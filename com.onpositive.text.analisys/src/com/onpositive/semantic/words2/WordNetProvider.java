@@ -11,7 +11,7 @@ public class WordNetProvider {
 
 	private static WordNet instance;
 	
-	public static final String DEFAULT_INDEX_FOLDER = "C:/se1";
+	public static final String DEFAULT_INDEX_FOLDER = "D:/se1";
 
 	public static WordNet getInstance()
 	{
