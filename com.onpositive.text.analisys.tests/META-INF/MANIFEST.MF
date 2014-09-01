@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: com.onpositive.text.analisys.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: ONPOSITIVE
+Require-Bundle: org.junit;bundle-version="3.8.2"
