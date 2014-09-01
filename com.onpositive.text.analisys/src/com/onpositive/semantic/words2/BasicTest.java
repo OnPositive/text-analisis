@@ -14,7 +14,7 @@ public class BasicTest {
 	
 	private static void test(WordNet instance) {
 		SimpleWordNet ww=(SimpleWordNet) instance;
-		WordSequence parse = ww.parse("максимальный");
+		WordSequence parse = ww.parse("экскаваторы");
 		WordRelation[] posibleWords = ww.getPosibleWords("промышленный");		
 		RelationTarget word = posibleWords[0].getWord();
 		System.out.println(word);

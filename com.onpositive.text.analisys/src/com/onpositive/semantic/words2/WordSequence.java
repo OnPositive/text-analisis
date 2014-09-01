@@ -182,7 +182,7 @@ public class WordSequence {
 						continue;
 					}
 				}
-				if (z.getBasicForm().equals("и")){
+				if (z.getBasicForm().length()<=2){
 					continue;
 				}
 				if (z.getBasicForm().equals("по")){
@@ -212,7 +212,6 @@ public class WordSequence {
 						}
 					}
 				}
-				
 				if (!hasTT&&wordRelations.length>1){
 					first=false;
 					continue;
