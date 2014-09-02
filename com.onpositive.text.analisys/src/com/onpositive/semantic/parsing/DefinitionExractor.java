@@ -3,7 +3,6 @@ package com.onpositive.semantic.parsing;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import com.onpositive.semantic.references.TermReference;
 import com.onpositive.semantic.words2.NounFormRule;
 import com.onpositive.semantic.words2.RelationTarget;

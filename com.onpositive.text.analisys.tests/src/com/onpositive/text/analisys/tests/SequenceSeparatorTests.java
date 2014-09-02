@@ -3,6 +3,7 @@ package com.onpositive.text.analisys.tests;
 
 import org.junit.Test;
 
+import com.onpositive.semantic.parsing.DefinitionExractor;
 import com.onpositive.semantic.words2.WordNetProvider;
 import com.onpositive.semantic.words2.WordRelation;
 
@@ -12,7 +13,7 @@ public class SequenceSeparatorTests extends TestCase {
 
 	@Test
 	public void test() {
-		WordRelation[] posibleWords = WordNetProvider.getInstance().getPosibleWords("молоко");
-		assertTrue(posibleWords.length>0);
+		WordRelation[] posibleWords = WordNetProvider.getInstance().getPosibleWords("политический деятель");
+		System.out.println(posibleWords);
 	}
 }

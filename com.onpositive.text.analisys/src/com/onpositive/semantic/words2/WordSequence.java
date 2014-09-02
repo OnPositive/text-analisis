@@ -2,7 +2,6 @@ package com.onpositive.semantic.words2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -36,7 +35,6 @@ public class WordSequence {
 				if (basicForm.equals("классификация")) {
 					continue;
 				}
-				
 				if (basicForm.equals("по")) {
 					continue;
 				}
@@ -163,63 +161,5 @@ public class WordSequence {
 		return -1;
 	}
 
-	public Collection<RelationTarget> getNouns() {
-		ArrayList<RelationTarget>tm=new ArrayList<RelationTarget>();
-		boolean first=true;
-		for (RelationTarget q:targets){
-			if (q instanceof Word){
-				Word z=(Word) q;
-				String basicForm = z.getBasicForm();
-				boolean equals = basicForm.equals("в");
-				if (equals){
-					if (!tm.isEmpty()){
-						break;	
-					}
-					
-				}
-				if( !z.isNoun()){
-					if (z.isVerb()||z.isAdjective()){
-						continue;
-					}
-				}
-				if (z.getBasicForm().length()<=2){
-					continue;
-				}
-				if (z.getBasicForm().equals("по")){
-					continue;
-				}
-				if (z.getBasicForm().equals("о")){
-					continue;
-				}
-				if (z.getBasicForm().equals("с")){
-					continue;
-				}
-				if (z.hasFeature(Word.FEATURE_TOPONIM)){
-					continue;
-				}
-				WordRelation[] wordRelations = sequence.get(q);
-				
-				boolean hasTT=false;
-				if (wordRelations==null){
-					hasTT=true;
-				}
-				else for (WordRelation r:wordRelations){
-					if (r.relation==NounFormRule.NOM_PL||(r.relation==NounFormRule.NOM_SG)){
-						hasTT=true;
-						if (first){
-							tm.add(q);
-							return tm;
-						}
-					}
-				}
-				if (!hasTT&&wordRelations.length>1){
-					first=false;
-					continue;
-				}
-			}
-			first=false;
-			tm.add(q);
-		}
-		return tm;
-	}
+	
 }

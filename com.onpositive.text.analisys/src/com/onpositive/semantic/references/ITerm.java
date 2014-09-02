@@ -12,4 +12,6 @@ public interface ITerm {
 	int relatedTo(ITerm term);
 
 	List<ISemanticConnection> getConnections();
+	
+	ITerm resolveToPrimary();
 }

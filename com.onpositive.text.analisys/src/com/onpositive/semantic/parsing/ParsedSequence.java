@@ -1,5 +1,4 @@
 package com.onpositive.semantic.parsing;
-
 import java.util.ArrayList;
 
 public class ParsedSequence {
