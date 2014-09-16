@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 
 public class PrimitiveTokenizerTest {
 	
-	private final static String TEST_RESULTS_PATH = "C:/workspaces/TestAnalysis/GIT/text-analisis/com.onpositive.text.analisys.tests/TestResults/tokenixerTest.txt";
+	private final static String TEST_RESULTS_PATH = "C:/workspaces/TestAnalysis/GIT/text-analisis/com.onpositive.text.analisys.tests/TestResults/tokenizerTest.txt";
 
 	private static final String UNIT_TYPE_NAME_PREFIX = "UNIT_TYPE_";
 
@@ -75,15 +76,8 @@ public class PrimitiveTokenizerTest {
 					stream.print(" ");
 				}
 				
-				int[] types = u.getType();
-				for(int i = 0 ; i < types.length ; i++){				
-					stream.print(map.get(types[i]));
-					
-					if(i<types.length-1){
-						stream.print(", ");
-					}
-				}
-				stream.println();			
+				int type = u.getType();
+				stream.println(map.get(type) + ", ");
 			}
 			stream.close();
 		} catch (IOException e) {

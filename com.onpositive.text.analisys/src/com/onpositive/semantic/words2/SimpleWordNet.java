@@ -251,7 +251,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		return getOrCreateWord(lowerCase);
 	}
 
-	protected void prepareWordSeqs() {
+	public void prepareWordSeqs() {
 		for (AbstractRelationTarget w : this) {
 			if (!(w instanceof Word)) {
 				continue;

@@ -1,5 +1,8 @@
 package com.onpositive.text.analysis;
 
+import java.util.Collection;
+import java.util.List;
+
 public interface IUnit {
 	
 	static final int UNIT_TYPE_UNDEFINED = 00001;
@@ -8,7 +11,7 @@ public interface IUnit {
 	
 	static final int UNIT_TYPE_LETTER = 10002;
 	
-	static final int UNIT_TYPE_SIGN = 10003;
+	static final int UNIT_TYPE_SYMBOL = 10003;
 	
 	static final int UNIT_TYPE_LINEBREAK = 100101;
 	
@@ -16,13 +19,39 @@ public interface IUnit {
 	
 	static final int UNIT_TYPE_OTHER_WHITESPACE = 100103;
 	
+	static final int UNIT_TYPE_WORD_FORM = 100201;
+	
 	String getStringValue();
 	
-	int[] getType();
+	int getType();
 	
 	int getStartPosition();
 	
 	int getEndPosition();
 	
 	int getLength();
+	
+	IUnit getNext();
+	
+	IUnit getPrevious();
+	
+	void setNext(IUnit unit);
+	
+	void setPrevious(IUnit unit);
+	
+	List<IUnit> getNextUnits();
+	
+	List<IUnit> getPreviousUnits();
+	
+	void addNextUnit(IUnit unit);
+	
+	void addPreviousUnit(IUnit unit);
+	
+	List<IUnit> getChildren();
+	
+	void addChild(IUnit child);
+	
+	List<IUnit> getParents();
+	
+	void addParent(IUnit parent);
 }
