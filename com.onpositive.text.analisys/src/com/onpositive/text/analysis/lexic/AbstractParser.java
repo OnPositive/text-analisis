@@ -2,16 +2,22 @@ package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.text.analysis.IUnit;
 
 public abstract class AbstractParser {
 	
+	protected static final int CONTINUE_PUSH = -1;
 	
-	abstract protected List<IUnit> combineUnits(Stack<IUnit> sample);
+	protected String text;	
 	
-	abstract protected boolean continueParsing(Stack<IUnit> sample);
+	abstract protected Set<IUnit> combineUnits(Stack<IUnit> sample);
+	
+	abstract protected int continuePush(Stack<IUnit> sample);
+	
+	abstract protected boolean checkAndPrepare(IUnit unit);
 	
 	public ArrayList<IUnit> process(List<IUnit> units){
 		
@@ -23,17 +29,31 @@ public abstract class AbstractParser {
 				continue;
 			}
 			List<IUnit> startingUnits = parseStartingUnits(unit);
-			result.addAll(startingUnits);
+			if(startingUnits==null){
+				result.add(unit);
+			}
+			else{
+				result.addAll(startingUnits);
+			}
 		}
 		return result;
 	}
 
 	private List<IUnit> parseStartingUnits(IUnit unit) {
 		
+		if(!checkAndPrepare(unit)){
+			return null;
+		}
+		
 		ArrayList<IUnit> result = new ArrayList<IUnit>();
 		Stack<IUnit> sample = new Stack<IUnit>();
 		sample.add(unit);		
 		boolean gotRecursion = parseRecursively(sample,result);
+		
+		if(result.isEmpty()){
+			return null;
+		}
+		
 		for(IUnit newUnit : result){
 			List<IUnit> children = newUnit.getChildren();
 			IUnit first = children.get(0);
@@ -64,10 +84,7 @@ public abstract class AbstractParser {
 				}
 			}
 			
-		}
-		if(result.isEmpty()){
-			result.add(unit);
-		}
+		}		
 		return result;
 	}
 
@@ -135,7 +152,8 @@ public abstract class AbstractParser {
 		IUnit last = sample.peek();
 		int unitsAdded = 0 ;
 		boolean gotRecursion = false;
-		while(continueParsing(sample)){
+		int popCount = -1;
+		while((popCount = continuePush(sample))==CONTINUE_PUSH){
 			IUnit next = last.getNext();
 			if(next!=null){
 				sample.add(next);
@@ -157,16 +175,15 @@ public abstract class AbstractParser {
 				break;
 			}
 		}
+		while(popCount-- > 0){
+			sample.pop();
+			unitsAdded--;
+		}
 		if(!gotRecursion){
 			while(unitsAdded >= 0){
-				List<IUnit> newUnits = combineUnits(sample);				
+				Set<IUnit> newUnits = combineUnits(sample);				
 				if(newUnits!=null&&!newUnits.isEmpty()){
-					for(IUnit newUnit : newUnits){
-						for(IUnit u : sample){
-							newUnit.addChild(u);
-							u.addParent(newUnit);
-						}						
-					}
+					handleChildrenAndParents(sample, newUnits);
 					result.addAll(newUnits);
 				}
 				if(unitsAdded > 0){
@@ -182,6 +199,37 @@ public abstract class AbstractParser {
 			sample.pop();
 		}
 		return gotRecursion;
+	}
+
+	private void handleChildrenAndParents(Stack<IUnit> sample,Set<IUnit> newUnits)
+	{
+		
+		for(IUnit newUnit : newUnits){
+			int sp = newUnit.getStartPosition();
+			int ep = newUnit.getEndPosition();
+			
+			int childIndex = 0;			
+			IUnit child = sample.get(childIndex);
+			while(child.getEndPosition()<=ep){
+				if(child.getStartPosition()>=sp){
+					newUnit.addChild(child);
+					child.addParent(newUnit);
+				}
+				childIndex++;
+				if(childIndex>=sample.size()){
+					break;
+				}
+				child = sample.get(childIndex);
+			}
+		}
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 }
 

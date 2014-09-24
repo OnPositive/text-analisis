@@ -1,7 +1,9 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.words2.WordNet;
@@ -18,7 +20,7 @@ public class WordFormParser extends AbstractParser {
 	WordNet wordNet;
 
 	@Override
-	protected List<IUnit> combineUnits(Stack<IUnit> sample) {
+	protected Set<IUnit> combineUnits(Stack<IUnit> sample) {
 		
 		StringBuilder bld = new StringBuilder();
 		for(IUnit unit : sample){
@@ -48,7 +50,7 @@ public class WordFormParser extends AbstractParser {
 		int startPosition = sample.firstElement().getStartPosition();
 		int endPosition = sample.peek().getEndPosition();
 
-		ArrayList<IUnit> result = new ArrayList<IUnit>();
+		LinkedHashSet<IUnit> result = new LinkedHashSet<IUnit>();
 		for(WordRelation wr : possibleWords){
 			WordFormToken wordFormToken = new WordFormToken(wr, startPosition, endPosition);
 			result.add(wordFormToken);
@@ -57,25 +59,34 @@ public class WordFormParser extends AbstractParser {
 	}
 
 	@Override
-	protected boolean continueParsing(Stack<IUnit> sample) {
+	protected int continuePush(Stack<IUnit> sample) {
 		
-		if(sample.size()>3)
-			return false;
+		if(sample.size()>2)
+			return 0;
 
 		IUnit lastToken = sample.peek();
-		if(lastToken.getType() != IUnit.UNIT_TYPE_LETTER){
-			if(lastToken.getType() != IUnit.UNIT_TYPE_SYMBOL){
-				if(lastToken.getType() != IUnit.UNIT_TYPE_NON_BREAKING_SPACE){
-					return false;
+		return checkToken(lastToken);
+	}
+
+	private int checkToken(IUnit unit) {
+		if(unit.getType() != IUnit.UNIT_TYPE_LETTER){
+			if(unit.getType() != IUnit.UNIT_TYPE_SYMBOL){
+				if(unit.getType() != IUnit.UNIT_TYPE_NON_BREAKING_SPACE){
+					return 1;
 				}
 			}
-			String val = lastToken.getStringValue();
+			String val = unit.getStringValue();
 			if(!val.equals("-")){
-				return false;
+				return 1;
 			}
-			return true;
+			return 1;
 		}
-		return true;
+		return CONTINUE_PUSH;
+	}
+
+	@Override
+	protected boolean checkAndPrepare(IUnit unit) {
+		return checkToken(unit)<0;
 	}
 
 }

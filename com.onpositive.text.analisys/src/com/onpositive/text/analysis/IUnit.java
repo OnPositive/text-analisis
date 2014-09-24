@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface IUnit {
@@ -13,13 +12,21 @@ public interface IUnit {
 	
 	static final int UNIT_TYPE_SYMBOL = 10003;
 	
+	static final int UNIT_TYPE_VULGAR_FRACTION = 10004;
+	
 	static final int UNIT_TYPE_LINEBREAK = 100101;
 	
 	static final int UNIT_TYPE_NON_BREAKING_SPACE = 100102;
 	
 	static final int UNIT_TYPE_OTHER_WHITESPACE = 100103;
 	
-	static final int UNIT_TYPE_WORD_FORM = 100201;
+	static final int UNIT_TYPE_SCALAR = 10201;
+	
+	static final int UNIT_TYPE_DATE = 10202;
+	
+	static final int UNIT_TYPE_DIMENSIONR = 10203;
+	
+	static final int UNIT_TYPE_WORD_FORM = 11001;
 	
 	String getStringValue();
 	

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.onpositive.text.analysis.IUnit;
 import com.onpositive.text.analysis.utils.Utils;
+import com.onpositive.text.analysis.utils.VulgarFraction;
 
 public class PrimitiveTokenizer {
 
@@ -77,6 +78,13 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				SymbolToken pt = new SymbolToken( ch, type, start+i, start+i+1 );
+				list.add(pt);
+			}
+		}
+		else if(type == IUnit.UNIT_TYPE_VULGAR_FRACTION){
+			for(int i = 0 ; i < sl ; i++){
+				char ch = segment.charAt(i); 
+				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
 				list.add(pt);
 			}
 		}
@@ -157,7 +165,9 @@ public class PrimitiveTokenizer {
 		if(Character.isLetter(ch)){
 			return IUnit.UNIT_TYPE_LETTER;
 		}
-		
+		if(VulgarFraction.isVulgarFraction(ch)){
+			return IUnit.UNIT_TYPE_VULGAR_FRACTION;
+		}
 		return IUnit.UNIT_TYPE_UNDEFINED;
 	}
 	
