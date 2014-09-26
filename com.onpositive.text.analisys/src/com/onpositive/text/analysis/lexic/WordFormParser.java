@@ -1,8 +1,5 @@
 package com.onpositive.text.analysis.lexic;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -20,7 +17,7 @@ public class WordFormParser extends AbstractParser {
 	WordNet wordNet;
 
 	@Override
-	protected Set<IToken> combineUnits(Stack<IToken> sample) {
+	protected void combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
 		
 		StringBuilder bld = new StringBuilder();
 		for(IToken unit : sample){
@@ -45,17 +42,15 @@ public class WordFormParser extends AbstractParser {
 		String str = bld.toString().trim().toLowerCase();
 		WordRelation[] possibleWords = wordNet.getPosibleWords(str);
 		if(possibleWords==null||possibleWords.length==0){
-			return null;
+			return;
 		}
 		int startPosition = sample.firstElement().getStartPosition();
 		int endPosition = sample.peek().getEndPosition();
 
-		LinkedHashSet<IToken> result = new LinkedHashSet<IToken>();
 		for(WordRelation wr : possibleWords){
 			WordFormToken wordFormToken = new WordFormToken(wr, startPosition, endPosition);
-			result.add(wordFormToken);
+			reliableTokens.add(wordFormToken);
 		}
-		return result;
 	}
 
 	@Override
@@ -79,7 +74,7 @@ public class WordFormParser extends AbstractParser {
 			if(!val.equals("-")){
 				return 1;
 			}
-			return 1;
+			return CONTINUE_PUSH;
 		}
 		return CONTINUE_PUSH;
 	}

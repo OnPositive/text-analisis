@@ -3,8 +3,6 @@ package com.onpositive.text.analysis.lexic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -37,11 +35,9 @@ public class ScalarParser extends AbstractParser {
 	
 	
 	@Override
-	protected Set<IToken> combineUnits(Stack<IToken> sample) {
+	protected void combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
 		
 		resetDelimeterPatterns();
-		
-		LinkedHashSet<IToken> result = new LinkedHashSet<IToken>();
 		
 		ArrayList<Integer> valueBounds = detectInitialValueBounds(sample);
 		detectDelimeters(sample, valueBounds);
@@ -53,7 +49,7 @@ public class ScalarParser extends AbstractParser {
 				Collection<IToken> values = applyPattern(pattern, sample, valueBounds);
 				if(values != null && !values.isEmpty()){
 					gotPattern = true;
-					result.addAll(values);
+					reliableTokens.addAll(values);
 				}
 			}
 		}
@@ -86,10 +82,9 @@ public class ScalarParser extends AbstractParser {
 				else{
 					continue;
 				}
-				result.add(scalar);
+				reliableTokens.add(scalar);
 			}
 		}
-		return result;
 	}
 	
 	private IToken createScalar(

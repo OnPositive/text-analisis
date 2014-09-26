@@ -8,13 +8,19 @@ import com.onpositive.text.analysis.IToken;
 public class DateParser extends AbstractParser {
 
 	@Override
-	protected Set<IToken> combineUnits(Stack<IToken> sample) {
-		return null;
+	protected void combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
+		
 	}
 
 	@Override
 	protected int continuePush(Stack<IToken> sample) {
-		return 0;
+		if(sample.size()==1){
+			
+		}
+		else{
+			
+		}		
+		return 1;
 	}
 
 	@Override
