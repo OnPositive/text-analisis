@@ -8,7 +8,7 @@ import java.util.Stack;
 
 import com.onpositive.semantic.words2.WordNet;
 import com.onpositive.semantic.words2.WordRelation;
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 
 public class WordFormParser extends AbstractParser {
 
@@ -20,11 +20,11 @@ public class WordFormParser extends AbstractParser {
 	WordNet wordNet;
 
 	@Override
-	protected Set<IUnit> combineUnits(Stack<IUnit> sample) {
+	protected Set<IToken> combineUnits(Stack<IToken> sample) {
 		
 		StringBuilder bld = new StringBuilder();
-		for(IUnit unit : sample){
-			if(unit.getType()==IUnit.UNIT_TYPE_LETTER){
+		for(IToken unit : sample){
+			if(unit.getType()==IToken.TOKEN_TYPE_LETTER){
 				bld.append(unit.getStringValue());
 				bld.append(" ");
 			}
@@ -50,7 +50,7 @@ public class WordFormParser extends AbstractParser {
 		int startPosition = sample.firstElement().getStartPosition();
 		int endPosition = sample.peek().getEndPosition();
 
-		LinkedHashSet<IUnit> result = new LinkedHashSet<IUnit>();
+		LinkedHashSet<IToken> result = new LinkedHashSet<IToken>();
 		for(WordRelation wr : possibleWords){
 			WordFormToken wordFormToken = new WordFormToken(wr, startPosition, endPosition);
 			result.add(wordFormToken);
@@ -59,19 +59,19 @@ public class WordFormParser extends AbstractParser {
 	}
 
 	@Override
-	protected int continuePush(Stack<IUnit> sample) {
+	protected int continuePush(Stack<IToken> sample) {
 		
 		if(sample.size()>2)
 			return 0;
 
-		IUnit lastToken = sample.peek();
+		IToken lastToken = sample.peek();
 		return checkToken(lastToken);
 	}
 
-	private int checkToken(IUnit unit) {
-		if(unit.getType() != IUnit.UNIT_TYPE_LETTER){
-			if(unit.getType() != IUnit.UNIT_TYPE_SYMBOL){
-				if(unit.getType() != IUnit.UNIT_TYPE_NON_BREAKING_SPACE){
+	private int checkToken(IToken unit) {
+		if(unit.getType() != IToken.TOKEN_TYPE_LETTER){
+			if(unit.getType() != IToken.TOKEN_TYPE_SYMBOL){
+				if(unit.getType() != IToken.TOKEN_TYPE_NON_BREAKING_SPACE){
 					return 1;
 				}
 			}
@@ -85,7 +85,7 @@ public class WordFormParser extends AbstractParser {
 	}
 
 	@Override
-	protected boolean checkAndPrepare(IUnit unit) {
+	protected boolean checkAndPrepare(IToken unit) {
 		return checkToken(unit)<0;
 	}
 

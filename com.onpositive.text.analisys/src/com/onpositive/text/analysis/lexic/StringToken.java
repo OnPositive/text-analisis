@@ -1,7 +1,7 @@
 package com.onpositive.text.analysis.lexic;
 
 import com.onpositive.text.analysis.AbstractToken;
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 
 public class StringToken extends AbstractToken{	
 

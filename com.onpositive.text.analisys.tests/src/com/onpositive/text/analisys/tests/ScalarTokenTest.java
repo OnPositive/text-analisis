@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.ScalarParser;
 
@@ -18,7 +18,7 @@ public class ScalarTokenTest {
 		
 		HashMap<Integer,String> map = new HashMap<Integer, String>();
 		
-		Field[] fields = IUnit.class.getFields();
+		Field[] fields = IToken.class.getFields();
 		for(Field f : fields){
 			int mdf = f.getModifiers();
 			if(!Modifier.isStatic(mdf)){
@@ -59,10 +59,10 @@ public class ScalarTokenTest {
 		
 		for(String s : sArr){
 			
-			List<IUnit> tokens = pt.tokenize(s);
+			List<IToken> tokens = pt.tokenize(s);
 			sp.setText(s);
-			ArrayList<IUnit> tokens2 = sp.process(tokens);
-			for(IUnit t : tokens2){
+			ArrayList<IToken> tokens2 = sp.process(tokens);
+			for(IToken t : tokens2){
 				System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + map.get(t.getType()) + " " + t.getStringValue());
 			}
 			System.out.println();

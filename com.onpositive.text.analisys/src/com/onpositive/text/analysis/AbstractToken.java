@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public abstract class AbstractToken implements IUnit {
+public abstract class AbstractToken implements IToken {
 
 	protected AbstractToken(int tokenType, int startPosition, int endPosition)
 	{
@@ -14,13 +14,13 @@ public abstract class AbstractToken implements IUnit {
 		this.endPosition = endPosition;
 	}
 	
-	private IUnit next;
+	private IToken next;
 	
-	private IUnit previous;
+	private IToken previous;
 	
-	private ArrayList<IUnit> nextTokens;
+	private ArrayList<IToken> nextTokens;
 	
-	private ArrayList<IUnit> previousTokens;	
+	private ArrayList<IToken> previousTokens;	
 	
 	private final int tokenType;
 	
@@ -28,9 +28,9 @@ public abstract class AbstractToken implements IUnit {
 	
 	private final int endPosition;
 	
-	private List<IUnit> children;
+	private List<IToken> children;
 	
-	private List<IUnit> parents;
+	private List<IToken> parents;
 	
 	public int getType() {
 		return tokenType;
@@ -48,27 +48,27 @@ public abstract class AbstractToken implements IUnit {
 		return endPosition - startPosition;
 	}
 
-	public IUnit getNext() {
+	public IToken getNext() {
 		return next;
 	}
 
-	public IUnit getPrevious() {
+	public IToken getPrevious() {
 		return previous;
 	}
 	
-	public void setNext(IUnit unit) {
+	public void setNext(IToken unit) {
 		this.next = unit;
 	}
 
-	public void setPrevious(IUnit unit) {
+	public void setPrevious(IToken unit) {
 		this.previous = unit;
 	}
 
-	public List<IUnit> getNextUnits() {
+	public List<IToken> getNextUnits() {
 		return nextTokens;
 	}
 
-	public void addNextUnit(IUnit unit) {
+	public void addNextUnit(IToken unit) {
 		if(this.next == null){
 			if( this.nextTokens==null){		
 				this.next = unit;
@@ -77,7 +77,7 @@ public abstract class AbstractToken implements IUnit {
 		}
 		else{
 			if(this.nextTokens==null){
-				this.nextTokens = new ArrayList<IUnit>();
+				this.nextTokens = new ArrayList<IToken>();
 				this.nextTokens.add(this.next);
 				this.next = null;
 			}
@@ -85,11 +85,11 @@ public abstract class AbstractToken implements IUnit {
 		this.nextTokens.add(unit);
 	}
 
-	public List<IUnit> getPreviousUnits() {
+	public List<IToken> getPreviousUnits() {
 		return previousTokens;
 	}
 
-	public void addPreviousUnit(IUnit unit) {
+	public void addPreviousUnit(IToken unit) {
 		if(this.previous == null){
 			if( this.previousTokens==null){		
 				this.previous = unit;
@@ -98,7 +98,7 @@ public abstract class AbstractToken implements IUnit {
 		}
 		else{
 			if(this.previousTokens==null){
-				this.previousTokens = new ArrayList<IUnit>();
+				this.previousTokens = new ArrayList<IToken>();
 				this.previousTokens.add(this.previous);
 				this.previous = null;
 			}
@@ -106,24 +106,24 @@ public abstract class AbstractToken implements IUnit {
 		this.previousTokens.add(unit);
 	}
 	
-	public List<IUnit> getChildren(){
+	public List<IToken> getChildren(){
 		return this.children;
 	}	
 	
-	public void addChild(IUnit child){
+	public void addChild(IToken child){
 		if(this.children==null){
-			this.children = new ArrayList<IUnit>();
+			this.children = new ArrayList<IToken>();
 		}
 		this.children.add(child);
 	}
 	
-	public List<IUnit> getParents(){
+	public List<IToken> getParents(){
 		return this.parents;
 	}
 	
-	public void addParent(IUnit parent){
+	public void addParent(IToken parent){
 		if(this.parents==null){
-			this.parents = new ArrayList<IUnit>();
+			this.parents = new ArrayList<IToken>();
 		}
 		this.parents.add(parent);
 	}

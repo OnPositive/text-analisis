@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.utils.VulgarFraction;
 
 public class ScalarParser extends AbstractParser {
@@ -37,11 +37,11 @@ public class ScalarParser extends AbstractParser {
 	
 	
 	@Override
-	protected Set<IUnit> combineUnits(Stack<IUnit> sample) {
+	protected Set<IToken> combineUnits(Stack<IToken> sample) {
 		
 		resetDelimeterPatterns();
 		
-		LinkedHashSet<IUnit> result = new LinkedHashSet<IUnit>();
+		LinkedHashSet<IToken> result = new LinkedHashSet<IToken>();
 		
 		ArrayList<Integer> valueBounds = detectInitialValueBounds(sample);
 		detectDelimeters(sample, valueBounds);
@@ -50,7 +50,7 @@ public class ScalarParser extends AbstractParser {
 		for(DelimeterPattern pattern : delimeterPatterns){
 			if(!pattern.isCanceled()){
 				
-				Collection<IUnit> values = applyPattern(pattern, sample, valueBounds);
+				Collection<IToken> values = applyPattern(pattern, sample, valueBounds);
 				if(values != null && !values.isEmpty()){
 					gotPattern = true;
 					result.addAll(values);
@@ -60,18 +60,18 @@ public class ScalarParser extends AbstractParser {
 		if(!gotPattern){
 			int size = sample.size();
 			for(int i = 0 ; i < size ; i++){
-				IUnit token = sample.get(i);
-				IUnit scalar = null;
+				IToken token = sample.get(i);
+				IToken scalar = null;
 				int type = token.getType();
-				if(type==IUnit.UNIT_TYPE_DIGIT){
+				if(type==IToken.TOKEN_TYPE_DIGIT){
 					int startPosition = token.getStartPosition() ;
 					int endPosition = token.getEndPosition() ;
 					String val = token.getStringValue();
 					
 					String frac = null;
 					if(i<size-1){
-						IUnit next = sample.get(i+1);
-						if(next.getType()==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+						IToken next = sample.get(i+1);
+						if(next.getType()==IToken.TOKEN_TYPE_VULGAR_FRACTION){
 							frac = next.getStringValue();
 						}
 						i++;
@@ -79,7 +79,7 @@ public class ScalarParser extends AbstractParser {
 					}
 					scalar = createScalar(val,null,frac,startPosition,endPosition);
 				}
-				else if(type == IUnit.UNIT_TYPE_VULGAR_FRACTION){
+				else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
 					String frac = token.getStringValue();
 					scalar = createScalar(null,null,frac,i,i+1);
 				}
@@ -92,7 +92,7 @@ public class ScalarParser extends AbstractParser {
 		return result;
 	}
 	
-	private IUnit createScalar(
+	private IToken createScalar(
 			String evenPart,
 			String decimalFractionPart,
 			String vulgarFractionPart,
@@ -120,15 +120,15 @@ public class ScalarParser extends AbstractParser {
 		return null;
 	}
 
-	private Collection<IUnit> applyPattern(DelimeterPattern pattern,	
-			Stack<IUnit> sample, ArrayList<Integer> valueBounds) {
+	private Collection<IToken> applyPattern(DelimeterPattern pattern,	
+			Stack<IToken> sample, ArrayList<Integer> valueBounds) {
 		
 		
 		String decimalDelimeter = pattern.getDecimalDelimeter();
 		String fractionDelimeter = pattern.getFractureDelimeter();
 		String valueDelimeter = pattern.getValueDelimeter();
 		
-		ArrayList<IUnit> result = new ArrayList<IUnit>();
+		ArrayList<IToken> result = new ArrayList<IToken>();
 		for(int i = 0 ; i < valueBounds.size() ; i+=2){
 			
 			int startIndex = valueBounds.get(i);
@@ -139,21 +139,21 @@ public class ScalarParser extends AbstractParser {
 			int startPosition=Integer.MAX_VALUE;
 			for(int j = startIndex ; j < endIndex ; j++){
 				
-				IUnit token = sample.get(j);
+				IToken token = sample.get(j);
 				String val = token.getStringValue();
 				int type = token.getType();
 				
-				if(type == IUnit.UNIT_TYPE_DIGIT){
+				if(type == IToken.TOKEN_TYPE_DIGIT){
 					if(bld.length()!=0){
 						if(isFraction){
-							IUnit scalar = createScalar(bld.toString(), val, null,startPosition,token.getEndPosition());
+							IToken scalar = createScalar(bld.toString(), val, null,startPosition,token.getEndPosition());
 							result.add(scalar);
 							bld.delete(0, bld.length());
 						}
 						else{
 							if(i>startIndex){
-								IUnit prev = sample.get(i-1);
-								if(prev.getType()==IUnit.UNIT_TYPE_DIGIT){
+								IToken prev = sample.get(i-1);
+								if(prev.getType()==IToken.TOKEN_TYPE_DIGIT){
 									if(!" ".equals(valueDelimeter)){
 										return null;
 									}
@@ -167,12 +167,12 @@ public class ScalarParser extends AbstractParser {
 						bld.append(val);
 					}
 				}
-				else if(type == IUnit.UNIT_TYPE_SYMBOL){
+				else if(type == IToken.TOKEN_TYPE_SYMBOL){
 					val = val.intern();
 					if(val == valueDelimeter){
 						if(bld.length()!=0){
 							String str = bld.toString();
-							IUnit scalar = createScalar(str, null, null,startPosition,sample.get(j-1).getEndPosition());
+							IToken scalar = createScalar(str, null, null,startPosition,sample.get(j-1).getEndPosition());
 							result.add(scalar);
 							bld.delete(0, bld.length());
 						}
@@ -189,11 +189,11 @@ public class ScalarParser extends AbstractParser {
 						isFraction = true;
 					}
 				}
-				else if(type == IUnit.UNIT_TYPE_NON_BREAKING_SPACE){
+				else if(type == IToken.TOKEN_TYPE_NON_BREAKING_SPACE){
 					val = " ".intern();
 					if(val == valueDelimeter){
 						String str = bld.toString();
-						IUnit scalar = createScalar(str, null, null,startPosition,sample.get(j-1).getEndPosition());
+						IToken scalar = createScalar(str, null, null,startPosition,sample.get(j-1).getEndPosition());
 						result.add(scalar);
 						bld.delete(0, bld.length());
 					}
@@ -203,16 +203,16 @@ public class ScalarParser extends AbstractParser {
 						}
 					}
 				}
-				else if(type == IUnit.UNIT_TYPE_VULGAR_FRACTION){
+				else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
 					
 					if(i<endIndex-1){
-						IUnit next = sample.get(i+1);
-						if(next.getType()==IUnit.UNIT_TYPE_SYMBOL){
+						IToken next = sample.get(i+1);
+						if(next.getType()==IToken.TOKEN_TYPE_SYMBOL){
 							if(!next.getStringValue().equals(valueDelimeter)){
 								return null;
 							}
 						}
-						else if(next.getType()==IUnit.UNIT_TYPE_DIGIT){
+						else if(next.getType()==IToken.TOKEN_TYPE_DIGIT){
 							if(!" ".equals(valueDelimeter)){
 								return null;
 							}
@@ -229,23 +229,23 @@ public class ScalarParser extends AbstractParser {
 					else{
 						startPosition = sample.get(j).getStartPosition();
 					}
-					IUnit scalar = createScalar(evenpart, null, val,startPosition,sample.get(j).getEndPosition());
+					IToken scalar = createScalar(evenpart, null, val,startPosition,sample.get(j).getEndPosition());
 					result.add(scalar);
 				}
 			}
 			if(bld.length()!=0){
-				IUnit lastToken = sample.get(endIndex-1);
-				if(lastToken.getType()!= IUnit.UNIT_TYPE_DIGIT ){
+				IToken lastToken = sample.get(endIndex-1);
+				if(lastToken.getType()!= IToken.TOKEN_TYPE_DIGIT ){
 					return null;
 				}
-				IUnit scalar = createScalar(bld.toString(), null, null,startPosition,lastToken.getEndPosition());
+				IToken scalar = createScalar(bld.toString(), null, null,startPosition,lastToken.getEndPosition());
 				result.add(scalar);
 			}
 		}
 		return result;
 	}
 
-	private void detectDelimeters(Stack<IUnit> sample, ArrayList<Integer> valueBounds)
+	private void detectDelimeters(Stack<IToken> sample, ArrayList<Integer> valueBounds)
 	{
 		for(int i = 0 ; i < valueBounds.size() ; i+=2 ){
 			
@@ -253,30 +253,30 @@ public class ScalarParser extends AbstractParser {
 			int endIndex = valueBounds.get(i+1);
 			for(int j = startIndex ; j < endIndex ; j++)
 			{
-				IUnit token = sample.get(j);
+				IToken token = sample.get(j);
 				int type = token.getType();
-				if(type==IUnit.UNIT_TYPE_DIGIT){
+				if(type==IToken.TOKEN_TYPE_DIGIT){
 					
 					String chl = null;
 					String chr = null;
 					
 					if(i>startIndex){
-						IUnit prev = sample.get(i-1);
-						if(prev.getType()==IUnit.UNIT_TYPE_SYMBOL){
+						IToken prev = sample.get(i-1);
+						if(prev.getType()==IToken.TOKEN_TYPE_SYMBOL){
 							chl = prev.getStringValue();
 						}
-						else if( prev.getType() == IUnit.UNIT_TYPE_NON_BREAKING_SPACE
-								||prev.getType() == IUnit.UNIT_TYPE_DIGIT ){
+						else if( prev.getType() == IToken.TOKEN_TYPE_NON_BREAKING_SPACE
+								||prev.getType() == IToken.TOKEN_TYPE_DIGIT ){
 							chl = " ";
 						}
 					}					
 					if(i<endIndex-1){
-						IUnit next = sample.get(i+1);
-						if(next.getType()==IUnit.UNIT_TYPE_SYMBOL){
+						IToken next = sample.get(i+1);
+						if(next.getType()==IToken.TOKEN_TYPE_SYMBOL){
 							chr = next.getStringValue();
 						}						
-						else if( next.getType() == IUnit.UNIT_TYPE_NON_BREAKING_SPACE
-								||next.getType() == IUnit.UNIT_TYPE_DIGIT ){
+						else if( next.getType() == IToken.TOKEN_TYPE_NON_BREAKING_SPACE
+								||next.getType() == IToken.TOKEN_TYPE_DIGIT ){
 							chr = " ";
 						}
 					}
@@ -306,31 +306,31 @@ public class ScalarParser extends AbstractParser {
 						cancelFractionDelimeter(chr);
 					}
 				}
-				else if(type == IUnit.UNIT_TYPE_SYMBOL){
+				else if(type == IToken.TOKEN_TYPE_SYMBOL){
 					String ch = token.getStringValue();
 					boolean canBeFractionDelimeter = true;
 					if(i>startIndex+1){
-						if(sample.get(i-1).getType()==IUnit.UNIT_TYPE_DIGIT){
-							IUnit lt = sample.get(i-2);
-							if(lt.getType()==IUnit.UNIT_TYPE_SYMBOL){
+						if(sample.get(i-1).getType()==IToken.TOKEN_TYPE_DIGIT){
+							IToken lt = sample.get(i-2);
+							if(lt.getType()==IToken.TOKEN_TYPE_SYMBOL){
 								canBeFractionDelimeter = !lt.getStringValue().equals(ch);
 							}
 						}
 					}
 					if(i<endIndex-1){
-						IUnit next = sample.get(i+1);
+						IToken next = sample.get(i+1);
 						int nextType = next.getType();
-						if(nextType==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+						if(nextType==IToken.TOKEN_TYPE_VULGAR_FRACTION){
 							canBeFractionDelimeter = false;
 							cancelDecimalDelimeter(ch);
 						}
-						else if( nextType == IUnit.UNIT_TYPE_DIGIT){
+						else if( nextType == IToken.TOKEN_TYPE_DIGIT){
 							if(i<endIndex-2){
-								IUnit rt = sample.get(i+2);
-								if(rt.getType()==IUnit.UNIT_TYPE_SYMBOL){
+								IToken rt = sample.get(i+2);
+								if(rt.getType()==IToken.TOKEN_TYPE_SYMBOL){
 									canBeFractionDelimeter = !rt.getStringValue().equals(ch);
 								}
-								else if(rt.getType() == IUnit.UNIT_TYPE_VULGAR_FRACTION){
+								else if(rt.getType() == IToken.TOKEN_TYPE_VULGAR_FRACTION){
 									if(next.getEndPosition() == rt.getStartPosition()){
 										canBeFractionDelimeter = false;
 									}
@@ -349,7 +349,7 @@ public class ScalarParser extends AbstractParser {
 		}
 	}
 
-	private ArrayList<Integer> detectInitialValueBounds(Stack<IUnit> sample) {
+	private ArrayList<Integer> detectInitialValueBounds(Stack<IToken> sample) {
 		ArrayList<Integer> valueBounds = new ArrayList<Integer>();		
 		
 		boolean isInsideValue = false;
@@ -357,10 +357,10 @@ public class ScalarParser extends AbstractParser {
 		
 		for(int i = 0 ; i < size; i++){
 			
-			IUnit token = sample.get(i);
+			IToken token = sample.get(i);
 			int type = token.getType();
-			IUnit previousToken = null;
-			IUnit nextToken = null;
+			IToken previousToken = null;
+			IToken nextToken = null;
 			int previousType = Integer.MIN_VALUE;
 			if(i>0){
 				previousToken = sample.get(i-1);
@@ -371,38 +371,38 @@ public class ScalarParser extends AbstractParser {
 				nextToken = sample.get(i+1);
 			}
 			
-			if( type==IUnit.UNIT_TYPE_DIGIT || type == IUnit.UNIT_TYPE_VULGAR_FRACTION )
+			if( type==IToken.TOKEN_TYPE_DIGIT || type == IToken.TOKEN_TYPE_VULGAR_FRACTION )
 			{
 				if(!isInsideValue){				
 					valueBounds.add(i);
 					isInsideValue = true;
 				}
-				else if(previousType==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+				else if(previousType==IToken.TOKEN_TYPE_VULGAR_FRACTION){
 					valueBounds.add(i);
 					valueBounds.add(i);
 				}
-				else if(previousType==IUnit.UNIT_TYPE_DIGIT){
+				else if(previousType==IToken.TOKEN_TYPE_DIGIT){
 					if(previousToken.getLength()>3||token.getLength()!=3){
 						valueBounds.add(i);
 						valueBounds.add(i);
 					}
 				}
 			}
-			else if( type == IUnit.UNIT_TYPE_VULGAR_FRACTION )
+			else if( type == IToken.TOKEN_TYPE_VULGAR_FRACTION )
 			{
 				if(!isInsideValue){				
 					valueBounds.add(i);
 					isInsideValue = true;
 				}
-				else if(previousType==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+				else if(previousType==IToken.TOKEN_TYPE_VULGAR_FRACTION){
 					valueBounds.add(i);
 					valueBounds.add(i);
 				}
 			}
-			else if( type == IUnit.UNIT_TYPE_SYMBOL || type == IUnit.UNIT_TYPE_NON_BREAKING_SPACE )
+			else if( type == IToken.TOKEN_TYPE_SYMBOL || type == IToken.TOKEN_TYPE_NON_BREAKING_SPACE )
 			{
 				if(isInsideValue){
-					if(previousType!=IUnit.UNIT_TYPE_DIGIT){
+					if(previousType!=IToken.TOKEN_TYPE_DIGIT){
 						valueBounds.add(i-1);
 					}
 					else{
@@ -417,9 +417,9 @@ public class ScalarParser extends AbstractParser {
 					}
 				}
 			}
-			else if(type == IUnit.UNIT_TYPE_LINEBREAK){
+			else if(type == IToken.TOKEN_TYPE_LINEBREAK){
 				if(isInsideValue){				
-					if(previousType==IUnit.UNIT_TYPE_DIGIT||previousType==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+					if(previousType==IToken.TOKEN_TYPE_DIGIT||previousType==IToken.TOKEN_TYPE_VULGAR_FRACTION){
 						valueBounds.add(i);						
 					}
 					else{
@@ -438,35 +438,35 @@ public class ScalarParser extends AbstractParser {
 	
 	//accept digit, symbol, vulgar fraction and line break and non breaking whitespace.
 	@Override
-	protected int continuePush(Stack<IUnit> sample) {
+	protected int continuePush(Stack<IToken> sample) {
 		
 		int result = CONTINUE_PUSH;
 		
 		int size = sample.size();
 		boolean isInsideValue = (size & 1) != 0;
-		IUnit token = sample.peek();
+		IToken token = sample.peek();
 		int type = token.getType();
 		
 		int previousType = Integer.MIN_VALUE;
 		if(size>1){
-			IUnit previous = sample.get(size-2);
+			IToken previous = sample.get(size-2);
 			previousType = previous.getType();
 		}
 		
-		if( type==IUnit.UNIT_TYPE_DIGIT || type == IUnit.UNIT_TYPE_VULGAR_FRACTION )
+		if( type==IToken.TOKEN_TYPE_DIGIT || type == IToken.TOKEN_TYPE_VULGAR_FRACTION )
 		{
 			
 //			if(!isInsideValue){				
 //				valueBounds.add(size-1);
 //			}
 //			else{
-//				if(previousType==IUnit.UNIT_TYPE_VULGER_FRACTION){
+//				if(previousType==IUnit.TOKEN_TYPE_VULGER_FRACTION){
 //					valueBounds.add(size-1);
 //					valueBounds.add(size-1);
 //				}
 //			}
 		}
-		else if( type == IUnit.UNIT_TYPE_SYMBOL ){
+		else if( type == IToken.TOKEN_TYPE_SYMBOL ){
 			String val = token.getStringValue().intern();
 			boolean isAccepted = false;
 			for(String s : acceptedSymbols){
@@ -476,18 +476,18 @@ public class ScalarParser extends AbstractParser {
 				result = 1;
 			}
 		}
-		else if ( type == IUnit.UNIT_TYPE_NON_BREAKING_SPACE )
+		else if ( type == IToken.TOKEN_TYPE_NON_BREAKING_SPACE )
 		{
 //			if(isInsideValue){
-//				if(previousType!=IUnit.UNIT_TYPE_DIGIT){
+//				if(previousType!=IUnit.TOKEN_TYPE_DIGIT){
 //					isInsideValue = false;
 //					valueBounds.add(size-2);
 //				}
 //			}
 		}
-		else if(type == IUnit.UNIT_TYPE_LINEBREAK){
+		else if(type == IToken.TOKEN_TYPE_LINEBREAK){
 //			if(isInsideValue){				
-//				if(previousType!=IUnit.UNIT_TYPE_DIGIT){						
+//				if(previousType!=IUnit.TOKEN_TYPE_DIGIT){						
 //					valueBounds.add(size-2);
 //				}
 //				else{
@@ -498,7 +498,7 @@ public class ScalarParser extends AbstractParser {
 		}
 		else{
 //			if(isInsideValue){
-//				if(previousType==IUnit.UNIT_TYPE_DIGIT||previousType==IUnit.UNIT_TYPE_VULGAR_FRACTION){
+//				if(previousType==IUnit.TOKEN_TYPE_DIGIT||previousType==IUnit.TOKEN_TYPE_VULGAR_FRACTION){
 //					valueBounds.add(size-1);
 //				}
 //				else{
@@ -511,9 +511,9 @@ public class ScalarParser extends AbstractParser {
 	}
 
 	@Override
-	protected boolean checkAndPrepare(IUnit unit) {
-		if(unit.getType() != IUnit.UNIT_TYPE_DIGIT
-				&& unit.getType() != IUnit.UNIT_TYPE_VULGAR_FRACTION){
+	protected boolean checkAndPrepare(IToken unit) {
+		if(unit.getType() != IToken.TOKEN_TYPE_DIGIT
+				&& unit.getType() != IToken.TOKEN_TYPE_VULGAR_FRACTION){
 			return false;
 		}		
 		return true;

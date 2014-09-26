@@ -6,7 +6,7 @@ import com.onpositive.text.analysis.AbstractToken;
 public class WordFormToken extends AbstractToken {
 
 	public WordFormToken(WordRelation wordRelation, int startPosition, int endPosition) {
-		super(UNIT_TYPE_WORD_FORM, startPosition, endPosition);
+		super(TOKEN_TYPE_WORD_FORM, startPosition, endPosition);
 		this.wordRelation = wordRelation;
 	}
 	

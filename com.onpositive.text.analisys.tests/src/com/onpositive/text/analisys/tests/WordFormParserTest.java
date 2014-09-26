@@ -6,7 +6,7 @@ import java.util.List;
 import com.onpositive.semantic.words2.SimpleWordNet;
 import com.onpositive.semantic.words2.WordNet;
 import com.onpositive.semantic.words2.WordNetProvider;
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 
@@ -22,10 +22,10 @@ public class WordFormParserTest {
 		
 	}
 
-	private static ArrayList<IUnit> doProcessString(PrimitiveTokenizer pt,WordFormParser wfParser) {
+	private static ArrayList<IToken> doProcessString(PrimitiveTokenizer pt,WordFormParser wfParser) {
 		String str = "Чудовище село на ковёр-самолёт и полетело.";		
-		List<IUnit> tokens = pt.tokenize(str);		
-		ArrayList<IUnit> processed = wfParser.process(tokens);
+		List<IToken> tokens = pt.tokenize(str);		
+		ArrayList<IToken> processed = wfParser.process(tokens);
 		return processed;
 	}
 	

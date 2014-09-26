@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 
 public abstract class AbstractParser {
 	
@@ -13,22 +13,22 @@ public abstract class AbstractParser {
 	
 	protected String text;	
 	
-	abstract protected Set<IUnit> combineUnits(Stack<IUnit> sample);
+	abstract protected Set<IToken> combineUnits(Stack<IToken> sample);
 	
-	abstract protected int continuePush(Stack<IUnit> sample);
+	abstract protected int continuePush(Stack<IToken> sample);
 	
-	abstract protected boolean checkAndPrepare(IUnit unit);
+	abstract protected boolean checkAndPrepare(IToken unit);
 	
-	public ArrayList<IUnit> process(List<IUnit> units){
+	public ArrayList<IToken> process(List<IToken> units){
 		
-		ArrayList<IUnit> result = new ArrayList<IUnit>();		
+		ArrayList<IToken> result = new ArrayList<IToken>();		
 		for( int i = 0 ; i < units.size() ; i++ ){
-			IUnit unit = units.get(i);			
-			List<IUnit> parents = unit.getParents();
+			IToken unit = units.get(i);			
+			List<IToken> parents = unit.getParents();
 			if(parents!=null&&!parents.isEmpty()){
 				continue;
 			}
-			List<IUnit> startingUnits = parseStartingUnits(unit);
+			List<IToken> startingUnits = parseStartingUnits(unit);
 			if(startingUnits==null){
 				result.add(unit);
 			}
@@ -39,14 +39,14 @@ public abstract class AbstractParser {
 		return result;
 	}
 
-	private List<IUnit> parseStartingUnits(IUnit unit) {
+	private List<IToken> parseStartingUnits(IToken unit) {
 		
 		if(!checkAndPrepare(unit)){
 			return null;
 		}
 		
-		ArrayList<IUnit> result = new ArrayList<IUnit>();
-		Stack<IUnit> sample = new Stack<IUnit>();
+		ArrayList<IToken> result = new ArrayList<IToken>();
+		Stack<IToken> sample = new Stack<IToken>();
 		sample.add(unit);		
 		boolean gotRecursion = parseRecursively(sample,result);
 		
@@ -54,31 +54,31 @@ public abstract class AbstractParser {
 			return null;
 		}
 		
-		for(IUnit newUnit : result){
-			List<IUnit> children = newUnit.getChildren();
-			IUnit first = children.get(0);
-			IUnit last = children.get(children.size()-1);
+		for(IToken newUnit : result){
+			List<IToken> children = newUnit.getChildren();
+			IToken first = children.get(0);
+			IToken last = children.get(children.size()-1);
 			
-			IUnit prev = first.getPrevious();
+			IToken prev = first.getPrevious();
 			if(prev!=null){
 				handlePreviousBound(newUnit, first, prev, gotRecursion);
 			}
 			else{
-				List<IUnit> previousUnits = first.getPreviousUnits();
+				List<IToken> previousUnits = first.getPreviousUnits();
 				if(previousUnits!=null){
-					for(IUnit pu : previousUnits){
+					for(IToken pu : previousUnits){
 						handlePreviousBound(newUnit, first, pu, gotRecursion);
 					}
 				}
 			}
-			IUnit next = last.getNext();
+			IToken next = last.getNext();
 			if(next!=null){
 				handleNextBound(newUnit, last, next, gotRecursion);
 			}
 			else{
-				List<IUnit> nextUnits = last.getNextUnits();
+				List<IToken> nextUnits = last.getNextUnits();
 				if(nextUnits!=null){
-					for(IUnit nu : nextUnits){
+					for(IToken nu : nextUnits){
 						handleNextBound(newUnit, last, nu, gotRecursion);
 					}
 				}
@@ -88,14 +88,14 @@ public abstract class AbstractParser {
 		return result;
 	}
 
-	private void handlePreviousBound(IUnit newUnit, IUnit firstChild,IUnit previousUnit, boolean gotRecursion)
+	private void handlePreviousBound(IToken newUnit, IToken firstChild,IToken previousUnit, boolean gotRecursion)
 	{
 		newUnit.addPreviousUnit(previousUnit);
 		if(gotRecursion){
 			previousUnit.addNextUnit(newUnit);
 		}
 		else{
-			IUnit nextOfPrevoius = previousUnit.getNext();
+			IToken nextOfPrevoius = previousUnit.getNext();
 			if(nextOfPrevoius!=null){
 				if(nextOfPrevoius==firstChild){
 					previousUnit.setNext(newUnit);
@@ -105,7 +105,7 @@ public abstract class AbstractParser {
 				}
 			}
 			else{
-				List<IUnit> nextUnitsOfPreviousUnit = previousUnit.getNextUnits();
+				List<IToken> nextUnitsOfPreviousUnit = previousUnit.getNextUnits();
 				for(int i = 0 ; i < nextUnitsOfPreviousUnit.size();i++){
 					if(nextUnitsOfPreviousUnit.get(i)==firstChild){
 						nextUnitsOfPreviousUnit.set(i, newUnit);
@@ -117,14 +117,14 @@ public abstract class AbstractParser {
 		}
 	}
 	
-	private void handleNextBound(IUnit newUnit, IUnit lastChild, IUnit nextUnit, boolean gotRecursion)
+	private void handleNextBound(IToken newUnit, IToken lastChild, IToken nextUnit, boolean gotRecursion)
 	{
 		newUnit.addNextUnit(nextUnit);
 		if(gotRecursion){
 			nextUnit.addPreviousUnit(newUnit);
 		}
 		else{
-			IUnit previousOfNext = nextUnit.getPrevious();
+			IToken previousOfNext = nextUnit.getPrevious();
 			if(previousOfNext!=null){
 				if(previousOfNext==lastChild){
 					nextUnit.setPrevious(newUnit);
@@ -134,7 +134,7 @@ public abstract class AbstractParser {
 				}
 			}
 			else{
-				List<IUnit> previousUnitsOfNextUnit = nextUnit.getPreviousUnits();
+				List<IToken> previousUnitsOfNextUnit = nextUnit.getPreviousUnits();
 				for(int i = 0 ; i < previousUnitsOfNextUnit.size();i++){
 					if(previousUnitsOfNextUnit.get(i)==lastChild){
 						previousUnitsOfNextUnit.set(i, newUnit);
@@ -147,24 +147,24 @@ public abstract class AbstractParser {
 	}
 	
 
-	private boolean parseRecursively( Stack<IUnit> sample, ArrayList<IUnit> result)
+	private boolean parseRecursively( Stack<IToken> sample, ArrayList<IToken> result)
 	{		
-		IUnit last = sample.peek();
+		IToken last = sample.peek();
 		int unitsAdded = 0 ;
 		boolean gotRecursion = false;
 		int popCount = -1;
 		while((popCount = continuePush(sample))==CONTINUE_PUSH){
-			IUnit next = last.getNext();
+			IToken next = last.getNext();
 			if(next!=null){
 				sample.add(next);
 				unitsAdded++;				
 				last = next;
 			}
 			else{
-				List<IUnit> nextUnits = last.getNextUnits();
+				List<IToken> nextUnits = last.getNextUnits();
 				if(nextUnits!=null&&!nextUnits.isEmpty()){					
 					int beforeCount = result.size();
-					for(IUnit nu : nextUnits){
+					for(IToken nu : nextUnits){
 						sample.add(nu);						
 						parseRecursively(sample, result);
 						sample.pop();						
@@ -181,7 +181,7 @@ public abstract class AbstractParser {
 		}
 		if(!gotRecursion){
 			while(unitsAdded >= 0){
-				Set<IUnit> newUnits = combineUnits(sample);				
+				Set<IToken> newUnits = combineUnits(sample);				
 				if(newUnits!=null&&!newUnits.isEmpty()){
 					handleChildrenAndParents(sample, newUnits);
 					result.addAll(newUnits);
@@ -201,15 +201,15 @@ public abstract class AbstractParser {
 		return gotRecursion;
 	}
 
-	private void handleChildrenAndParents(Stack<IUnit> sample,Set<IUnit> newUnits)
+	private void handleChildrenAndParents(Stack<IToken> sample,Set<IToken> newUnits)
 	{
 		
-		for(IUnit newUnit : newUnits){
+		for(IToken newUnit : newUnits){
 			int sp = newUnit.getStartPosition();
 			int ep = newUnit.getEndPosition();
 			
 			int childIndex = 0;			
-			IUnit child = sample.get(childIndex);
+			IToken child = sample.get(childIndex);
 			while(child.getEndPosition()<=ep){
 				if(child.getStartPosition()>=sp){
 					newUnit.addChild(child);

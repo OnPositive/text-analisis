@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.utils.Utils;
 import com.onpositive.text.analysis.utils.VulgarFraction;
 
@@ -18,13 +18,13 @@ public class PrimitiveTokenizer {
 	
 	private ArrayList<ITokenizerExtension> extensions = new ArrayList<ITokenizerExtension>();
 	
-	public List<IUnit> tokenize(String str){
+	public List<IToken> tokenize(String str){
 		
 		if( Utils.isEmptyString(str) ){
-			return new ArrayList<IUnit>();
+			return new ArrayList<IToken>();
 		}
 		
-		List<IUnit> tokens;
+		List<IToken> tokens;
 		if(extensions.isEmpty()){
 			tokens = tokenizeSimply(str);			
 		}
@@ -33,8 +33,8 @@ public class PrimitiveTokenizer {
 		}
 		
 		for(int i = 1 ; i < tokens.size() ; i++){
-			IUnit prev = tokens.get(i-1);
-			IUnit curr = tokens.get(i);
+			IToken prev = tokens.get(i-1);
+			IToken curr = tokens.get(i);
 			
 			prev.addNextUnit(curr);
 			curr.addPreviousUnit(prev);
@@ -43,9 +43,9 @@ public class PrimitiveTokenizer {
 		return tokens;
 	}
 
-	private List<IUnit> tokenizeSimply(String str) {
+	private List<IToken> tokenizeSimply(String str) {
 		
-		ArrayList<IUnit> list = new ArrayList<IUnit>();		
+		ArrayList<IToken> list = new ArrayList<IToken>();		
 		
 		int start = 0 ;
 		int type = detectType(str.charAt(start));		
@@ -58,7 +58,7 @@ public class PrimitiveTokenizer {
 				continue;
 			}
 			
-			if(type != IUnit.UNIT_TYPE_OTHER_WHITESPACE){
+			if(type != IToken.TOKEN_TYPE_OTHER_WHITESPACE){
 				String segment = str.substring(start,i);
 				tokenizeSegment(list, start, type, segment);
 			}
@@ -71,17 +71,17 @@ public class PrimitiveTokenizer {
 		return list;
 	}
 
-	private final void tokenizeSegment(ArrayList<IUnit> list, int start, int type, String segment)
+	private final void tokenizeSegment(ArrayList<IToken> list, int start, int type, String segment)
 	{
 		int sl = segment.length();
-		if(type == IUnit.UNIT_TYPE_SYMBOL){
+		if(type == IToken.TOKEN_TYPE_SYMBOL){
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				SymbolToken pt = new SymbolToken( ch, type, start+i, start+i+1 );
 				list.add(pt);
 			}
 		}
-		else if(type == IUnit.UNIT_TYPE_VULGAR_FRACTION){
+		else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
@@ -95,16 +95,16 @@ public class PrimitiveTokenizer {
 	}
 
 
-	private List<IUnit> tokenizeExtensively(String str) {
+	private List<IToken> tokenizeExtensively(String str) {
 		
-		ArrayList<IUnit> list = new ArrayList<IUnit>();		
+		ArrayList<IToken> list = new ArrayList<IToken>();		
 		
 		int type = -1;
 		int start = 0 ;
 		int l = str.length();
 		for(int i = 0 ; i < l; i++){			
 			
-			IUnit extendedUnit = null;			
+			IToken extendedUnit = null;			
 			for(ITokenizerExtension te : extensions){
 				extendedUnit = te.readUnit(str, i);
 				if(extendedUnit!=null){
@@ -113,7 +113,7 @@ public class PrimitiveTokenizer {
 			}
 			
 			if(extendedUnit!=null){				
-				if( type >=0 && type != IUnit.UNIT_TYPE_OTHER_WHITESPACE ){
+				if( type >=0 && type != IToken.TOKEN_TYPE_OTHER_WHITESPACE ){
 					String segment = str.substring(start,i);
 					tokenizeSegment(list, start, type, segment);
 					type = -1;
@@ -133,7 +133,7 @@ public class PrimitiveTokenizer {
 				if(cType==type){
 					continue;
 				}				
-				if(type != IUnit.UNIT_TYPE_OTHER_WHITESPACE){
+				if(type != IToken.TOKEN_TYPE_OTHER_WHITESPACE){
 					String segment = str.substring(start,i);
 					tokenizeSegment(list, start, type, segment);
 				}
@@ -155,30 +155,30 @@ public class PrimitiveTokenizer {
 			return type;
 		
 		if(Character.isWhitespace(ch)){
-			return IUnit.UNIT_TYPE_OTHER_WHITESPACE;
+			return IToken.TOKEN_TYPE_OTHER_WHITESPACE;
 		}
 		
 		if(Character.isDigit(ch)){
-			return IUnit.UNIT_TYPE_DIGIT;
+			return IToken.TOKEN_TYPE_DIGIT;
 		}
 		
 		if(Character.isLetter(ch)){
-			return IUnit.UNIT_TYPE_LETTER;
+			return IToken.TOKEN_TYPE_LETTER;
 		}
 		if(VulgarFraction.isVulgarFraction(ch)){
-			return IUnit.UNIT_TYPE_VULGAR_FRACTION;
+			return IToken.TOKEN_TYPE_VULGAR_FRACTION;
 		}
-		return IUnit.UNIT_TYPE_UNDEFINED;
+		return IToken.TOKEN_TYPE_UNDEFINED;
 	}
 	
 	private static void fillMap() {
 		
 		for(char ch : new char[]{'\r', '\n'}){
-			map.put(ch, IUnit.UNIT_TYPE_LINEBREAK);
+			map.put(ch, IToken.TOKEN_TYPE_LINEBREAK);
 		}
 		
 		for(char ch : new char[]{'\u00A0', '\u2007', '\u202F'}){
-			map.put(ch, IUnit.UNIT_TYPE_NON_BREAKING_SPACE);
+			map.put(ch, IToken.TOKEN_TYPE_NON_BREAKING_SPACE);
 		}
 		
 		char[] symbols = new char[]{
@@ -187,7 +187,7 @@ public class PrimitiveTokenizer {
 				';', ':', '\'', '"', '[', ']', '{', '}' , '—', '«', '»'
 			};
 		for(char ch : symbols){
-			map.put(ch, IUnit.UNIT_TYPE_SYMBOL);
+			map.put(ch, IToken.TOKEN_TYPE_SYMBOL);
 		}
 	}
 }

@@ -5,7 +5,7 @@ import com.onpositive.text.analysis.AbstractToken;
 public class ScalarToken extends AbstractToken {
 	
 	public ScalarToken(double value, int startPosition, int endPosition) {
-		super(UNIT_TYPE_SCALAR, startPosition, endPosition);
+		super(TOKEN_TYPE_SCALAR, startPosition, endPosition);
 		this.value1 = value;
 		this.value2 = Integer.MIN_VALUE;
 		this.isFracture = false;
@@ -13,7 +13,7 @@ public class ScalarToken extends AbstractToken {
 	}
 	
 	public ScalarToken(int value1, int value2, boolean isDecimal, int startPosition, int endPosition) {
-		super(UNIT_TYPE_SCALAR, startPosition, endPosition);
+		super(TOKEN_TYPE_SCALAR, startPosition, endPosition);
 		this.value1 = value1;
 		this.value2 = value2;
 		this.isFracture = true;
