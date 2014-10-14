@@ -4,36 +4,48 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.onpositive.text.analysis.IUnit;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.utils.Utils;
+import com.onpositive.text.analysis.utils.VulgarFraction;
 
 public class PrimitiveTokenizer {
-	
-	public PrimitiveTokenizer() {
-		fillMap();
-	}
 
 	private static final HashMap<Character,Integer> map = new HashMap<Character, Integer>();
 	
+	static{
+		fillMap();
+	}
+	
 	private ArrayList<ITokenizerExtension> extensions = new ArrayList<ITokenizerExtension>();
 	
-	public List<IUnit> tokenize(String str){
+	public List<IToken> tokenize(String str){
 		
 		if( Utils.isEmptyString(str) ){
-			return new ArrayList<IUnit>();
+			return new ArrayList<IToken>();
 		}
 		
+		List<IToken> tokens;
 		if(extensions.isEmpty()){
-			return tokenizeSimply(str);
+			tokens = tokenizeSimply(str);			
 		}
 		else{
-			return tokenizeExtensively(str);
+			tokens = tokenizeExtensively(str);
 		}
+		
+		for(int i = 1 ; i < tokens.size() ; i++){
+			IToken prev = tokens.get(i-1);
+			IToken curr = tokens.get(i);
+			
+			prev.addNextUnit(curr);
+			curr.addPreviousUnit(prev);
+		}
+		
+		return tokens;
 	}
 
-	private List<IUnit> tokenizeSimply(String str) {
+	private List<IToken> tokenizeSimply(String str) {
 		
-		ArrayList<IUnit> list = new ArrayList<IUnit>();		
+		ArrayList<IToken> list = new ArrayList<IToken>();		
 		
 		int start = 0 ;
 		int type = detectType(str.charAt(start));		
@@ -46,32 +58,53 @@ public class PrimitiveTokenizer {
 				continue;
 			}
 			
-			if(type != IUnit.UNIT_TYPE_OTHER_WHITESPACE){
+			if(type != IToken.TOKEN_TYPE_OTHER_WHITESPACE){
 				String segment = str.substring(start,i);
-				PrimitiveToken pt = new PrimitiveToken(segment, type, start, i);
-				list.add(pt);
+				tokenizeSegment(list, start, type, segment);
 			}
 			start = i;
 			type = cType;
 		}
 		String segment = str.substring(start,l);
-		PrimitiveToken pt = new PrimitiveToken(segment, type, start, l);
-		list.add(pt);
+		tokenizeSegment(list, start, type, segment);
 		
 		return list;
 	}
 
+	private final void tokenizeSegment(ArrayList<IToken> list, int start, int type, String segment)
+	{
+		int sl = segment.length();
+		if(type == IToken.TOKEN_TYPE_SYMBOL){
+			for(int i = 0 ; i < sl ; i++){
+				char ch = segment.charAt(i); 
+				SymbolToken pt = new SymbolToken( ch, type, start+i, start+i+1 );
+				list.add(pt);
+			}
+		}
+		else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
+			for(int i = 0 ; i < sl ; i++){
+				char ch = segment.charAt(i); 
+				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
+				list.add(pt);
+			}
+		}
+		else{
+			StringToken pt = new StringToken(segment, type, start, start + sl );
+			list.add(pt);
+		}		
+	}
 
-	private List<IUnit> tokenizeExtensively(String str) {
+
+	private List<IToken> tokenizeExtensively(String str) {
 		
-		ArrayList<IUnit> list = new ArrayList<IUnit>();		
+		ArrayList<IToken> list = new ArrayList<IToken>();		
 		
 		int type = -1;
 		int start = 0 ;
 		int l = str.length();
 		for(int i = 0 ; i < l; i++){			
 			
-			IUnit extendedUnit = null;			
+			IToken extendedUnit = null;			
 			for(ITokenizerExtension te : extensions){
 				extendedUnit = te.readUnit(str, i);
 				if(extendedUnit!=null){
@@ -80,10 +113,9 @@ public class PrimitiveTokenizer {
 			}
 			
 			if(extendedUnit!=null){				
-				if( type >=0 && type != IUnit.UNIT_TYPE_OTHER_WHITESPACE ){
+				if( type >=0 && type != IToken.TOKEN_TYPE_OTHER_WHITESPACE ){
 					String segment = str.substring(start,i);
-					PrimitiveToken pt = new PrimitiveToken(segment, type, start, i);
-					list.add(pt);
+					tokenizeSegment(list, start, type, segment);
 					type = -1;
 				}				
 				list.add(extendedUnit);
@@ -101,10 +133,9 @@ public class PrimitiveTokenizer {
 				if(cType==type){
 					continue;
 				}				
-				if(type != IUnit.UNIT_TYPE_OTHER_WHITESPACE){
+				if(type != IToken.TOKEN_TYPE_OTHER_WHITESPACE){
 					String segment = str.substring(start,i);
-					PrimitiveToken pt = new PrimitiveToken(segment, type, start, i);
-					list.add(pt);
+					tokenizeSegment(list, start, type, segment);
 				}
 				start = i;
 				type = cType;
@@ -112,8 +143,7 @@ public class PrimitiveTokenizer {
 		}
 		if(start<l){
 			String segment = str.substring(start,l);
-			PrimitiveToken pt = new PrimitiveToken(segment, type, start, l);
-			list.add(pt);
+			tokenizeSegment(list, start, type, segment);
 		}		
 		return list;
 	}
@@ -125,57 +155,39 @@ public class PrimitiveTokenizer {
 			return type;
 		
 		if(Character.isWhitespace(ch)){
-			return IUnit.UNIT_TYPE_OTHER_WHITESPACE;
+			return IToken.TOKEN_TYPE_OTHER_WHITESPACE;
 		}
 		
 		if(Character.isDigit(ch)){
-			return IUnit.UNIT_TYPE_DIGIT;
+			return IToken.TOKEN_TYPE_DIGIT;
 		}
 		
 		if(Character.isLetter(ch)){
-			return IUnit.UNIT_TYPE_LETTER;
+			return IToken.TOKEN_TYPE_LETTER;
 		}
-		
-		return IUnit.UNIT_TYPE_UNDEFINED;
+		if(VulgarFraction.isVulgarFraction(ch)){
+			return IToken.TOKEN_TYPE_VULGAR_FRACTION;
+		}
+		return IToken.TOKEN_TYPE_UNDEFINED;
 	}
 	
-	private void fillMap() {
+	private static void fillMap() {
 		
 		for(char ch : new char[]{'\r', '\n'}){
-			map.put(ch, IUnit.UNIT_TYPE_LINEBREAK);
+			map.put(ch, IToken.TOKEN_TYPE_LINEBREAK);
 		}
 		
 		for(char ch : new char[]{'\u00A0', '\u2007', '\u202F'}){
-			map.put(ch, IUnit.UNIT_TYPE_NON_BREAKING_SPACE);
+			map.put(ch, IToken.TOKEN_TYPE_NON_BREAKING_SPACE);
 		}
 		
 		char[] symbols = new char[]{
 				'`', '~', '!',  '@',  '#', '$', '%', '^', '&', '*', '(', ')',
 				'-', '_', '=',  '+', '\\', '|', ',', '.', '<', '>', '/', '?',
-				';', ':', '\'', '"', '[', ']', '{', '}'
+				';', ':', '\'', '"', '[', ']', '{', '}' , '—', '«', '»'
 			};
 		for(char ch : symbols){
-			map.put(ch, IUnit.UNIT_TYPE_SIGN);
-		}
-		
-		char[] rusLetters = new char[] {
-				'à', 'á', 'â', 'ã', 'ä',
-				'å', '¸', 'æ', 'ý', 'è',
-				'é', 'ê', 'ë', 'ì', 'í',
-				'î', 'ï', 'ð', 'ñ', 'ò',
-				'ó', 'ô', 'õ', 'ö', '÷',
-				'ø', 'ù', 'ü', 'û', 'ú',
-				'ý', 'þ', 'ÿ',
-				'À', 'Á', 'Â', 'Ã', 'Ä',
-				'Å', '¨', 'Æ', 'Ç', 'È',
-				'É', 'Ê', 'Ë', 'Ì', 'Í',
-				'Î', 'Ï', 'Ð', 'Ñ', 'Ò',
-				'Ó', 'Ô', 'Õ', 'Ö', '×',
-				'Ø', 'Ù', 'Ü', 'Û', 'Ú',
-				'Ý', 'Þ', 'ß'
-			};
-		for(char ch : rusLetters){
-			map.put(ch, IUnit.UNIT_TYPE_LETTER);
+			map.put(ch, IToken.TOKEN_TYPE_SYMBOL);
 		}
 	}
 }
