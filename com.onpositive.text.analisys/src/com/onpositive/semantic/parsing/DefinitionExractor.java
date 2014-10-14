@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import com.onpositive.semantic.references.TermReference;
 import com.onpositive.semantic.words2.NounFormRule;
-import com.onpositive.semantic.words2.RelationTarget;
 import com.onpositive.semantic.words2.Word;
 import com.onpositive.semantic.words2.WordNetProvider;
-import com.onpositive.semantic.words2.WordRelation;
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.WordRelation;
 
 public class DefinitionExractor {
 	

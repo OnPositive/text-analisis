@@ -3,10 +3,10 @@ package com.onpositive.semantic.parsing;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.onpositive.semantic.words2.RelationTarget;
 import com.onpositive.semantic.words2.Word;
 import com.onpositive.semantic.words2.WordNetProvider;
-import com.onpositive.semantic.words2.WordRelation;
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.WordRelation;
 
 public class ParsedWord implements ISentenceElement{
 	private static final ParsedWord PARSED_WORD = new ParsedWord("*", -1, null);

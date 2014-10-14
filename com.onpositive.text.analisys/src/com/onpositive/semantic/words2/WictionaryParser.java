@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 import com.carrotsearch.hppc.CharOpenHashSet;
+import com.onpositive.semantic.words3.model.WordRelation;
 import com.onpositive.wikipedia.dumps.builder.IPageVisitor;
 import com.onpositive.wikipedia.dumps.builder.PageModel;
 import com.onpositive.wikipedia.dumps.builder.XMLPageParser;

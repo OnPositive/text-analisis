@@ -1,5 +1,7 @@
 package com.onpositive.semantic.words2;
 
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.WordRelation;
 import com.onpositive.wikipedia.dumps.builder.Porter;
 
 public class Porter2 {

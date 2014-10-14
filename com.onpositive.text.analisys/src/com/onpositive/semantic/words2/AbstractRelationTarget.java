@@ -2,7 +2,12 @@ package com.onpositive.semantic.words2;
 
 import java.io.Serializable;
 
-public abstract class AbstractRelationTarget extends RelationTarget implements Serializable{
+import com.onpositive.semantic.words3.model.ConceptElement;
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.TextElement;
+import com.onpositive.semantic.words3.model.WordRelation;
+
+public abstract class AbstractRelationTarget extends TextElement implements Serializable{
 
 	/**
 	 * 
@@ -13,6 +18,11 @@ public abstract class AbstractRelationTarget extends RelationTarget implements S
 
 	public AbstractRelationTarget() {
 		super();
+	}
+	
+	@Override
+	public ConceptElement[] getConcepts() {
+		return null;
 	}
 
 	
@@ -58,6 +68,10 @@ public abstract class AbstractRelationTarget extends RelationTarget implements S
 		}
 		return false;		
 	}
+	@Override
+	public WordRelation[] getSemanticRelations() {
+		return getRelations();
+	}
 	public boolean isSpecialization(AbstractRelationTarget other){
 		int id = other.id();
 		if (this.relations!=null){
@@ -93,7 +107,7 @@ public abstract class AbstractRelationTarget extends RelationTarget implements S
 		return isSynonim(r)||isGeneralization(r)||isSpecialization(r);
 	}
 	
-	@Override
+	
 	public boolean matchRelated(RelationTarget relationTarget) {
 		if (this.equals(relationTarget)){
 			return true;

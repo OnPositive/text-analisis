@@ -1,5 +1,8 @@
 package com.onpositive.semantic.words2;
 
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.WordRelation;
+
 
 
 public class BasicTest {

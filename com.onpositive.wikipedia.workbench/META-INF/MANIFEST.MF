@@ -5,4 +5,6 @@ Bundle-SymbolicName: com.onpositive.wikipedia.workbench
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ONPOSITIVE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: com.onpositive.wikipedia.dumps.builder
+Export-Package: com.onpositive.semantic.wikipedia.abstracts,
+ com.onpositive.wikipedia.dumps.builder
+Require-Bundle: org.eclipse.jface.text

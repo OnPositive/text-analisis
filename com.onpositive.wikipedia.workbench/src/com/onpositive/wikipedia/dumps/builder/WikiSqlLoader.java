@@ -23,9 +23,26 @@ public class WikiSqlLoader {
 
 			if (readLine.startsWith("INSERT INTO")) {
 				readLine = readLine.substring(readLine.indexOf('('));
-				String[] split = readLine.split("\\)\\,\\(");
+				ArrayList<String>subPars=new ArrayList<String>();
+				int pos=0;
+				while (true){
+					int indexOf = readLine.indexOf("),(",pos);
+					if (indexOf!=-1){
+						subPars.add(readLine.substring(pos,indexOf));
+						pos=indexOf+3;						
+					}
+					else{
+						subPars.add(readLine.substring(pos));
+						break;
+					}
+				}
+				//String[] split = readLine.split("\\)\\,\\(");
+				String[] mm=subPars.toArray(new String[subPars.size()]);
+//				if (!Arrays.equals(mm, split)){
+//					throw new IllegalStateException();
+//				}
 				int a=0;
-				for (String s : split) {
+				for (String s : mm) {
 					consume(s, consumer);
 					a++;
 				}
@@ -90,9 +107,11 @@ public class WikiSqlLoader {
 				sq = sq.substring(0, sq.length() - 2);
 			}
 			try {
+				if (sq.length()>0&&Character.isDigit(sq.charAt(0))){
 				int parseLong = Integer.valueOf(sq);
 				rs[a++] = parseLong;
 				continue;
+				}
 			} catch (NumberFormatException e) {
 				// TODO: handle exception
 			}

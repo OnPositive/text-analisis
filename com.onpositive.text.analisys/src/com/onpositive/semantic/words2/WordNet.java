@@ -1,11 +1,17 @@
 package com.onpositive.semantic.words2;
 
-public abstract class WordNet extends WordFormsStore implements Iterable<Word>{
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.WordRelation;
+
+public abstract class WordNet extends WordFormsStore implements Iterable<AbstractRelationTarget>{
 	
 	int fullyCorrectNouns;
 	int fullyCorrectAdj;
+	int fullyCorrectVerbs;
+	
 	int incorrectNouns;
 	int incorrectAdj;
+	int incorrectVerbs;
 
 	protected abstract void registerWord(Word word);
 	

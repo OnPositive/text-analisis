@@ -1,6 +1,7 @@
 package com.onpositive.semantic.words2;
 
 
+
 public class SimpleWord extends Word{	
 
 	@Override
@@ -158,7 +159,7 @@ public class SimpleWord extends Word{
 		this.features|=featureKind;
 	}
 
-	@Override
+	
 	public Word[] getWords() {
 		return new Word[]{this};
 	}
@@ -172,4 +173,10 @@ public class SimpleWord extends Word{
 	public boolean hasFeature(int feature) {
 		return (features&feature)!=0;
 	}
+
+	public int getKind() {
+		return kind;
+	}
+
+	
 }

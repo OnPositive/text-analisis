@@ -21,7 +21,6 @@ public abstract class Word extends AbstractRelationTarget implements Serializabl
 	
 	protected abstract void registerFoundation(int number,String foundation);
 	
-	
 	public static final int NOUN=1;
 	public static final int VERB=2;
 	public static final int ADJ=4;

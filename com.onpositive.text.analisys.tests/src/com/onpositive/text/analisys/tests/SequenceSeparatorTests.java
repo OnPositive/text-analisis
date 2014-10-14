@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.onpositive.semantic.parsing.DefinitionExractor;
 import com.onpositive.semantic.words2.WordNetProvider;
-import com.onpositive.semantic.words2.WordRelation;
+import com.onpositive.semantic.words3.model.WordRelation;
 
 import junit.framework.TestCase;
 

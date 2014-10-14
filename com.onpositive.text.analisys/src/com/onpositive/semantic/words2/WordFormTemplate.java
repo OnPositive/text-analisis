@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+import com.onpositive.semantic.words3.model.WordRelation;
+
 public class WordFormTemplate implements Serializable {
 
 	/**
@@ -224,6 +226,9 @@ public class WordFormTemplate implements Serializable {
 			if (formRule instanceof NounFormRule){
 				wordNet.fullyCorrectNouns++;
 			}
+			if (formRule instanceof VerbFormRule){
+				wordNet.fullyCorrectVerbs++;
+			}
 			if (formRule instanceof AdjectiveFormRule){
 				wordNet.fullyCorrectAdj++;
 			}
@@ -231,6 +236,9 @@ public class WordFormTemplate implements Serializable {
 		else{
 			if (formRule instanceof NounFormRule){
 				wordNet.incorrectNouns++;
+			}
+			if (formRule instanceof VerbFormRule){
+				wordNet.incorrectVerbs++;
 			}
 			if (formRule instanceof AdjectiveFormRule){
 				wordNet.incorrectAdj++;

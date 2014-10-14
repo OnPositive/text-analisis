@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+
+import com.onpositive.semantic.words3.model.ConceptElement;
+import com.onpositive.semantic.words3.model.RelationTarget;
+import com.onpositive.semantic.words3.model.TextElement;
+import com.onpositive.semantic.words3.model.WordRelation;
 
 public class SimpleWordNet extends WordNet implements Serializable {
 
@@ -26,10 +32,18 @@ public class SimpleWordNet extends WordNet implements Serializable {
 
 	protected HashMap<String, WordFormTemplate> wordTemplateMap = new HashMap<String, WordFormTemplate>();
 	protected HashMap<String, ArrayList<WordRelation>> wordforms = new HashMap<String, ArrayList<WordRelation>>();
+	
+	public Set<String>getFormsSet(){
+		return wordforms.keySet();
+	}
+	
+	public int size(){
+		return words.size();
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Iterator<Word> iterator() {
+	public Iterator<AbstractRelationTarget> iterator() {
 		return new ArrayList(wordMap.values()).iterator();
 	}
 
@@ -221,7 +235,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 
 	}
 
-	public RelationTarget getWord(int id) {
+	public RelationTarget getWordElementQ(int id) {
 		return words.get(id);
 	}
 
@@ -237,10 +251,12 @@ public class SimpleWordNet extends WordNet implements Serializable {
 
 	@Override
 	protected void init() {
-		for (Word w : this) {
+		for (AbstractRelationTarget w : this) {
+			if (w instanceof SimpleWord){
 			SimpleWord s = (SimpleWord) w;
 			if (s.template != null) {
-				s.template.register(w);
+				s.template.register((Word) w);
+			}
 			}
 		}
 	}
@@ -262,17 +278,17 @@ public class SimpleWordNet extends WordNet implements Serializable {
 					q.owner = this;
 				}
 				if (q.relation == WordRelation.SPECIALIZATION) {
-					AbstractRelationTarget word = (AbstractRelationTarget) getWord(q.word);
+					AbstractRelationTarget word = (AbstractRelationTarget) getWordElementQ(q.word);
 					word.registerRelation(
 							WordRelation.GENERALIZATION_BACK_LINK, w);
 				}
 				if (q.relation == WordRelation.GENERALIZATION) {
-					AbstractRelationTarget word = (AbstractRelationTarget) getWord(q.word);
+					AbstractRelationTarget word = (AbstractRelationTarget) getWordElementQ(q.word);
 					word.registerRelation(
 							WordRelation.SPECIALIZATION_BACK_LINK, w);
 				}
 				if (q.relation == WordRelation.SYNONIM) {
-					AbstractRelationTarget word = (AbstractRelationTarget) getWord(q.word);
+					AbstractRelationTarget word = (AbstractRelationTarget) getWordElementQ(q.word);
 					word.registerRelation(WordRelation.SYNONIM_BACK_LINK, w);
 				}
 			}
@@ -282,6 +298,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 				continue;
 			}
 			Word w = (Word) q;
+			
 			if (w.getBasicForm().indexOf(' ') != -1) {
 				String[] split = w.getBasicForm().split(" ");
 				ArrayList<Word> sequence = new ArrayList<Word>();
@@ -293,7 +310,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 					sequence.add(singlePossibleWord);
 				}
 				SimpleSequence s = new SimpleSequence(
-						sequence.toArray(new Word[sequence.size()]), w.id());
+						sequence.toArray(new Word[sequence.size()]), w.id(), w.getBasicForm());
 				s.relations = w.relations;
 				registerSequence(s);
 				// register sequence
@@ -303,10 +320,11 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		}
 	}
 
-	protected class SimpleSequence extends AbstractRelationTarget implements
+	public class SimpleSequence extends AbstractRelationTarget implements
 			Serializable {
 
 		protected Word[] words;
+		protected String form;
 
 		@Override
 		public int hashCode() {
@@ -333,8 +351,9 @@ public class SimpleWordNet extends WordNet implements Serializable {
 			return true;
 		}
 
-		public SimpleSequence(Word[] words, int id) {
+		public SimpleSequence(Word[] words, int id,String form) {
 			super();
+			this.form=form;
 			this.words = words;
 			this.id = id;
 		}
@@ -345,7 +364,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@Override
+		
 		public Word[] getWords() {
 			return words;
 		}
@@ -353,6 +372,9 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		@Override
 		public int id() {
 			return id;
+		}
+		public String getBasicForm(){
+			return form;
 		}
 
 		@Override
@@ -378,6 +400,14 @@ public class SimpleWordNet extends WordNet implements Serializable {
 				}
 			}
 			return true;
+		}
+
+		public int getFeatures() {
+			return 0;
+		}
+
+		public short getKind() {
+			return 0;
 		}
 
 	}
@@ -438,7 +468,7 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		}
 		int id = -1;
 		for (WordRelation r : posibleWords) {
-			RelationTarget word = getWord(r.word);
+			RelationTarget word = getWordElementQ(r.word);
 			if (word instanceof Word) {
 				Word wr = (Word) word;
 				if (wr.isNoun()) {
@@ -462,6 +492,41 @@ public class SimpleWordNet extends WordNet implements Serializable {
 		if (id == -1) {
 			return null;
 		}
-		return (Word) getWord(id);
+		return (Word) getWordElementQ(id);
+	}
+
+	@Override
+	public int wordCount() {
+		return 0;
+	}
+
+	@Override
+	public int conceptCount() {
+		return 0;
+	}
+
+	@Override
+	public int grammarFormsCount() {
+		return 0;
+	}
+
+	@Override
+	public ConceptElement getConceptInfo(int conceptId) {
+		return null;
+	}
+
+	@Override
+	public WordRelation[] getPossibleGrammarForms(String wordForm) {
+		return null;
+	}
+
+	@Override
+	public TextElement getWordElement(int wordId) {
+		return (TextElement) getWordElementQ(wordId);
+	}
+
+	@Override
+	public TextElement getWordElement(String basicForm) {
+		return (TextElement) getWord(basicForm);
 	}
 }

@@ -1,6 +1,9 @@
 package com.onpositive.semantic.words2;
 
-public abstract class WordFormsStore {
+import com.onpositive.semantic.words3.model.AbstractWordNet;
+import com.onpositive.semantic.words3.model.WordRelation;
+
+public abstract class WordFormsStore extends AbstractWordNet{
 	protected abstract void registerWordForm(String wf,WordRelation form);
 	public abstract WordRelation[] getPosibleWords(String wf);
 }

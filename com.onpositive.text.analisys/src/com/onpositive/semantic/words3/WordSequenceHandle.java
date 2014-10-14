@@ -1,0 +1,21 @@
+package com.onpositive.semantic.words3;
+
+import com.onpositive.semantic.words3.ReadOnlyWordNet.WordStore;
+import com.onpositive.semantic.words3.dto.SequenceInfo;
+
+public class WordSequenceHandle extends SenseElementHandle{
+
+	public WordSequenceHandle(int address, WordStore store) {
+		super(address, store);
+	}
+
+	public WordHandle[] getWords(){
+		SequenceInfo info = (SequenceInfo) store.getInfo(id());
+		int[] words = info.words;
+		WordHandle[] hh=new WordHandle[words.length];
+		for (int a=0;a<words.length;a++){
+			hh[a]=(WordHandle) store.getWordNet().getWordElement(words[a]);
+		}
+		return hh;		
+	}
+}
