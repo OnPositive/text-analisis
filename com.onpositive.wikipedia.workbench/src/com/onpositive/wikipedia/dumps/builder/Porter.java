@@ -4,33 +4,33 @@ import java.util.regex.Pattern;
 
 public class Porter {
 
-    private static final Pattern PERFECTIVEGROUND = Pattern.compile("((ив|ивши|ившись|ыв|ывши|ывшись)|((?<=[ая])(в|вши|вшись)))$");
+    private static final Pattern PERFECTIVEGROUND = Pattern.compile("((РёРІ|РёРІС€Рё|РёРІС€РёСЃСЊ|С‹РІ|С‹РІС€Рё|С‹РІС€РёСЃСЊ)|((?<=[Р°СЏ])(РІ|РІС€Рё|РІС€РёСЃСЊ)))$");
 
-    private static final Pattern REFLEXIVE = Pattern.compile("(с[яь])$");
+    private static final Pattern REFLEXIVE = Pattern.compile("(СЃ[СЏСЊ])$");
 
-    private static final Pattern ADJECTIVE = Pattern.compile("(ее|ие|ые|ое|ими|ыми|ей|ий|ый|ой|ем|им|ым|ом|его|ого|ему|ому|их|ых|ую|юю|ая|яя|ою|ею)$");
+    private static final Pattern ADJECTIVE = Pattern.compile("(РµРµ|РёРµ|С‹Рµ|РѕРµ|РёРјРё|С‹РјРё|РµР№|РёР№|С‹Р№|РѕР№|РµРј|РёРј|С‹Рј|РѕРј|РµРіРѕ|РѕРіРѕ|РµРјСѓ|РѕРјСѓ|РёС…|С‹С…|СѓСЋ|СЋСЋ|Р°СЏ|СЏСЏ|РѕСЋ|РµСЋ)$");
 
-    private static final Pattern PARTICIPLE = Pattern.compile("((ивш|ывш|ующ)|((?<=[ая])(ем|нн|вш|ющ|щ)))$");
+    private static final Pattern PARTICIPLE = Pattern.compile("((РёРІС€|С‹РІС€|СѓСЋС‰)|((?<=[Р°СЏ])(РµРј|РЅРЅ|РІС€|СЋС‰|С‰)))$");
 
-    private static final Pattern VERB = Pattern.compile("((ила|ыла|ена|ейте|уйте|ите|или|ыли|ей|уй|ил|ыл|им|ым|ен|ило|ыло|ено|ят|ует|уют|ит|ыт|ены|ить|ыть|ишь|ую|ю)|((?<=[ая])(ла|на|ете|йте|ли|й|л|ем|н|ло|но|ет|ют|ны|ть|ешь|нно)))$");
+    private static final Pattern VERB = Pattern.compile("((РёР»Р°|С‹Р»Р°|РµРЅР°|РµР№С‚Рµ|СѓР№С‚Рµ|РёС‚Рµ|РёР»Рё|С‹Р»Рё|РµР№|СѓР№|РёР»|С‹Р»|РёРј|С‹Рј|РµРЅ|РёР»Рѕ|С‹Р»Рѕ|РµРЅРѕ|СЏС‚|СѓРµС‚|СѓСЋС‚|РёС‚|С‹С‚|РµРЅС‹|РёС‚СЊ|С‹С‚СЊ|РёС€СЊ|СѓСЋ|СЋ)|((?<=[Р°СЏ])(Р»Р°|РЅР°|РµС‚Рµ|Р№С‚Рµ|Р»Рё|Р№|Р»|РµРј|РЅ|Р»Рѕ|РЅРѕ|РµС‚|СЋС‚|РЅС‹|С‚СЊ|РµС€СЊ|РЅРЅРѕ)))$");
 
-    private static final Pattern NOUN = Pattern.compile("(а|ев|ов|ие|ье|е|иями|ями|ами|еи|ии|и|ией|ей|ой|ий|й|иям|ям|ием|ем|ам|ом|о|у|ах|иях|ях|ы|ь|ию|ью|ю|ия|ья|я)$");
+    private static final Pattern NOUN = Pattern.compile("(Р°|РµРІ|РѕРІ|РёРµ|СЊРµ|Рµ|РёСЏРјРё|СЏРјРё|Р°РјРё|РµРё|РёРё|Рё|РёРµР№|РµР№|РѕР№|РёР№|Р№|РёСЏРј|СЏРј|РёРµРј|РµРј|Р°Рј|РѕРј|Рѕ|Сѓ|Р°С…|РёСЏС…|СЏС…|С‹|СЊ|РёСЋ|СЊСЋ|СЋ|РёСЏ|СЊСЏ|СЏ)$");
 
-    private static final Pattern RVRE = Pattern.compile("^(.*?[аеиоуыэюя])(.*)$");
+    private static final Pattern RVRE = Pattern.compile("^(.*?[Р°РµРёРѕСѓС‹СЌСЋСЏ])(.*)$");
 
-    private static final Pattern DERIVATIONAL = Pattern.compile(".*[^аеиоуыэюя]+[аеиоуыэюя].*ость?$");
+    private static final Pattern DERIVATIONAL = Pattern.compile(".*[^Р°РµРёРѕСѓС‹СЌСЋСЏ]+[Р°РµРёРѕСѓС‹СЌСЋСЏ].*РѕСЃС‚СЊ?$");
 
-    private static final Pattern DER = Pattern.compile("ость?$");
+    private static final Pattern DER = Pattern.compile("РѕСЃС‚СЊ?$");
 
-    private static final Pattern SUPERLATIVE = Pattern.compile("(ейше|ейш)$");
+    private static final Pattern SUPERLATIVE = Pattern.compile("(РµР№С€Рµ|РµР№С€)$");
 
-    private static final Pattern I = Pattern.compile("и$");
-    private static final Pattern P = Pattern.compile("ь$");
-    private static final Pattern NN = Pattern.compile("нн$");
+    private static final Pattern I = Pattern.compile("Рё$");
+    private static final Pattern P = Pattern.compile("СЊ$");
+    private static final Pattern NN = Pattern.compile("РЅРЅ$");
 
     public static String stem(String word) {
         word = word.toLowerCase();
-        word = word.replace('ё', 'е');
+        word = word.replace('С‘', 'Рµ');
         Matcher m = RVRE.matcher(word);
         if (m.matches()) {
             String pre = m.group(1);
@@ -64,7 +64,7 @@ public class Porter {
             temp = P.matcher(rv).replaceFirst("");
             if (temp.equals(rv)) {
                 rv = SUPERLATIVE.matcher(rv).replaceFirst("");
-                rv = NN.matcher(rv).replaceFirst("н");
+                rv = NN.matcher(rv).replaceFirst("РЅ");
             }else{
                 rv = temp;
             }

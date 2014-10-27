@@ -12,12 +12,12 @@ public class TextAbstractExtractor {
 			return "";
 		}
 		while (true) {
-			int indexOf = content.indexOf("{{ÄàòàÐîæäåíèÿ");
+			int indexOf = content.indexOf("{{Ð”Ð°Ñ‚Ð°Ð Ð¾Ð¶Ð´ÐµÐ½Ð¸Ñ");
 			if (indexOf != -1) {
 				int indexOf2 = content.indexOf("}}",indexOf);
 				if (indexOf2!=-1){
 					content=content.substring(0,indexOf)
-					+replaceDate(content.substring(indexOf+"{{ÄàòàÐîæäåíèÿ".length()+1,indexOf2))
+					+replaceDate(content.substring(indexOf+"{{Ð”Ð°Ñ‚Ð°Ð Ð¾Ð¶Ð´ÐµÐ½Ð¸Ñ".length()+1,indexOf2))
 					+content.substring(indexOf2+2);
 				}
 			}
@@ -27,13 +27,17 @@ public class TextAbstractExtractor {
 		}
 		
 		while (true) {
-			int indexOf = content.indexOf("{{Ôëàãèôèêàöèÿ");
+			int indexOf = content.indexOf("{{Ð¤Ð»Ð°Ð³Ð¸Ñ„Ð¸ÐºÐ°Ñ†Ð¸Ñ");
 			if (indexOf != -1) {
 				int indexOf2 = content.indexOf("}}",indexOf);
 				if (indexOf2!=-1){
+					try{
 					content=content.substring(0,indexOf)
-					+content.substring(indexOf+"{{Ôëàãèôèêàöèÿ".length()+1,indexOf2)
+					+content.substring(indexOf+"{{Ð¤Ð»Ð°Ð³Ð¸Ñ„Ð¸ÐºÐ°Ñ†Ð¸Ñ".length()+1,indexOf2)
 					+content.substring(indexOf2+2);
+					}catch (StringIndexOutOfBoundsException e){
+						break;
+					}
 				}
 			}
 			else{
@@ -41,12 +45,12 @@ public class TextAbstractExtractor {
 			}
 		}
 //		while (true) {
-//			int indexOf = content.indexOf("{{Ôëàã");
+//			int indexOf = content.indexOf("{{Ð¤Ð»Ð°Ð³");
 //			if (indexOf != -1) {
 //				int indexOf2 = content.indexOf("}}",indexOf);
 //				if (indexOf2!=-1){
 //					content=content.substring(0,indexOf)
-//					+content.substring(indexOf+"{{Ôëàã".length()+1,indexOf2)
+//					+content.substring(indexOf+"{{Ð¤Ð»Ð°Ð³".length()+1,indexOf2)
 //					+content.substring(indexOf2+2);
 //				}
 //			}
@@ -138,6 +142,44 @@ public class TextAbstractExtractor {
 		StringWriter out = new StringWriter();
 		element.printElement(new TextAbstractsPrinter(out));
 		return out.toString();
+	}
+	
+	public String[] doExtractImages(String s) {
+		s = initialCleanup(replaceImportantTemplates(s));
+		RootElement element = new RootElement();
+		BufferedReader rr = new BufferedReader(new StringReader(s));
+		try {
+			while (true) {
+				String readLine = rr.readLine();
+				if (readLine == null) {
+					break;
+				}
+				element.addLine(readLine.trim());
+			}
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+		element.accept(new TableExtractor());
+		ImageExtractor visitor = new ImageExtractor();
+		do{
+		visitor.extractedCount=0;
+		element.accept(visitor);
+		}while (visitor.extractedCount>0);
+		final ArrayList<String>result=new ArrayList<String>();
+		element.accept(new TextElementVisitor() {
+			
+			@Override
+			public void visit(TextAbstractElement element) {
+				if (element instanceof ImageElement){
+					ImageElement el=(ImageElement) element;
+					String text = el.text.toLowerCase();
+					if (text.endsWith(".jpg")||text.endsWith(".gif")||text.endsWith(".png")){
+						result.add(text);
+					}
+				}
+			}
+		});
+		return result.toArray(new String[result.size()]);
 	}
 
 	public String initialCleanup(String s) {

@@ -12,7 +12,7 @@ public class CleanupVisitor extends TextElementVisitor implements NotifyOnEndVis
 				/*CompositeTextElement mp= (CompositeTextElement) element.getParent();
 				mp.remove(element);*/
 			}
-			if (mm.text.startsWith("[[Категория:")){
+			if (mm.text.startsWith("[[РљР°С‚РµРіРѕСЂРёСЏ:")){
 				mm.valid=false;
 			}
 		}
@@ -28,18 +28,23 @@ public class CleanupVisitor extends TextElementVisitor implements NotifyOnEndVis
 		if (text.charAt(0)=='|'){
 			return false;
 		}
-		if (text.startsWith("Категория:")){
+		if (text.startsWith("РљР°С‚РµРіРѕСЂРёСЏ:")){
 			return false;
 		}
 		
 		if (text.startsWith("thumb|")){
 			return false;
 		}
-		
+		if (text.startsWith("frame|")){
+			return false;
+		}
+		if (text.contains("px|")){
+			return false;
+		}
 		if (text.startsWith("File:")){
 			return false;
 		}
-		if (text.startsWith("Файл:")){
+		if (text.startsWith("Р¤Р°Р№Р»:")){
 			return false;
 		}
 		boolean letterFound=false;

@@ -31,7 +31,7 @@ public class OnelineTextElement extends TextAbstractElement {
 		cleared_text = clearArtefacts(cleared_text);
 		cleared_text=cleared_text.replace(" , ",", ");
 		cleared_text=cleared_text.replace(" , ",", ");
-		cleared_text=cleared_text.replace(" , ",", ");
+		cleared_text=cleared_text.replace(" , ",", ");
 		
 	}
 
@@ -65,7 +65,7 @@ public class OnelineTextElement extends TextAbstractElement {
 		StringBuilder bld=new StringBuilder();
 		for (int a=0;a<length;a++){
 			char c=linkText.charAt(a);
-			if (c=='—'){
+			if (c=='ï¿½'){
 				boolean isOk=false;
 				for (int b=a+1;b<length;b++){
 					char k=linkText.charAt(b);

@@ -10,7 +10,7 @@ public class ImageExtractor extends TextElementVisitor{
 	public void visit(TextAbstractElement element) {
 		if (element instanceof OnelineTextElement){
 			OnelineTextElement q=(OnelineTextElement) element;
-			if (q.text.startsWith("[[Файл:")||q.text.startsWith("[[File:")){
+			if (q.text.startsWith("[[Р¤Р°Р№Р»:")||q.text.startsWith("[[File:")){
 				int m=q.text.indexOf('|');
 				if (m==-1){
 					m=balancedIndex(q);
@@ -32,13 +32,13 @@ public class ImageExtractor extends TextElementVisitor{
 					}
 				}
 			}
-			if (q.text.startsWith("[[Изображение")||q.text.startsWith("[[Изображение")){
+			if (q.text.startsWith("[[РР·РѕР±СЂР°Р¶РµРЅРёРµ")||q.text.startsWith("[[РР·РѕР±СЂР°Р¶РµРЅРёРµ")){
 				int m=q.text.indexOf('|');
 				if (m==-1){
 					m=balancedIndex(q);
 				}
 				if (m!=-1){
-					String image=q.text.substring("[[Изображение".length(),m);
+					String image=q.text.substring("[[РР·РѕР±СЂР°Р¶РµРЅРёРµ".length(),m);
 					int m1=balancedIndex(q);
 					String otherText=m1==-1?"":q.text.substring(m1+1);
 					if (m1==-1){

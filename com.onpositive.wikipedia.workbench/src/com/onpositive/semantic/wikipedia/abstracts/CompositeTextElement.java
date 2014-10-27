@@ -69,19 +69,19 @@ public abstract class CompositeTextElement extends TextAbstractElement {
 			if (q instanceof Section) {
 				Section c = (Section) q;
 				String readLine = c.header;
-				if (readLine.contains("Ссылки")) {
+				if (readLine.contains("РЎСЃС‹Р»РєРё")) {
 					break;
 				}
-				if (readLine.contains("Издания")) {
+				if (readLine.contains("РР·РґР°РЅРёСЏ")) {
 					break;
 				}
-				if (readLine.contains("Источники")) {
+				if (readLine.contains("РСЃС‚РѕС‡РЅРёРєРё")) {
 					break;
 				}
-				if (readLine.contains("См. также")) {
+				if (readLine.contains("РЎРј. С‚Р°РєР¶Рµ")) {
 					break;
 				}
-				if (readLine.contains("Литература")) {
+				if (readLine.contains("Р›РёС‚РµСЂР°С‚СѓСЂР°")) {
 					break;
 				}
 			}
