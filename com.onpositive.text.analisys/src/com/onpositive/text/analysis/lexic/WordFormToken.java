@@ -1,6 +1,6 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.semantic.words2.WordRelation;
+import com.onpositive.semantic.words3.model.WordRelation;
 import com.onpositive.text.analysis.AbstractToken;
 
 public class WordFormToken extends AbstractToken {

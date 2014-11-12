@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.words2.WordNet;
-import com.onpositive.semantic.words2.WordRelation;
+import com.onpositive.semantic.words3.model.WordRelation;
 import com.onpositive.text.analysis.IToken;
 
 public class WordFormParser extends AbstractParser {

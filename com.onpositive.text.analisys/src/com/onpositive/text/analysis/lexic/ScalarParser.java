@@ -111,7 +111,6 @@ public class ScalarParser extends AbstractParser {
 				return new ScalarToken(iVal, fVal,true,startPosition, endPosition);
 			}			
 		}
-		
 		return null;
 	}
 
@@ -670,6 +669,4 @@ public class ScalarParser extends AbstractParser {
 			}
 		}
 	}
-
-
 }

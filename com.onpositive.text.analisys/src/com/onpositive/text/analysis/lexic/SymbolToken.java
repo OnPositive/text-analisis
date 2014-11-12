@@ -1,7 +1,6 @@
 package com.onpositive.text.analysis.lexic;
 
 import com.onpositive.text.analysis.AbstractToken;
-import com.onpositive.text.analysis.IToken;
 
 public class SymbolToken extends AbstractToken {
 
