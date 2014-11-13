@@ -3,21 +3,21 @@ package com.onpositive.text.analysis.lexic;
 import java.util.Set;
 import java.util.Stack;
 
-import com.onpositive.semantic.words2.WordNet;
-import com.onpositive.semantic.words3.model.WordRelation;
+import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.text.analysis.IToken;
 
 public class WordFormParser extends AbstractParser {
 
-	public WordFormParser(WordNet wordNet) {
+	public WordFormParser(AbstractWordNet wordNet) {
 		super();
 		this.wordNet = wordNet;
 	}
 	
-	WordNet wordNet;
+	AbstractWordNet wordNet;
 
 	@Override
-	protected void combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
+	protected ProcessingResult combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
 		
 		StringBuilder bld = new StringBuilder();
 		for(IToken unit : sample){
@@ -40,14 +40,14 @@ public class WordFormParser extends AbstractParser {
 		}
 		
 		String str = bld.toString().trim().toLowerCase();
-		WordRelation[] possibleWords = wordNet.getPosibleWords(str);
+		GrammarRelation[] possibleWords = wordNet.getPossibleGrammarForms(str);
 		if(possibleWords==null||possibleWords.length==0){
 			return;
 		}
 		int startPosition = sample.firstElement().getStartPosition();
 		int endPosition = sample.peek().getEndPosition();
 
-		for(WordRelation wr : possibleWords){
+		for(GrammarRelation wr : possibleWords){
 			WordFormToken wordFormToken = new WordFormToken(wr, startPosition, endPosition);
 			reliableTokens.add(wordFormToken);
 		}

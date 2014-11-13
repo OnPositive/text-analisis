@@ -11,32 +11,76 @@ import com.onpositive.text.analysis.IToken;
 
 public abstract class AbstractParser {
 	
-	protected static final int CONTINUE_PUSH = -1;
+
+	protected static boolean isOneOf(IToken token, String[] acceptedSymbols)
+	{
+		String val = token.getStringValue().intern();
+		boolean isAccepted = false;				
+		for(String s : acceptedSymbols){
+			isAccepted |= (s == val);
+		}
+		return isAccepted;
+	}
 	
-	protected String text;	
-	
-	abstract protected void combineUnits(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens);
-	
-	abstract protected int continuePush(Stack<IToken> sample);
-	
-	abstract protected boolean checkAndPrepare(IToken unit);
-	
-	public ArrayList<IToken> process(List<IToken> units){
+	public static class ProcessingResult{
 		
+		protected int stebBack;
+
+		public ProcessingResult(int stebBack) {
+			super();
+			this.stebBack = stebBack;
+		}
+		
+	}
+	
+	//protected static final int CONTINUE_PUSH = -1;
+	
+	protected String text;
+	
+	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(-1);
+	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0);
+	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(1);
+	protected static ProcessingResult stepBack(int count){
+		return new ProcessingResult(count);
+	}
+	
+	abstract protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens);
+	
+	protected ProcessingResult continuePush(Stack<IToken> sample,IToken newToken){
+		return checkToken(newToken);
+	}
+	
+	abstract protected ProcessingResult checkToken(IToken newToken);
+	
+	protected ProcessingResult checkPossibleStart(IToken unit){
+		return checkToken(unit);
+	};
+	
+	protected void beforeProcess(List<IToken> tokens){};
+	
+	
+	protected void prepare(){}
+	
+	
+	protected void cleanUp(){}
+	
+	public ArrayList<IToken> process(List<IToken> tokens){
+		
+		beforeProcess(tokens);
 		
 		LinkedHashSet<IToken> reliableTokens = new LinkedHashSet<IToken>();
 		LinkedHashSet<IToken> doubtfulTokens = new LinkedHashSet<IToken>(); 
 		
 		ArrayList<IToken> result = new ArrayList<IToken>();
-		for( int i = 0 ; i < units.size() ; i++ ){
-			IToken unit = units.get(i);			
+		for( int i = 0 ; i < tokens.size() ; i++ ){
+			IToken unit = tokens.get(i);			
 			List<IToken> parents = unit.getParents();
 			if(parents!=null&&!parents.isEmpty()){
 				continue;
 			}
 			reliableTokens.clear();
 			doubtfulTokens.clear();
-			parseStartingUnits(unit,reliableTokens,doubtfulTokens);
+			parseStartingTokens(unit,reliableTokens,doubtfulTokens);
 			if(reliableTokens.isEmpty()){
 				result.add(unit);
 			}
@@ -46,14 +90,14 @@ public abstract class AbstractParser {
 			result.addAll(doubtfulTokens);
 		}
 		return result;
-	}
+	}	
 
-	private void parseStartingUnits(IToken unit, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
+	private void parseStartingTokens(IToken unit, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
 		
-		if(!checkAndPrepare(unit)){
+		if(checkPossibleStart(unit).stebBack>=0){
 			return;
-		}
-		
+		}		
+		prepare();		
 		
 		Stack<IToken> sample = new Stack<IToken>();
 		sample.add(unit);		
@@ -68,7 +112,8 @@ public abstract class AbstractParser {
 		}
 		for(IToken newUnit : doubtfulTokens){
 			handleBounds(gotRecursion, newUnit, false);
-		}
+		}		
+		cleanUp();
 	}
 
 	private void handleBounds(boolean gotRecursion, IToken newUnit, boolean isReliable) {
@@ -81,9 +126,9 @@ public abstract class AbstractParser {
 			handlePreviousBound(newUnit, first, prev, gotRecursion,isReliable);
 		}
 		else{
-			List<IToken> previousUnits = first.getPreviousUnits();
-			if(previousUnits!=null){
-				for(IToken pu : previousUnits){
+			List<IToken> previousTokens = first.getPreviousToken();
+			if(previousTokens!=null){
+				for(IToken pu : previousTokens){
 					handlePreviousBound(newUnit, first, pu, gotRecursion,isReliable);
 				}
 			}
@@ -93,9 +138,9 @@ public abstract class AbstractParser {
 			handleNextBound(newUnit, last, next, gotRecursion,isReliable);
 		}
 		else{
-			List<IToken> nextUnits = last.getNextUnits();
-			if(nextUnits!=null){
-				for(IToken nu : nextUnits){
+			List<IToken> nextTokens = last.getNextTokens();
+			if(nextTokens!=null){
+				for(IToken nu : nextTokens){
 					handleNextBound(newUnit, last, nu, gotRecursion,isReliable);
 				}
 			}
@@ -119,16 +164,16 @@ public abstract class AbstractParser {
 				}
 			}
 			else{
-				List<IToken> nextUnitsOfPreviousUnit = previousUnit.getNextUnits();
+				List<IToken> nextTokensOfPreviousToken = previousUnit.getNextTokens();
 				if(isReliable){
-					for(int i = 0 ; i < nextUnitsOfPreviousUnit.size();i++){
-						if(nextUnitsOfPreviousUnit.get(i)==firstChild){
-							nextUnitsOfPreviousUnit.set(i, newUnit);
+					for(int i = 0 ; i < nextTokensOfPreviousToken.size();i++){
+						if(nextTokensOfPreviousToken.get(i)==firstChild){
+							nextTokensOfPreviousToken.set(i, newUnit);
 							return;
 						}
 					}
 				}
-				nextUnitsOfPreviousUnit.add(newUnit);
+				nextTokensOfPreviousToken.add(newUnit);
 			}
 		}
 	}
@@ -150,16 +195,16 @@ public abstract class AbstractParser {
 				}
 			}
 			else{
-				List<IToken> previousUnitsOfNextUnit = nextUnit.getPreviousUnits();
+				List<IToken> previousTokensOfNextToken = nextUnit.getPreviousToken();
 				if(isReliable){
-					for(int i = 0 ; i < previousUnitsOfNextUnit.size();i++){
-						if(previousUnitsOfNextUnit.get(i)==lastChild){
-							previousUnitsOfNextUnit.set(i, newUnit);
+					for(int i = 0 ; i < previousTokensOfNextToken.size();i++){
+						if(previousTokensOfNextToken.get(i)==lastChild){
+							previousTokensOfNextToken.set(i, newUnit);
 							return;
 						}
 					}
 				}
-				previousUnitsOfNextUnit.add(newUnit);
+				previousTokensOfNextToken.add(newUnit);
 			}
 		}
 	}
@@ -168,21 +213,21 @@ public abstract class AbstractParser {
 	private boolean parseRecursively( Stack<IToken> sample, LinkedHashSet<IToken> reliableTokens, HashSet<IToken> doubtfulTokens)
 	{		
 		IToken last = sample.peek();
-		int unitsAdded = 0 ;
+		int tokensAdded = 0 ;
 		boolean gotRecursion = false;
-		int popCount = -1;
-		while((popCount = continuePush(sample))==CONTINUE_PUSH){
+		ProcessingResult pr = CONTINUE_PUSH;
+		while((pr = continuePush(sample,last))==CONTINUE_PUSH){
 			IToken next = last.getNext();
 			if(next!=null){
 				sample.add(next);
-				unitsAdded++;				
+				tokensAdded++;				
 				last = next;
 			}
 			else{
-				List<IToken> nextUnits = last.getNextUnits();
-				if(nextUnits!=null&&!nextUnits.isEmpty()){					
+				List<IToken> nextTokens = last.getNextTokens();
+				if(nextTokens!=null&&!nextTokens.isEmpty()){					
 					int beforeCount = reliableTokens.size();
-					for(IToken nu : nextUnits){
+					for(IToken nu : nextTokens){
 						sample.add(nu);						
 						parseRecursively(sample, reliableTokens,doubtfulTokens);						
 						sample.pop();						
@@ -193,15 +238,16 @@ public abstract class AbstractParser {
 				break;
 			}
 		}
+		int popCount = pr.stebBack;
 		while(popCount-- > 0){
 			sample.pop();
-			unitsAdded--;
+			tokensAdded--;
 		}
 		if(!gotRecursion){
-			while(unitsAdded >= 0){
+			while(tokensAdded >= 0){
 				LinkedHashSet<IToken> rt = new LinkedHashSet<IToken>();
 				LinkedHashSet<IToken> dt = new LinkedHashSet<IToken>();
-				combineUnits(sample,rt,dt);
+				combineTokens(sample,rt,dt);
 				if(!rt.isEmpty()){
 					handleChildrenAndParents(sample, rt);
 					reliableTokens.addAll(rt);
@@ -210,25 +256,25 @@ public abstract class AbstractParser {
 					handleChildrenAndParents(sample, dt);
 					doubtfulTokens.addAll(dt);
 				}
-				if(unitsAdded > 0){
+				if(tokensAdded > 0){
 					sample.pop();
 				}
-				unitsAdded--;
+				tokensAdded--;
 				if(!rt.isEmpty()||!dt.isEmpty()){
 					break;
 				}
 			}
 		}
-		while(unitsAdded-- > 0){
+		while(tokensAdded-- > 0){
 			sample.pop();
 		}
 		return gotRecursion;
 	}
 
-	private void handleChildrenAndParents(Stack<IToken> sample,Set<IToken> newUnits)
+	private void handleChildrenAndParents(Stack<IToken> sample,Set<IToken> newTokens)
 	{
 		
-		for(IToken newUnit : newUnits){
+		for(IToken newUnit : newTokens){
 			int sp = newUnit.getStartPosition();
 			int ep = newUnit.getEndPosition();
 			

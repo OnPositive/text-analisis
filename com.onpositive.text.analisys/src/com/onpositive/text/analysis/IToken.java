@@ -24,7 +24,7 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_DATE = 10202;
 	
-	static final int TOKEN_TYPE_DIMENSIONR = 10203;
+	static final int TOKEN_TYPE_DIMENSION = 10203;
 	
 	static final int TOKEN_TYPE_WORD_FORM = 11001;
 	
@@ -46,9 +46,9 @@ public interface IToken {
 	
 	void setPrevious(IToken unit);
 	
-	List<IToken> getNextUnits();
+	List<IToken> getNextTokens();
 	
-	List<IToken> getPreviousUnits();
+	List<IToken> getPreviousToken();
 	
 	void addNextUnit(IToken unit);
 	
@@ -61,4 +61,8 @@ public interface IToken {
 	List<IToken> getParents();
 	
 	void addParent(IToken parent);
+
+	boolean hasSpaceAfter();
+	
+	boolean hasSpaceBefore();
 }

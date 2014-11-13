@@ -64,7 +64,7 @@ public abstract class AbstractToken implements IToken {
 		this.previous = unit;
 	}
 
-	public List<IToken> getNextUnits() {
+	public List<IToken> getNextTokens() {
 		return nextTokens;
 	}
 
@@ -85,7 +85,7 @@ public abstract class AbstractToken implements IToken {
 		this.nextTokens.add(unit);
 	}
 
-	public List<IToken> getPreviousUnits() {
+	public List<IToken> getPreviousToken() {
 		return previousTokens;
 	}
 
@@ -126,6 +126,35 @@ public abstract class AbstractToken implements IToken {
 			this.parents = new ArrayList<IToken>();
 		}
 		this.parents.add(parent);
+	}
+	
+	public boolean hasSpaceAfter(){
+		
+		int startOfNext = 0;
+		if(next!=null){
+			startOfNext = next.getStartPosition();
+		}
+		else if(nextTokens!=null&&!nextTokens.isEmpty()){
+			startOfNext = nextTokens.get(0).getStartPosition();
+		}
+		else{
+			return false;
+		}
+		return this.endPosition < startOfNext;
+	}
+	
+	public boolean hasSpaceBefore(){
+		int endOfPrevious = 0;
+		if(previous!=null){
+			endOfPrevious = previous.getEndPosition();
+		}
+		else if(previousTokens!=null&&!previousTokens.isEmpty()){
+			endOfPrevious = previousTokens.get(0).getEndPosition();
+		}
+		else{
+			return false;
+		}
+		return this.startPosition > endOfPrevious;
 	}
 	
 	@Override

@@ -32,10 +32,10 @@ public class ScalarToken extends AbstractToken {
 		
 		if(isFracture()){
 			if(isDecimal){
-				return "" +value1 + "." + value2;
+				return "" + (int)value1 + "." + (int)value2;
 			}
 			else{
-				return "" +value1 + "/" + value2;
+				return "" + (int)value1 + "/" + (int)value2;
 			}
 		}
 		else{

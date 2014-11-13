@@ -1,16 +1,16 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.semantic.words3.model.WordRelation;
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.text.analysis.AbstractToken;
 
 public class WordFormToken extends AbstractToken {
 
-	public WordFormToken(WordRelation wordRelation, int startPosition, int endPosition) {
+	public WordFormToken(GrammarRelation wordRelation, int startPosition, int endPosition) {
 		super(TOKEN_TYPE_WORD_FORM, startPosition, endPosition);
 		this.wordRelation = wordRelation;
 	}
 	
-	private final WordRelation wordRelation;
+	private final GrammarRelation wordRelation;
 
 	@Override
 	public String getStringValue() {
