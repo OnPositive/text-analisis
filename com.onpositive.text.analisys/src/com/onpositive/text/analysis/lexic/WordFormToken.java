@@ -1,20 +1,25 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.semantic.wordnet.GrammarRelation;
+import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractToken;
 
 public class WordFormToken extends AbstractToken {
 
-	public WordFormToken(GrammarRelation wordRelation, int startPosition, int endPosition) {
+	public WordFormToken(TextElement grammarRelation, int startPosition, int endPosition) {
 		super(TOKEN_TYPE_WORD_FORM, startPosition, endPosition);
-		this.wordRelation = wordRelation;
+		this.textElement = grammarRelation;
 	}
 	
-	private final GrammarRelation wordRelation;
+	private final TextElement textElement;
+	
+
+	public TextElement getTextElement() {
+		return textElement;
+	}
 
 	@Override
 	public String getStringValue() {
-		return wordRelation == null ? "null" : wordRelation.toString();
+		return textElement == null ? "null" : textElement.toString();
 	}
 
 	@Override
@@ -22,7 +27,7 @@ public class WordFormToken extends AbstractToken {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ ((wordRelation == null) ? 0 : wordRelation.hashCode());
+				+ ((textElement == null) ? 0 : textElement.hashCode());
 		return result;
 	}
 
@@ -35,10 +40,10 @@ public class WordFormToken extends AbstractToken {
 		if (getClass() != obj.getClass())
 			return false;
 		WordFormToken other = (WordFormToken) obj;
-		if (wordRelation == null) {
-			if (other.wordRelation != null)
+		if (textElement == null) {
+			if (other.textElement != null)
 				return false;
-		} else if (wordRelation.getWord() != other.wordRelation.getWord())
+		} else if (textElement.equals(other.textElement))
 			return false;
 		return true;
 	}

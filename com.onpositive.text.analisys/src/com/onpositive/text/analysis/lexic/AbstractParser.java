@@ -24,22 +24,21 @@ public abstract class AbstractParser {
 	
 	public static class ProcessingResult{
 		
-		protected int stebBack;
+		protected int stepBack;
 
-		public ProcessingResult(int stebBack) {
+		public ProcessingResult(int stepBack) {
 			super();
-			this.stebBack = stebBack;
+			this.stepBack = stepBack;
 		}
 		
 	}
-	
-	//protected static final int CONTINUE_PUSH = -1;
 	
 	protected String text;
 	
 	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(-1);
 	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0);
 	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(1);
+	
 	protected static ProcessingResult stepBack(int count){
 		return new ProcessingResult(count);
 	}
@@ -94,7 +93,7 @@ public abstract class AbstractParser {
 
 	private void parseStartingTokens(IToken unit, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
 		
-		if(checkPossibleStart(unit).stebBack>=0){
+		if(checkPossibleStart(unit).stepBack>=0){
 			return;
 		}		
 		prepare();		
@@ -239,12 +238,13 @@ public abstract class AbstractParser {
 				break;
 			}
 		}
-		int popCount = pr.stebBack;
+		int popCount = pr.stepBack;
+		rollBackState(popCount);
+		
 		while(popCount-- > 0){
 			sample.pop();
 			tokensAdded--;
 		}
-		rollBackState(popCount);
 		
 		if(!gotRecursion){
 			while(tokensAdded >= 0){
@@ -262,16 +262,17 @@ public abstract class AbstractParser {
 				if(tokensAdded > 0){
 					sample.pop();
 				}
+				rollBackState(1);
 				tokensAdded--;
 				if(!rt.isEmpty()||!dt.isEmpty()){
 					break;
 				}
 			}
 		}
+		rollBackState(tokensAdded);
 		while(tokensAdded-- > 0){
 			sample.pop();
-		}
-		rollBackState(tokensAdded);
+		}	
 		
 		return gotRecursion;
 	}

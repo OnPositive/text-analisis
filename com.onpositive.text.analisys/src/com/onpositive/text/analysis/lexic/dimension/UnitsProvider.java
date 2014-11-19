@@ -25,7 +25,7 @@ public class UnitsProvider {
 	
 	private MeaningElement ultimateUnit;
 	
-	public List<Unit> getUnit(String str){
+	public List<Unit> getUnits(String str){
 		
 		init();
 		
@@ -35,14 +35,15 @@ public class UnitsProvider {
 		for(GrammarRelation gr : possibleGrammarForms){
 			MeaningElement[] concepts = gr.getWord().getConcepts();
 			for(MeaningElement me : concepts){
-				List<Integer> unitTypes = me.detectGeneralizations(unitKindMap.keySet());
-				for(int ut : unitTypes){
-					Unit unit = new Unit(str, unitKindMap.get(ut), 1);
-					if(set==null){
-						set = new LinkedHashSet<Unit>();
-					}
-					set.add(unit);
+				List<Unit> units = getUnits(me);
+				if(units.isEmpty()){
+					continue;
 				}
+				
+				if(set==null){
+					set = new LinkedHashSet<Unit>();
+				}				
+				set.addAll(units);
 			}
 		}
 		
@@ -52,8 +53,6 @@ public class UnitsProvider {
 	public boolean canBeUnitStart(String str){
 		
 		init();
-		
-		LinkedHashSet<Unit> set=null;
 
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(str);
 		for(GrammarRelation gr : possibleGrammarForms){
@@ -72,6 +71,21 @@ public class UnitsProvider {
 		}
 		
 		return false;
+	}
+	
+	public List<Unit> getUnits(MeaningElement me){
+		
+		LinkedHashSet<Unit> set=null;
+		
+		List<Integer> unitTypes = me.detectGeneralizations(unitKindMap.keySet());
+		for(int ut : unitTypes){
+			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), 1);
+			if(set==null){
+				set = new LinkedHashSet<Unit>();
+			}
+			set.add(unit);
+		}
+		return new ArrayList<Unit>(set);
 	}
 
 	private void init() {

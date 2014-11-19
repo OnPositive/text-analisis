@@ -49,7 +49,7 @@ public class DimensionParserTest extends TestCase{
 		TextElement wordElement = editable.getWordNet().getWordElement("_ALL_DIMENSION_UNITS".toLowerCase());
 		TextElement wordElement2 = editable.getWordNet().getWordElement("_UNITs_SIZE".toLowerCase());
 		UnitsProvider unitsProvider = new UnitsProvider(editable.getWordNet());
-		List<Unit> unit = unitsProvider.getUnit("км/ч");
+		List<Unit> unit = unitsProvider.getUnits("км/ч");
 		
 		System.out.println("done");
 	}

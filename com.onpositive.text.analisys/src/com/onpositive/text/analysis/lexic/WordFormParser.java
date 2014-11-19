@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
@@ -25,26 +26,41 @@ public class WordFormParser extends AbstractParser {
 	@Override
 	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
 		
-		
 		ArrayList<WordFormToken> tokens = new ArrayList<WordFormToken>();
 		IToken firstToken = sample.get(0);
 		int startPosition = firstToken.getStartPosition();
 		int endPosition = firstToken.getEndPosition();
-		for(GrammarRelation gr : firstWordForms){
-			WordFormToken token = new WordFormToken(gr, startPosition, endPosition);
-			tokens.add(token);
-		}
 		
-		for(WordSequenceData data : dataList){
-			if(!data.gotMatch()){
-				continue;
+		HashSet<TextElement> occuredElements = new HashSet<TextElement>(); 
+		
+		if(dataList.isEmpty()){
+			for(GrammarRelation gr : firstWordForms){
+				TextElement word = gr.getWord();
+				if(occuredElements.contains(word)){
+					continue;
+				}
+				occuredElements.add(word);
+				WordFormToken token = new WordFormToken(word, startPosition, endPosition);
+				tokens.add(token);
 			}
-			int endIndex = data.getSequenceLength()-1;
-			endPosition = sample.get(endIndex).getEndPosition();
-			TextElement te = data.textElement();
-			GrammarRelation gr = new GrammarRelation(wordNet, te, GrammarRelation.UNKNOWN_GRAMMAR_FORM);
-			WordFormToken token = new WordFormToken(gr, startPosition, endPosition);
-			tokens.add(token);
+		}
+		else{
+			for(WordSequenceData data : dataList)
+			{
+				if(!data.gotMatch()){
+					continue;
+				}
+				TextElement te = data.textElement();
+				if(occuredElements.contains(te)){
+					continue;
+				}
+				occuredElements.add(te);
+				
+				int endIndex = data.getSequenceLength()-1;
+				endPosition = sample.get(endIndex).getEndPosition();				
+				WordFormToken token = new WordFormToken(te, startPosition, endPosition);
+				tokens.add(token);
+			}
 		}
 		if(tokens.size()==1){
 			reliableTokens.add(tokens.get(0));
@@ -57,29 +73,54 @@ public class WordFormParser extends AbstractParser {
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
-		if(dataList.isEmpty()){
-			return ACCEPT_AND_BREAK;
-		}
 		ProcessingResult result = CONTINUE_PUSH;
-		if( sample.size() > 1 ){
+		
+		String value = newToken.getStringValue();
+		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
+		
+		if( sample.size() == 1 ){
+			firstWordForms = possibleGrammarForms;
 			
-			String value = newToken.getStringValue();
-			GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value);
-			if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
-				
-				boolean needContinue = false;
-				for(WordSequenceData data : dataList){
-					for(GrammarRelation gr : possibleGrammarForms){
-						int wordId = gr.getWord().id();
-						needContinue |= data.needContinue(wordId, sample.size()-1);
+			for(GrammarRelation gr : possibleGrammarForms){
+				TextElement word = gr.getWord();
+				TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
+				if(possibleContinuations!=null){
+					for(TextElement te : possibleContinuations){
+						TextElement[] parts = te.getParts();
+						int[] arr = new int[parts.length];
+						for(int i = 0 ; i < parts.length ; i++){
+							arr[i] = parts[i].id();
+						}
+						WordSequenceData data = new WordSequenceData(te,arr);
+						dataList.add(data);
 					}
 				}
-				if(!needContinue){
-					result = DO_NOT_ACCEPT_AND_BREAK;
-				}
+			}
+		}
+		else{
+			if(dataList.isEmpty()){
+				result = DO_NOT_ACCEPT_AND_BREAK;
 			}
 			else{
-				result = DO_NOT_ACCEPT_AND_BREAK;
+				for(WordSequenceData data : dataList){
+					data.setPosition(sample.size()-1);
+				}
+				if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
+					
+					boolean needContinue = false;
+					for(WordSequenceData data : dataList){
+						for(GrammarRelation gr : possibleGrammarForms){
+							int wordId = gr.getWord().id();
+							needContinue |= data.check(wordId);
+						}
+					}
+					if(!needContinue){
+						result = DO_NOT_ACCEPT_AND_BREAK;
+					}
+				}
+				else{
+					result = DO_NOT_ACCEPT_AND_BREAK;
+				}
 			}
 		}
 		return result;
@@ -88,26 +129,9 @@ public class WordFormParser extends AbstractParser {
 	protected ProcessingResult checkPossibleStart(IToken token){
 		
 		String value = token.getStringValue();
-		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value);
+		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		if(possibleGrammarForms==null||possibleGrammarForms.length==0){
 			return DO_NOT_ACCEPT_AND_BREAK;
-		}
-		firstWordForms = possibleGrammarForms;
-		
-		for(GrammarRelation gr : possibleGrammarForms){
-			TextElement word = gr.getWord();
-			TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
-			if(possibleContinuations!=null){
-				for(TextElement te : possibleContinuations){
-					TextElement[] parts = te.getParts();
-					int[] arr = new int[parts.length];
-					for(int i = 0 ; i < parts.length ; i++){
-						arr[i] = parts[i].id();
-					}
-					WordSequenceData data = new WordSequenceData(te,arr);
-					dataList.add(data);
-				}
-			}
 		}
 		return CONTINUE_PUSH;
 	};
@@ -149,20 +173,25 @@ public class WordFormParser extends AbstractParser {
 		private int currentPosition = 0;
 		
 		private boolean gotMatch(){
-			boolean result = matchPosition == sequence.length;
+			boolean result = matchPosition == sequence.length-1;
 			return result;
 		}
 		
-		private boolean needContinue(int wordId, int pos){
+		private boolean check(int wordId){
 			
-			if(pos<sequence.length && pos == matchPosition+1){
-				if(sequence[pos]==wordId){
-					matchPosition = pos;
+			if(currentPosition<sequence.length && currentPosition == matchPosition+1){
+				if(sequence[currentPosition]==wordId){
+					matchPosition = currentPosition;
 				}
 			}
-			currentPosition = pos;
-			boolean result = (matchPosition == pos) && (pos < sequence.length-1);
+			boolean result = matchPosition == currentPosition;
 			return result;
+		}
+		
+
+		public void setPosition(int pos) {
+			this.currentPosition = pos;
+			
 		}
 		
 		private void rollBack(int stepCount){
