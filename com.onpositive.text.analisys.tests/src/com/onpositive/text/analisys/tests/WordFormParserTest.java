@@ -18,49 +18,6 @@ import com.onpositive.text.analysis.lexic.WordFormParser;
 
 public class WordFormParserTest extends TestCase{
 
-//	public static void main(String[] args) {
-//		PrimitiveTokenizer pt = new PrimitiveTokenizer();
-//		AbstractWordNet instance = WordNetProvider.getInstance();
-//		//ww.prepareWordSeqs();
-//		WordFormParser wfParser = new WordFormParser(instance);
-//		doProcessString(pt, wfParser);		
-//		
-//	}
-	
-	private static final String TOKEN_TYPE_NAME_PREFIX = "TOKEN_TYPE_";
-	private static HashMap<Integer,String> map = new HashMap<Integer, String>();
-	
-	static{
-		Field[] fields = IToken.class.getFields();
-		for(Field f : fields){
-			int mdf = f.getModifiers();
-			if(!Modifier.isStatic(mdf)){
-				continue;
-			}
-			
-			if( f.getType() != int.class ){
-				continue;
-			}
-			
-			String fName = f.getName();
-			if(!fName.startsWith(TOKEN_TYPE_NAME_PREFIX)){
-				continue;
-			}
-			
-			f.setAccessible(true);
-			
-			try {
-				int code = (Integer) f.get(null);
-				map.put(code, fName.substring(TOKEN_TYPE_NAME_PREFIX.length()));
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-			
-		}
-	}
-
 	public void testWordFormParser() {
 		
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();
@@ -75,7 +32,7 @@ public class WordFormParserTest extends TestCase{
 		ArrayList<IToken> processed = wfParser.process(tokens);
 		
 		for(IToken t : processed){
-			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + map.get(t.getType()) + " " + t.getStringValue());
+			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
 		}
 		System.out.println();
 	}

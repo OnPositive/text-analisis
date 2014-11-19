@@ -15,9 +15,16 @@
 		<sc t="_UNITS_TIME"/>
 		<sc t="_UNITS_POWER_TO_MASS_RATIO"/>
 	</gr>
+	<gr f="_UNITS_SIZE" r="specialization" >
+		<sc t="километр" />
+		<sc t="кт" />
+		<sc t="метр" />
+		<sc t="т" />
+	</gr>
 	<gr f="_UNITS_SPEED" r="specialization" >
 		<sc t="м / c" />
 		<sc t="метр в секунду" />
+		<sc t="километр в час" />
 		<sc t="кмч" />
 		<sc t="км / ч" />
 	</gr>
