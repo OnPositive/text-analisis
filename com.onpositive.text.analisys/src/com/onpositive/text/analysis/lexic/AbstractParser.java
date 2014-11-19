@@ -63,6 +63,12 @@ public abstract class AbstractParser {
 	
 	protected void cleanUp(){}
 	
+	
+	protected boolean keepInputToken(){
+		return true;
+	}
+	
+	
 	public ArrayList<IToken> process(List<IToken> tokens){
 		
 		beforeProcess(tokens);
@@ -80,12 +86,15 @@ public abstract class AbstractParser {
 			reliableTokens.clear();
 			doubtfulTokens.clear();
 			parseStartingTokens(unit,reliableTokens,doubtfulTokens);
-			if(reliableTokens.isEmpty()){
+			
+			if(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()){
 				result.add(unit);
 			}
-			else{
-				result.addAll(reliableTokens);
+			
+			else if(reliableTokens.isEmpty()&&keepInputToken()){
+				result.add(unit);
 			}
+			result.addAll(reliableTokens);
 			result.addAll(doubtfulTokens);
 		}
 		return result;

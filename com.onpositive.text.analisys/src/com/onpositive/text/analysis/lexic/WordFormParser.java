@@ -157,6 +157,10 @@ public class WordFormParser extends AbstractParser {
 		}
 	}
 	
+	protected boolean keepInputToken(){
+		return false;
+	}
+	
 	private static class WordSequenceData{
 		
 		public WordSequenceData(TextElement textElement,int[] sequence) {
