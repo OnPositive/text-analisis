@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
-import com.onpositive.text.analysis.lexic.ScalarParser;
+import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 
 public class ScalarTokenTest {
 
@@ -48,10 +48,10 @@ public class ScalarTokenTest {
 		}
 		
 		String[] sArr = new String[]{
-				"У меня есть 25 яблок",
-				"Прилетело 1 000 000 попугаев",
-				"Прилетело попугаев 1,000,000.2,000,000 -- это прилетело ворон.",
-				"У меня есть " + '\u2159' + " яблока"
+				"РЈ РјРµРЅСЏ РµСЃС‚СЊ 25 СЏР±Р»РѕРє",
+				"РџСЂРёР»РµС‚РµР»Рѕ 1 000 000 РїРѕРїСѓРіР°РµРІ",
+				"РџСЂРёР»РµС‚РµР»Рѕ РїРѕРїСѓРіР°РµРІ 1,000,000.2,000,000 -- СЌС‚Рѕ РїСЂРёР»РµС‚РµР»Рѕ РІРѕСЂРѕРЅ.",
+				"РЈ РјРµРЅСЏ РµСЃС‚СЊ " + '\u2159' + " СЏР±Р»РѕРєР°"
 		};
 		
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();

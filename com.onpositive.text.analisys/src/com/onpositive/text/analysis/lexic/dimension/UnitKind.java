@@ -1,4 +1,4 @@
-package com.onpositive.text.analysis.lexic;
+package com.onpositive.text.analysis.lexic.dimension;
 
 public enum UnitKind {
 
@@ -6,7 +6,10 @@ public enum UnitKind {
 	AREA,
 	WEIGHT,
 	FORCE,
-	SPEED, LOADING, DATE, SCALAR,
+	SPEED,
+	LOADING,
+	DATE,
+	SCALAR,
 	CLIMB_RATE,
 	POWER,
 	TIME,

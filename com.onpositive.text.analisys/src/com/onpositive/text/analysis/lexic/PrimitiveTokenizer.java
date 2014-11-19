@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.utils.Exponent;
 import com.onpositive.text.analysis.utils.Utils;
 import com.onpositive.text.analysis.utils.VulgarFraction;
 
@@ -168,6 +169,9 @@ public class PrimitiveTokenizer {
 		if(VulgarFraction.isVulgarFraction(ch)){
 			return IToken.TOKEN_TYPE_VULGAR_FRACTION;
 		}
+		if(Exponent.isExponent(""+ch)){
+			return IToken.TOKEN_TYPE_EXPONENT;
+		}
 		return IToken.TOKEN_TYPE_UNDEFINED;
 	}
 	
@@ -184,7 +188,7 @@ public class PrimitiveTokenizer {
 		char[] symbols = new char[]{
 				'`', '~', '!',  '@',  '#', '$', '%', '^', '&', '*', '(', ')',
 				'-', '_', '=',  '+', '\\', '|', ',', '.', '<', '>', '/', '?',
-				';', ':', '\'', '"', '[', ']', '{', '}' , '—', '«', '»'
+				';', ':', '\'', '"', '[', ']', '{', '}' , 'ï¿½', 'ï¿½', 'ï¿½'
 			};
 		for(char ch : symbols){
 			map.put(ch, IToken.TOKEN_TYPE_SYMBOL);

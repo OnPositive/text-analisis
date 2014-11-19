@@ -52,8 +52,8 @@ public abstract class AbstractParser {
 	
 	abstract protected ProcessingResult checkToken(IToken newToken);
 	
-	protected ProcessingResult checkPossibleStart(IToken unit){
-		return checkToken(unit);
+	protected ProcessingResult checkPossibleStart(IToken token){
+		return checkToken(token);
 	};
 	
 	protected void beforeProcess(List<IToken> tokens){};
@@ -230,7 +230,8 @@ public abstract class AbstractParser {
 					for(IToken nu : nextTokens){
 						sample.add(nu);						
 						parseRecursively(sample, reliableTokens,doubtfulTokens);						
-						sample.pop();						
+						sample.pop();
+						rollBackState(1);
 					}
 					int afterCount = reliableTokens.size();					
 					gotRecursion = afterCount != beforeCount;
@@ -243,6 +244,8 @@ public abstract class AbstractParser {
 			sample.pop();
 			tokensAdded--;
 		}
+		rollBackState(popCount);
+		
 		if(!gotRecursion){
 			while(tokensAdded >= 0){
 				LinkedHashSet<IToken> rt = new LinkedHashSet<IToken>();
@@ -268,8 +271,12 @@ public abstract class AbstractParser {
 		while(tokensAdded-- > 0){
 			sample.pop();
 		}
+		rollBackState(tokensAdded);
+		
 		return gotRecursion;
 	}
+
+	protected void rollBackState(int stepCount) {}
 
 	private void handleChildrenAndParents(Stack<IToken> sample,Set<IToken> newTokens)
 	{

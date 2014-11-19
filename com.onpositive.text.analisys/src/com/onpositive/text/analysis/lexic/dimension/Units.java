@@ -1,4 +1,4 @@
-package com.onpositive.text.analysis.lexic;
+package com.onpositive.text.analysis.lexic.dimension;
 
 import java.util.ArrayList;
 import java.util.HashMap;

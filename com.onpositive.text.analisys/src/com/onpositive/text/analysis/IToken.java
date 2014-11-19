@@ -14,6 +14,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_VULGAR_FRACTION = 10004;
 	
+	static final int TOKEN_TYPE_EXPONENT = 10005;
+	
 	static final int TOKEN_TYPE_LINEBREAK = 100101;
 	
 	static final int TOKEN_TYPE_NON_BREAKING_SPACE = 100102;
@@ -26,7 +28,9 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_DIMENSION = 10203;
 	
-	static final int TOKEN_TYPE_WORD_FORM = 11001;
+	static final int TOKEN_TYPE_UNIT = 10213;
+	
+	static final int TOKEN_TYPE_WORD_FORM = 11001;	
 	
 	String getStringValue();
 	
