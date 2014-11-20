@@ -13,6 +13,7 @@ import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.SemanticRelation;
 import com.onpositive.semantic.wordnet.TextElement;
+import com.onpositive.semantic.words3.MetaLayer;
 import com.onpositive.semantic.words3.hds.IntArrayList;
 
 public class UnitsProvider {
@@ -24,8 +25,6 @@ public class UnitsProvider {
 	private final IntObjectOpenHashMapSerialzable<UnitKind> unitKindMap = new IntObjectOpenHashMapSerialzable<UnitKind>(); 
 
 	private AbstractWordNet wordNet;
-	
-	private HashMap<String,Unit> map = new HashMap<String, Unit>();
 	
 	private MeaningElement ultimateUnit;
 	
@@ -109,6 +108,19 @@ public class UnitsProvider {
 		
 		init();
 		
+		Double relationToPrimary = Double.NaN;
+		MetaLayer<Object> layer = wordNet.getMetaLayers().getLayer("relation_to_primary");
+		if(layer!=null){		
+			Object value = layer.getValue(me);
+			if(value!=null){
+				try{
+					relationToPrimary = Double.parseDouble(value.toString());
+				}
+				catch(Exception e){}
+			}
+		}
+		
+		
 		LinkedHashSet<Unit> set=null;
 		IntArrayList unitTypes = detectGeneralizations(me,unitKindMap.keys());
 		if(unitTypes==null){
@@ -117,7 +129,7 @@ public class UnitsProvider {
 		int size = unitTypes.size();
 		for(int a=0;a<size;a++){
 			int ut=unitTypes.get(a);
-			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), 1);
+			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), relationToPrimary);
 			if(set==null){
 				set = new LinkedHashSet<Unit>();
 			}

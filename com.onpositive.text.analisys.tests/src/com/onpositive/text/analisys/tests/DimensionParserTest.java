@@ -1,12 +1,10 @@
 package com.onpositive.text.analisys.tests;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.edit.IWordNetEditInterface;
@@ -15,9 +13,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.dimension.DimensionParser;
-import com.onpositive.text.analysis.lexic.dimension.Unit;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
-import com.onpositive.text.analysis.lexic.dimension.UnitsProvider;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 
 import junit.framework.TestCase;

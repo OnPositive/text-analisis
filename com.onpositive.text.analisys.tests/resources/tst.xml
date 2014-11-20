@@ -28,5 +28,6 @@
 		<sc t="кмч" />
 		<sc t="км / ч" />
 	</gr>
-	<meta w="кмч" v="0.27777777" l="relation_to_primary"/>
+	<meta w="кмч" v="1" l="relation_to_primary"/>
+	<meta w="километр" v="1000" l="relation_to_primary"/>
 </wnc>
