@@ -75,9 +75,15 @@ public class UnitsProvider {
 	
 	public List<Unit> getUnits(MeaningElement me){
 		
+		init();
+		
 		LinkedHashSet<Unit> set=null;
 		
 		List<Integer> unitTypes = me.detectGeneralizations(unitKindMap.keySet());
+		if(unitTypes==null){
+			return null;
+		}
+		
 		for(int ut : unitTypes){
 			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), 1);
 			if(set==null){

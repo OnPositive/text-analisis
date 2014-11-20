@@ -31,9 +31,14 @@ public class WordFormParser extends AbstractParser {
 		int startPosition = firstToken.getStartPosition();
 		int endPosition = firstToken.getEndPosition();
 		
-		HashSet<TextElement> occuredElements = new HashSet<TextElement>(); 
+		HashSet<TextElement> occuredElements = new HashSet<TextElement>();
 		
-		if(dataList.isEmpty()){
+		boolean gotSequence = false;
+		for(WordSequenceData data : dataList){
+			gotSequence |= data.gotMatch();
+		}
+		
+		if(!gotSequence){
 			for(GrammarRelation gr : firstWordForms){
 				TextElement word = gr.getWord();
 				if(occuredElements.contains(word)){

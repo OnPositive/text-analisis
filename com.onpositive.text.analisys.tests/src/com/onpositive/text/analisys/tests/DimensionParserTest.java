@@ -15,6 +15,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
+import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitsProvider;
 
 import junit.framework.TestCase;
@@ -49,11 +50,14 @@ public class DimensionParserTest extends TestCase{
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();
 		WordFormParser wfParser = new WordFormParser(editable.getWordNet());
 		
-		String str = "Проехал два километра со скоростью 50 километров в час.";		
+		String str = "Проехал два километра со скоростью 10 метров в секунду.";		
 		List<IToken> tokens = pt.tokenize(str);		
 		ArrayList<IToken> processed = wfParser.process(tokens);
+		UnitParser unitParser = new UnitParser(editable.getWordNet());
+		ArrayList<IToken> processed2 = unitParser.process(processed);
 		
-		for(IToken t : processed){
+		
+		for(IToken t : processed2){
 			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
 		}
 		System.out.println();
