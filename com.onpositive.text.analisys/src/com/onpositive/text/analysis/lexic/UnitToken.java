@@ -18,4 +18,8 @@ public class UnitToken extends AbstractToken {
 		return unit.toString();
 	}
 
+	public Unit getUnit() {
+		return unit;
+	}
+
 }
