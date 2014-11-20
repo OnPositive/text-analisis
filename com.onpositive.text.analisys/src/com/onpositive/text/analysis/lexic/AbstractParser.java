@@ -100,15 +100,15 @@ public abstract class AbstractParser {
 		return result;
 	}	
 
-	private void parseStartingTokens(IToken unit, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
+	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
 		
-		if(checkPossibleStart(unit).stepBack>=0){
+		if(checkPossibleStart(token).stepBack>=0){
 			return;
 		}		
 		prepare();		
 		
 		Stack<IToken> sample = new Stack<IToken>();
-		sample.add(unit);		
+		sample.add(token);		
 		boolean gotRecursion = parseRecursively(sample,reliableTokens,doubtfulTokens);
 		
 		if(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()){
@@ -247,7 +247,7 @@ public abstract class AbstractParser {
 				break;
 			}
 		}
-		int popCount = pr.stepBack;
+		int popCount = Math.min(pr.stepBack,tokensAdded);
 		rollBackState(popCount);
 		
 		while(popCount-- > 0){

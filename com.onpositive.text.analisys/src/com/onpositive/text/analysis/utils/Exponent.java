@@ -17,7 +17,7 @@ public class Exponent {
 		return map.containsKey(str);
 	}
 	
-	public Integer getExponentValue(String str){
+	public static Integer getExponentValue(String str){
 		return map.get(str);
 	}
 	
