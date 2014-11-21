@@ -1,12 +1,16 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
+import com.carrotsearch.hppc.IntSet;
 import com.onpositive.text.analysis.IToken;
 
 public abstract class AbstractParser {
@@ -69,36 +73,91 @@ public abstract class AbstractParser {
 	}
 	
 	
+	private Set<IToken> branchRegistry = new HashSet<IToken>();
+	
+	
 	public ArrayList<IToken> process(List<IToken> tokens){
 		
 		beforeProcess(tokens);
+		
+		
 		
 		LinkedHashSet<IToken> reliableTokens = new LinkedHashSet<IToken>();
 		LinkedHashSet<IToken> doubtfulTokens = new LinkedHashSet<IToken>(); 
 		
 		ArrayList<IToken> result = new ArrayList<IToken>();
 		for( int i = 0 ; i < tokens.size() ; i++ ){
-			IToken unit = tokens.get(i);			
-			List<IToken> parents = unit.getParents();
-			if(parents!=null&&!parents.isEmpty()){
+			IToken token = tokens.get(i);			
+			if(inspectBranch(token)){
 				continue;
 			}
 			reliableTokens.clear();
 			doubtfulTokens.clear();
-			parseStartingTokens(unit,reliableTokens,doubtfulTokens);
+			parseStartingTokens(token,reliableTokens,doubtfulTokens);
+			
+			registerBranches(token,reliableTokens);			
 			
 			if(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()){
-				result.add(unit);
+				result.add(token);
 			}
 			
 			else if(reliableTokens.isEmpty()&&keepInputToken()){
-				result.add(unit);
+				result.add(token);
 			}
 			result.addAll(reliableTokens);
 			result.addAll(doubtfulTokens);
+			
 		}
 		return result;
 	}	
+
+	private void registerBranches(IToken token,	Set<IToken> reliableTokens)
+	{
+		IToken next = token.getNext();
+		if(next!=null){
+			registerBranch(next,reliableTokens);
+		}
+		else{
+			List<IToken> nextTokens = token.getNextTokens();
+			if(nextTokens!=null){
+				for(IToken t : nextTokens){
+					registerBranch(t,reliableTokens);
+				}
+			}
+		}
+		
+	}
+
+	private void registerBranch(IToken next,Set<IToken> reliableTokens) {
+		
+		List<IToken> parents = next.getParents();
+		if(parents==null||parents.isEmpty()){
+			branchRegistry.add(next);
+		}
+		else{
+			boolean gotParent = false;
+			for(IToken parent : parents){
+				if(reliableTokens.contains(parent)){
+					gotParent = true;
+					break;
+				}
+			}
+			if(!gotParent){
+				branchRegistry.add(next);
+			}
+		}		
+	}
+
+	private boolean inspectBranch(IToken token) {		
+		if(!branchRegistry.contains(token)){
+			List<IToken> parents = token.getParents();
+			if(parents!=null&&!parents.isEmpty()){
+				return true;
+			}
+		}
+		branchRegistry.remove(token);
+		return false;
+	}
 
 	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
 		
@@ -234,15 +293,17 @@ public abstract class AbstractParser {
 			else{
 				List<IToken> nextTokens = last.getNextTokens();
 				if(nextTokens!=null&&!nextTokens.isEmpty()){					
-					int beforeCount = reliableTokens.size();
+					int beforeCount1 = reliableTokens.size();
+					int beforeCount2 = reliableTokens.size();
 					for(IToken nu : nextTokens){
 						sample.add(nu);						
 						parseRecursively(sample, reliableTokens,doubtfulTokens);						
 						sample.pop();
 						rollBackState(1);
 					}
-					int afterCount = reliableTokens.size();					
-					gotRecursion = afterCount != beforeCount;
+					int afterCount1 = reliableTokens.size();
+					int afterCount2 = doubtfulTokens.size();
+					gotRecursion = afterCount1 != beforeCount1 || afterCount2 != beforeCount2;
 				}
 				break;
 			}

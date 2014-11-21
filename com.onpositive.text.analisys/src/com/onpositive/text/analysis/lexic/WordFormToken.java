@@ -27,7 +27,7 @@ public class WordFormToken extends AbstractToken {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ ((textElement == null) ? 0 : textElement.hashCode());
+				+ ((textElement == null) ? 0 : textElement.id());
 		return result;
 	}
 
@@ -43,7 +43,7 @@ public class WordFormToken extends AbstractToken {
 		if (textElement == null) {
 			if (other.textElement != null)
 				return false;
-		} else if (textElement.equals(other.textElement))
+		} else if (textElement.id() == other.textElement.id())
 			return false;
 		return true;
 	}

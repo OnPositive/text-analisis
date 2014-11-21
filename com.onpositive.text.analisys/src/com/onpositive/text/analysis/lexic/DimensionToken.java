@@ -23,4 +23,35 @@ public class DimensionToken extends AbstractToken {
 		return scalar.getStringValue()+unit.toString();
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((scalar == null) ? 0 : scalar.hashCode());
+		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DimensionToken other = (DimensionToken) obj;
+		if (scalar == null) {
+			if (other.scalar != null)
+				return false;
+		} else if (!scalar.equals(other.scalar))
+			return false;
+		if (unit == null) {
+			if (other.unit != null)
+				return false;
+		} else if (!unit.equals(other.unit))
+			return false;
+		return true;
+	}
+
 }
