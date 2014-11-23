@@ -98,6 +98,20 @@ public class NumericParserTest extends TestCase{
 		assertTestDimension(50222, processed);
 	}
 	
+	public void testM7(){
+		String str = "двадцать кмч";		
+		List<IToken> processed=composition.parse(str);
+		printTokens(processed);
+		assertTestDimension(20, processed);
+	}
+	
+	public void testM8(){
+		String str = "девяносто кмч";		
+		List<IToken> processed=composition.parse(str);
+		printTokens(processed);
+		assertTestDimension(90, processed);
+	}
+	
 	public void testM3(){
 		String str = "50 два 34 двадцать два";		
 		List<IToken> processed=composition.parse(str);
