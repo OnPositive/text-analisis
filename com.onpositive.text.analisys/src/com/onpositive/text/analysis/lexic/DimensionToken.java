@@ -17,10 +17,13 @@ public class DimensionToken extends AbstractToken {
 	
 	private final Unit unit;
 	
+	public double getValue(){
+		return ((ScalarToken)scalar).getValue();
+	}
+	
 	@Override
 	public String getStringValue() {
-		
-		return scalar.getStringValue()+unit.toString();
+		return scalar.getStringValue()+' '+unit.toString();
 	}
 
 	@Override

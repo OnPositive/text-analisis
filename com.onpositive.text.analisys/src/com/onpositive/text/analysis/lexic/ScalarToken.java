@@ -91,4 +91,14 @@ public class ScalarToken extends AbstractToken {
 		return true;
 	}
 
+	public double getValue() {
+		if (!isFracture){
+			return value1;
+		}
+		if (!isDecimal){
+			return value1/value2;
+		}
+		return Double.parseDouble((""+value1).replace((CharSequence)".0", "")+"."+(""+value2).replace((CharSequence)".", ""));
+	}
+
 }

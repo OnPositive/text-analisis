@@ -3,6 +3,7 @@ package com.onpositive.semantic.parsing;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.words2.Word;
 import com.onpositive.semantic.words2.WordNetProvider;
 import com.onpositive.semantic.words3.model.RelationTarget;
@@ -16,7 +17,7 @@ public class ParsedWord implements ISentenceElement{
 	public int length;
 
 	
-	protected WordRelation[] wordForms;
+	protected GrammarRelation[] wordForms;
 	protected int index;
 	protected int indexInAll;
 	
@@ -49,7 +50,7 @@ public class ParsedWord implements ISentenceElement{
 			}
 		}
 		if (wordForms.length==0){
-			content=content.replace('å','¸');
+			content=content.replace('ï¿½','ï¿½');
 		}
 		wordForms = WordNetProvider.getInstance().getPosibleWords(content);
 		if (wordForms.length == 0) {
@@ -98,20 +99,20 @@ public class ParsedWord implements ISentenceElement{
 		if (equals) {
 			return true;
 		}
-		String replace = content2.replace('¸', 'å');
+		String replace = content2.replace('ï¿½', 'ï¿½');
 		equals = replace.equals(text);
 		if (equals) {
 			return true;
 		}
-		equals = text.replace('¸', 'å').equals(content2);
+		equals = text.replace('ï¿½', 'ï¿½').equals(content2);
 		if (equals) {
 			return true;
 		}
-		equals = text.replace('¸', 'å').equals(replace);
+		equals = text.replace('ï¿½', 'ï¿½').equals(replace);
 		if (equals) {
 			return true;
 		}
-		equals = text.replace('å', 'ý').equals(replace);
+		equals = text.replace('ï¿½', 'ï¿½').equals(replace);
 		if (equals) {
 			return true;
 		}
