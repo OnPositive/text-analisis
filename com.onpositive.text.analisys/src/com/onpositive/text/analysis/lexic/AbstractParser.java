@@ -178,7 +178,7 @@ public abstract class AbstractParser {
 			handleBounds(gotRecursion, newUnit, true);
 		}
 		for(IToken newUnit : doubtfulTokens){
-			handleBounds(gotRecursion, newUnit, false);
+			handleBounds(gotRecursion, newUnit, !keepInputToken());
 		}		
 		cleanUp();
 	}
@@ -280,7 +280,7 @@ public abstract class AbstractParser {
 	private boolean parseRecursively( Stack<IToken> sample, LinkedHashSet<IToken> reliableTokens, HashSet<IToken> doubtfulTokens)
 	{		
 		IToken last = sample.peek();
-		int tokensAdded = 0 ;
+		int tokensAdded = 1 ;
 		boolean gotRecursion = false;
 		ProcessingResult pr = CONTINUE_PUSH;
 		while((pr = continuePush(sample,last))==CONTINUE_PUSH){
@@ -298,7 +298,7 @@ public abstract class AbstractParser {
 					for(IToken nu : nextTokens){
 						sample.add(nu);						
 						parseRecursively(sample, reliableTokens,doubtfulTokens);						
-						sample.pop();
+						//sample.pop();
 						rollBackState(1);
 					}
 					int afterCount1 = reliableTokens.size();
@@ -317,7 +317,7 @@ public abstract class AbstractParser {
 		}
 		
 		if(!gotRecursion){
-			while(tokensAdded >= 0){
+			while(tokensAdded > 0){
 				LinkedHashSet<IToken> rt = new LinkedHashSet<IToken>();
 				LinkedHashSet<IToken> dt = new LinkedHashSet<IToken>();
 				combineTokens(sample,rt,dt);
