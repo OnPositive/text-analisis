@@ -133,7 +133,7 @@ public class NumericsParser extends AbstractParser {
 		if (newToken instanceof WordFormToken) {
 			WordFormToken tk = (WordFormToken) newToken;
 			TextElement textElement = tk.getTextElement();
-			if (layer.getValue(textElement)!=null) {
+			if (layer!=null&&layer.getValue(textElement)!=null) {
 				return CONTINUE_PUSH;
 			}
 		}

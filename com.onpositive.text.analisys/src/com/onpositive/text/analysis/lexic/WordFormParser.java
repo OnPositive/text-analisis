@@ -77,7 +77,9 @@ public class WordFormParser extends AbstractParser {
 
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
-		
+		if (newToken.getType()==IToken.TOKEN_TYPE_DIGIT){
+			return DO_NOT_ACCEPT_AND_BREAK; 
+		}
 		ProcessingResult result = CONTINUE_PUSH;
 		
 		String value = newToken.getStringValue();
@@ -111,7 +113,9 @@ public class WordFormParser extends AbstractParser {
 	}
 	
 	protected ProcessingResult checkPossibleStart(IToken token){
-		
+		if (token.getType()==IToken.TOKEN_TYPE_DIGIT){
+			return DO_NOT_ACCEPT_AND_BREAK; 
+		}
 		String value = token.getStringValue();
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		if(possibleGrammarForms==null||possibleGrammarForms.length==0){

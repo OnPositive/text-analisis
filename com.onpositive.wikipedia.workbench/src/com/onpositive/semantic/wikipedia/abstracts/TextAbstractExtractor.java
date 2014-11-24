@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 public class TextAbstractExtractor {
 
-	private static String replaceImportantTemplates(String content) {
+	public static String replaceImportantTemplates(String content) {
 		if (content==null||content.length()==0){
 			return "";
 		}
 		while (true) {
-			int indexOf = content.indexOf("{{ДатаРождения");
+			int indexOf = content.toLowerCase().indexOf("{{датарождения");
 			if (indexOf != -1) {
 				int indexOf2 = content.indexOf("}}",indexOf);
 				if (indexOf2!=-1){
@@ -20,14 +20,30 @@ public class TextAbstractExtractor {
 					+replaceDate(content.substring(indexOf+"{{ДатаРождения".length()+1,indexOf2))
 					+content.substring(indexOf2+2);
 				}
+				else{
+					break;
+				}
 			}
 			else{
 				break;
 			}
 		}
-		
 		while (true) {
-			int indexOf = content.indexOf("{{Флагификация");
+			int indexOf = content.toLowerCase().indexOf("{{датасмерти");
+			if (indexOf != -1) {
+				int indexOf2 = content.indexOf("}}",indexOf);
+				if (indexOf2!=-1){
+					content=content.substring(0,indexOf)
+					+replaceDate(content.substring(indexOf+"{{ДатаСмерти".length()+1,indexOf2))
+					+content.substring(indexOf2+2);
+				}
+			}
+			else{
+				break;
+			}
+		}
+		while (true) {
+			int indexOf = content.toLowerCase().indexOf("{{флагификация");
 			if (indexOf != -1) {
 				int indexOf2 = content.indexOf("}}",indexOf);
 				if (indexOf2!=-1){
@@ -38,6 +54,9 @@ public class TextAbstractExtractor {
 					}catch (StringIndexOutOfBoundsException e){
 						break;
 					}
+				}
+				else{
+					break;
 				}
 			}
 			else{
@@ -174,7 +193,7 @@ public class TextAbstractExtractor {
 					ImageElement el=(ImageElement) element;
 					String text = el.text.toLowerCase();
 					if (text.endsWith(".jpg")||text.endsWith(".gif")||text.endsWith(".png")){
-						result.add(text);
+						result.add(el.text);
 					}
 				}
 			}
@@ -182,7 +201,7 @@ public class TextAbstractExtractor {
 		return result.toArray(new String[result.size()]);
 	}
 
-	public String initialCleanup(String s) {
+	public static String initialCleanup(String s) {
 		s = killTemplates(s);
 		String text = s;
 		text = text.replaceAll("<ref>(.)*</ref>", "");
@@ -256,7 +275,7 @@ public class TextAbstractExtractor {
 		return text;
 	}
 
-	private String killStylingMarkup(String text) {
+	private static String killStylingMarkup(String text) {
 		text = text.replace((CharSequence) "'''", "");
 		text = text.replace((CharSequence) "''", "");
 		text = text.replace((CharSequence) "&nbsp;", "");
@@ -267,7 +286,7 @@ public class TextAbstractExtractor {
 		return text;
 	}
 
-	public String cleanRef(String text) {
+	public static String cleanRef(String text) {
 		while (true) {
 			int indexOf2 = text.indexOf("<ref");
 			if (indexOf2 != -1) {

@@ -6,6 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ONPOSITIVE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: com.onpositive.semantic.wikipedia.abstracts,
+ com.onpositive.semantic.wikipedia.abstracts.svc,
  com.onpositive.semantic.wikipedia.properties,
  com.onpositive.wikipedia.dumps.builder
-Require-Bundle: org.eclipse.jface.text
+Require-Bundle: org.eclipse.jface.text,
+ com.swc-engine

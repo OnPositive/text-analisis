@@ -40,5 +40,5 @@ public class SwcAbstractExtractor {
 		String ourHtml = HtmlRenderer.print(new MyRendererCallback(), config,
 				pageTitle, cp.getPage());
 		return ourHtml;
-	}
+	}	
 }
