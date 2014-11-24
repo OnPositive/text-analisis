@@ -1,20 +1,29 @@
 package com.onpositive.text.analysis.lexic.dimension;
 
-import java.rmi.server.ExportException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.conditions.BinaryCondition;
+import com.onpositive.text.analysis.conditions.BinaryDisjunction;
+import com.onpositive.text.analysis.conditions.TokenMaskBinaryCondition;
 import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.ScalarToken;
-import com.onpositive.text.analysis.lexic.StringToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
+import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.utils.Exponent;
 
 public class UnitGroupParser extends AbstractParser{
+	
+	private static HashMap<String,Integer> expMap = new HashMap<String, Integer>();
+	static{
+		expMap.put("квадратный",2);
+		expMap.put("кубический",3);
+	}
 	
 	
 	public UnitGroupParser(AbstractWordNet wordNet) {
@@ -30,20 +39,8 @@ public class UnitGroupParser extends AbstractParser{
 		int startPosition = sample.get(0).getStartPosition();
 		int endPosition = sample.peek().getEndPosition();
 		if(sample.size()==2){
-			IToken token0 = sample.get(0);
-			if(!(token0 instanceof UnitToken)){
-				return;
-			}
-			UnitToken unitToken = (UnitToken) token0;			
-			IToken token1 = sample.get(1);
-			if(token1.getType() != IToken.TOKEN_TYPE_EXPONENT){
-				return;
-			}
-			Integer exp = Exponent.getExponentValue(token1.getStringValue());
-			if(exp==null){
-				return;
-			}
-			newUnitTokens = groupUnit(unitToken,exp,startPosition,endPosition);			
+			compositeTransformCondition.setTokens(sample);
+			newUnitTokens = compositeTransformCondition.compute(0);
 		}
 		else if(sample.size()==3){
 			IToken token0 = sample.get(0);
@@ -51,10 +48,6 @@ public class UnitGroupParser extends AbstractParser{
 				return;
 			}
 			UnitToken unitToken = (UnitToken) token0;			
-			IToken token1 = sample.get(1);
-			if(!token1.getStringValue().equals("^")){
-				return;
-			}
 			IToken token2 = sample.get(2);
 			if(!(token2 instanceof ScalarToken)){
 				return;
@@ -76,23 +69,14 @@ public class UnitGroupParser extends AbstractParser{
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken )
 	{
-//		if(sample.size()==1){
-//			return CONTINUE_PUSH;
-//		}
-		
-		int type = newToken.getType();		
 		if(sample.size()==1){
-			if(type==IToken.TOKEN_TYPE_EXPONENT){
-				return ACCEPT_AND_BREAK;
-			}
-			else if(type==IToken.TOKEN_TYPE_SYMBOL){
-				String value = newToken.getStringValue();
-				if(value.equals("^")){
-					return CONTINUE_PUSH;
-				}
+			ProcessingResult result = compositeDetectCondition.compute(sample.peek(), newToken);
+			if(result!=null){
+				return result;
 			}
 		}
 		else if(sample.size()==2){
+			int type = newToken.getType();
 			if(type==IToken.TOKEN_TYPE_SCALAR){
 				return ACCEPT_AND_BREAK;
 			}
@@ -102,10 +86,23 @@ public class UnitGroupParser extends AbstractParser{
 
 	@Override
 	protected ProcessingResult checkPossibleStart(IToken token) {
-		if(token.getType()==IToken.TOKEN_TYPE_UNIT){
+		int type = token.getType();
+		if(type==IToken.TOKEN_TYPE_UNIT){
 			return CONTINUE_PUSH;
 		}
+		else if(type == IToken.TOKEN_TYPE_WORD_FORM){
+			return checkWordFormToken(token) ? CONTINUE_PUSH : DO_NOT_ACCEPT_AND_BREAK;
+		}
 		return DO_NOT_ACCEPT_AND_BREAK;
+	}
+
+	private static boolean checkWordFormToken(IToken token) {
+		WordFormToken wft = (WordFormToken) token;
+		String basicForm = wft.getTextElement().getBasicForm().toLowerCase();
+		if(expMap.containsKey(basicForm)){
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -131,5 +128,139 @@ public class UnitGroupParser extends AbstractParser{
 		}
 		return null;
 	}
+	
+	protected TokenMaskBinaryCondition mask0 = new TokenMaskBinaryCondition(
+			new int[]{IToken.TOKEN_TYPE_UNIT, IToken.TOKEN_TYPE_EXPONENT});
+	
+	protected TokenMaskBinaryCondition mask1 = new TokenMaskBinaryCondition(
+			new int[]{IToken.TOKEN_TYPE_UNIT, IToken.TOKEN_TYPE_SYMBOL});
+	
+	protected TokenMaskBinaryCondition mask2 = new TokenMaskBinaryCondition(
+			new int[]{IToken.TOKEN_TYPE_UNIT, IToken.TOKEN_TYPE_WORD_FORM});
+	
+	protected TokenMaskBinaryCondition mask3 = new TokenMaskBinaryCondition(
+			new int[]{IToken.TOKEN_TYPE_WORD_FORM, IToken.TOKEN_TYPE_UNIT});
+	
+	protected BinaryCondition<List<UnitToken>> transformCondition0 =
+			new BinaryCondition<List<UnitToken>>() {
+
+		@Override
+		public List<UnitToken> compute(IToken token0, IToken token1) {
+
+			if (!mask0.compute(token0, token1)) {
+				return null;
+			}			
+			int startPosition = token0.getStartPosition();
+			int endPosition = token1.getEndPosition();
+			UnitToken unitToken = (UnitToken) token0;			
+			Integer exp = Exponent.getExponentValue(token1.getStringValue());
+			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
+			return result;
+		}
+	};
+
+	protected BinaryCondition<List<UnitToken>> transformCondition2 = 
+			new BinaryCondition<List<UnitToken>>() {
+
+		@Override
+		public List<UnitToken> compute(IToken token0, IToken token1) {
+
+			if (!mask2.compute(token0, token1)) {
+				return null;
+			}
+			int startPosition = token0.getStartPosition();
+			int endPosition = token1.getEndPosition();
+			UnitToken unitToken = (UnitToken) token0;
+			WordFormToken wft = (WordFormToken) token1;
+			String expString = wft.getTextElement().getBasicForm();
+			Integer exp = expMap.get(expString.toLowerCase());
+			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
+			return result;
+		}
+	};
+
+	protected BinaryCondition<List<UnitToken>> transformCondition3 = 
+			new BinaryCondition<List<UnitToken>>() {
+
+		@Override
+		public List<UnitToken> compute(IToken token0, IToken token1) {
+
+			if (!mask3.compute(token0, token1)) {
+				return null;
+			}
+			int startPosition = token0.getStartPosition();
+			int endPosition = token1.getEndPosition();
+			WordFormToken wft = (WordFormToken) token0;
+			UnitToken unitToken = (UnitToken) token1;			
+			String expString = wft.getTextElement().getBasicForm();
+			Integer exp = expMap.get(expString.toLowerCase());
+			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
+			return result;
+		}
+	};
+	
+	@SuppressWarnings("unchecked")
+	protected BinaryDisjunction<List<UnitToken>> compositeTransformCondition = new BinaryDisjunction<List<UnitToken>>(
+			new BinaryCondition[]{transformCondition0, transformCondition2, transformCondition3});
+	
+	protected BinaryCondition<ProcessingResult> detectCondition0
+		= new BinaryCondition<ProcessingResult>(){
+
+		@Override
+		public ProcessingResult compute(IToken token0, IToken token1) {
+			
+			if(!mask0.compute(token0, token1)){
+				return null;
+			}
+			return ACCEPT_AND_BREAK;
+		}
+	};
+	
+	protected BinaryCondition<ProcessingResult> detectCondition1
+		= new BinaryCondition<ProcessingResult>(){
+
+		@Override
+		public ProcessingResult compute(IToken token0, IToken token1) {
+			
+			if(!mask1.compute(token0, token1)){
+				return null;
+			}
+			String value = token1.getStringValue();
+			if(value.equals("^")){
+				return CONTINUE_PUSH;
+			}
+			return null;
+		}
+	};
+	
+	protected BinaryCondition<ProcessingResult> detectCondition2
+		= new BinaryCondition<ProcessingResult>(){
+
+		@Override
+		public ProcessingResult compute(IToken token0, IToken token1) {
+			
+			if(!mask2.compute(token0, token1)){
+				return null;
+			}
+			return checkWordFormToken(token1) ? ACCEPT_AND_BREAK : null;
+		}
+	};
+	
+	protected BinaryCondition<ProcessingResult> detectCondition3
+		= new BinaryCondition<ProcessingResult>(){
+
+		@Override
+		public ProcessingResult compute(IToken token0, IToken token1) {
+			
+			if(!mask3.compute(token0, token1)){
+				return null;
+			}
+			return ACCEPT_AND_BREAK;
+		}
+	};
+	
+	@SuppressWarnings("unchecked")
+	protected BinaryDisjunction<ProcessingResult> compositeDetectCondition = new BinaryDisjunction<ProcessingResult>(
+			new BinaryCondition[]{detectCondition0, detectCondition1, detectCondition2, detectCondition3}); 
 
 }
