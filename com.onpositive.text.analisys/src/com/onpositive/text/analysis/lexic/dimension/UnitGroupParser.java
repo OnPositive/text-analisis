@@ -97,7 +97,7 @@ public class UnitGroupParser extends AbstractParser{
 				return ACCEPT_AND_BREAK;
 			}
 		}
-		return new ProcessingResult(sample.size());
+		return stepBack(sample.size());
 	}
 
 	@Override

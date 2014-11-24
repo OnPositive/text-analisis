@@ -53,7 +53,7 @@ public class DimensionParser extends AbstractParser {
 			return ACCEPT_AND_BREAK;
 		}
 		else{
-			return new ProcessingResult(sample.size());		
+			return stepBack(sample.size());		
 		}
 	}
 

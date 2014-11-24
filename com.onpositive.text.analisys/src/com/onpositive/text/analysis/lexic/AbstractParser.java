@@ -1,16 +1,12 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.carrotsearch.hppc.IntOpenHashSet;
-import com.carrotsearch.hppc.IntSet;
 import com.onpositive.text.analysis.IToken;
 
 public abstract class AbstractParser {
@@ -28,27 +24,37 @@ public abstract class AbstractParser {
 	
 	public static class ProcessingResult{
 		
-		protected int stepBack;
+		final protected int stepBack;
+		
+		final protected boolean acceptToken;
+		
+		final protected boolean stop;
 
-		public ProcessingResult(int stepBack) {
+		public ProcessingResult(int stepBack,boolean acceptToken, boolean stop) {
 			super();
 			this.stepBack = stepBack;
+			this.acceptToken = acceptToken;
+			this.stop = stop;
 		}
 		
-		protected boolean tokenAllowed(){
-			return stepBack <= 0;
+		protected boolean tokenAccepted(){
+			return acceptToken;
+		}
+		
+		protected boolean stopped(){
+			return stop;
 		}
 		
 	}
 	
 	protected String text;
 	
-	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(-1);
-	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0);
-	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(1);
+	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(0,true,false);
+	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0,true,true);
+	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(0,false,true);
 	
 	protected static ProcessingResult stepBack(int count){
-		return new ProcessingResult(count);
+		return new ProcessingResult(count,false,true);
 	}
 	
 	abstract protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens);
@@ -166,7 +172,7 @@ public abstract class AbstractParser {
 		prepare();
 		
 		ProcessingResult pr = checkPossibleStart(token);
-		if(!pr.tokenAllowed()){
+		if(!pr.tokenAccepted()){
 			return;
 		}				
 		
@@ -314,7 +320,7 @@ public abstract class AbstractParser {
 			IToken next = last.getNext();
 			if(next!=null){
 				pr = continuePush(sample,next);
-				if(pr.tokenAllowed()){
+				if(pr.tokenAccepted()){
 					sample.add(next);
 					last = next;
 				}
@@ -326,7 +332,7 @@ public abstract class AbstractParser {
 					int beforeCount2 = reliableTokens.size();
 					for(IToken nt : nextTokens){
 						pr = continuePush(sample,nt);
-						if(pr.tokenAllowed()){
+						if(pr.tokenAccepted()){
 							sample.add(nt);
 							parseRecursively2(sample, pr, reliableTokens,doubtfulTokens);
 							sample.pop();

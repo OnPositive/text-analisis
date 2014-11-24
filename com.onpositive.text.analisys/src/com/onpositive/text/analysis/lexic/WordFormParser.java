@@ -62,7 +62,7 @@ public class WordFormParser extends AbstractParser {
 				occuredElements.add(te);
 				
 				int endIndex = data.getSequenceLength()-1;
-				endPosition = sample.get(endIndex).getEndPosition();				
+				endPosition = sample.get(endIndex).getEndPosition();
 				WordFormToken token = new WordFormToken(te, startPosition, endPosition);
 				tokens.add(token);
 			}
@@ -84,7 +84,7 @@ public class WordFormParser extends AbstractParser {
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		
 		if(dataList.isEmpty()){
-			result = DO_NOT_ACCEPT_AND_BREAK;
+			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		else{
 			for(WordSequenceData data : dataList){
@@ -96,10 +96,10 @@ public class WordFormParser extends AbstractParser {
 				for(WordSequenceData data : dataList){
 					for(GrammarRelation gr : possibleGrammarForms){
 						int wordId = gr.getWord().id();
-					needContinue |= data.check(wordId);
+						needContinue |= data.check(wordId);
 					}
 				}
-			if(!needContinue){
+				if(!needContinue){
 					result = DO_NOT_ACCEPT_AND_BREAK;
 				}
 			}

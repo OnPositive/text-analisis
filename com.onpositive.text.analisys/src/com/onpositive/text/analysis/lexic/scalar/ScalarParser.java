@@ -170,7 +170,7 @@ public class ScalarParser extends AbstractParser {
 							return CONTINUE_PUSH;
 						}
 						else{
-							return new ProcessingResult(2);
+							return new ProcessingResult(1,false,true);
 						}
 					}
 					else{
@@ -178,7 +178,7 @@ public class ScalarParser extends AbstractParser {
 							return DO_NOT_ACCEPT_AND_BREAK;
 						}
 						else{
-							return new ProcessingResult(2);
+							return new ProcessingResult(1,false,true);
 						}
 					}
 				}
@@ -209,7 +209,7 @@ public class ScalarParser extends AbstractParser {
 					return DO_NOT_ACCEPT_AND_BREAK;
 				}
 			}
-			return new ProcessingResult(2);
+			return new ProcessingResult(1,false,true);
 		}
 	};
 
