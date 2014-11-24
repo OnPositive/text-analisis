@@ -47,8 +47,8 @@ public class DimensionParser extends AbstractParser {
 		if(sample.size()==1){
 			return CONTINUE_PUSH;
 		}
-		IToken token = sample.peek();
-		int type = token.getType();
+		
+		int type = nextToken.getType();
 		if(type == IToken.TOKEN_TYPE_UNIT){
 			return ACCEPT_AND_BREAK;
 		}

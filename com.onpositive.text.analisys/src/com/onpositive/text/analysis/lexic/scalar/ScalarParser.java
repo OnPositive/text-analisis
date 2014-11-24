@@ -151,7 +151,7 @@ public class ScalarParser extends AbstractParser {
 	//accept digit, symbol, vulgar fraction and non breaking whitespace.
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> tokens, IToken newToken) {
-		IToken previousToken = tokens.size()>1 ? tokens.get(tokens.size()-2) : null;
+		IToken previousToken = tokens.size() > 0 ? tokens.peek() : null;
 		ProcessingResult result = breakCondition.compute(previousToken,newToken);
 		return result;
 	}

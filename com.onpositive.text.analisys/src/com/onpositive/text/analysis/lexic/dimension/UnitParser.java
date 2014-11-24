@@ -54,18 +54,13 @@ public class UnitParser extends AbstractParser {
 			}
 		}
 	}
-	
-	@Override
-	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken){		
-		return ACCEPT_AND_BREAK;
-	}
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
 		
 		int type = newToken.getType();
 		if(type==IToken.TOKEN_TYPE_WORD_FORM){
-			return CONTINUE_PUSH;
+			return ACCEPT_AND_BREAK;
 		}		
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}

@@ -83,49 +83,28 @@ public class WordFormParser extends AbstractParser {
 		String value = newToken.getStringValue();
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		
-		if( sample.size() == 1 ){
-			firstWordForms = possibleGrammarForms;
-			
-			for(GrammarRelation gr : possibleGrammarForms){
-				TextElement word = gr.getWord();
-				TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
-				if(possibleContinuations!=null){
-					for(TextElement te : possibleContinuations){
-						TextElement[] parts = te.getParts();
-						int[] arr = new int[parts.length];
-						for(int i = 0 ; i < parts.length ; i++){
-							arr[i] = parts[i].id();
-						}
-						WordSequenceData data = new WordSequenceData(te,arr);
-						dataList.add(data);
-					}
-				}
-			}
+		if(dataList.isEmpty()){
+			result = DO_NOT_ACCEPT_AND_BREAK;
 		}
 		else{
-			if(dataList.isEmpty()){
-				result = DO_NOT_ACCEPT_AND_BREAK;
+			for(WordSequenceData data : dataList){
+				data.setPosition(sample.size());
 			}
-			else{
+			if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
+				
+				boolean needContinue = false;
 				for(WordSequenceData data : dataList){
-					data.setPosition(sample.size()-1);
-				}
-				if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
-					
-					boolean needContinue = false;
-					for(WordSequenceData data : dataList){
-						for(GrammarRelation gr : possibleGrammarForms){
-							int wordId = gr.getWord().id();
-							needContinue |= data.check(wordId);
-						}
-					}
-					if(!needContinue){
-						result = DO_NOT_ACCEPT_AND_BREAK;
+					for(GrammarRelation gr : possibleGrammarForms){
+						int wordId = gr.getWord().id();
+					needContinue |= data.check(wordId);
 					}
 				}
-				else{
+			if(!needContinue){
 					result = DO_NOT_ACCEPT_AND_BREAK;
 				}
+			}
+			else{
+				result = DO_NOT_ACCEPT_AND_BREAK;
 			}
 		}
 		return result;
@@ -138,6 +117,25 @@ public class WordFormParser extends AbstractParser {
 		if(possibleGrammarForms==null||possibleGrammarForms.length==0){
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
+		
+		firstWordForms = possibleGrammarForms;
+		
+		for(GrammarRelation gr : possibleGrammarForms){
+			TextElement word = gr.getWord();
+			TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
+			if(possibleContinuations!=null){
+				for(TextElement te : possibleContinuations){
+					TextElement[] parts = te.getParts();
+					int[] arr = new int[parts.length];
+					for(int i = 0 ; i < parts.length ; i++){
+						arr[i] = parts[i].id();
+					}
+					WordSequenceData data = new WordSequenceData(te,arr);
+					dataList.add(data);
+				}
+			}
+		}
+		
 		return CONTINUE_PUSH;
 	};
 

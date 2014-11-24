@@ -35,6 +35,10 @@ public abstract class AbstractParser {
 			this.stepBack = stepBack;
 		}
 		
+		protected boolean tokenAllowed(){
+			return stepBack <= 0;
+		}
+		
 	}
 	
 	protected String text;
@@ -80,8 +84,6 @@ public abstract class AbstractParser {
 		
 		beforeProcess(tokens);
 		
-		
-		
 		LinkedHashSet<IToken> reliableTokens = new LinkedHashSet<IToken>();
 		LinkedHashSet<IToken> doubtfulTokens = new LinkedHashSet<IToken>(); 
 		
@@ -93,7 +95,7 @@ public abstract class AbstractParser {
 			}
 			reliableTokens.clear();
 			doubtfulTokens.clear();
-			parseStartingTokens(token,reliableTokens,doubtfulTokens);
+			parseStartingTokens2(token,reliableTokens,doubtfulTokens);
 			
 			registerBranches(token,reliableTokens);			
 			
@@ -157,6 +159,32 @@ public abstract class AbstractParser {
 		}
 		branchRegistry.remove(token);
 		return false;
+	}
+	
+	private void parseStartingTokens2(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
+		
+		prepare();
+		
+		ProcessingResult pr = checkPossibleStart(token);
+		if(!pr.tokenAllowed()){
+			return;
+		}				
+		
+		Stack<IToken> sample = new Stack<IToken>();
+		sample.add(token);		
+		boolean gotRecursion = parseRecursively2(sample,pr,reliableTokens,doubtfulTokens);
+		
+		if(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()){
+			return;
+		}
+		
+		for(IToken newUnit : reliableTokens){
+			handleBounds(gotRecursion, newUnit, true);
+		}
+		for(IToken newUnit : doubtfulTokens){
+			handleBounds(gotRecursion, newUnit, !keepInputToken());
+		}		
+		cleanUp();
 	}
 
 	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
@@ -274,6 +302,71 @@ public abstract class AbstractParser {
 				previousTokensOfNextToken.add(newUnit);
 			}
 		}
+	}
+	
+	private boolean parseRecursively2( Stack<IToken> sample, ProcessingResult pr, LinkedHashSet<IToken> reliableTokens, HashSet<IToken> doubtfulTokens)
+	{
+		int inputSize = sample.size();
+		IToken last = sample.peek();
+		boolean gotRecursion = false;
+		
+		while(pr == CONTINUE_PUSH) {
+			IToken next = last.getNext();
+			if(next!=null){
+				pr = continuePush(sample,next);
+				if(pr.tokenAllowed()){
+					sample.add(next);
+					last = next;
+				}
+			}
+			else{
+				List<IToken> nextTokens = last.getNextTokens();
+				if(nextTokens!=null&&!nextTokens.isEmpty()){					
+					int beforeCount1 = reliableTokens.size();
+					int beforeCount2 = reliableTokens.size();
+					for(IToken nt : nextTokens){
+						pr = continuePush(sample,nt);
+						if(pr.tokenAllowed()){
+							sample.add(nt);
+							parseRecursively2(sample, pr, reliableTokens,doubtfulTokens);
+							sample.pop();
+							rollBackState(1);
+						}						
+					}
+					int afterCount1 = reliableTokens.size();
+					int afterCount2 = doubtfulTokens.size();
+					gotRecursion |= afterCount1 != beforeCount1 || afterCount2 != beforeCount2;
+				}
+				break;
+			}
+		}		
+		
+		int popCount = Math.min(pr.stepBack,sample.size()-inputSize);
+		rollBackState(popCount);
+		for(int i = 0 ; i < popCount ; i++ ){
+			sample.pop();
+		}
+		
+		if(!gotRecursion){
+			LinkedHashSet<IToken> rt = new LinkedHashSet<IToken>();
+			LinkedHashSet<IToken> dt = new LinkedHashSet<IToken>();
+			combineTokens(sample,rt,dt);
+			if(!rt.isEmpty()){
+				handleChildrenAndParents(sample, rt);
+				reliableTokens.addAll(rt);
+			}
+			if(!dt.isEmpty()){
+				handleChildrenAndParents(sample, dt);
+				doubtfulTokens.addAll(dt);
+			}
+		}
+		popCount = sample.size()-inputSize;
+		rollBackState(popCount);
+		for(int i = 0 ; i < popCount ; i++ ){
+			sample.pop();
+		}	
+		
+		return gotRecursion;
 	}
 	
 

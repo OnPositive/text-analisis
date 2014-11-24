@@ -76,12 +76,12 @@ public class UnitGroupParser extends AbstractParser{
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken )
 	{
-		if(sample.size()==1){
-			return CONTINUE_PUSH;
-		}
+//		if(sample.size()==1){
+//			return CONTINUE_PUSH;
+//		}
 		
 		int type = newToken.getType();		
-		if(sample.size()==2){
+		if(sample.size()==1){
 			if(type==IToken.TOKEN_TYPE_EXPONENT){
 				return ACCEPT_AND_BREAK;
 			}
@@ -92,7 +92,7 @@ public class UnitGroupParser extends AbstractParser{
 				}
 			}
 		}
-		else if(sample.size()==3){
+		else if(sample.size()==2){
 			if(type==IToken.TOKEN_TYPE_SCALAR){
 				return ACCEPT_AND_BREAK;
 			}
