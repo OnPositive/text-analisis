@@ -28,6 +28,8 @@ public class DimensionParserTest extends ParserTest{
 	private Unit mileUnit = new Unit("сухопутная миля",UnitKind.SIZE,1609.344);
 	
 	private Unit kilofootUnit = new Unit("килофут",UnitKind.SIZE, 304.8);
+	
+	private Unit squareKilofootUnit = new Unit("килофут^2",UnitKind.AREA, 304.8*304.8);
 
 	private Unit meterPerSecondUnit = new Unit("метр в секунду",UnitKind.SPEED,1);
 	
@@ -79,6 +81,12 @@ public class DimensionParserTest extends ParserTest{
 	}
 	
 	public void testD006(){
+		String str = "Площадь моря составляет 50000 килофутов^2.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(50000.0,squareKilofootUnit ,processed);
+	}
+	
+	public void testD007(){
 		String str = "Мы проехали три сухопутных мили в сторону гор.";		
 		List<IToken> processed = process(str);
 		assertTestDimension(3.0,mileUnit,processed);
