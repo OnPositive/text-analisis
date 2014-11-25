@@ -19,6 +19,8 @@ import com.onpositive.semantic.words3.hds.IntArrayList;
 
 public class UnitsProvider {
 	
+	private static final String UNIT_KIND_PREFIX = "_UNITS_";
+
 	private static HashMap<String,Integer> scalePrefixMap = new HashMap<String, Integer>();
 	
 	private static int[] scalePrefixLengths;
@@ -67,6 +69,12 @@ public class UnitsProvider {
 		}
 		return null;
 	}
+	
+	private HashMap<UnitKind,Unit> primaryUnits;
+	
+	
+	private HashMap<UnitKind,List<Unit>> unitsCache;
+	
 	
 	public static Integer getScale(String scalePrefix) {
 		
@@ -177,16 +185,18 @@ public class UnitsProvider {
 			}
 		}
 		
-		
 		LinkedHashSet<Unit> set=null;
 		IntArrayList unitTypes = detectGeneralizations(me,unitKindMap.keys());
 		if(unitTypes==null){
 			return null;
 		}
+		String unitName = me.getParentTextElement().getBasicForm();
+		
 		int size = unitTypes.size();
 		for(int a=0;a<size;a++){
 			int ut=unitTypes.get(a);
-			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), relationToPrimary);
+			UnitKind kind = unitKindMap.get(ut);
+			Unit unit = createNewUnit(unitName, relationToPrimary, kind);
 			if(set==null){
 				set = new LinkedHashSet<Unit>();
 			}
@@ -206,7 +216,7 @@ public class UnitsProvider {
 		
 		for( UnitKind uk : UnitKind.values()){
 			String name = uk.name();
-			MeaningElement meaning = getMeaning(("_UNITS_"+name).toLowerCase());
+			MeaningElement meaning = getMeaning((UNIT_KIND_PREFIX+name).toLowerCase());
 			if(meaning!=null){
 				unitKindMap.put(meaning.id(), uk);
 			}
@@ -239,13 +249,98 @@ public class UnitsProvider {
 				ArrayList<Unit> units = new ArrayList<Unit>();
 				double rel = Math.pow(10, exp);
 				for(Unit baseUnit : baseUnits){
-					Unit unit = new Unit(pref + baseUnit.getShortName(), baseUnit.getKind(), rel);
+					UnitKind kind = baseUnit.getKind();
+					String unitName = pref + baseUnit.getShortName();					
+					Unit unit = createNewUnit(unitName, rel, kind);
 					units.add(unit);
 				}
 				return units;
 			}
 		}
 		return null;
+	}
+
+	private Unit createNewUnit(String unitName, double relationToPrimary,UnitKind unitKind)
+	{
+		Unit unit = getFromCache(unitName,unitKind);
+		if(unit!=null){
+			return unit;
+		}
+		
+		Unit primaryUnit = getPromaryUnit(unitKind);					
+		unit = new Unit(unitName, unitKind, relationToPrimary, primaryUnit);
+		
+		putToCache(unit);
+		return unit;
+	}
+	
+	private void putToCache(Unit unit) {
+		if(unitsCache==null){
+			unitsCache = new HashMap<UnitKind, List<Unit>>();
+		}
+		UnitKind kind = unit.getKind();
+		List<Unit> units = unitsCache.get(kind);
+		if(units==null){
+			units = new ArrayList<Unit>();
+			unitsCache.put(kind, units);
+		}
+		String unitName = unit.getShortName();
+		for(Unit u : units){
+			if(u.getShortName().equals(unitName)){
+				return;
+			}
+		}
+		units.add(unit);
+	}
+
+	private Unit getFromCache(String unitName, UnitKind unitKind) {
+		
+		if(unitsCache==null){
+			return null;
+		}
+		List<Unit> units = unitsCache.get(unitKind);
+		if(units==null){
+			return null;
+		}
+		for(Unit u : units){
+			if(u.getShortName().equals(unitName)){
+				return u;
+			}
+		}
+		return null;
+	}
+
+	protected Unit getPromaryUnit(UnitKind unitKind){
+		if(primaryUnits==null){
+			initPrimaryUnits();
+		}
+		return primaryUnits.get(unitKind);
+	}
+
+	private void initPrimaryUnits() {
+		
+		primaryUnits = new HashMap<UnitKind, Unit>();
+		MetaLayer<Object> layer = wordNet.getMetaLayers().getLayer("primary_unit");
+		if(layer==null){		
+			return;
+		}
+		int[] allMeanings = layer.getAllIds();
+		for(int id : allMeanings){
+			MeaningElement me = wordNet.getConceptInfo(id);
+			String unitKindeString = me.getParentTextElement().getBasicForm().toUpperCase();
+			if(!unitKindeString.startsWith(UNIT_KIND_PREFIX)){
+				continue;
+			}
+			UnitKind unitKind = UnitKind.valueOf(unitKindeString.substring(UNIT_KIND_PREFIX.length()));
+			if(unitKind==null){
+				continue;
+			}
+			
+			MeaningElement mePrim = (MeaningElement) layer.getValue(id);
+			String primaryUnitName = mePrim.getParentTextElement().getBasicForm();
+			Unit primaryUnit = createNewUnit(primaryUnitName, 1, unitKind);
+			primaryUnits.put(unitKind, primaryUnit);
+		}
 	}
 
 }
