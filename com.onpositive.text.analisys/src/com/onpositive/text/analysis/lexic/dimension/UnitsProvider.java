@@ -39,7 +39,7 @@ public class UnitsProvider {
 			MeaningElement[] concepts = gr.getWord().getConcepts();
 			for(MeaningElement me : concepts){
 				List<Unit> units = getUnits(me);
-				if(units.isEmpty()){
+				if(units==null||units.isEmpty()){
 					continue;
 				}
 				
@@ -49,7 +49,9 @@ public class UnitsProvider {
 				set.addAll(units);
 			}
 		}
-		
+		if(set==null){
+			return null;
+		}
 		return new ArrayList<Unit>(set);
 	}
 	
@@ -134,6 +136,9 @@ public class UnitsProvider {
 				set = new LinkedHashSet<Unit>();
 			}
 			set.add(unit);
+		}
+		if(set==null){
+			return null;
 		}
 		return new ArrayList<Unit>(set);
 	}

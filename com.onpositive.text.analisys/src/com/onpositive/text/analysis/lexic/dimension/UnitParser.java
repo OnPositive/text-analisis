@@ -1,13 +1,13 @@
 package com.onpositive.text.analysis.lexic.dimension;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
@@ -45,15 +45,31 @@ public class UnitParser extends AbstractParser {
 		scalePrefixMap.put("зепто", -21);
 		scalePrefixMap.put("иокто", -24);
 		
-		ArrayList<Integer> list = new ArrayList<Integer>(); 
+		IntOpenHashSet list = new IntOpenHashSet(); 
 		for(String str : scalePrefixMap.keySet()){
 			list.add(str.length());
 		}
-		Collections.sort(list);
-		scalePrefixLengths = new int[list.size()];
-		for(int i = 0 ; i < list.size() ; i++){
-			scalePrefixLengths[i] = list.get(i);
+		scalePrefixLengths = list.toArray();
+		Arrays.sort(scalePrefixLengths);
+	}
+	
+	public static String detectScalePrefix(String value) {
+		
+		for(int prefLength : scalePrefixLengths){
+			if(value.length()<=prefLength){
+				break;
+			}
+			String pref = value.substring(0,prefLength);
+			if(scalePrefixMap.containsKey(pref)){
+				return pref;
+			}
 		}
+		return null;
+	}
+	
+	public static Integer getScale(String scalePrefix) {
+		
+		return scalePrefixMap.get(scalePrefix);
 	}
 	
 	public UnitParser(AbstractWordNet wordNet) {
@@ -83,15 +99,9 @@ public class UnitParser extends AbstractParser {
 		}
 		if(units.isEmpty()&&!te.isMultiWord()){
 			String value = te.getBasicForm();
-			for(int prefLength : scalePrefixLengths){
-				if(value.length()<=prefLength){
-					break;
-				}
-				String pref = value.substring(prefLength);
-				Integer exp = scalePrefixMap.get(pref);				
-				if(exp==null){
-					continue;
-				}
+			String pref = detectScalePrefix(value);
+			if(pref!=null){
+				int exp = getScale(pref);
 				String baseValue = value.substring(pref.length());
 				List<Unit> baseUnits = unitsProvider.getUnits(baseValue);
 				if(baseUnits!=null){
