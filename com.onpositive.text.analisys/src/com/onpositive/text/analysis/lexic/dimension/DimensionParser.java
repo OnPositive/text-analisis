@@ -44,10 +44,6 @@ public class DimensionParser extends AbstractParser {
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample,IToken nextToken) {
 		
-		if(sample.size()==1){
-			return CONTINUE_PUSH;
-		}
-		
 		int type = nextToken.getType();
 		if(type == IToken.TOKEN_TYPE_UNIT){
 			return ACCEPT_AND_BREAK;
