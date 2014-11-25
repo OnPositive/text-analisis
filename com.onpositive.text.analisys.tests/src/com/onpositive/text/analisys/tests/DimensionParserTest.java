@@ -22,6 +22,12 @@ public class DimensionParserTest extends ParserTest{
 	private Unit kilometerUnit = new Unit("километр",UnitKind.SIZE,1000);
 	
 	private Unit meterUnit = new Unit("метр",UnitKind.SIZE,1);
+	
+	private Unit nanometerUnit = new Unit("нанометр",UnitKind.SIZE,0.000000001);
+	
+	private Unit mileUnit = new Unit("сухопутная миля",UnitKind.SIZE,1609.344);
+	
+	private Unit kilofootUnit = new Unit("килофут",UnitKind.SIZE, 304.8);
 
 	private Unit meterPerSecondUnit = new Unit("метр в секунду",UnitKind.SPEED,1);
 	
@@ -41,22 +47,40 @@ public class DimensionParserTest extends ParserTest{
 		setParsers(wfParser,scalarParser,numericsParser,unitParser,unitGroupParser,dimParser);
 	}
 
-	public void testBasic(){
+	public void testD001(){
 		String str = "Проехал два км со скоростью 10 метров в секунду";		
 		List<IToken> processed = process(str);		
 		assertTestDimension(new Double[]{2.0,10.0}, new Unit[]{kilometerUnit,meterPerSecondUnit},processed );
 	}
 	
 
-	public void testArea1(){
+	public void testD002(){
 		String str = "Вскопал 2 км^2 земли.";		
 		List<IToken> processed = process(str);
 		assertTestDimension(2.0, squareKilometerUnit,processed);
 	}
 	
-	public void testArea2(){
+	public void testD003(){
 		String str = "Обработал 4 км² асфальта.";		
 		List<IToken> processed = process(str);
 		assertTestDimension(4.0,squareKilometerUnit,processed);
+	}
+	
+	public void testD004(){
+		String str = "Технологический процесс 22 нм.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(22.0,nanometerUnit,processed);
+	}
+	
+	public void testD005(){
+		String str = "Глубина моря в этом месте составляет 50 килофутов.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(50.0,kilofootUnit,processed);
+	}
+	
+	public void testD006(){
+		String str = "Мы проехали три сухопутных мили в сторону гор.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(3.0,mileUnit,processed);
 	}
 }

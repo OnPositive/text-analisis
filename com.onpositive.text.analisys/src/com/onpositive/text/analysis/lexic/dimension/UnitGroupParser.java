@@ -126,21 +126,14 @@ public class UnitGroupParser extends AbstractParser{
 			}
 			return list;
 		}
-		String pref = UnitParser.detectScalePrefix(shortName);
-		if(pref!=null){
-			int scaleExp = UnitParser.getScale(pref)*exp;
-			String baseName = shortName.substring(pref.length());
-			List<Unit> baseUnits = unitsProvider.getUnits(baseName);
-			if(baseUnits!=null&&!baseUnits.isEmpty()){
-				double rel = Math.pow(10, scaleExp);
-				ArrayList<UnitToken> list = new ArrayList<UnitToken>();
-				for(Unit baseUnit : baseUnits){
-					Unit unit = new Unit(shortName, baseUnit.getKind(), rel);
-					UnitToken token = new UnitToken(unit, startPosition, endPosition);
-					list.add(token);
-				}
-				return list;
+		List<Unit> constructed = unitsProvider.constructUnits(shortName);
+		if(constructed != null&&!constructed.isEmpty()){
+			ArrayList<UnitToken> list = new ArrayList<UnitToken>();
+			for(Unit unit : constructed){
+				UnitToken token = new UnitToken(unit, startPosition, endPosition);
+				list.add(token);
 			}
+			return list;
 		}
 		return null;
 	}

@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis.lexic.dimension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,6 +18,60 @@ import com.onpositive.semantic.words3.MetaLayer;
 import com.onpositive.semantic.words3.hds.IntArrayList;
 
 public class UnitsProvider {
+	
+	private static HashMap<String,Integer> scalePrefixMap = new HashMap<String, Integer>();
+	
+	private static int[] scalePrefixLengths;
+	
+	static{
+		scalePrefixMap.put("дека", 1);
+		scalePrefixMap.put("гекто", 2);
+		scalePrefixMap.put("кило", 3);
+		scalePrefixMap.put("мега", 6);
+		scalePrefixMap.put("гига", 9);
+		scalePrefixMap.put("тера", 12);
+		scalePrefixMap.put("пета", 15);
+		scalePrefixMap.put("экса", 18);
+		scalePrefixMap.put("зетта", 21);
+		scalePrefixMap.put("иотта", 24);
+
+		scalePrefixMap.put("деци", -1);
+		scalePrefixMap.put("санти", -2);
+		scalePrefixMap.put("милли", -3);
+		scalePrefixMap.put("микро", -6);
+		scalePrefixMap.put("нано", -9);
+		scalePrefixMap.put("пико", -12);
+		scalePrefixMap.put("фемто", -15);
+		scalePrefixMap.put("атто", -18);
+		scalePrefixMap.put("зепто", -21);
+		scalePrefixMap.put("иокто", -24);
+		
+		IntOpenHashSet list = new IntOpenHashSet(); 
+		for(String str : scalePrefixMap.keySet()){
+			list.add(str.length());
+		}
+		scalePrefixLengths = list.toArray();
+		Arrays.sort(scalePrefixLengths);
+	}
+	
+	public static String detectScalePrefix(String value) {
+		
+		for(int prefLength : scalePrefixLengths){
+			if(value.length()<=prefLength){
+				break;
+			}
+			String pref = value.substring(0,prefLength);
+			if(scalePrefixMap.containsKey(pref)){
+				return pref;
+			}
+		}
+		return null;
+	}
+	
+	public static Integer getScale(String scalePrefix) {
+		
+		return scalePrefixMap.get(scalePrefix);
+	}
 	
 	public UnitsProvider(AbstractWordNet wordNet) {
 		this.wordNet = wordNet;		
@@ -168,6 +223,26 @@ public class UnitsProvider {
 			MeaningElement[] concepts = pgf[0].getWord().getConcepts();
 			if(concepts!=null&&concepts.length!=0){
 				return concepts[0];
+			}
+		}
+		return null;
+	}
+	
+	public List<Unit> constructUnits(String str){
+		
+		String pref = detectScalePrefix(str);
+		if(pref!=null){
+			int exp = getScale(pref);
+			String baseValue = str.substring(pref.length());
+			List<Unit> baseUnits = getUnits(baseValue);
+			if(baseUnits!=null){
+				ArrayList<Unit> units = new ArrayList<Unit>();
+				double rel = Math.pow(10, exp);
+				for(Unit baseUnit : baseUnits){
+					Unit unit = new Unit(pref + baseUnit.getShortName(), baseUnit.getKind(), rel);
+					units.add(unit);
+				}
+				return units;
 			}
 		}
 		return null;
