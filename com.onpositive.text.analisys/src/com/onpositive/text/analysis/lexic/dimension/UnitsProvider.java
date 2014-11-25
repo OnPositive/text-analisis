@@ -296,7 +296,8 @@ public class UnitsProvider {
 	private Unit getFromCache(String unitName, UnitKind unitKind) {
 		
 		if(unitsCache==null){
-			return null;
+			unitsCache = new HashMap<UnitKind, List<Unit>>();
+			initPrimaryUnits();
 		}
 		List<Unit> units = unitsCache.get(unitKind);
 		if(units==null){
@@ -340,6 +341,7 @@ public class UnitsProvider {
 			String primaryUnitName = mePrim.getParentTextElement().getBasicForm();
 			Unit primaryUnit = createNewUnit(primaryUnitName, 1, unitKind);
 			primaryUnits.put(unitKind, primaryUnit);
+			putToCache(primaryUnit);
 		}
 	}
 
