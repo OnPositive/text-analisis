@@ -87,6 +87,12 @@ public class DimensionParserTest extends ParserTest{
 	}
 	
 	public void testD007(){
+		String str = "Площадь моря составляет 50000 килофутов квадратных.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(50000.0,squareKilofootUnit ,processed);
+	}
+	
+	public void testD008(){
 		String str = "Мы проехали три сухопутных мили в сторону гор.";		
 		List<IToken> processed = process(str);
 		assertTestDimension(3.0,mileUnit,processed);
