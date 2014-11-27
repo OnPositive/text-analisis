@@ -24,7 +24,7 @@ public class SwcAbstractExtractor {
 		return (String) p.go(cp.getPage());
 	}
 
-	public String extractHTML(String title, String wikiText)
+	public String extractHTML(String title, String wikiText,String wikiUrl)
 			throws Exception {
 		wikiText=wikiText.replace("Файл:", "File:");
 		wikiText=wikiText.replace("Изображение:", "File:");
@@ -37,7 +37,7 @@ public class SwcAbstractExtractor {
 		PageTitle pageTitle = PageTitle.make(config, title);
 		PageId pageId = new PageId(pageTitle, -1);
 		EngProcessedPage cp = engine.postprocess(pageId, wikiText, null);
-		String ourHtml = HtmlRenderer.print(new MyRendererCallback(), config,
+		String ourHtml = HtmlRenderer.print(new MyRendererCallback(wikiUrl), config,
 				pageTitle, cp.getPage());
 		return ourHtml;
 	}	

@@ -10,12 +10,18 @@ final class MyRendererCallback
 				HtmlRendererCallback
 	{
 		protected static final String LOCAL_URL = "";
+		private String siteWiki;
 		
+		public MyRendererCallback(String siteWiki) {
+			super();
+			this.siteWiki = siteWiki;
+		}
+
 		@Override
 		public boolean resourceExists(PageTitle target)
 		{
 			// TODO: Add proper check
-			return false;
+			return true;
 		}
 		
 		@Override
@@ -32,7 +38,7 @@ final class MyRendererCallback
 			String url = page;
 			if (f != null && !f.isEmpty())
 				url = page + "#" + UrlEncoding.WIKI.encode(f);
-			return LOCAL_URL + "/" + url;
+			return siteWiki + url;
 		}
 		
 		@Override
