@@ -69,7 +69,7 @@ public class Unit implements Serializable{
 		this.shortName = shortName;
 		this.kind = kind;
 		this.relationToPrimary = relationToPrimary;
-		this.primaryUnit = primaryUnit ;
+		this.primaryUnit = primaryUnit == null ? this : primaryUnit ;
 	}
 
 	public String getShortName() {

@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis.lexic.dimension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,6 +18,68 @@ import com.onpositive.semantic.words3.MetaLayer;
 import com.onpositive.semantic.words3.hds.IntArrayList;
 
 public class UnitsProvider {
+	
+	private static final String UNIT_KIND_PREFIX = "_UNITS_";
+
+	private static HashMap<String,Integer> scalePrefixMap = new HashMap<String, Integer>();
+	
+	private static int[] scalePrefixLengths;
+	
+	static{
+		scalePrefixMap.put("дека", 1);
+		scalePrefixMap.put("гекто", 2);
+		scalePrefixMap.put("кило", 3);
+		scalePrefixMap.put("мега", 6);
+		scalePrefixMap.put("гига", 9);
+		scalePrefixMap.put("тера", 12);
+		scalePrefixMap.put("пета", 15);
+		scalePrefixMap.put("экса", 18);
+		scalePrefixMap.put("зетта", 21);
+		scalePrefixMap.put("иотта", 24);
+
+		scalePrefixMap.put("деци", -1);
+		scalePrefixMap.put("санти", -2);
+		scalePrefixMap.put("милли", -3);
+		scalePrefixMap.put("микро", -6);
+		scalePrefixMap.put("нано", -9);
+		scalePrefixMap.put("пико", -12);
+		scalePrefixMap.put("фемто", -15);
+		scalePrefixMap.put("атто", -18);
+		scalePrefixMap.put("зепто", -21);
+		scalePrefixMap.put("иокто", -24);
+		
+		IntOpenHashSet list = new IntOpenHashSet(); 
+		for(String str : scalePrefixMap.keySet()){
+			list.add(str.length());
+		}
+		scalePrefixLengths = list.toArray();
+		Arrays.sort(scalePrefixLengths);
+	}
+	
+	public static String detectScalePrefix(String value) {
+		
+		for(int prefLength : scalePrefixLengths){
+			if(value.length()<=prefLength){
+				break;
+			}
+			String pref = value.substring(0,prefLength);
+			if(scalePrefixMap.containsKey(pref)){
+				return pref;
+			}
+		}
+		return null;
+	}
+	
+	private HashMap<UnitKind,Unit> primaryUnits;
+	
+	
+	private HashMap<UnitKind,List<Unit>> unitsCache;
+	
+	
+	public static Integer getScale(String scalePrefix) {
+		
+		return scalePrefixMap.get(scalePrefix);
+	}
 	
 	public UnitsProvider(AbstractWordNet wordNet) {
 		this.wordNet = wordNet;		
@@ -39,7 +102,7 @@ public class UnitsProvider {
 			MeaningElement[] concepts = gr.getWord().getConcepts();
 			for(MeaningElement me : concepts){
 				List<Unit> units = getUnits(me);
-				if(units.isEmpty()){
+				if(units==null||units.isEmpty()){
 					continue;
 				}
 				
@@ -49,7 +112,9 @@ public class UnitsProvider {
 				set.addAll(units);
 			}
 		}
-		
+		if(set==null){
+			return null;
+		}
 		return new ArrayList<Unit>(set);
 	}
 	
@@ -120,20 +185,25 @@ public class UnitsProvider {
 			}
 		}
 		
-		
 		LinkedHashSet<Unit> set=null;
 		IntArrayList unitTypes = detectGeneralizations(me,unitKindMap.keys());
 		if(unitTypes==null){
 			return null;
 		}
+		String unitName = me.getParentTextElement().getBasicForm();
+		
 		int size = unitTypes.size();
 		for(int a=0;a<size;a++){
 			int ut=unitTypes.get(a);
-			Unit unit = new Unit(me.getParentTextElement().getBasicForm(), unitKindMap.get(ut), relationToPrimary);
+			UnitKind kind = unitKindMap.get(ut);
+			Unit unit = createNewUnit(unitName, relationToPrimary, kind);
 			if(set==null){
 				set = new LinkedHashSet<Unit>();
 			}
 			set.add(unit);
+		}
+		if(set==null){
+			return null;
 		}
 		return new ArrayList<Unit>(set);
 	}
@@ -146,7 +216,7 @@ public class UnitsProvider {
 		
 		for( UnitKind uk : UnitKind.values()){
 			String name = uk.name();
-			MeaningElement meaning = getMeaning(("_UNITS_"+name).toLowerCase());
+			MeaningElement meaning = getMeaning((UNIT_KIND_PREFIX+name).toLowerCase());
 			if(meaning!=null){
 				unitKindMap.put(meaning.id(), uk);
 			}
@@ -166,6 +236,113 @@ public class UnitsProvider {
 			}
 		}
 		return null;
+	}
+	
+	public List<Unit> constructUnits(String str){
+		
+		String pref = detectScalePrefix(str);
+		if(pref!=null){
+			int exp = getScale(pref);
+			String baseValue = str.substring(pref.length());
+			List<Unit> baseUnits = getUnits(baseValue);
+			if(baseUnits!=null){
+				ArrayList<Unit> units = new ArrayList<Unit>();
+				double rel = Math.pow(10, exp);
+				for(Unit baseUnit : baseUnits){
+					UnitKind kind = baseUnit.getKind();
+					String unitName = pref + baseUnit.getShortName();					
+					Unit unit = createNewUnit(unitName, rel, kind);
+					units.add(unit);
+				}
+				return units;
+			}
+		}
+		return null;
+	}
+
+	private Unit createNewUnit(String unitName, double relationToPrimary,UnitKind unitKind)
+	{
+		Unit unit = getFromCache(unitName,unitKind);
+		if(unit!=null){
+			return unit;
+		}
+		
+		Unit primaryUnit = getPromaryUnit(unitKind);					
+		unit = new Unit(unitName, unitKind, relationToPrimary, primaryUnit);
+		
+		putToCache(unit);
+		return unit;
+	}
+	
+	private void putToCache(Unit unit) {
+		if(unitsCache==null){
+			unitsCache = new HashMap<UnitKind, List<Unit>>();
+		}
+		UnitKind kind = unit.getKind();
+		List<Unit> units = unitsCache.get(kind);
+		if(units==null){
+			units = new ArrayList<Unit>();
+			unitsCache.put(kind, units);
+		}
+		String unitName = unit.getShortName();
+		for(Unit u : units){
+			if(u.getShortName().equals(unitName)){
+				return;
+			}
+		}
+		units.add(unit);
+	}
+
+	private Unit getFromCache(String unitName, UnitKind unitKind) {
+		
+		if(unitsCache==null){
+			unitsCache = new HashMap<UnitKind, List<Unit>>();
+			initPrimaryUnits();
+		}
+		List<Unit> units = unitsCache.get(unitKind);
+		if(units==null){
+			return null;
+		}
+		for(Unit u : units){
+			if(u.getShortName().equals(unitName)){
+				return u;
+			}
+		}
+		return null;
+	}
+
+	protected Unit getPromaryUnit(UnitKind unitKind){
+		if(primaryUnits==null){
+			initPrimaryUnits();
+		}
+		return primaryUnits.get(unitKind);
+	}
+
+	private void initPrimaryUnits() {
+		
+		primaryUnits = new HashMap<UnitKind, Unit>();
+		MetaLayer<Object> layer = wordNet.getMetaLayers().getLayer("primary_unit");
+		if(layer==null){		
+			return;
+		}
+		int[] allMeanings = layer.getAllIds();
+		for(int id : allMeanings){
+			MeaningElement me = wordNet.getConceptInfo(id);
+			String unitKindeString = me.getParentTextElement().getBasicForm().toUpperCase();
+			if(!unitKindeString.startsWith(UNIT_KIND_PREFIX)){
+				continue;
+			}
+			UnitKind unitKind = UnitKind.valueOf(unitKindeString.substring(UNIT_KIND_PREFIX.length()));
+			if(unitKind==null){
+				continue;
+			}
+			
+			MeaningElement mePrim = (MeaningElement) layer.getValue(id);
+			String primaryUnitName = mePrim.getParentTextElement().getBasicForm();
+			Unit primaryUnit = createNewUnit(primaryUnitName, 1, unitKind);
+			primaryUnits.put(unitKind, primaryUnit);
+			putToCache(primaryUnit);
+		}
 	}
 
 }

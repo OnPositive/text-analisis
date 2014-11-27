@@ -26,6 +26,14 @@ public class DimensionToken extends AbstractToken {
 		return scalar.getStringValue()+' '+unit.toString();
 	}
 
+	public IToken getScalar() {
+		return scalar;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
