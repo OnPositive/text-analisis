@@ -40,7 +40,7 @@ public class NumericsParser extends AbstractParser {
 					if (value!=0){
 						int m1 = (int) value;
 						int m2 = (int) tk.getValue();
-						if (value == 0 || m1 / 10 > m2 / 10) {
+						if (value == 0 || differentOrder(m1, m2)) {
 							value += tk.getValue();
 						} else {
 							reliableTokens.add(new ScalarToken(value,
@@ -92,7 +92,7 @@ public class NumericsParser extends AbstractParser {
 						} else {
 							int m1 = (int) value;
 							int m2 = (int) value2.doubleValue();
-							if (value == 0 || m1 / 10 > m2 / 10) {
+							if (value == 0 || differentOrder(m1, m2)) {
 								value += value2;
 							} else {
 								reliableTokens.add(new ScalarToken(value,
@@ -119,6 +119,10 @@ public class NumericsParser extends AbstractParser {
 		if (end != Integer.MIN_VALUE) {
 			reliableTokens.add(new ScalarToken(value, start, end));
 		}
+	}
+
+	boolean differentOrder(int m1, int m2) {
+		return (""+m1).length()>(""+m2).length();
 	}
 
 	@Override
