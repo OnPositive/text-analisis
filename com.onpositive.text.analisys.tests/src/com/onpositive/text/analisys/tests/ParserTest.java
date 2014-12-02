@@ -1,5 +1,6 @@
 package com.onpositive.text.analisys.tests;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.onpositive.text.analysis.IToken;
@@ -8,6 +9,7 @@ import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
+import com.onpositive.text.analysis.syntax.SentenceToken;
 
 import junit.framework.TestCase;
 
@@ -28,8 +30,17 @@ public class ParserTest extends TestCase {
 	
 	protected List<IToken> process(String str){
 		List<IToken> processed = composition.parse(str);
-		printTokens(processed);
-		return processed;
+		ArrayList<IToken> list = new ArrayList<>();
+		for(IToken t : processed){
+			if(t instanceof SentenceToken){
+				list.addAll(t.getChildren());
+			}
+			else{
+				list.add(t);
+			}
+		}
+		printTokens(list);
+		return list;
 	}	
 	
 	

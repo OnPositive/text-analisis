@@ -54,7 +54,7 @@ public class UnitParser extends AbstractParser {
 	private String getUnitName(IToken token) {
 		
 		if(token instanceof WordFormToken){
-			TextElement te = ((WordFormToken)token).getTextElement();			
+			TextElement te = ((WordFormToken)token).getMeaningElement().getParentTextElement();			
 			if(te.isMultiWord()){
 				return null;
 			}
@@ -83,7 +83,7 @@ public class UnitParser extends AbstractParser {
 		int startPosition = token.getStartPosition();
 		int endPosition = token.getEndPosition();
 		
-		TextElement te = token.getTextElement();		
+		TextElement te = token.getMeaningElement().getParentTextElement();		
 		LinkedHashSet<Unit> units = new LinkedHashSet<Unit>(); 
 		MeaningElement[] concepts = te.getConcepts();
 		for(MeaningElement me : concepts){

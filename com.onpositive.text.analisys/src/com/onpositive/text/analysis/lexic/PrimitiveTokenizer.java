@@ -37,8 +37,8 @@ public class PrimitiveTokenizer {
 			IToken prev = tokens.get(i-1);
 			IToken curr = tokens.get(i);
 			
-			prev.addNextUnit(curr);
-			curr.addPreviousUnit(prev);
+			prev.addNextToken(curr);
+			curr.addPreviousToken(prev);
 		}
 		
 		return tokens;
@@ -79,6 +79,7 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				SymbolToken pt = new SymbolToken( ch, type, start+i, start+i+1 );
+				pt.setId(list.size());
 				list.add(pt);
 			}
 		}
@@ -86,11 +87,13 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
+				pt.setId(list.size());
 				list.add(pt);
 			}
 		}
 		else{
 			StringToken pt = new StringToken(segment, type, start, start + sl );
+			pt.setId(list.size());
 			list.add(pt);
 		}		
 	}

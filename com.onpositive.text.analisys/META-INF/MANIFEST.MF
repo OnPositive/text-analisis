@@ -10,6 +10,7 @@ Export-Package: com.onpositive.semantic.parsing,
  com.onpositive.text.analysis,
  com.onpositive.text.analysis.lexic,
  com.onpositive.text.analysis.lexic.dimension,
- com.onpositive.text.analysis.lexic.scalar
+ com.onpositive.text.analysis.lexic.scalar,
+ com.onpositive.text.analysis.syntax
 Require-Bundle: com.onpositive.wikipedia.workbench;bundle-version="1.0.0",
  com.onpositive.wordnet;bundle-version="1.0.1"
