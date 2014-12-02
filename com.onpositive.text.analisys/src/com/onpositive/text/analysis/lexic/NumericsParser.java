@@ -62,7 +62,7 @@ public class NumericsParser extends AbstractParser {
 			}
 			if (q instanceof WordFormToken) {
 				WordFormToken tk = (WordFormToken) q;
-				TextElement textElement = tk.getTextElement();
+				TextElement textElement = tk.getMeaningElement().getParentTextElement();
 				if (true) {
 					Double value2 = (Double) layer.getValue(textElement);
 					if (value2 == null) {
@@ -136,7 +136,7 @@ public class NumericsParser extends AbstractParser {
 	public ProcessingResult isNumeral(IToken newToken) {
 		if (newToken instanceof WordFormToken) {
 			WordFormToken tk = (WordFormToken) newToken;
-			TextElement textElement = tk.getTextElement();
+			TextElement textElement = tk.getMeaningElement().getParentTextElement();
 			if (layer!=null&&layer.getValue(textElement)!=null) {
 				return CONTINUE_PUSH;
 			}

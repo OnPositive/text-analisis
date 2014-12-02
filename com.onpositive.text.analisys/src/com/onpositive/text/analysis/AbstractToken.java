@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.onpositive.text.analysis.IToken.Direction;
+
 
 public abstract class AbstractToken implements IToken {
-
+	
 	protected AbstractToken(int tokenType, int startPosition, int endPosition)
 	{
 		this.tokenType = tokenType;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
 	}
+	
+	private int id;
 	
 	private IToken next;
 	
@@ -28,10 +32,18 @@ public abstract class AbstractToken implements IToken {
 	
 	private final int endPosition;
 	
-	private List<IToken> children;
+	protected List<IToken> children;
 	
 	private List<IToken> parents;
 	
+	public int id() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getType() {
 		return tokenType;
 	}
@@ -68,10 +80,10 @@ public abstract class AbstractToken implements IToken {
 		return nextTokens;
 	}
 
-	public void addNextUnit(IToken unit) {
+	public void addNextToken(IToken token) {
 		if(this.next == null){
-			if( this.nextTokens==null){		
-				this.next = unit;
+			if( this.nextTokens==null||this.nextTokens.isEmpty()){		
+				this.next = token;
 				return;
 			}
 		}
@@ -82,17 +94,60 @@ public abstract class AbstractToken implements IToken {
 				this.next = null;
 			}
 		}
-		this.nextTokens.add(unit);
+		if(!this.nextTokens.contains(token)){
+			this.nextTokens.add(token);
+		}
+	}
+	
+	public void removeNextToken(IToken token) {
+		if(this.next == null){
+			if( this.nextTokens==null){		
+				return;
+			}
+			else{
+				this.nextTokens.remove(token);
+			}
+		}
+		else{
+			if(this.next==token){
+				this.next = null;
+			}
+		}
+	}
+	
+	public void removePreviousToken(IToken token) {
+		if(this.previous == null){
+			if( this.previousTokens==null||this.previousTokens.isEmpty()){		
+				return;
+			}
+			else{
+				this.previousTokens.remove(token);
+			}
+		}
+		else{
+			if(this.previous==token){
+				this.previous = null;
+			}
+		}
+	}
+	
+	public void removeNeighbour(Direction direction, IToken token) {
+		if(direction == Direction.END){
+			removeNextToken(token);
+		}
+		else{
+			removePreviousToken(token);
+		}
 	}
 
 	public List<IToken> getPreviousToken() {
 		return previousTokens;
 	}
 
-	public void addPreviousUnit(IToken unit) {
+	public void addPreviousToken(IToken token) {
 		if(this.previous == null){
 			if( this.previousTokens==null){		
-				this.previous = unit;
+				this.previous = token;
 				return;
 			}
 		}
@@ -103,7 +158,50 @@ public abstract class AbstractToken implements IToken {
 				this.previous = null;
 			}
 		}
-		this.previousTokens.add(unit);
+		if(!this.previousTokens.contains(token)){
+			this.previousTokens.add(token);
+		}
+	}
+	
+
+	@Override
+	public IToken getNeighbour(Direction direction) {
+		if(direction == Direction.END){
+			return getNext();
+		}
+		else{
+			return getPrevious();
+		}
+	}
+
+	@Override
+	public void setNeighbour(IToken token, Direction direction) {
+		if(direction == Direction.END){
+			setNext(token);
+		}
+		else{
+			setPrevious(token);
+		}		
+	}
+
+	@Override
+	public List<IToken> getNeighbours(Direction direction) {
+		if(direction == Direction.END){
+			return getNextTokens();
+		}
+		else{
+			return getPreviousToken();
+		}
+	}
+
+	@Override
+	public void addNeighbour(IToken token, Direction direction) {
+		if(direction == Direction.END){
+			addNextToken(token);
+		}
+		else{
+			addPreviousToken(token);
+		}
 	}
 	
 	public List<IToken> getChildren(){
@@ -117,6 +215,18 @@ public abstract class AbstractToken implements IToken {
 		this.children.add(child);
 	}
 	
+	public void addChildren(Collection<IToken> children){
+		if(this.children==null){
+			this.children = new ArrayList<IToken>();
+		}
+		this.children.addAll(children);
+	}
+	
+	public void setChildren(Collection<IToken> children){
+		this.children.clear();
+		this.addChildren(children);
+	}
+	
 	public List<IToken> getParents(){
 		return this.parents;
 	}
@@ -126,6 +236,29 @@ public abstract class AbstractToken implements IToken {
 			this.parents = new ArrayList<IToken>();
 		}
 		this.parents.add(parent);
+	}
+	
+	public IToken getFirstChild(Direction direction){
+		if(direction==Direction.START){
+			return children.get(0);
+		}
+		else{
+			return children.get(children.size()-1);
+		}
+	}
+	
+	public IToken getChild(int pos, Direction direction){
+		
+		int size = children.size();
+		if(size<pos){
+			return null;
+		}
+		if(direction==Direction.START){
+			return children.get(pos);
+		}
+		else{
+			return children.get(size-1-pos);
+		}
 	}
 	
 	public boolean hasSpaceAfter(){

@@ -1,12 +1,14 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
+import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.IToken;
 
@@ -26,12 +28,10 @@ public class WordFormParser extends AbstractParser {
 	@Override
 	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
 		
-		ArrayList<WordFormToken> tokens = new ArrayList<WordFormToken>();
+		IntObjectOpenHashMap<IToken> tokens = new IntObjectOpenHashMap<IToken>();
 		IToken firstToken = sample.get(0);
 		int startPosition = firstToken.getStartPosition();
 		int endPosition = firstToken.getEndPosition();
-		
-		HashSet<TextElement> occuredElements = new HashSet<TextElement>();
 		
 		boolean gotSequence = false;
 		for(WordSequenceData data : dataList){
@@ -41,12 +41,17 @@ public class WordFormParser extends AbstractParser {
 		if(!gotSequence){
 			for(GrammarRelation gr : firstWordForms){
 				TextElement word = gr.getWord();
-				if(occuredElements.contains(word)){
-					continue;
+				MeaningElement[] concepts = word.getConcepts();
+				for(MeaningElement me : concepts){
+					int id = me.id();
+					IToken token = tokens.get(id);
+					if(token == null){
+						token = new WordFormToken(me, startPosition, endPosition);
+						tokens.put(id, token);
+					}
+					WordFormToken wft = (WordFormToken) token;
+					registerGrammarRelation(gr, wft);
 				}
-				occuredElements.add(word);
-				WordFormToken token = new WordFormToken(word, startPosition, endPosition);
-				tokens.add(token);
 			}
 		}
 		else{
@@ -56,22 +61,45 @@ public class WordFormParser extends AbstractParser {
 					continue;
 				}
 				TextElement te = data.textElement();
-				if(occuredElements.contains(te)){
-					continue;
+				MeaningElement[] concepts = te.getConcepts();
+				for(MeaningElement me : concepts){
+					int id = me.id();
+					if(tokens.containsKey(id)){
+						continue;
+					}
+					int endIndex = data.getSequenceLength()-1;
+					endPosition = sample.get(endIndex).getEndPosition();
+					WordFormToken token = new WordFormToken(me, startPosition, endPosition);
+					registerGrammarRelation(null, token);
+					tokens.put(id,token);
 				}
-				occuredElements.add(te);
-				
-				int endIndex = data.getSequenceLength()-1;
-				endPosition = sample.get(endIndex).getEndPosition();
-				WordFormToken token = new WordFormToken(te, startPosition, endPosition);
-				tokens.add(token);
 			}
 		}
-		if(tokens.size()==1){
-			reliableTokens.add(tokens.get(0));
+		IToken[] array = tokens.values().toArray(IToken.class);
+		if(array.length==1){			
+			reliableTokens.add(array[0]);
 		}
-		else{
-			doubtfulTokens.addAll(tokens);
+		else if(array.length>0){
+			for(IToken t : array){
+				doubtfulTokens.add(t);
+			}
+		}
+	}
+
+	private void registerGrammarRelation(GrammarRelation gr, WordFormToken wft)
+	{
+		if(gr!=null){
+			List<GrammarRelation> grammarRelations = wft.getGrammarRelations();
+			boolean exists = false;
+			for(GrammarRelation rel : grammarRelations){
+				if(rel.equals(gr)){
+					exists = true;
+					break;
+				}
+			}
+			if(!exists){
+				wft.addGrammarRelation(gr);
+			}
 		}
 	}
 

@@ -1,8 +1,18 @@
 package com.onpositive.text.analysis;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface IToken {
+	
+	public static enum Direction{
+		
+		START, END;
+		
+		public Direction opposite(){
+			return this == START ? END : START;
+		}
+	}
 	
 	static final int TOKEN_TYPE_UNDEFINED = 00001;
 	
@@ -30,7 +40,19 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_UNIT = 10213;
 	
-	static final int TOKEN_TYPE_WORD_FORM = 11001;	
+	static final int TOKEN_TYPE_SENTENCE = 1100;	
+	
+	static final int TOKEN_TYPE_WORD_FORM = 11001;
+	
+	static final int TOKEN_TYPE_NOUN_ADJECTIVE = 11011;
+	
+	static final int TOKEN_TYPE_DIRECT_SUBJECT_NAME = 11012;
+	
+	static final int TOKEN_TYPE_DIRECT_SUBJECT_INF = 11013;
+	
+	int id();
+	
+	void setId(int id);
 	
 	String getStringValue();
 	
@@ -46,21 +68,43 @@ public interface IToken {
 	
 	IToken getPrevious();
 	
-	void setNext(IToken unit);
+	IToken getNeighbour(Direction direction);
 	
-	void setPrevious(IToken unit);
+	void setNext(IToken token);
+	
+	void setPrevious(IToken token);
+	
+	void setNeighbour(IToken token, Direction direction);
 	
 	List<IToken> getNextTokens();
 	
 	List<IToken> getPreviousToken();
 	
-	void addNextUnit(IToken unit);
+	List<IToken> getNeighbours(Direction direction);
 	
-	void addPreviousUnit(IToken unit);
+	void addNextToken(IToken token);
+	
+	void addPreviousToken(IToken token);
+	
+	void addNeighbour(IToken token, Direction direction);
+	
+	public void removeNextToken(IToken token);
+	
+	public void removePreviousToken(IToken token);
+	
+	public void removeNeighbour(Direction direction, IToken token);
 	
 	List<IToken> getChildren();
 	
 	void addChild(IToken child);
+	
+	void addChildren(Collection<IToken> children);
+	
+	void setChildren(Collection<IToken> children);
+	
+	IToken getFirstChild(Direction direction);
+	
+	IToken getChild(int pos, Direction direction);
 	
 	List<IToken> getParents();
 	

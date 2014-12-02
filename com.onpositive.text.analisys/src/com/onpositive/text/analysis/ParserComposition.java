@@ -17,6 +17,11 @@ public class ParserComposition {
 	
 	public List<IToken>parse(String str){
 		List<IToken> tokenize = pt.tokenize(str);
+		tokenize = process(tokenize);
+		return tokenize;
+	}
+
+	public List<IToken> process(List<IToken> tokenize) {
 		for (AbstractParser p:parsers){
 			tokenize=p.process(tokenize);
 		}
