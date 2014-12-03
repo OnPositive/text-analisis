@@ -1,5 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,11 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
+import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.AbstractParser;
+import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public abstract class AbstractSyntaxParser extends AbstractParser {
 
@@ -102,6 +106,109 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 			}
 		}
 		return true;
+	}
+	
+	protected List<IToken> combineNames( SyntaxToken mainGroup,	SyntaxToken token, int tokenType )
+	{
+		ArrayList<IToken> tokens = new ArrayList<IToken>(); 
+		int startPosition = Math.min(mainGroup.getStartPosition(), token.getStartPosition());
+		int endPosition = Math.max(mainGroup.getEndPosition(), token.getEndPosition());
+		
+		Map<GrammarRelation,Set<Grammem>> tokenGrammems = prepareGrammemsMap(token);
+		Map<GrammarRelation,Set<Grammem>> mainGroupGrammems = prepareGrammemsMap(mainGroup);
+		
+		for(Map.Entry<GrammarRelation, Set<Grammem>> entry0 : mainGroupGrammems.entrySet()){
+			
+			Set<Grammem> nounGrammems = entry0.getValue();
+			Set<Case> nounCases = extractGrammems(nounGrammems,Case.class);
+			Set<SingularPlural> nounSP = extractGrammems(nounGrammems,SingularPlural.class);
+			Set<Gender> nounGender = extractGrammems(nounGrammems,Gender.class);
+			
+			for(Map.Entry<GrammarRelation, Set<Grammem>> entry1 : tokenGrammems.entrySet()){
+				
+				Set<Grammem> adjvGrammems = entry1.getValue();
+				Set<Case> adjvCases = extractGrammems(adjvGrammems,Case.class);
+				Map<Case, Case> matchCase = matchCase(nounCases,adjvCases);
+				if(matchCase==null){
+					continue;
+				}
+				Set<SingularPlural> adjvSP = extractGrammems(adjvGrammems,SingularPlural.class);
+				Map<SingularPlural, SingularPlural> matchSP = matchSP(nounSP,adjvSP);
+				if(matchSP==null){
+					continue;
+				}
+				Set<Gender> adjvGender = extractGrammems(adjvGrammems,Gender.class);
+				Set<Gender> matchGender = matchGender(nounGender,adjvGender);
+				if(matchGender==null){
+					continue;
+				}
+				SyntaxToken newToken = new SyntaxToken(tokenType, mainGroup, startPosition, endPosition);
+				tokens.add(newToken);
+				break;
+			}
+		}
+		return tokens;
+	}
+	
+	private Map<GrammarRelation,Set<Grammem>> prepareGrammemsMap(SyntaxToken token) {
+		
+		WordFormToken mainWord = token.getMainWord();
+		Set<Grammem> grammems = mainWord.getMeaningElement().getGrammems();
+		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+		Map<GrammarRelation,Set<Grammem>> map = new HashMap<GrammarRelation, Set<Grammem>>(); 
+		for(GrammarRelation gr : grammarRelations){
+			Set<Grammem> set = new HashSet<Grammem>(gr.getGrammems());
+			set.addAll(grammems);
+			map.put(gr, set);
+		}
+		return map;
+	}
+
+	private Set<Gender> matchGender(Set<Gender> set0, Set<Gender> set1) {
+		
+		if(set0.contains(Gender.UNKNOWN)){
+			set1.remove(Gender.UNKNOWN);
+			return set1;
+		}
+		if(set1.contains(Gender.UNKNOWN)){
+			return set0;
+		}
+		if(set0.contains(Gender.COMMON)){
+			return set1;
+		}
+		if(set1.contains(Gender.COMMON)){
+			return set0;
+		}
+		HashSet<Gender> result = new HashSet<Grammem.Gender>();
+		for(Gender g : set0){
+			if(set1.contains(g)){
+				result.add(g);
+			}
+		}
+		return result.isEmpty() ? null : result;
+	}
+
+
+	private Map<SingularPlural,SingularPlural> matchSP(Set<SingularPlural> set0, Set<SingularPlural> set1) {
+		return matchGrammem(set0, set1, spMatchMap);
+	}
+
+
+	private Map<Case,Case> matchCase(Set<Case> set0, Set<Case> set1) {
+		return matchGrammem(set0, set1, caseMatchMap);
+	}
+
+	protected boolean checkIfAlreadyProcessed(SyntaxToken token0, SyntaxToken token1) {
+		List<IToken> parents1 = token1.getParents();
+		List<IToken> parents0 = token0.getParents();
+		if((parents1!=null&&!parents1.isEmpty())&&(parents0!=null&&!parents0.isEmpty())){
+			for(IToken parent : parents0){
+				if(parents1.contains(parent)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

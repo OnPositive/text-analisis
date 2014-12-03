@@ -1,18 +1,15 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
-import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class DirectSubjectParser extends AbstractSyntaxParser {
 
@@ -26,13 +23,16 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 		SyntaxToken token0 = (SyntaxToken) sample.get(0);
 		SyntaxToken token1 = (SyntaxToken) sample.peek();
 		
+		if(checkIfAlreadyProcessed(token0, token1)){
+			return;
+		}
+		
 		int startPosition = token0.getStartPosition();
 		int endPosition = token1.getEndPosition();
 		
-		Set<Grammem> grammems0 = ((SyntaxToken)token0).getMainWord().getMeaningElement().getGrammems();
 		SyntaxToken verbToken = null;
 		SyntaxToken subjToken = null;
-		if(checkVerb(grammems0)){
+		if(checkVerb(token0)){
 			verbToken = token0;
 			subjToken = token1;
 		}
@@ -40,7 +40,7 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			verbToken = token1;
 			subjToken = token0;
 		}
-		int subjType = checkInf(subjToken.getMainWord().getMeaningElement().getGrammems())
+		int subjType = checkInf(subjToken)
 				? IToken.TOKEN_TYPE_DIRECT_SUBJECT_INF
 				: IToken.TOKEN_TYPE_DIRECT_SUBJECT_NAME;
 
@@ -57,28 +57,19 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
-		IToken firstToken = sample.peek();
-		Set<Grammem> grammems0 = ((SyntaxToken)firstToken).getMainWord().getMeaningElement().getGrammems();
+		SyntaxToken token0 = (SyntaxToken) sample.peek();
+		SyntaxToken token1 = (SyntaxToken)newToken;
 		
-		WordFormToken mainWord1 = ((SyntaxToken)newToken).getMainWord();
-		MeaningElement me1 = mainWord1.getMeaningElement();		
-		if(checkVerb(grammems0)){
-			
-			List<GrammarRelation> grammarRelations = mainWord1.getGrammarRelations();
-			for(GrammarRelation gr : grammarRelations){
-				Set<Grammem> grammems1 = new HashSet<Grammem>(me1.getGrammems());
-				grammems1.addAll(gr.getGrammems());
-				if(checkName(grammems1)){
-					return ACCEPT_AND_BREAK;
-				}
-				if(checkInf(grammems1)){
-					return ACCEPT_AND_BREAK;
-				}
+		if(checkVerb(token0)){
+			if(checkName(token1)){
+				return ACCEPT_AND_BREAK;
+			}
+			if(checkInf(token1)){
+				return ACCEPT_AND_BREAK;
 			}
 		}
 		else{
-			Set<Grammem> grammems1 = me1.getGrammems();
-			if(checkVerb(grammems1)){
+			if(checkVerb(token1)){
 				return ACCEPT_AND_BREAK;
 			}
 		}
@@ -92,60 +83,45 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
-		WordFormToken mainWord = ((SyntaxToken) newToken).getMainWord();
-		WordFormToken wft = mainWord;
-		MeaningElement me = wft.getMeaningElement();
-		
-		List<GrammarRelation> grammarRelations = wft.getGrammarRelations();		
-		for(GrammarRelation gr : grammarRelations){
-			Set<Grammem> grammems = new HashSet<Grammem>(me.getGrammems());
-			grammems.addAll(gr.getGrammems());
-			if(checkVerb(grammems)){
-				return CONTINUE_PUSH;
-			}
-			if(checkInf(grammems)){
-				return CONTINUE_PUSH;
-			}
-			if(checkName(grammems)){
-				return CONTINUE_PUSH;
-			}
+		SyntaxToken st = (SyntaxToken) newToken;
+		if(checkVerb(st)){
+			return CONTINUE_PUSH;
+		}
+		if(checkInf(st)){
+			return CONTINUE_PUSH;
+		}
+		if(checkName(st)){
+			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 
 	
-	private final static PartOfSpeech[] acceptedNames = 
-			new PartOfSpeech[]{	PartOfSpeech.NOUN, PartOfSpeech.ADJF };
+	private final static Set<PartOfSpeech> acceptedNames = 
+			new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.NOUN, PartOfSpeech.ADJF));
 	
 	
-	private boolean checkName(Set<Grammem> grammems)
+	private boolean checkName(SyntaxToken token)
 	{
-		for(PartOfSpeech pt : acceptedNames){
-			if(grammems.contains(pt)){
-				Set<Case> cases = caseMatchMap.get(Case.ACCS);
-				for(Case c : cases){
-					if(grammems.contains(c)){
-						return true;
-					}
-				}
+		if(token.hasOneOfGrammems(acceptedNames)){
+			if(token.hasOneOfGrammems(caseMatchMap.get(Case.ACCS))){
+				return true;
 			}
 		}
 		return false;
 	}
 	
+	private final static Set<Grammem> verbMatchGrammems = 
+			new HashSet<Grammem>(Arrays.asList(PartOfSpeech.VERB, TransKind.tran));
+	
 
-	private boolean checkVerb(Set<Grammem> grammems) {
-		if(grammems.contains(PartOfSpeech.VERB)&&grammems.contains(TransKind.tran)){
-			return true;
-		}
-		return false;
+	private boolean checkVerb(SyntaxToken token) {		
+		return token.hasAllGrammems(verbMatchGrammems);
 	}
 	
 	
-	private boolean checkInf(Set<Grammem> grammems) {
-		if(grammems.contains(PartOfSpeech.INFN)){
-			return true;
-		}
-		return false;
+	private boolean checkInf(SyntaxToken token){
+		boolean hasGrammem = token.hasGrammem(PartOfSpeech.INFN);
+		return hasGrammem;
 	}
 }

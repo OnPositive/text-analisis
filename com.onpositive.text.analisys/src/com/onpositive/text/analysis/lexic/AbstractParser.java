@@ -111,7 +111,7 @@ public abstract class AbstractParser {
 			doubtfulTokens.clear();
 			parseStartingTokens(token,reliableTokens,doubtfulTokens);
 			
-			boolean tokenReleased = handleBounds(token, reliableTokens, doubtfulTokens);;
+			boolean tokenReleased = handleBounds(token, reliableTokens, doubtfulTokens);
 			if(!tokenReleased){
 				result.add(token);
 				parsedTokens.put(token.id(),token);
@@ -154,7 +154,7 @@ public abstract class AbstractParser {
 		else{
 			boolean gotParent = false;
 			for(IToken parent : parents){
-				if(reliableTokens.contains(parent)||(keepInputToken()&&doubtfulTokens.contains(parent))){
+				if(reliableTokens.contains(parent)||(!keepInputToken()&&doubtfulTokens.contains(parent))){
 					gotParent = true;
 					break;
 				}
@@ -167,19 +167,29 @@ public abstract class AbstractParser {
 		}
 	}
 
-	private boolean inspectBranch(IToken token) {		
-		if(!branchRegistry.contains(token)){
-			List<IToken> parents = token.getParents();
-			if(parents!=null&&!parents.isEmpty()){
-				for(IToken parent: parents){
-					if(parsedTokens.containsKey(parent.id())){
-						return true;
-					}
-				}
+	private boolean inspectBranch(IToken token) {
+		List<IToken> parents = token.getParents();
+		if(parents==null||parents.isEmpty()){
+			return false;
+		}
+		for(IToken parent: parents){
+			if(parsedTokens.containsKey(parent.id())){
+				return true;
 			}
 		}
-		branchRegistry.remove(token);
 		return false;
+//		if(!branchRegistry.contains(token)){
+//			List<IToken> parents = token.getParents();
+//			if(parents!=null&&!parents.isEmpty()){
+//				for(IToken parent: parents){
+//					if(parsedTokens.containsKey(parent.id())){
+//						return true;
+//					}
+//				}
+//			}
+//		}
+//		branchRegistry.remove(token);
+//		return false;
 	}
 	
 	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {

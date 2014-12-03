@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.semantic.words3.MetaLayer;
 import com.onpositive.text.analysis.IToken;
@@ -62,9 +63,9 @@ public class NumericsParser extends AbstractParser {
 			}
 			if (q instanceof WordFormToken) {
 				WordFormToken tk = (WordFormToken) q;
-				TextElement textElement = tk.getMeaningElement().getParentTextElement();
+				MeaningElement meaningElement = tk.getMeaningElement();
 				if (true) {
-					Double value2 = (Double) layer.getValue(textElement);
+					Double value2 = (Double) layer.getValue(meaningElement);
 					if (value2 == null) {
 						if (end > 0) {
 							reliableTokens.add(new ScalarToken(value, start,
@@ -76,7 +77,7 @@ public class NumericsParser extends AbstractParser {
 						lastScalar = false;
 						continue;
 					}
-					Object scale = scaleLayer.getValue(textElement);
+					Object scale = scaleLayer.getValue(meaningElement);
 					if (scale != null && scale.equals(true)) {
 						value *= value2;
 						lastScalar=false;
@@ -136,11 +137,15 @@ public class NumericsParser extends AbstractParser {
 	public ProcessingResult isNumeral(IToken newToken) {
 		if (newToken instanceof WordFormToken) {
 			WordFormToken tk = (WordFormToken) newToken;
-			TextElement textElement = tk.getMeaningElement().getParentTextElement();
-			if (layer!=null&&layer.getValue(textElement)!=null) {
+			if (layer!=null&&layer.getValue(tk.getMeaningElement())!=null) {
 				return CONTINUE_PUSH;
 			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
+	}
+	
+	@Override
+	protected boolean keepInputToken() {
+		return false;
 	}
 }

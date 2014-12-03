@@ -1,7 +1,13 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.onpositive.semantic.wordnet.GrammarRelation;
+import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.AbstractToken;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
@@ -14,6 +20,85 @@ public class SyntaxToken extends AbstractToken{
 	}
 
 	protected SyntaxToken mainGroup;
+	
+	
+	public boolean hasGrammem(Grammem gr){
+		
+		WordFormToken mainWord = getMainWord();
+		MeaningElement meaningElement = mainWord.getMeaningElement();
+		Set<Grammem> grammems = meaningElement.getGrammems();
+		if(grammems!=null&&grammems.contains(gr)){
+			return true;
+		}
+		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+		if(grammarRelations!=null){
+			for(GrammarRelation rel : grammarRelations){
+				if(rel.hasGrammem(gr)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	public boolean hasOneOfGrammems(Collection<? extends Grammem> col){
+		
+		WordFormToken mainWord = getMainWord();
+		MeaningElement meaningElement = mainWord.getMeaningElement();
+		Set<Grammem> grammems = meaningElement.getGrammems();
+		if(grammems!=null){
+			for(Grammem gr : col){
+				if(grammems.contains(gr)){
+					return true;
+				}
+			}
+		}
+		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+		if(grammarRelations!=null){
+			for(GrammarRelation rel : grammarRelations){
+				for(Grammem gr : col){
+					if(rel.hasGrammem(gr)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	public boolean hasAllGrammems(Collection<? extends Grammem> col)
+	{
+		HashSet<Grammem> set = new HashSet<Grammem>();
+		WordFormToken mainWord = getMainWord();
+		MeaningElement meaningElement = mainWord.getMeaningElement();
+		Set<Grammem> grammems = meaningElement.getGrammems();
+		if(grammems!=null){			
+			for(Grammem gr : col){
+				if(grammems.contains(gr)){
+					set.add(gr);
+					if(set.size() == col.size()){
+						return true;
+					}
+				}
+			}
+		}
+		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+		if(grammarRelations!=null){
+			for(GrammarRelation rel : grammarRelations){
+				for(Grammem gr : col){
+					if(rel.hasGrammem(gr)){
+						set.add(gr);
+						if(set.size() == col.size()){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 	
 	@Override
 	public String getStringValue() {
