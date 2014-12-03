@@ -43,11 +43,26 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	public void test005(){
-		String str = "Я иду работать. Но я люблю смотреть кино.";		
+		String str = "Я иду работать. Но я люблю смотреть кино. Я смотрю кино каждую неделю.";		
 		List<IToken> processed = process(str);
 	}
 	
 	public void test006(){
+		String str = "Но я люблю смотреть кино.";		
+		List<IToken> processed = process(str);
+	}
+	
+	public void test007(){
+		String str = "Я смотрю кино каждую неделю. Я смотрю фильмы каждую неделю.";		
+		List<IToken> processed = process(str);
+	}
+	
+	public void test009(){
+		String str = "Я смотрю сериал каждую неделю.";		
+		List<IToken> processed = process(str);
+	}
+	
+	public void test010(){
 		String str = "Петя любит петь.";		
 		List<IToken> processed = process(str);
 	}

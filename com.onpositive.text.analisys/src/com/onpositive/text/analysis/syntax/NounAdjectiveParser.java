@@ -116,16 +116,16 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 		for(GrammarRelation nounRel : nounRelations){
 			
 			Set<Grammem> nounGrammems = new HashSet<Grammem>(nounRel.getGrammems());
-			MeaningElement[] nounConcepts = nounRel.getWord().getConcepts();
-			for(MeaningElement me : nounConcepts){
-				nounGrammems.addAll(me.getGrammems());
-			}
+			nounGrammems.addAll(nounMeaning.getGrammems());
+
 			Set<Case> nounCases = extractGrammems(nounGrammems,Case.class);
 			Set<SingularPlural> nounSP = extractGrammems(nounGrammems,SingularPlural.class);
 			Set<Gender> nounGender = extractGrammems(nounGrammems,Gender.class);
 			
 			for(GrammarRelation adjvRel : adjvRelations){
 				Set<Grammem> adjvGrammems = adjvRel.getGrammems();
+				adjvGrammems.addAll(adjvMeaning.getGrammems());
+				
 				Set<Case> adjvCases = extractGrammems(adjvGrammems,Case.class);
 				Map<Case, Case> matchCase = matchCase(nounCases,adjvCases);
 				if(matchCase==null){

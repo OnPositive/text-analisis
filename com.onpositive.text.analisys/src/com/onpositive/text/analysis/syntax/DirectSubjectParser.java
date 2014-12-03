@@ -1,8 +1,11 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
@@ -56,16 +59,25 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 		
 		IToken firstToken = sample.peek();
 		Set<Grammem> grammems0 = ((SyntaxToken)firstToken).getMainWord().getMeaningElement().getGrammems();
-		Set<Grammem> grammems1 = ((SyntaxToken)newToken).getMainWord().getMeaningElement().getGrammems();
+		
+		WordFormToken mainWord1 = ((SyntaxToken)newToken).getMainWord();
+		MeaningElement me1 = mainWord1.getMeaningElement();		
 		if(checkVerb(grammems0)){
-			if(checkName(grammems1)){
-				return ACCEPT_AND_BREAK;
-			}
-			if(checkInf(grammems1)){
-				return ACCEPT_AND_BREAK;
+			
+			List<GrammarRelation> grammarRelations = mainWord1.getGrammarRelations();
+			for(GrammarRelation gr : grammarRelations){
+				Set<Grammem> grammems1 = new HashSet<Grammem>(me1.getGrammems());
+				grammems1.addAll(gr.getGrammems());
+				if(checkName(grammems1)){
+					return ACCEPT_AND_BREAK;
+				}
+				if(checkInf(grammems1)){
+					return ACCEPT_AND_BREAK;
+				}
 			}
 		}
 		else{
+			Set<Grammem> grammems1 = me1.getGrammems();
 			if(checkVerb(grammems1)){
 				return ACCEPT_AND_BREAK;
 			}
@@ -80,18 +92,23 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
-		WordFormToken wft = ((SyntaxToken) newToken).getMainWord();
+		WordFormToken mainWord = ((SyntaxToken) newToken).getMainWord();
+		WordFormToken wft = mainWord;
 		MeaningElement me = wft.getMeaningElement();
-		Set<Grammem> grammems = me.getGrammems();
 		
-		if(checkVerb(grammems)){
-			return CONTINUE_PUSH;
-		}
-		if(checkInf(grammems)){
-			return CONTINUE_PUSH;
-		}
-		if(checkName(grammems)){
-			return CONTINUE_PUSH;
+		List<GrammarRelation> grammarRelations = wft.getGrammarRelations();		
+		for(GrammarRelation gr : grammarRelations){
+			Set<Grammem> grammems = new HashSet<Grammem>(me.getGrammems());
+			grammems.addAll(gr.getGrammems());
+			if(checkVerb(grammems)){
+				return CONTINUE_PUSH;
+			}
+			if(checkInf(grammems)){
+				return CONTINUE_PUSH;
+			}
+			if(checkName(grammems)){
+				return CONTINUE_PUSH;
+			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
@@ -105,7 +122,7 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 	{
 		for(PartOfSpeech pt : acceptedNames){
 			if(grammems.contains(pt)){
-				Set<Case> cases = caseMatchMap.get(Case.GENT);
+				Set<Case> cases = caseMatchMap.get(Case.ACCS);
 				for(Case c : cases){
 					if(grammems.contains(c)){
 						return true;
