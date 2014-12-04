@@ -3,6 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
@@ -16,9 +17,14 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			PartOfSpeech.NOUN, PartOfSpeech.ADJF);
 	private final UnaryMatcher<SyntaxToken> acceptedAcc = hasAny(caseMatchMap
 			.get(Case.ACCS));
+
+	private final UnaryMatcher<SyntaxToken> acceptedGC = hasAny(caseMatchMap
+			.get(Case.GENT));
+
 	@SuppressWarnings("unchecked")
-	private final UnaryMatcher<SyntaxToken> checkName = and(acceptedNames,
-			acceptedAcc);
+	private final UnaryMatcher<SyntaxToken> checkName = and(
+			acceptedNames,
+			or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR)))));
 	private final UnaryMatcher<SyntaxToken> verbMatchGrammems = hasAll(
 			PartOfSpeech.VERB, TransKind.tran);
 	private final UnaryMatcher<SyntaxToken> infnGrammems = has(PartOfSpeech.INFN);

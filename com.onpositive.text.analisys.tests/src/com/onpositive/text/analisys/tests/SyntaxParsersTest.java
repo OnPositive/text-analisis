@@ -66,4 +66,9 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Петя любит петь.";		
 		List<IToken> processed = process(str);
 	}
+	
+	public void test011(){
+		String str = "Я занял денег.";		
+		List<IToken> processed = process(str);
+	}
 }

@@ -224,6 +224,15 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	public final UnaryMatcher<SyntaxToken> has(Grammem infn) {
 		return new HasGrammem(infn);
 	}
+	public final UnaryMatcher<SyntaxToken> not(final UnaryMatcher<SyntaxToken> infn) {
+		return new UnaryMatcher<SyntaxToken>(SyntaxToken.class) {
+
+			@Override
+			protected boolean innerMatch(SyntaxToken token) {
+				return !infn.match(token);
+			}
+		};
+	}
 	public static final UnaryMatcher<SyntaxToken>and(UnaryMatcher<SyntaxToken>...matchers){
 		return new AndMatcher<SyntaxToken>(SyntaxToken.class, matchers);
 	}
