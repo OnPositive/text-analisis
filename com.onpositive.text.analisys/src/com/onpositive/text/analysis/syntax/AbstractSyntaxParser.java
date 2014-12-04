@@ -16,6 +16,12 @@ import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.rules.matchers.AndMatcher;
+import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
+import com.onpositive.text.analysis.rules.matchers.HasAnyOfGrammems;
+import com.onpositive.text.analysis.rules.matchers.HasGrammem;
+import com.onpositive.text.analysis.rules.matchers.OrMatcher;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public abstract class AbstractSyntaxParser extends AbstractParser {
 
@@ -210,5 +216,25 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		}
 		return false;
 	}
+	public final UnaryMatcher<SyntaxToken> hasAll(Grammem... tran) {
+		return new HasAllGrammems(tran);
+	}
 
+	public final UnaryMatcher<SyntaxToken> has(Grammem infn) {
+		return new HasGrammem(infn);
+	}
+	public final UnaryMatcher<SyntaxToken>and(UnaryMatcher<SyntaxToken>...matchers){
+		return new AndMatcher<SyntaxToken>(SyntaxToken.class, matchers);
+	}
+	public final UnaryMatcher<SyntaxToken>or(UnaryMatcher<SyntaxToken>...matchers){
+		return new OrMatcher<SyntaxToken>(SyntaxToken.class, matchers);
+	}
+
+	public final UnaryMatcher<SyntaxToken> hasAny(Grammem...gf) {
+		return new HasAnyOfGrammems(gf);
+	}
+
+	public final UnaryMatcher<SyntaxToken> hasAny(Set<? extends Grammem> set) {
+		return hasAny(set.toArray(new Grammem[set.size()]));
+	}
 }

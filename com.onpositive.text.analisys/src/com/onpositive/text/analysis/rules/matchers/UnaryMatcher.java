@@ -1,6 +1,8 @@
 package com.onpositive.text.analysis.rules.matchers;
 
-public abstract class UnaryMatcher<T> {
+import com.onpositive.text.analysis.IToken;
+
+public abstract class UnaryMatcher<T extends IToken> {
 
 	private final Class<T> clazz;
 
@@ -8,8 +10,15 @@ public abstract class UnaryMatcher<T> {
 		super();
 		this.clazz = clazz;
 	}
+	
+	public final boolean match(IToken token){
+		if (clazz.isInstance(token)){
+			return innerMatch(clazz.cast(token));
+		}
+		return false;
+	}
 
-	public abstract boolean match(T token);
+	protected abstract boolean innerMatch(T token);
 	
 	public Class<T>getTokenClass(){
 		return clazz;

@@ -1,6 +1,8 @@
 package com.onpositive.text.analysis.rules.matchers;
 
-public class AndMatcher<T> extends UnaryMatcher<T> {
+import com.onpositive.text.analysis.IToken;
+
+public class AndMatcher<T extends IToken> extends UnaryMatcher<T> {
 
 	protected UnaryMatcher<T>[]matchers;
 	
@@ -11,9 +13,9 @@ public class AndMatcher<T> extends UnaryMatcher<T> {
 	
 
 	@Override
-	public boolean match(T token) {
+	public boolean innerMatch(T token) {
 		for (UnaryMatcher<T>m:matchers){
-			if (!m.match(token)){
+			if (!m.innerMatch(token)){
 				return false;
 			}
 		}

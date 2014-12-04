@@ -3,8 +3,10 @@ package com.onpositive.text.analysis.syntax;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.AbstractParser;
@@ -15,6 +17,11 @@ import com.onpositive.text.analysis.lexic.dimension.DimensionParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
+import com.onpositive.text.analysis.rules.matchers.AndMatcher;
+import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
+import com.onpositive.text.analysis.rules.matchers.HasAnyOfGrammems;
+import com.onpositive.text.analysis.rules.matchers.HasGrammem;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class SyntaxParser extends ParserComposition {
 	
@@ -137,5 +144,6 @@ public class SyntaxParser extends ParserComposition {
 		}
 		return isParser;
 	}
+
 
 }
