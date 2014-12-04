@@ -8,7 +8,6 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.rules.matchers.BiMatcher;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class DirectSubjectParser extends AbstractSyntaxParser {
@@ -28,10 +27,6 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 	private final UnaryMatcher<SyntaxToken> verbMatchGrammems = hasAll(
 			PartOfSpeech.VERB, TransKind.tran);
 	private final UnaryMatcher<SyntaxToken> infnGrammems = has(PartOfSpeech.INFN);
-
-	@SuppressWarnings("unchecked")
-	private final BiMatcher firstOption = both(verbMatchGrammems,
-			or(checkName, infnGrammems));
 
 	@SuppressWarnings("unchecked")
 	UnaryMatcher<SyntaxToken> verbInforName = or(verbMatchGrammems,
@@ -84,13 +79,22 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			IToken newToken) {
 		IToken token0 = sample.peek();
 		IToken token1 = newToken;
-
-		return toAcceptBreak(firstOption.match(token0, token1)
-				|| verbMatchGrammems.match(token1));
+		if (verbMatchGrammems.match(token0)
+				&& or(checkName, infnGrammems).match(token1)) {
+			return ACCEPT_AND_BREAK;
+		} else {
+			if (verbMatchGrammems.match(token1)) {
+				return ACCEPT_AND_BREAK;
+			}
+		}
+		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
-		return toPush(verbInforName.match(newToken));
+		if (verbInforName.match(newToken)) {
+			return CONTINUE_PUSH;
+		}
+		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 }
