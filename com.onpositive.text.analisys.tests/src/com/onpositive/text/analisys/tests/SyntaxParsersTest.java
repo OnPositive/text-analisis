@@ -25,50 +25,68 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test001(){
 		String str = "Потом он красной ручкой расписался в дневнике.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красный([кач, ПРИЛ]), <main>WORD_FORM ручка([жр, СУЩ, неод]))", processed);
 	}
 	
 	public void test002(){
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]), <main>NOUN_ADJECTIVE(WORD_FORM вязаный([ПРИЛ]), <main>WORD_FORM шапка([жр, СУЩ, неод])))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM большой([кач, ПРИЛ]), <main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
 	}
 	
 	public void test003(){
 		String str = "Петя в красивой красной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]), <main>NOUN_ADJECTIVE(WORD_FORM красный([ПРИЛ]), <main>WORD_FORM шапка([жр, СУЩ, неод])))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM большой([кач, ПРИЛ]), <main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
 	}
 	
 	public void test004(){
 		String str = "Тот дом, своя улица.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ]), <main>WORD_FORM дом([мр, СУЩ, неод]))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM свой([мест-п, Анаф, ПРИЛ]), <main>WORD_FORM улица([жр, СУЩ, неод]))", processed);
 	}
 	
 	public void test005(){
 		String str = "Я иду работать. Но я люблю смотреть кино. Я смотрю кино каждую неделю.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>DIRECT_SUBJECT_INF(<main>WORD_FORM люблю([ГЛ, перех, несов]), WORD_FORM смотреть([перех, несов, ИНФ])), WORD_FORM кино([СУЩ, ср, 0, неод]))", processed);
 	}
 	
 	public void test006(){
 		String str = "Но я люблю смотреть кино.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>DIRECT_SUBJECT_INF(<main>WORD_FORM люблю([ГЛ, перех, несов]), WORD_FORM смотреть([перех, несов, ИНФ])), WORD_FORM кино([СУЩ, ср, 0, неод]))", processed);
 	}
 	
 	public void test007(){
 		String str = "Я смотрю кино каждую неделю. Я смотрю фильмы каждую неделю.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM смотрю([ГЛ, перех, несов]), WORD_FORM кино([СУЩ, ср, 0, неод]))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM каждый([мест-п, ПРИЛ]), <main>WORD_FORM неделя([жр, СУЩ, неод]))", processed);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM смотрю([ГЛ, перех, несов]), WORD_FORM фильм([мр, СУЩ, неод]))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM каждый([мест-п, ПРИЛ]), <main>WORD_FORM неделя([жр, СУЩ, неод]))", processed);
 	}
 	
 	public void test009(){
 		String str = "Я смотрю сериал каждую неделю.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM смотрю([ГЛ, перех, несов]), WORD_FORM сериал([мр, СУЩ, неод]))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM каждый([мест-п, ПРИЛ]), <main>WORD_FORM неделя([жр, СУЩ, неод]))", processed);
 	}
 	
 	public void test010(){
 		String str = "Петя любит петь.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_INF(<main>WORD_FORM люблю([ГЛ, перех, несов]), WORD_FORM петь([ГЛ]))", processed);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM люблю([ГЛ, перех, несов]), WORD_FORM петя([имя, мр, од, СУЩ]))", processed);
 	}
 	
 	public void test011(){
 		String str = "Я занял денег.";		
 		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM занял([сов, ГЛ, перех]), WORD_FORM деньга([жр, СУЩ, неод]))", processed);
 	}
 }

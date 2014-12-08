@@ -323,7 +323,7 @@ public abstract class AbstractParser {
 				List<IToken> nextTokens = last.getNextTokens();
 				if(nextTokens!=null&&!nextTokens.isEmpty()){					
 					int beforeCount1 = reliableTokens.size();
-					int beforeCount2 = reliableTokens.size();
+					int beforeCount2 = doubtfulTokens.size();
 					for(IToken nt : nextTokens){
 						pr = continuePush(sample,nt);
 						if(pr.tokenAccepted()){

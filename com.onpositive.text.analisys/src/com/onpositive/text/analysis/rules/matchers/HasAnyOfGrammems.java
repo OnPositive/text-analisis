@@ -18,7 +18,7 @@ public class HasAnyOfGrammems extends UnaryMatcher<SyntaxToken>{
 
 	@Override
 	public boolean innerMatch(SyntaxToken token) {
-		return token.hasOneOfGrammems(grammems);
+		return token.hasAnyGrammem(grammems);
 	}
 
 }

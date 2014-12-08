@@ -36,8 +36,12 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		fillGrammemMap(Case.all, caseMatchMap);
 		fillGrammemMap(SingularPlural.all, spMatchMap);
 	}
+	
+	public boolean isIterative(){
+		return false;
+	}
 
-	protected <T extends Grammem> Map<T, T> matchGrammem(Set<T> set0, Set<T> set1, Map<T, Set<T>> matchMap)
+	protected static <T extends Grammem> Map<T, T> matchGrammem(Set<T> set0, Set<T> set1, Map<T, Set<T>> matchMap)
 	{
 		Map<T, T> map = new HashMap<T, T>();
 		for (T c0 : set0) {
@@ -45,7 +49,6 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 			for (T c1 : matches) {
 				if (set1.contains(c1)) {
 					map.put(c0, c1);
-					break;
 				}
 			}
 		}
@@ -88,7 +91,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T extends Grammem> Set<T> extractGrammems(Set<Grammem> grammems,
+	protected static <T extends Grammem> Set<T> extractGrammems(Set<Grammem> grammems,
 			Class<T> clazz) {
 
 		HashSet<T> set = new HashSet<T>();
@@ -100,8 +103,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		return set;
 	}
 
-	protected boolean checkParents(IToken newToken, List<IToken> children) {
-		
+	protected static boolean checkParents(IToken newToken, List<IToken> children) {
+		newToken.setChildren(children);
 		for(IToken ch : children){
 			List<IToken> parents = ch.getParents();
 			if(parents==null){
@@ -111,10 +114,11 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 				return false;
 			}
 		}
+		newToken.setChildren(new ArrayList<IToken>());
 		return true;
 	}
 	
-	protected List<IToken> combineNames( SyntaxToken mainGroup,	SyntaxToken token, int tokenType )
+	protected static List<IToken> combineNames( SyntaxToken mainGroup,	SyntaxToken token, int tokenType )
 	{
 		ArrayList<IToken> tokens = new ArrayList<IToken>(); 
 		int startPosition = Math.min(mainGroup.getStartPosition(), token.getStartPosition());
@@ -123,7 +127,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		Map<GrammarRelation,Set<Grammem>> tokenGrammems = prepareGrammemsMap(token);
 		Map<GrammarRelation,Set<Grammem>> mainGroupGrammems = prepareGrammemsMap(mainGroup);
 		
-		for(Map.Entry<GrammarRelation, Set<Grammem>> entry0 : mainGroupGrammems.entrySet()){
+l0:		for(Map.Entry<GrammarRelation, Set<Grammem>> entry0 : mainGroupGrammems.entrySet()){
 			
 			Set<Grammem> nounGrammems = entry0.getValue();
 			Set<Case> nounCases = extractGrammems(nounGrammems,Case.class);
@@ -150,13 +154,13 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 				}
 				SyntaxToken newToken = new SyntaxToken(tokenType, mainGroup, startPosition, endPosition);
 				tokens.add(newToken);
-				break;
+				break l0;
 			}
 		}
 		return tokens;
 	}
 	
-	private Map<GrammarRelation,Set<Grammem>> prepareGrammemsMap(SyntaxToken token) {
+	protected static Map<GrammarRelation,Set<Grammem>> prepareGrammemsMap(SyntaxToken token) {
 		
 		WordFormToken mainWord = token.getMainWord();
 		Set<Grammem> grammems = mainWord.getMeaningElement().getGrammems();
@@ -170,10 +174,9 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		return map;
 	}
 
-	private Set<Gender> matchGender(Set<Gender> set0, Set<Gender> set1) {
+	protected static Set<Gender> matchGender(Set<Gender> set0, Set<Gender> set1) {
 		
 		if(set0.contains(Gender.UNKNOWN)){
-			set1.remove(Gender.UNKNOWN);
 			return set1;
 		}
 		if(set1.contains(Gender.UNKNOWN)){
@@ -195,12 +198,12 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 
 
-	private Map<SingularPlural,SingularPlural> matchSP(Set<SingularPlural> set0, Set<SingularPlural> set1) {
+	protected static Map<SingularPlural,SingularPlural> matchSP(Set<SingularPlural> set0, Set<SingularPlural> set1) {
 		return matchGrammem(set0, set1, spMatchMap);
 	}
 
 
-	private Map<Case,Case> matchCase(Set<Case> set0, Set<Case> set1) {
+	protected static Map<Case,Case> matchCase(Set<Case> set0, Set<Case> set1) {
 		return matchGrammem(set0, set1, caseMatchMap);
 	}
 
@@ -216,11 +219,12 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		}
 		return false;
 	}
-	public final UnaryMatcher<SyntaxToken> hasAll(Grammem... tran) {
+
+	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAll(T... tran) {
 		return new HasAllGrammems(tran);
 	}
 
-	public final UnaryMatcher<SyntaxToken> has(Grammem infn) {
+	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> has(T infn) {
 		return new HasGrammem(infn);
 	}
 
@@ -236,15 +240,15 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	public static final UnaryMatcher<SyntaxToken>and(UnaryMatcher<SyntaxToken>...matchers){
 		return new AndMatcher<SyntaxToken>(SyntaxToken.class, matchers);
 	}
-	public final UnaryMatcher<SyntaxToken>or(UnaryMatcher<SyntaxToken>...matchers){
+	public static final UnaryMatcher<SyntaxToken>or(UnaryMatcher<SyntaxToken>...matchers){
 		return new OrMatcher<SyntaxToken>(SyntaxToken.class, matchers);
 	}
 
-	public final UnaryMatcher<SyntaxToken> hasAny(Grammem...gf) {
+	public static final UnaryMatcher<SyntaxToken> hasAny(Grammem...gf) {
 		return new HasAnyOfGrammems(gf);
 	}
 
-	public final UnaryMatcher<SyntaxToken> hasAny(Set<? extends Grammem> set) {
+	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAny(Set<T> set) {
 		return hasAny(set.toArray(new Grammem[set.size()]));
 	}
 }
