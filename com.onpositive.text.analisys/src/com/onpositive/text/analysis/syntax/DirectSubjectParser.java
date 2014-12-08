@@ -3,6 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
@@ -11,6 +12,10 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class DirectSubjectParser extends AbstractSyntaxParser {
+
+	public DirectSubjectParser(AbstractWordNet wordNet) {
+		super(wordNet);
+	}
 
 	private final UnaryMatcher<SyntaxToken> acceptedNames = hasAny(
 			PartOfSpeech.NOUN, PartOfSpeech.ADJF);

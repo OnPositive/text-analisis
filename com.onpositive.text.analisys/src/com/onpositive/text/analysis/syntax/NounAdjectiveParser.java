@@ -15,8 +15,7 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 
 	
 	public NounAdjectiveParser(AbstractWordNet wordNet) {
-		super();
-		this.wordNet = wordNet;
+		super(wordNet);
 	}
 
 	@Override

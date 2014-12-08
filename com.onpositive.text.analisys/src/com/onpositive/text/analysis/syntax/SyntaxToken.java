@@ -200,6 +200,10 @@ public class SyntaxToken extends AbstractToken{
 		return true;
 	}
 
+	public String getBasicForm() {
+		return getMainWord().getMeaningElement().getParentTextElement().getBasicForm();
+	}
+
 
 	
 	

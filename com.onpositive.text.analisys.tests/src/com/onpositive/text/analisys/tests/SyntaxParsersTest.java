@@ -17,6 +17,7 @@ public class SyntaxParsersTest extends ParserTest{
 		CompositeWordnet wn=new CompositeWordnet();
 		wn.addUrl("/numerics.xml");
 		wn.addUrl("/dimensions.xml");
+		wn.addUrl("/modificator-adverb.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
 		this.composition = syntaxParser;
@@ -86,6 +87,12 @@ public class SyntaxParsersTest extends ParserTest{
 	
 	public void test011(){
 		String str = "Я занял денег.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM занял([сов, ГЛ, перех]), WORD_FORM деньга([жр, СУЩ, неод]))", processed);
+	}
+	
+	public void test012(){
+		String str = "Мы очень быстро едем.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM занял([сов, ГЛ, перех]), WORD_FORM деньга([жр, СУЩ, неод]))", processed);
 	}

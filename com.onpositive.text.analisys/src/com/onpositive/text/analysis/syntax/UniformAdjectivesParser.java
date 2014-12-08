@@ -3,6 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.util.Map;
 import java.util.Set;
 
+import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
@@ -12,8 +13,8 @@ import com.onpositive.text.analysis.syntax.UniformSentencePartsParser;
 
 public class UniformAdjectivesParser extends UniformSentencePartsParser {
 
-	public UniformAdjectivesParser() {
-		super(IToken.TOKEN_TYPE_UNIFORM_ADJECTIVE, new PartOfSpeech[]{PartOfSpeech.ADJF});
+	public UniformAdjectivesParser(AbstractWordNet wordNet) {
+		super(wordNet, IToken.TOKEN_TYPE_UNIFORM_ADJECTIVE, new PartOfSpeech[]{PartOfSpeech.ADJF});
 	}
 	
 	protected boolean refineGrammemSet(Set<Grammem> grammems, SyntaxToken token) {

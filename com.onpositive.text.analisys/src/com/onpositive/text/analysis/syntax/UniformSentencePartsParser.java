@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
@@ -37,12 +38,12 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 	}
 	
 	
-	public UniformSentencePartsParser(int tokenType, Collection<PartOfSpeech> acceptedParts) {
-		this(tokenType, acceptedParts.toArray(new PartOfSpeech[acceptedParts.size()]));
+	public UniformSentencePartsParser(AbstractWordNet wordNet, int tokenType, Collection<PartOfSpeech> acceptedParts) {
+		this(wordNet, tokenType, acceptedParts.toArray(new PartOfSpeech[acceptedParts.size()]));
 	}
 
-	public UniformSentencePartsParser(int tokenType, PartOfSpeech... acceptedParts) {
-		super();
+	public UniformSentencePartsParser(AbstractWordNet wordNet, int tokenType, PartOfSpeech... acceptedParts) {
+		super(wordNet);
 		this.acceptedParts = acceptedParts;
 		this.tokenType = tokenType;
 		initMatchers();

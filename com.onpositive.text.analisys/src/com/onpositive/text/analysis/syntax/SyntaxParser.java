@@ -28,6 +28,7 @@ public class SyntaxParser extends ParserComposition {
 	};
 	
 	private static final Class<?>[] syntaxParsersArray = new Class<?>[]{
+		AdverbModificatorParser.class,
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		DirectSubjectParser.class

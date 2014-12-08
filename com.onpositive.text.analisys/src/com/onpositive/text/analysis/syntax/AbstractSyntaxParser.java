@@ -25,8 +25,6 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public abstract class AbstractSyntaxParser extends AbstractParser {
 
-	protected AbstractWordNet wordNet;
-
 	protected static Map<Case, Set<Case>> caseMatchMap = new HashMap<Case, Set<Case>>();
 
 	protected static Map<SingularPlural, Set<SingularPlural>> spMatchMap
@@ -36,6 +34,14 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		fillGrammemMap(Case.all, caseMatchMap);
 		fillGrammemMap(SingularPlural.all, spMatchMap);
 	}
+
+
+	public AbstractSyntaxParser(AbstractWordNet wordNet) {
+		super();
+		this.wordNet = wordNet;
+	}
+	
+	private AbstractWordNet wordNet;
 	
 	public boolean isIterative(){
 		return false;
@@ -84,10 +90,6 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 				set3.addAll(set2);
 			}
 		}
-	}
-
-	public AbstractSyntaxParser() {
-		super();
 	}
 
 	@SuppressWarnings("unchecked")
