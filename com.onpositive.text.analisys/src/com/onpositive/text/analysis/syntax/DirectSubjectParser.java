@@ -1,75 +1,89 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
-import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class DirectSubjectParser extends AbstractSyntaxParser {
 
+	private final UnaryMatcher<SyntaxToken> acceptedNames = hasAny(
+			PartOfSpeech.NOUN, PartOfSpeech.ADJF);
+	private final UnaryMatcher<SyntaxToken> acceptedAcc = hasAny(caseMatchMap
+			.get(Case.ACCS));
+
+	private final UnaryMatcher<SyntaxToken> acceptedGC = hasAny(caseMatchMap
+			.get(Case.GENT));
+
+	@SuppressWarnings("unchecked")
+	private final UnaryMatcher<SyntaxToken> checkName = and(
+			acceptedNames,
+			or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR)))));
+	private final UnaryMatcher<SyntaxToken> verbMatchGrammems = hasAll(
+			PartOfSpeech.VERB, TransKind.tran);
+	private final UnaryMatcher<SyntaxToken> infnGrammems = has(PartOfSpeech.INFN);
+
+	@SuppressWarnings("unchecked")
+	UnaryMatcher<SyntaxToken> verbInforName = or(verbMatchGrammems,
+			infnGrammems, checkName);
+
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
-	{
-		if(sample.size()<2){
+	protected void combineTokens(Stack<IToken> sample,
+			Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+		if (sample.size() < 2) {
 			return;
 		}
 
 		SyntaxToken token0 = (SyntaxToken) sample.get(0);
 		SyntaxToken token1 = (SyntaxToken) sample.peek();
-		
-		if(checkIfAlreadyProcessed(token0, token1)){
+
+		if (checkIfAlreadyProcessed(token0, token1)) {
 			return;
 		}
-		
-		int startPosition = token0.getStartPosition();
-		int endPosition = token1.getEndPosition();
-		
+
 		SyntaxToken verbToken = null;
 		SyntaxToken subjToken = null;
-		if(checkVerb(token0)){
+		if (verbMatchGrammems.match(token0)) {
 			verbToken = token0;
 			subjToken = token1;
-		}
-		else{
+		} else {
 			verbToken = token1;
 			subjToken = token0;
 		}
-		int subjType = checkInf(subjToken)
-				? IToken.TOKEN_TYPE_DIRECT_SUBJECT_INF
+
+		int subjType = infnGrammems.match(subjToken) ? IToken.TOKEN_TYPE_DIRECT_SUBJECT_INF
 				: IToken.TOKEN_TYPE_DIRECT_SUBJECT_NAME;
 
-		IToken newToken = new SyntaxToken(subjType, verbToken, startPosition, endPosition);
-		if(checkParents(newToken,sample)){
+		createAndAdd(sample, reliableTokens, token0, token1, verbToken,
+				subjType);
+	}
+
+	void createAndAdd(Stack<IToken> sample, Set<IToken> reliableTokens,
+			SyntaxToken first, SyntaxToken last, SyntaxToken mainToken,
+			int subjType) {
+		IToken newToken = new SyntaxToken(subjType, mainToken,
+				first.getStartPosition(), last.getEndPosition());
+		if (checkParents(newToken, sample)) {
 			reliableTokens.add(newToken);
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
-	protected ProcessingResult continuePush(Stack<IToken> sample,IToken newToken)
-	{
-		if(!(newToken instanceof SyntaxToken)){
-			return DO_NOT_ACCEPT_AND_BREAK;
-		}
-		
-		SyntaxToken token0 = (SyntaxToken) sample.peek();
-		SyntaxToken token1 = (SyntaxToken)newToken;
-		
-		if(checkVerb(token0)){
-			if(checkName(token1)){
-				return ACCEPT_AND_BREAK;
-			}
-			if(checkInf(token1)){
-				return ACCEPT_AND_BREAK;
-			}
-		}
-		else{
-			if(checkVerb(token1)){
+	protected ProcessingResult continuePush(Stack<IToken> sample,
+			IToken newToken) {
+		IToken token0 = sample.peek();
+		IToken token1 = newToken;
+		if (verbMatchGrammems.match(token0)
+				&& or(checkName, infnGrammems).match(token1)) {
+			return ACCEPT_AND_BREAK;
+		} else {
+			if (verbMatchGrammems.match(token1)) {
 				return ACCEPT_AND_BREAK;
 			}
 		}
@@ -78,50 +92,9 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
-		
-		if(!(newToken instanceof SyntaxToken)){
-			return DO_NOT_ACCEPT_AND_BREAK;
-		}
-		
-		SyntaxToken st = (SyntaxToken) newToken;
-		if(checkVerb(st)){
-			return CONTINUE_PUSH;
-		}
-		if(checkInf(st)){
-			return CONTINUE_PUSH;
-		}
-		if(checkName(st)){
+		if (verbInforName.match(newToken)) {
 			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
-	}
-
-	
-	private final static Set<PartOfSpeech> acceptedNames = 
-			new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.NOUN, PartOfSpeech.ADJF));
-	
-	
-	private boolean checkName(SyntaxToken token)
-	{
-		if(token.hasOneOfGrammems(acceptedNames)){
-			if(token.hasOneOfGrammems(caseMatchMap.get(Case.ACCS))){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private final static Set<Grammem> verbMatchGrammems = 
-			new HashSet<Grammem>(Arrays.asList(PartOfSpeech.VERB, TransKind.tran));
-	
-
-	private boolean checkVerb(SyntaxToken token) {		
-		return token.hasAllGrammems(verbMatchGrammems);
-	}
-	
-	
-	private boolean checkInf(SyntaxToken token){
-		boolean hasGrammem = token.hasGrammem(PartOfSpeech.INFN);
-		return hasGrammem;
 	}
 }

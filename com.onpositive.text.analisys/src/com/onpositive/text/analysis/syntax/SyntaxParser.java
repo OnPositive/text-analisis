@@ -3,7 +3,6 @@ package com.onpositive.text.analysis.syntax;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
@@ -28,6 +27,7 @@ public class SyntaxParser extends ParserComposition {
 	};
 	
 	private static final Class<?>[] syntaxParsersArray = new Class<?>[]{
+		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		DirectSubjectParser.class
 	};
@@ -137,5 +137,6 @@ public class SyntaxParser extends ParserComposition {
 		}
 		return isParser;
 	}
+
 
 }

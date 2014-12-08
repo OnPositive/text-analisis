@@ -107,7 +107,7 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 		if(token.hasGrammem(PartOfSpeech.PREP)){
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
-		if(token.hasOneOfGrammems(acceptedPartsOfSpeech)){
+		if(token.hasAnyGrammem(acceptedPartsOfSpeech)){
 			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;

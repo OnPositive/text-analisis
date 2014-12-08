@@ -41,8 +41,29 @@ public class SyntaxToken extends AbstractToken{
 		return false;
 	}
 	
+	public Set<Grammem> getAllGrammems(){
+		Set<Grammem> grammems = new HashSet<Grammem>();
+		
+		WordFormToken mainWord = getMainWord();
+		MeaningElement meaningElement = mainWord.getMeaningElement();
+		Set<Grammem> meGr = meaningElement.getGrammems();
+		if(meGr!=null){
+			grammems.addAll(meGr);
+		}
+		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+		if(grammarRelations!=null){
+			for(GrammarRelation rel : grammarRelations){
+				HashSet<Grammem> grammems2 = rel.getGrammems();				
+				if(grammems2!=null){
+					grammems.addAll(grammems2);
+				}
+			}
+		}
+		return grammems;
+	}
 	
-	public boolean hasOneOfGrammems(Collection<? extends Grammem> col){
+	
+	public boolean hasAnyGrammem(Collection<? extends Grammem> col){
 		
 		WordFormToken mainWord = getMainWord();
 		MeaningElement meaningElement = mainWord.getMeaningElement();
@@ -119,7 +140,7 @@ public class SyntaxToken extends AbstractToken{
 		return (WordFormToken) token;
 	}
 	
-	SyntaxToken getMainGroup(){
+	public SyntaxToken getMainGroup(){
 		return mainGroup;
 	}
 
@@ -156,6 +177,25 @@ public class SyntaxToken extends AbstractToken{
 			}
 			else if (!mainGroup.equals(other.mainGroup))		
 				return false;
+		}
+		if(children==null){
+			if(other.children!=null){
+				return false;
+			}
+		}
+		else{
+			if(other.children==null){
+				return false;
+			}
+			int size = this.children.size();
+			if(size!=other.children.size()){
+				return false;
+			}
+			for(int i = 0 ; i < size ; i++){
+				if(!this.children.get(i).equals(other.children.get(i))){
+					return false;
+				}
+			}
 		}
 		return true;
 	}

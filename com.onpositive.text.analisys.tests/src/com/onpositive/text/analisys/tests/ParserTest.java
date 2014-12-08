@@ -10,11 +10,13 @@ import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
 import com.onpositive.text.analysis.syntax.SentenceToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 import junit.framework.TestCase;
 
 public class ParserTest extends TestCase {
 	
+	private static final String childOffStr = "  ";
 	protected ParserComposition composition;
 	
 
@@ -45,11 +47,21 @@ public class ParserTest extends TestCase {
 	
 	
 	protected static void printTokens(List<IToken> processed) {
+		
 		System.out.println();
 		System.out.println("-----");
 		
+		if(processed==null||processed.isEmpty()){
+			return;
+		}
+		
+		int l = (""+processed.get(processed.size()-1).getEndPosition()).length();
+		
 		for(IToken t : processed){
-			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
+			System.out.format("%0" + l + "d", t.getStartPosition());
+			System.out.print("-");
+			System.out.format("%0" + l + "d", t.getEndPosition());
+			System.out.println( " " + printToken(t, l+l+2).trim());//TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
 		}
 	}
 	
@@ -106,5 +118,54 @@ public class ParserTest extends TestCase {
 		}
 		TestCase.assertTrue(found);
 	}
-
+	
+	public static String printToken(IToken token, int off){
+		
+		StringBuilder offsetBld = new StringBuilder();
+		for(int i = 0 ; i < off ; i ++){
+			offsetBld.append(" ");
+		}
+		String offStr = offsetBld.toString();
+		
+		StringBuilder bld = new StringBuilder();
+		
+		bld.append(offStr);
+		bld.append(TokenTypeResolver.getResolvedType(token));
+		
+		if(token.getClass() == SyntaxToken.class){
+			SyntaxToken st = (SyntaxToken) token;
+			SyntaxToken mainGroup = st.getMainGroup();
+			List<IToken> children = token.getChildren();
+			bld.append("(");
+			for(int i = 0 ; i < children.size() ; i++){
+				bld.append("\n");
+				IToken ch = children.get(i);
+				String childStr = printToken(ch,off + 2);
+				if(ch==mainGroup){
+					bld.append(offStr).append(childOffStr).append("<main>");
+					childStr = childStr.trim();
+				}
+				bld.append(childStr);
+			}
+			bld.append("  )");
+		}
+		else{
+			bld.append(" ").append(token.getStringValue());
+		}
+		String result = bld.toString();
+		return result;
+	}
+	
+	protected static void assertTestTokenPrint(String print, List<IToken> tokens){
+		String str = print.replaceAll("(\\s|\\,)", "");
+		boolean gotPrint = false;
+		for(IToken token : tokens){
+			String s1 = printToken(token,0).replaceAll("(\\s|\\,)", "");
+			if(str.equals(s1)){
+				gotPrint = true;
+				break;
+			}
+		}
+		TestCase.assertTrue(gotPrint);
+	}
 }

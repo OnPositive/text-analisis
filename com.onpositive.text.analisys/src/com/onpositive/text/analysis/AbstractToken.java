@@ -223,6 +223,9 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public void setChildren(Collection<IToken> children){
+		if(this.children==null){
+			this.children = new ArrayList<IToken>();
+		}
 		this.children.clear();
 		this.addChildren(children);
 	}
