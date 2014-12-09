@@ -12,10 +12,8 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.StringToken;
+import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
-import com.onpositive.text.analysis.rules.matchers.BiMatcher;
-import com.onpositive.text.analysis.rules.matchers.BiOrMatcher;
 import com.onpositive.text.analysis.rules.matchers.HasGrammem;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
@@ -139,17 +137,17 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 	
-	protected UnaryMatcher<StringToken> commaMatcher;
+	protected UnaryMatcher<SymbolToken> commaMatcher;
 	
 	protected UnaryMatcher<SyntaxToken> conjunctionMatcher;
 	
 	protected UnaryMatcher<SyntaxToken> partOfSpeechMatcher;
 	
 	private void initMatchers(){
-		commaMatcher = new UnaryMatcher<StringToken>(StringToken.class) {
+		commaMatcher = new UnaryMatcher<SymbolToken>(SymbolToken.class) {
 		
 			@Override
-			protected boolean innerMatch(StringToken token) {
+			protected boolean innerMatch(SymbolToken token) {
 				int type = token.getType();
 				if(type != IToken.TOKEN_TYPE_SYMBOL){
 					return false;
@@ -179,5 +177,9 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 		};
 	
 		partOfSpeechMatcher = hasAny(acceptedParts);
+	}
+	
+	public boolean isRecursive() {
+		return false;
 	}
 }

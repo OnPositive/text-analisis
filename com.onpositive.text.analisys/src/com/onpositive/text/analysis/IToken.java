@@ -46,9 +46,11 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_NOUN_ADJECTIVE = 11011;
 	
-	static final int TOKEN_TYPE_DIRECT_SUBJECT_NAME = 11012;
+	static final int TOKEN_TYPE_ADJECTIVE_ADVERB = 11012;
 	
-	static final int TOKEN_TYPE_DIRECT_SUBJECT_INF = 11013;
+	static final int TOKEN_TYPE_DIRECT_SUBJECT_NAME = 11013;
+	
+	static final int TOKEN_TYPE_DIRECT_SUBJECT_INF = 11014;
 	
 	static final int TOKEN_TYPE_ADVERB_WITH_MODIFICATOR = 11041;
 	
@@ -58,6 +60,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_UNIFORM_ADJECTIVE = 11053;
 
+	static final int TOKEN_TYPE_UNIFORM_NOUN = 11054;
+	
 	
 	
 	int id();

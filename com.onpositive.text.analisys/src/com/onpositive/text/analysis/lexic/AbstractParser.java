@@ -168,28 +168,28 @@ public abstract class AbstractParser {
 	}
 
 	private boolean inspectBranch(IToken token) {
-		List<IToken> parents = token.getParents();
-		if(parents==null||parents.isEmpty()){
-			return false;
-		}
-		for(IToken parent: parents){
-			if(parsedTokens.containsKey(parent.id())){
-				return true;
-			}
-		}
-		return false;
-//		if(!branchRegistry.contains(token)){
-//			List<IToken> parents = token.getParents();
-//			if(parents!=null&&!parents.isEmpty()){
-//				for(IToken parent: parents){
-//					if(parsedTokens.containsKey(parent.id())){
-//						return true;
-//					}
-//				}
+//		List<IToken> parents = token.getParents();
+//		if(parents==null||parents.isEmpty()){
+//			return false;
+//		}
+//		for(IToken parent: parents){
+//			if(parsedTokens.containsKey(parent.id())){
+//				return true;
 //			}
 //		}
-//		branchRegistry.remove(token);
 //		return false;
+		if(!branchRegistry.contains(token)){
+			List<IToken> parents = token.getParents();
+			if(parents!=null&&!parents.isEmpty()){
+				for(IToken parent: parents){
+					if(parsedTokens.containsKey(parent.id())){
+						return true;
+					}
+				}
+			}
+		}
+		branchRegistry.remove(token);
+		return false;
 	}
 	
 	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
@@ -421,6 +421,10 @@ public abstract class AbstractParser {
 		for(IToken token : tokens){
 			currentTokenId = Math.max(currentTokenId, token.id());
 		}
+	}
+
+	public boolean isRecursive() {
+		return true;
 	}
 	
 }

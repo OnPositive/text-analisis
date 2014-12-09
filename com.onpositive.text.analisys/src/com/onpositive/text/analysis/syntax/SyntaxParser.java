@@ -30,8 +30,10 @@ public class SyntaxParser extends ParserComposition {
 	private static final Class<?>[] syntaxParsersArray = new Class<?>[]{
 		AdverbModificatorParser.class,
 		UniformAdverbParser.class,
+		AdjectiveAdverbParser.class,
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
+		UniformNounsParser.class,
 		DirectSubjectParser.class
 	};
 	
@@ -65,7 +67,7 @@ public class SyntaxParser extends ParserComposition {
 					parser.resetTrigger();
 					tokens = parser.process(tokens);
 				}
-				while(parser.hasTriggered());
+				while(parser.hasTriggered()&&parser.isRecursive());
 			}
 			sentence.setChildren(tokens);
 		}

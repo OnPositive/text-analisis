@@ -8,6 +8,7 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.syntax.UniformSentencePartsParser;
 
@@ -20,10 +21,18 @@ public class UniformAdjectivesParser extends UniformSentencePartsParser {
 	protected boolean refineGrammemSet(Set<Grammem> grammems, SyntaxToken token) {
 		
 		Set<Grammem> tokenGrammems = token.getAllGrammems();
+		
 		Set<Gender> genderSet = extractGrammems(grammems, Gender.class);
 		Set<Gender> tokenGenderSet = extractGrammems(tokenGrammems, Gender.class);
 		Set<Gender> matchedGender = matchGender(genderSet, tokenGenderSet);
 		if(matchedGender==null||matchedGender.isEmpty()){
+			return false;
+		}
+		
+		Set<SingularPlural> spSet = extractGrammems(grammems, SingularPlural.class);
+		Set<SingularPlural> tokenSpSet = extractGrammems(tokenGrammems, SingularPlural.class);
+		Map<SingularPlural,SingularPlural> matchedSp = matchSP(spSet, tokenSpSet);
+		if(matchedSp==null||matchedSp.isEmpty()){
 			return false;
 		}
 		
@@ -35,6 +44,7 @@ public class UniformAdjectivesParser extends UniformSentencePartsParser {
 		}
 		grammems.clear();
 		grammems.addAll(matchedGender);
+		grammems.addAll(matchedSp.keySet());
 		grammems.addAll(matchedCase.keySet());
 		return true;
 	}

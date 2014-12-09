@@ -32,14 +32,14 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test002(){
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]), <main>NOUN_ADJECTIVE(WORD_FORM вязаный([ПРИЛ]), <main>WORD_FORM шапка([жр, СУЩ, неод])))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(UNIFORM_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]),<main>WORD_FORM вязаный([ПРИЛ])),<main>WORD_FORM шапка([жр, СУЩ, неод]))", processed);
 		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM большой([кач, ПРИЛ]), <main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
 	}
 	
 	public void test003(){
 		String str = "Петя в красивой красной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]), <main>NOUN_ADJECTIVE(WORD_FORM красный([ПРИЛ]), <main>WORD_FORM шапка([жр, СУЩ, неод])))", processed);
+		assertTestTokenPrint("NOUN_ADJECTIVE(UNIFORM_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]),<main>WORD_FORM красный([ПРИЛ])),<main>WORD_FORM шапка([жр, СУЩ, неод]))", processed);
 		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM большой([кач, ПРИЛ]), <main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
 	}
 	
@@ -101,5 +101,36 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Мы быстро и комфортно едем на автобусе.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint("UNIFORM_ADVERB(WORD_FORM быстро([Н]),WORD_FORM и([СОЮЗ]),<main>WORD_FORM комфортно([Н]))", processed);
+	}
+	
+	public void test014(){
+		String str = "Мы очень быстро и комфортно едем на автобусе.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint("UNIFORM_ADVERB(ADVERB_WITH_MODIFICATOR(WORD_FORM очень([]),<main>WORD_FORM быстро([Н])),WORD_FORM и([СОЮЗ]),<main>WORD_FORM комфортно([Н]))", processed);
+	}
+	
+	public void test015(){
+		String str = "В лесу стоит очень красивое дерево.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint("NOUN_ADJECTIVE(ADJECTIVE_ADVERB(WORD_FORM очень([Н]),<main>WORD_FORM красивый([кач, ПРИЛ])),<main>WORD_FORM дерево([СУЩ, ср, неод]))", processed);
+	}
+	
+	public void test016(){
+		String str = "Мы встретили красивую Машу, умного Петю и весёлого Васю.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint("DIRECT_SUBJECT_NAME("
+								+"<main>WORD_FORM встретил([сов, ГЛ, перех])"
+								+"UNIFORM_NOUN("
+									+"NOUN_ADJECTIVE("
+										+"WORD_FORM красивый([кач, ПРИЛ])"
+										+"<main>WORD_FORM маша([имя, жр, од, СУЩ])  )"
+									+"SYMBOL ,"
+									+"NOUN_ADJECTIVE("
+										+"WORD_FORM умный([кач, ПРИЛ])"
+										+"<main>WORD_FORM петя([имя, мр, од, СУЩ])  )"
+									+"WORD_FORM и([СОЮЗ])"
+									+"<main>NOUN_ADJECTIVE("
+										+"WORD_FORM весёлый([кач, ПРИЛ])"
+										+"<main>WORD_FORM вася([имя, мр, од, СУЩ])  )  )  )", processed);
 	}
 }
