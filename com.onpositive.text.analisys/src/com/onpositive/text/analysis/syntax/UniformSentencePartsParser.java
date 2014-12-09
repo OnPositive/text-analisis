@@ -114,7 +114,7 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 			return checkToken(newToken);
 		}
 		else if(conjunctionMatcher.match(newToken)){
-			if(partOfSpeechMatcher.match(newToken)){
+			if(partOfSpeechMatcher.match(token0)){
 				return CONTINUE_PUSH;
 			}
 			else{
@@ -168,7 +168,7 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 					return false;
 				}
 				
-				String stringValue = token.getStringValue().toLowerCase();
+				String stringValue = token.getBasicForm();
 				if(new HasGrammem(PartOfSpeech.CONJ).match(token)){			
 					if(acceptedConjunctions.contains(stringValue)){
 						return true;

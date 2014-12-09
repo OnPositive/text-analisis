@@ -93,7 +93,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static <T extends Grammem> Set<T> extractGrammems(Set<Grammem> grammems,
+	public static <T extends Grammem> Set<T> extractGrammems(Set<Grammem> grammems,
 			Class<T> clazz) {
 
 		HashSet<T> set = new HashSet<T>();
@@ -106,17 +106,28 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
-		newToken.setChildren(children);
 		for(IToken ch : children){
 			List<IToken> parents = ch.getParents();
 			if(parents==null){
 				continue;
 			}
-			if(parents.contains(newToken)){
+			int s0 = children.size();
+l0:			for(IToken parent: parents){
+				List<IToken> children1 = parent.getChildren();
+				int s1 = children1.size();
+				if(s0!=s1){
+					continue;
+				}
+				for(int i = 0 ; i < s0 ; i++){
+					IToken ch0 = children.get(i);
+					IToken ch1 = children1.get(i);
+					if(!ch0.equals(ch1)){
+						continue l0;
+					}
+				}
 				return false;
 			}
 		}
-		newToken.setChildren(new ArrayList<IToken>());
 		return true;
 	}
 	

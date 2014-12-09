@@ -94,6 +94,12 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test012(){
 		String str = "Мы очень быстро едем.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("DIRECT_SUBJECT_NAME(<main>WORD_FORM занял([сов, ГЛ, перех]), WORD_FORM деньга([жр, СУЩ, неод]))", processed);
+		assertTestTokenPrint("ADVERB_WITH_MODIFICATOR(WORD_FORM очень([]),<main>WORD_FORM быстро([Н])  )", processed);
+	}
+	
+	public void test013(){
+		String str = "Мы быстро и комфортно едем на автобусе.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint("UNIFORM_ADVERB(WORD_FORM быстро([Н]),WORD_FORM и([СОЮЗ]),<main>WORD_FORM комфортно([Н]))", processed);
 	}
 }

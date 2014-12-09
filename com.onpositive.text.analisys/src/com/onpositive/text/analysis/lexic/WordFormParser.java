@@ -1,16 +1,23 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
+import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.syntax.AbstractSyntaxParser;
+import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 public class WordFormParser extends AbstractParser {
 
@@ -43,6 +50,9 @@ public class WordFormParser extends AbstractParser {
 				TextElement word = gr.getWord();
 				MeaningElement[] concepts = word.getConcepts();
 				for(MeaningElement me : concepts){
+					if(!corresponds(me,gr)){
+						continue;
+					}
 					int id = me.id();
 					IToken token = tokens.get(id);
 					if(token == null){
@@ -84,6 +94,32 @@ public class WordFormParser extends AbstractParser {
 				doubtfulTokens.add(t);
 			}
 		}
+	}
+
+	private boolean corresponds(MeaningElement me, GrammarRelation gr) {
+		
+		Set<Grammem> grammems0 = me.getGrammems();
+		Set<Grammem> grammems1 = gr.getGrammems();
+		if(!matchGrammems(grammems0, grammems1,PartOfSpeech.class)){
+			return false;
+		}
+		if(!matchGrammems(grammems0, grammems1,Gender.class)){
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean matchGrammems(Set<Grammem> grammems0, Set<Grammem> grammems1, Class<? extends Grammem> clazz) {
+		Set<? extends Grammem> ext0 = AbstractSyntaxParser.extractGrammems(grammems0, clazz);
+		if(!ext0.isEmpty()){
+			Set<? extends Grammem> ext1 = AbstractSyntaxParser.extractGrammems(grammems1, clazz);
+			if(!ext1.isEmpty()){
+				if(!ext1.containsAll(ext0)){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private void registerGrammarRelation(GrammarRelation gr, WordFormToken wft)
@@ -158,11 +194,13 @@ public class WordFormParser extends AbstractParser {
 			if(possibleContinuations!=null){
 				for(TextElement te : possibleContinuations){
 					TextElement[] parts = te.getParts();
-					int[] arr = new int[parts.length];
-					for(int i = 0 ; i < parts.length ; i++){
-						arr[i] = parts[i].id();
+					IntArrayList arr = new IntArrayList();
+					for(TextElement part : parts){
+						if(part!=null){
+							arr.add(part.id());
+						}
 					}
-					WordSequenceData data = new WordSequenceData(te,arr);
+					WordSequenceData data = new WordSequenceData(te,arr.toArray());
 					dataList.add(data);
 				}
 			}
