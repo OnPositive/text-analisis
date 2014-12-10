@@ -91,7 +91,7 @@ public class ScalarParser extends AbstractParser {
 			if(Utils.isEmptyString(evenPart)){
 				return null;
 			}
-			return new ScalarToken(iVal, startPosition, endPosition);
+			return new ScalarToken(iVal, null, null, startPosition, endPosition);
 		}
 		else if(token.getType() == IToken.TOKEN_TYPE_DIGIT){
 			if(Utils.isEmptyString(evenPart)){
@@ -102,7 +102,7 @@ public class ScalarParser extends AbstractParser {
 				return null;
 			}
 			Integer fVal = Integer.parseInt(decimalFractionPart);
-			return new ScalarToken(iVal, fVal,true,startPosition, endPosition);
+			return new ScalarToken(iVal, fVal,true, null, null, startPosition, endPosition);
 		}
 		else if(token.getType() == IToken.TOKEN_TYPE_VULGAR_FRACTION){
 			String vulgarFractionPart = token.getStringValue();
@@ -110,7 +110,7 @@ public class ScalarParser extends AbstractParser {
 				return null;
 			}
 			int[] iPair = VulgarFraction.getIntegerPair(vulgarFractionPart.charAt(0));
-			return new ScalarToken(iVal*iPair[1]+iPair[0], iPair[1], false, startPosition, endPosition);
+			return new ScalarToken(iVal*iPair[1]+iPair[0], iPair[1], false,  null, null, startPosition, endPosition);
 		}
 		return null;
 	}

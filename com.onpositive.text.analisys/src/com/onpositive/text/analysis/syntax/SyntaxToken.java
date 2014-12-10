@@ -1,17 +1,26 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.Case;
+import com.onpositive.semantic.wordnet.Grammem.Gender;
+import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.text.analysis.AbstractToken;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class SyntaxToken extends AbstractToken{
+	
+	protected static final List<GrammemSet> uniformGrammems = new ArrayList<GrammemSet>(
+			Arrays.asList( new GrammemSet(Arrays.asList(
+					Case.NOMN, Case.GENT, Case.DATV, Case.ACCS, Case.ABLT, Case.LOCT,
+					SingularPlural.SINGULAR, SingularPlural.PLURAL, Gender.UNKNOWN))));
 
 	public SyntaxToken(int tokenType, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
 		super(tokenType, startPosition, endPosition);

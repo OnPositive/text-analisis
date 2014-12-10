@@ -1,16 +1,16 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.text.analysis.AbstractToken;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 
-public class DimensionToken extends AbstractToken {
+public class DimensionToken extends SyntaxToken {
 
-	public DimensionToken(IToken scalar, Unit unit, int startPosition, int endPosition) {
-		super(IToken.TOKEN_TYPE_DIMENSION, startPosition, endPosition);
+	public DimensionToken(IToken scalar, UnitToken unitToken, int startPosition, int endPosition) {
+		super(IToken.TOKEN_TYPE_DIMENSION, unitToken, null, startPosition, endPosition);
 		this.scalar = scalar;
-		this.unit = unit;
+		this.unit = unitToken.getUnit();
 	}
 
 	private final IToken scalar;

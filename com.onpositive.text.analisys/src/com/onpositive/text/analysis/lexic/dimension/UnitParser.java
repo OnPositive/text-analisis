@@ -2,19 +2,18 @@ package com.onpositive.text.analysis.lexic.dimension;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.StringToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class UnitParser extends AbstractParser {
 	
@@ -47,7 +46,7 @@ public class UnitParser extends AbstractParser {
 		
 		int startPosition = token.getStartPosition();
 		int endPosition = token.getEndPosition();
-		ArrayList<IToken> tokens = createUnitTokens(constructed, startPosition, endPosition);
+		ArrayList<IToken> tokens = createUnitTokens(constructed, null, startPosition, endPosition);
 		appendTokens(tokens,reliableTokens,doubtfulTokens);
 	}
 
@@ -55,9 +54,6 @@ public class UnitParser extends AbstractParser {
 		
 		if(token instanceof WordFormToken){
 			TextElement te = ((WordFormToken)token).getMeaningElement().getParentTextElement();			
-			if(te.isMultiWord()){
-				return null;
-			}
 			return te.getBasicForm();
 		}
 		else if( token instanceof StringToken){
@@ -83,27 +79,23 @@ public class UnitParser extends AbstractParser {
 		int startPosition = token.getStartPosition();
 		int endPosition = token.getEndPosition();
 		
-		TextElement te = token.getMeaningElement().getParentTextElement();		
-		LinkedHashSet<Unit> units = new LinkedHashSet<Unit>(); 
-		MeaningElement[] concepts = te.getConcepts();
-		for(MeaningElement me : concepts){
-			List<Unit> list = unitsProvider.getUnits(me);
-			if(list!=null){
-				units.addAll(list);
-			}
-		}
-		if(units.isEmpty()){
+		List<Unit> units = unitsProvider.getUnits(token.getMeaningElement());
+		if(units==null){
 			return null;
 		}
-		ArrayList<IToken> tokens = createUnitTokens(units, startPosition, endPosition);
+		ArrayList<IToken> tokens = createUnitTokens(units, token, startPosition, endPosition);
 		return tokens;
 	}
 
-	private ArrayList<IToken> createUnitTokens(Collection<Unit> units,
-			int startPosition, int endPosition) {
+	private ArrayList<IToken> createUnitTokens(
+			Collection<Unit> units,
+			SyntaxToken mainGroup,
+			int startPosition,
+			int endPosition)
+	{
 		ArrayList<IToken> tokens = new ArrayList<IToken>();
 		for(Unit unit : units){
-			UnitToken unitToken = new UnitToken(unit, startPosition, endPosition);
+			UnitToken unitToken = new UnitToken(unit, mainGroup, null, startPosition, endPosition);
 			tokens.add(unitToken);
 		}
 		return tokens;

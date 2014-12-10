@@ -1,19 +1,22 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.text.analysis.AbstractToken;
+import java.util.Collection;
+import java.util.List;
 
-public class ScalarToken extends AbstractToken {
+import com.onpositive.text.analysis.syntax.SyntaxToken;
+
+public class ScalarToken extends SyntaxToken {
 	
-	public ScalarToken(double value, int startPosition, int endPosition) {
-		super(TOKEN_TYPE_SCALAR, startPosition, endPosition);
+	public ScalarToken(double value, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
+		super(TOKEN_TYPE_SCALAR, mainGroup,  grammemSets, startPosition, endPosition);
 		this.value1 = value;
 		this.value2 = Integer.MIN_VALUE;
 		this.isFracture = false;
 		this.isDecimal = false;
 	}
 	
-	public ScalarToken(int value1, int value2, boolean isDecimal, int startPosition, int endPosition) {
-		super(TOKEN_TYPE_SCALAR, startPosition, endPosition);
+	public ScalarToken(int value1, int value2, boolean isDecimal, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
+		super(TOKEN_TYPE_SCALAR, mainGroup,  grammemSets, startPosition, endPosition);
 		this.value1 = value1;
 		this.value2 = value2;
 		this.isFracture = true;
@@ -26,6 +29,16 @@ public class ScalarToken extends AbstractToken {
 	private final double value1;
 	
 	private final double value2;
+	
+	@Override
+	public List<GrammemSet> getGrammemSets() {
+		if(this.mainGroup!=null){
+			return super.getGrammemSets();
+		}
+		else{
+			return uniformGrammems;
+		}
+	}
 
 	@Override
 	public String getStringValue() {

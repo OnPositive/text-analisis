@@ -121,7 +121,7 @@ public class UnitGroupParser extends AbstractParser{
 		if(units!=null&&!units.isEmpty()){
 			ArrayList<UnitToken> list = new ArrayList<UnitToken>();
 			for(Unit unit : units){
-				UnitToken token = new UnitToken(unit, startPosition, endPosition);
+				UnitToken token = new UnitToken(unit, unitToken, null, startPosition, endPosition);
 				list.add(token);				
 			}
 			return list;
@@ -130,7 +130,7 @@ public class UnitGroupParser extends AbstractParser{
 		if(constructed != null&&!constructed.isEmpty()){
 			ArrayList<UnitToken> list = new ArrayList<UnitToken>();
 			for(Unit unit : constructed){
-				UnitToken token = new UnitToken(unit, startPosition, endPosition);
+				UnitToken token = new UnitToken(unit, unitToken, null, startPosition, endPosition);
 				list.add(token);
 			}
 			return list;

@@ -1,13 +1,16 @@
 package com.onpositive.text.analysis.lexic;
 
-import com.onpositive.text.analysis.AbstractToken;
+import java.util.Collection;
+import java.util.List;
+
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class UnitToken extends AbstractToken {
+public class UnitToken extends SyntaxToken {
 
-	public UnitToken(Unit unit, int startPosition, int endPosition) {
-		super(IToken.TOKEN_TYPE_UNIT, startPosition, endPosition);
+	public UnitToken(Unit unit, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
+		super(IToken.TOKEN_TYPE_UNIT, mainGroup, grammemSets, startPosition, endPosition);
 		this.unit = unit;
 	}
 	
@@ -20,6 +23,16 @@ public class UnitToken extends AbstractToken {
 
 	public Unit getUnit() {
 		return unit;
+	}
+	
+	@Override
+	public List<GrammemSet> getGrammemSets() {
+		if(this.mainGroup!=null){
+			return super.getGrammemSets();
+		}
+		else{
+			return uniformGrammems;
+		}
 	}
 
 	@Override
