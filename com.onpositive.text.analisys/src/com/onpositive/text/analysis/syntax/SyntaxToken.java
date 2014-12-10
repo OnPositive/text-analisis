@@ -1,88 +1,94 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
-import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.AbstractToken;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class SyntaxToken extends AbstractToken{
 
-	public SyntaxToken(int tokenType, SyntaxToken mainGroup, int startPosition, int endPosition) {
+	public SyntaxToken(int tokenType, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
 		super(tokenType, startPosition, endPosition);
 		this.mainGroup = mainGroup;
+		if(grammemSets!=null){
+			this.grammemSets = new ArrayList<SyntaxToken.GrammemSet>(grammemSets);
+		}
 	}
 
 	protected SyntaxToken mainGroup;
 	
+	protected List<GrammemSet> grammemSets;
 	
+	public List<GrammemSet> getGrammemSets(){
+		if(grammemSets!=null){
+			return grammemSets;
+		}
+		else if(this != mainGroup){
+			return mainGroup.getGrammemSets();
+		}
+		return null;
+	}
+
+
 	public boolean hasGrammem(Grammem gr){
 		
-		WordFormToken mainWord = getMainWord();
-		MeaningElement meaningElement = mainWord.getMeaningElement();
-		Set<Grammem> grammems = meaningElement.getGrammems();
-		if(grammems!=null&&grammems.contains(gr)){
-			return true;
+		List<GrammemSet> sets = getGrammemSets();		
+		if(sets==null){
+			return false;
 		}
-		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
-		if(grammarRelations!=null){
-			for(GrammarRelation rel : grammarRelations){
-				if(rel.hasGrammem(gr)){
-					return true;
-				}
+		
+		for(GrammemSet gs : sets){
+			if(gs.hasGrammem(gr)){
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	public Set<Grammem> getAllGrammems(){
-		Set<Grammem> grammems = new HashSet<Grammem>();
-		
-		WordFormToken mainWord = getMainWord();
-		MeaningElement meaningElement = mainWord.getMeaningElement();
-		Set<Grammem> meGr = meaningElement.getGrammems();
-		if(meGr!=null){
-			grammems.addAll(meGr);
-		}
-		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
-		if(grammarRelations!=null){
-			for(GrammarRelation rel : grammarRelations){
-				HashSet<Grammem> grammems2 = rel.getGrammems();				
-				if(grammems2!=null){
-					grammems.addAll(grammems2);
-				}
-			}
-		}
-		return grammems;
-	}
+	
+//	public Set<Grammem> getAllGrammems(){
+//		
+//		if(grammemSets==null){
+//			initGrammemSets();
+//		}
+//		
+//		Set<Grammem> grammems = new HashSet<Grammem>();
+//		
+//		WordFormToken mainWord = getMainWord();
+//		MeaningElement meaningElement = mainWord.getMeaningElement();
+//		Set<Grammem> meGr = meaningElement.getGrammems();
+//		if(meGr!=null){
+//			grammems.addAll(meGr);
+//		}
+//		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
+//		if(grammarRelations!=null){
+//			for(GrammarRelation rel : grammarRelations){
+//				HashSet<Grammem> grammems2 = rel.getGrammems();				
+//				if(grammems2!=null){
+//					grammems.addAll(grammems2);
+//				}
+//			}
+//		}
+//		return grammems;
+//	}
 	
 	
 	public boolean hasAnyGrammem(Collection<? extends Grammem> col){
 		
-		WordFormToken mainWord = getMainWord();
-		MeaningElement meaningElement = mainWord.getMeaningElement();
-		Set<Grammem> grammems = meaningElement.getGrammems();
-		if(grammems!=null){
-			for(Grammem gr : col){
-				if(grammems.contains(gr)){
-					return true;
-				}
-			}
+		List<GrammemSet> sets = getGrammemSets();		
+		if(sets==null){
+			return false;
 		}
-		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
-		if(grammarRelations!=null){
-			for(GrammarRelation rel : grammarRelations){
-				for(Grammem gr : col){
-					if(rel.hasGrammem(gr)){
-						return true;
-					}
-				}
+		
+		for(GrammemSet gs : sets){
+			if(gs.hasAnyGrammem(col)){
+				return true;
 			}
 		}
 		return false;
@@ -91,31 +97,14 @@ public class SyntaxToken extends AbstractToken{
 	
 	public boolean hasAllGrammems(Collection<? extends Grammem> col)
 	{
-		HashSet<Grammem> set = new HashSet<Grammem>();
-		WordFormToken mainWord = getMainWord();
-		MeaningElement meaningElement = mainWord.getMeaningElement();
-		Set<Grammem> grammems = meaningElement.getGrammems();
-		if(grammems!=null){			
-			for(Grammem gr : col){
-				if(grammems.contains(gr)){
-					set.add(gr);
-					if(set.size() == col.size()){
-						return true;
-					}
-				}
-			}
+		List<GrammemSet> sets = getGrammemSets();		
+		if(sets==null){
+			return false;
 		}
-		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
-		if(grammarRelations!=null){
-			for(GrammarRelation rel : grammarRelations){
-				for(Grammem gr : col){
-					if(rel.hasGrammem(gr)){
-						set.add(gr);
-						if(set.size() == col.size()){
-							return true;
-						}
-					}
-				}
+		
+		for(GrammemSet gs : sets){
+			if(gs.hasAllGrammems(col)){
+				return true;
 			}
 		}
 		return false;
@@ -134,8 +123,13 @@ public class SyntaxToken extends AbstractToken{
 
 	public WordFormToken getMainWord() {		
 		SyntaxToken token = this;
-		while(!(token instanceof WordFormToken)){
-			token = token.getMainGroup();
+		SyntaxToken mainGroup = this.getMainGroup();
+		while(token!=mainGroup){
+			token = mainGroup;
+			mainGroup = token.getMainGroup();
+		}
+		if(!(token instanceof WordFormToken)){
+			return null;
 		}
 		return (WordFormToken) token;
 	}
@@ -201,10 +195,57 @@ public class SyntaxToken extends AbstractToken{
 	}
 
 	public String getBasicForm() {
-		return getMainWord().getMeaningElement().getParentTextElement().getBasicForm();
+		return getMainWord().getBasicForm();
 	}
 
 
-	
+	public static class GrammemSet
+	{
+		public GrammemSet(Collection<? extends Grammem> grammems) {
+			super();
+			this.grammems = new ArrayList<Grammem>(grammems);
+		}
+
+		private ArrayList<Grammem> grammems;
+		
+		public List<Grammem> grammems(){
+			return grammems;
+		}
+		
+		public boolean hasGrammem(Grammem gr){
+			return grammems.contains(gr);
+		}
+		
+		public boolean hasAnyGrammem(Collection<? extends Grammem> col){
+			for(Grammem gr : col){
+				if(grammems.contains(gr)){
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public boolean hasAllGrammems(Collection<? extends Grammem> col){
+			return grammems.containsAll(col);
+		}
+		
+		
+		public <T extends Grammem> Set<T> extractGrammems(Class<T> clazz) {
+			return extractGrammems(grammems, clazz);
+		}
+		
+		
+		@SuppressWarnings("unchecked")
+		public static <T extends Grammem> Set<T> extractGrammems(Iterable<Grammem> col, Class<T> clazz) {
+
+			HashSet<T> set = new HashSet<T>();
+			for (Grammem gr : col) {
+				if (clazz.isInstance(gr)) {
+					set.add((T) gr);
+				}
+			}
+			return set;
+		}
+	}
 	
 }

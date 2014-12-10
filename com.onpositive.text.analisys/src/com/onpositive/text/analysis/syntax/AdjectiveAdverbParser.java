@@ -54,10 +54,10 @@ public class AdjectiveAdverbParser extends AbstractSyntaxParser{
 		int tokenType = IToken.TOKEN_TYPE_ADJECTIVE_ADVERB;
 		ArrayList<IToken> tokens = new ArrayList<IToken>();
 		if(token0.hasAnyGrammem(adjectives)&&token1.hasGrammem(PartOfSpeech.ADVB)){
-			tokens.add(new SyntaxToken(tokenType, token0, startPosition, endPosition));
+			tokens.add(new SyntaxToken(tokenType, token0, null, startPosition, endPosition));
 		}
 		if(token1.hasAnyGrammem(adjectives)&&token0.hasGrammem(PartOfSpeech.ADVB)){
-			tokens.add(new SyntaxToken(tokenType, token1, startPosition, endPosition));
+			tokens.add(new SyntaxToken(tokenType, token1, null, startPosition, endPosition));
 		}
 		return tokens;
 	}

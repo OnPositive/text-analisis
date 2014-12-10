@@ -63,16 +63,10 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 
 		int subjType = infnGrammems.match(subjToken) ? IToken.TOKEN_TYPE_DIRECT_SUBJECT_INF
 				: IToken.TOKEN_TYPE_DIRECT_SUBJECT_NAME;
-
-		createAndAdd(sample, reliableTokens, token0, token1, verbToken,
-				subjType);
-	}
-
-	void createAndAdd(Stack<IToken> sample, Set<IToken> reliableTokens,
-			SyntaxToken first, SyntaxToken last, SyntaxToken mainToken,
-			int subjType) {
-		IToken newToken = new SyntaxToken(subjType, mainToken,
-				first.getStartPosition(), last.getEndPosition());
+		
+		int startPosition = token0.getStartPosition();
+		int endPosition = token1.getEndPosition();		
+		IToken newToken = new SyntaxToken(subjType, verbToken, null, startPosition, endPosition);
 		if (checkParents(newToken, sample)) {
 			reliableTokens.add(newToken);
 		}

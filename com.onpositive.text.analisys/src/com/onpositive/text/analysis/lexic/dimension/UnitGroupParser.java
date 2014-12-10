@@ -98,7 +98,7 @@ public class UnitGroupParser extends AbstractParser{
 
 	private static boolean checkWordFormToken(IToken token) {
 		WordFormToken wft = (WordFormToken) token;
-		String basicForm = wft.getMeaningElement().getParentTextElement().getBasicForm().toLowerCase();
+		String basicForm = wft.getBasicForm().toLowerCase();
 		if(expMap.containsKey(basicForm)){
 			return true;
 		}
@@ -181,7 +181,7 @@ public class UnitGroupParser extends AbstractParser{
 			int endPosition = token1.getEndPosition();
 			UnitToken unitToken = (UnitToken) token0;
 			WordFormToken wft = (WordFormToken) token1;
-			String expString = wft.getMeaningElement().getParentTextElement().getBasicForm();
+			String expString = wft.getBasicForm();
 			Integer exp = expMap.get(expString.toLowerCase());
 			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
 			return result;
@@ -201,7 +201,7 @@ public class UnitGroupParser extends AbstractParser{
 			int endPosition = token1.getEndPosition();
 			WordFormToken wft = (WordFormToken) token0;
 			UnitToken unitToken = (UnitToken) token1;			
-			String expString = wft.getMeaningElement().getParentTextElement().getBasicForm();
+			String expString = wft.getBasicForm();
 			Integer exp = expMap.get(expString.toLowerCase());
 			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
 			return result;

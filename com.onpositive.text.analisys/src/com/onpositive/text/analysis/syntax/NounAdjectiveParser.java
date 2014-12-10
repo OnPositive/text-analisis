@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,33 +30,26 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 			return;
 		}
 		
-		ArrayList<IToken> rawTokens = matchMeanings(token0, token1);
-		ArrayList<IToken> tokens = new ArrayList<IToken>();
-		for(IToken newToken : rawTokens){
-			if(checkParents(newToken,sample)){
-				tokens.add(newToken);
-			}
+		IToken rawToken = matchMeanings(token0, token1);
+		if(rawToken==null){
+			return;
 		}
-		
-		if(tokens.size()==1){
-			reliableTokens.add(tokens.get(0));
-		}
-		else if(!tokens.isEmpty()){
-			doubtfulTokens.addAll(tokens);
+		if(checkParents(rawToken,sample)){
+			reliableTokens.add(rawToken);
 		}
 	}
 
-	private ArrayList<IToken> matchMeanings(SyntaxToken token0, SyntaxToken token1)
+	private IToken matchMeanings(SyntaxToken token0, SyntaxToken token1)
 	{
 		int tokenType = IToken.TOKEN_TYPE_NOUN_ADJECTIVE;
-		ArrayList<IToken> tokens = new ArrayList<IToken>();
+		IToken result = null;
 		if(token0.hasGrammem(PartOfSpeech.NOUN)&&token1.hasGrammem(PartOfSpeech.ADJF)){
-			tokens.addAll(combineNames(token0,token1,tokenType));
+			result = combineNames(token0,token1,tokenType);
 		}
 		if(token1.hasGrammem(PartOfSpeech.NOUN)&&token0.hasGrammem(PartOfSpeech.ADJF)){
-			tokens.addAll(combineNames(token1,token0,tokenType));
+			result = combineNames(token1,token0,tokenType);
 		}
-		return tokens;
+		return result;
 	}
 	
 	

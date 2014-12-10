@@ -8,20 +8,19 @@ import java.util.Map;
 import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.AbstractParser;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.matchers.AndMatcher;
 import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
 import com.onpositive.text.analysis.rules.matchers.HasAnyOfGrammems;
 import com.onpositive.text.analysis.rules.matchers.HasGrammem;
 import com.onpositive.text.analysis.rules.matchers.OrMatcher;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
+import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public abstract class AbstractSyntaxParser extends AbstractParser {
 
@@ -92,19 +91,6 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T extends Grammem> Set<T> extractGrammems(Set<Grammem> grammems,
-			Class<T> clazz) {
-
-		HashSet<T> set = new HashSet<T>();
-		for (Grammem gr : grammems) {
-			if (clazz.isInstance(gr)) {
-				set.add((T) gr);
-			}
-		}
-		return set;
-	}
-
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
 		for(IToken ch : children){
 			List<IToken> parents = ch.getParents();
@@ -131,60 +117,42 @@ l0:			for(IToken parent: parents){
 		return true;
 	}
 	
-	protected static List<IToken> combineNames( SyntaxToken mainGroup,	SyntaxToken token, int tokenType )
+	protected static IToken combineNames(SyntaxToken mainGroup, SyntaxToken token, int tokenType )
 	{
-		ArrayList<IToken> tokens = new ArrayList<IToken>(); 
 		int startPosition = Math.min(mainGroup.getStartPosition(), token.getStartPosition());
 		int endPosition = Math.max(mainGroup.getEndPosition(), token.getEndPosition());
 		
-		Map<GrammarRelation,Set<Grammem>> tokenGrammems = prepareGrammemsMap(token);
-		Map<GrammarRelation,Set<Grammem>> mainGroupGrammems = prepareGrammemsMap(mainGroup);
-		
-l0:		for(Map.Entry<GrammarRelation, Set<Grammem>> entry0 : mainGroupGrammems.entrySet()){
-			
-			Set<Grammem> nounGrammems = entry0.getValue();
-			Set<Case> nounCases = extractGrammems(nounGrammems,Case.class);
-			Set<SingularPlural> nounSP = extractGrammems(nounGrammems,SingularPlural.class);
-			Set<Gender> nounGender = extractGrammems(nounGrammems,Gender.class);
-			
-			for(Map.Entry<GrammarRelation, Set<Grammem>> entry1 : tokenGrammems.entrySet()){
+		ArrayList<GrammemSet> grammemSets = new ArrayList<SyntaxToken.GrammemSet>();
+l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){			
+			for(GrammemSet gs1 : token.getGrammemSets())
+			{				
+				Set<Gender> matchedGender = matchGender(gs0,gs1);
+				if(matchedGender==null||matchedGender.isEmpty()){
+					continue;
+				}
+
+				Map<SingularPlural,SingularPlural> matchedSp = matchSP(gs0,gs1);
+				if(matchedSp==null||matchedSp.isEmpty()){
+					continue;
+				}
 				
-				Set<Grammem> adjvGrammems = entry1.getValue();
-				Set<Case> adjvCases = extractGrammems(adjvGrammems,Case.class);
-				Map<Case, Case> matchCase = matchCase(nounCases,adjvCases);
-				if(matchCase==null){
+				Map<Case, Case> matchedCase = matchCase(gs0,gs1);
+				if(matchedCase==null||matchedCase.isEmpty()){
 					continue;
 				}
-				Set<SingularPlural> adjvSP = extractGrammems(adjvGrammems,SingularPlural.class);
-				Map<SingularPlural, SingularPlural> matchSP = matchSP(nounSP,adjvSP);
-				if(matchSP==null){
-					continue;
-				}
-				Set<Gender> adjvGender = extractGrammems(adjvGrammems,Gender.class);
-				Set<Gender> matchGender = matchGender(nounGender,adjvGender);
-				if(matchGender==null){
-					continue;
-				}
-				SyntaxToken newToken = new SyntaxToken(tokenType, mainGroup, startPosition, endPosition);
-				tokens.add(newToken);
-				break l0;
+				grammemSets.add(gs0);
+				continue l0;
 			}
 		}
-		return tokens;
+		if(grammemSets.isEmpty()){
+			return null;
+		}
+		SyntaxToken result = new SyntaxToken(tokenType, mainGroup, grammemSets, startPosition, endPosition);
+		return result;
 	}
 	
-	protected static Map<GrammarRelation,Set<Grammem>> prepareGrammemsMap(SyntaxToken token) {
-		
-		WordFormToken mainWord = token.getMainWord();
-		Set<Grammem> grammems = mainWord.getMeaningElement().getGrammems();
-		List<GrammarRelation> grammarRelations = mainWord.getGrammarRelations();
-		Map<GrammarRelation,Set<Grammem>> map = new HashMap<GrammarRelation, Set<Grammem>>(); 
-		for(GrammarRelation gr : grammarRelations){
-			Set<Grammem> set = new HashSet<Grammem>(gr.getGrammems());
-			set.addAll(grammems);
-			map.put(gr, set);
-		}
-		return map;
+	public static Set<Gender> matchGender(GrammemSet gs0, GrammemSet gs1){
+		return matchGender(gs0.extractGrammems(Gender.class), gs1.extractGrammems(Gender.class));
 	}
 
 	protected static Set<Gender> matchGender(Set<Gender> set0, Set<Gender> set1) {
@@ -209,10 +177,18 @@ l0:		for(Map.Entry<GrammarRelation, Set<Grammem>> entry0 : mainGroupGrammems.ent
 		}
 		return result.isEmpty() ? null : result;
 	}
+	
+	public static Map<SingularPlural,SingularPlural> matchSP(GrammemSet gs0, GrammemSet gs1){
+		return matchSP(gs0.extractGrammems(SingularPlural.class), gs1.extractGrammems(SingularPlural.class));
+	}
 
 
 	protected static Map<SingularPlural,SingularPlural> matchSP(Set<SingularPlural> set0, Set<SingularPlural> set1) {
 		return matchGrammem(set0, set1, spMatchMap);
+	}
+	
+	public static Map<Case,Case> matchCase(GrammemSet gs0, GrammemSet gs1){
+		return matchCase(gs0.extractGrammems(Case.class), gs1.extractGrammems(Case.class));
 	}
 
 

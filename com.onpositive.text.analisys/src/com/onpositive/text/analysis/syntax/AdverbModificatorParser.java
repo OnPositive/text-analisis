@@ -44,6 +44,8 @@ public class AdverbModificatorParser extends AbstractSyntaxParser {
 
 	private List<IToken> matchTokens(List<IToken> sample) {
 		
+		int tokenType = IToken.TOKEN_TYPE_ADVERB_WITH_MODIFICATOR;
+		
 		ArrayList<IToken> result = new ArrayList<IToken>();
 		int size = sample.size();
 		SyntaxToken mainWord=null;
@@ -67,7 +69,8 @@ public class AdverbModificatorParser extends AbstractSyntaxParser {
 					int endPosition = Math.max(mainWord.getEndPosition(), sample.get(i-1).getEndPosition());
 					seqStart = -1;
 					
-					SyntaxToken st = new SyntaxToken(IToken.TOKEN_TYPE_ADVERB_WITH_MODIFICATOR, mainWord, startPosition, endPosition);
+					
+					SyntaxToken st = new SyntaxToken(tokenType, mainWord, null, startPosition, endPosition);
 					result.add(st);
 					if(mainWord==token){
 						mainWord=null;
@@ -116,6 +119,7 @@ public class AdverbModificatorParser extends AbstractSyntaxParser {
 			return map.get(str);
 		}
 
+		@SuppressWarnings("unchecked")
 		private void initMap() {
 			if(map!=null){
 				return;
