@@ -52,6 +52,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_DIRECT_SUBJECT_INF = 11014;
 	
+	static final int TOKEN_TYPE_CLAUSE = 11030;
+	
 	static final int TOKEN_TYPE_ADVERB_WITH_MODIFICATOR = 11041;
 	
 	static final int TOKEN_TYPE_UNIFORM_PREDICATIVE = 11051;
@@ -127,4 +129,6 @@ public interface IToken {
 	boolean hasSpaceAfter();
 	
 	boolean hasSpaceBefore();
+	
+	boolean isContinuous();
 }

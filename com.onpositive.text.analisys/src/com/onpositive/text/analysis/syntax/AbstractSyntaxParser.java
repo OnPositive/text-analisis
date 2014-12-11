@@ -158,16 +158,16 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	protected static Set<Gender> matchGender(Set<Gender> set0, Set<Gender> set1) {
 		
 		if(set0.contains(Gender.UNKNOWN)){
-			return set1;
+			return set1.isEmpty() ? set0 : set1;
 		}
 		if(set1.contains(Gender.UNKNOWN)){
-			return set0;
+			return set0.isEmpty() ? set1 : set0;
 		}
 		if(set0.contains(Gender.COMMON)){
-			return set1;
+			return set1.isEmpty() ? set0 : set1;
 		}
 		if(set1.contains(Gender.COMMON)){
-			return set0;
+			return set0.isEmpty() ? set1 : set0;
 		}
 		HashSet<Gender> result = new HashSet<Grammem.Gender>();
 		for(Gender g : set0){
@@ -217,7 +217,7 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return new HasGrammem(infn);
 	}
 
-	public final UnaryMatcher<SyntaxToken> not(final UnaryMatcher<SyntaxToken> infn) {
+	public static final UnaryMatcher<SyntaxToken> not(final UnaryMatcher<SyntaxToken> infn) {
 		return new UnaryMatcher<SyntaxToken>(SyntaxToken.class) {
 
 			@Override

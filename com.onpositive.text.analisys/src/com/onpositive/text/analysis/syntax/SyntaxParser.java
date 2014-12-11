@@ -34,7 +34,8 @@ public class SyntaxParser extends ParserComposition {
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		UniformNounsParser.class,
-		DirectSubjectParser.class
+		DirectSubjectParser.class,
+		ClauseParser.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {

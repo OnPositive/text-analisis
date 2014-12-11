@@ -1,7 +1,12 @@
 package com.onpositive.text.analisys.tests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import junit.framework.TestCase;
 
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
@@ -9,12 +14,13 @@ import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
+import com.onpositive.text.analysis.syntax.ClauseToken;
 import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-import junit.framework.TestCase;
-
 public class ParserTest extends TestCase {
+	
+	private static final Set<Class<?>> prinTreeClasses = new HashSet<Class<?>>(Arrays.asList(SyntaxToken.class, ClauseToken.class));
 	
 	private static final String childOffStr = "  ";
 	protected ParserComposition composition;
@@ -132,7 +138,7 @@ public class ParserTest extends TestCase {
 		bld.append(offStr);
 		bld.append(TokenTypeResolver.getResolvedType(token));
 		
-		if(token.getClass() == SyntaxToken.class){
+		if(prinTreeClasses.contains(token.getClass())){
 			SyntaxToken st = (SyntaxToken) token;
 			SyntaxToken mainGroup = st.getMainGroup();
 			List<IToken> children = token.getChildren();

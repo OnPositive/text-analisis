@@ -374,16 +374,20 @@ public abstract class AbstractParser {
 	private void handleChildrenAndParents(Stack<IToken> sample,Set<IToken> newTokens)
 	{
 		
-		for(IToken newUnit : newTokens){
-			int sp = newUnit.getStartPosition();
-			int ep = newUnit.getEndPosition();
+		for(IToken newToken : newTokens){
+			List<IToken> children = newToken.getChildren();
+			if(children!=null&&!children.isEmpty()){
+				continue;
+			}
+			int sp = newToken.getStartPosition();
+			int ep = newToken.getEndPosition();
 			
 			int childIndex = 0;			
 			IToken child = sample.get(childIndex);
 			while(child.getEndPosition()<=ep){
 				if(child.getStartPosition()>=sp){
-					newUnit.addChild(child);
-					child.addParent(newUnit);
+					newToken.addChild(child);
+					child.addParent(newToken);
 				}
 				childIndex++;
 				if(childIndex>=sample.size()){

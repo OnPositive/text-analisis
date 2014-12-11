@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.onpositive.text.analysis.IToken.Direction;
-
 
 public abstract class AbstractToken implements IToken {
 	
@@ -14,6 +12,14 @@ public abstract class AbstractToken implements IToken {
 		this.tokenType = tokenType;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
+	}
+	
+	protected AbstractToken(int tokenType, int startPosition, int endPosition, boolean isContinuous)
+	{
+		this.tokenType = tokenType;
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
+		this.isContinuous = isContinuous;
 	}
 	
 	private int id;
@@ -35,6 +41,8 @@ public abstract class AbstractToken implements IToken {
 	protected List<IToken> children;
 	
 	private List<IToken> parents;
+	
+	private boolean isContinuous = true;
 	
 	public int id() {
 		return id;
@@ -213,6 +221,7 @@ public abstract class AbstractToken implements IToken {
 			this.children = new ArrayList<IToken>();
 		}
 		this.children.add(child);
+		this.isContinuous &= child.isContinuous();
 	}
 	
 	public void addChildren(Collection<IToken> children){
@@ -220,6 +229,9 @@ public abstract class AbstractToken implements IToken {
 			this.children = new ArrayList<IToken>();
 		}
 		this.children.addAll(children);
+		for(IToken child : children){
+			this.isContinuous &= child.isContinuous();
+		}
 	}
 	
 	public void setChildren(Collection<IToken> children){
@@ -293,6 +305,10 @@ public abstract class AbstractToken implements IToken {
 		return this.startPosition > endOfPrevious;
 	}
 	
+	public boolean isContinuous() {
+		return isContinuous;
+	}
+
 	@Override
 	public String toString() {
 		return getStringValue();

@@ -22,8 +22,29 @@ public class SyntaxToken extends AbstractToken{
 					Case.NOMN, Case.GENT, Case.DATV, Case.ACCS, Case.ABLT, Case.LOCT,
 					SingularPlural.SINGULAR, SingularPlural.PLURAL, Gender.UNKNOWN))));
 
-	public SyntaxToken(int tokenType, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
+	public SyntaxToken(
+			int tokenType,
+			SyntaxToken mainGroup,
+			Collection<GrammemSet> grammemSets,
+			int startPosition,
+			int endPosition) {
+		
 		super(tokenType, startPosition, endPosition);
+		this.mainGroup = mainGroup;
+		if(grammemSets!=null){
+			this.grammemSets = new ArrayList<SyntaxToken.GrammemSet>(grammemSets);
+		}
+	}
+	
+	public SyntaxToken(
+			int tokenType,
+			SyntaxToken mainGroup,
+			Collection<GrammemSet> grammemSets,
+			int startPosition,
+			int endPosition,
+			boolean isContinuous) {
+		
+		super(tokenType, startPosition, endPosition, isContinuous);
 		this.mainGroup = mainGroup;
 		if(grammemSets!=null){
 			this.grammemSets = new ArrayList<SyntaxToken.GrammemSet>(grammemSets);
@@ -37,6 +58,9 @@ public class SyntaxToken extends AbstractToken{
 	public List<GrammemSet> getGrammemSets(){
 		if(grammemSets!=null){
 			return grammemSets;
+		}
+		else if(mainGroup==null){
+			return null;
 		}
 		else if(this != mainGroup){
 			return mainGroup.getGrammemSets();
@@ -254,6 +278,11 @@ public class SyntaxToken extends AbstractToken{
 				}
 			}
 			return set;
+		}
+		
+		@Override
+		public String toString() {
+			return grammems.toString();
 		}
 	}
 	
