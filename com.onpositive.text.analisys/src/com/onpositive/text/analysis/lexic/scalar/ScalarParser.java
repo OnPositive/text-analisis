@@ -45,35 +45,42 @@ public class ScalarParser extends AbstractParser {
 		}
 		if(!gotPattern){
 			int size = tokens.size();
-			for(int i = 0 ; i < size ; i++){
-				IToken token = tokens.get(i);
-				IToken scalar = null;
-				int type = token.getType();
-				if(type==IToken.TOKEN_TYPE_DIGIT){
-					int startPosition = token.getStartPosition() ;
-					int endPosition = token.getEndPosition() ;
-					String val = token.getStringValue();
-					
-					IToken next = null;
-					if(i<size-1){
-						next = tokens.get(i+1);
-						endPosition = next.getEndPosition() ;
-						if(next.getType()!=IToken.TOKEN_TYPE_VULGAR_FRACTION){
-							next = null;
-						}
-						i++;
-					}
-					scalar = createScalar(val,next,startPosition,endPosition);
-				}
-				else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
-					scalar = createScalar(null,token,i,i+1);
-				}
-				else{
-					continue;
-				}
-				reliableTokens.add(scalar);
-			}
+			reliableTokens.addAll(createBasicScalars(tokens, size));
 		}
+	}
+
+	protected List<IToken> createBasicScalars(Stack<IToken> tokens,	int size) {
+		ScalarProcessingData pd = new ScalarProcessingData();
+		for(int i = 0 ; i < size ; i++){
+			IToken token = tokens.get(i);
+			IToken scalar = null;
+			int type = token.getType();
+			if(type==IToken.TOKEN_TYPE_DIGIT){
+				int startPosition = token.getStartPosition() ;
+				int endPosition = token.getEndPosition() ;
+				String val = token.getStringValue();
+				
+				IToken next = null;
+				if(i<size-1){
+					next = tokens.get(i+1);
+					endPosition = next.getEndPosition() ;
+					if(next.getType()!=IToken.TOKEN_TYPE_VULGAR_FRACTION){
+						next = null;
+					}
+					i++;
+				}
+				scalar = createScalar(val,next,startPosition,endPosition);
+			}
+			else if(type == IToken.TOKEN_TYPE_VULGAR_FRACTION){
+				scalar = createScalar(null,token,i,i+1);
+			}
+			else{
+				continue;
+			}
+			pd.addScalar(scalar);			
+		}
+		ArrayList<IToken> result = pd.getTokens();
+		return result;
 	}
 	
 	static IToken createScalar(

@@ -90,7 +90,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 			}
 		}
 	}
-
+	
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
 		for(IToken ch : children){
 			List<IToken> parents = ch.getParents();
@@ -117,7 +117,7 @@ l0:			for(IToken parent: parents){
 		return true;
 	}
 	
-	protected static IToken combineNames(SyntaxToken mainGroup, SyntaxToken token, int tokenType )
+	protected static SyntaxToken combineNames(SyntaxToken mainGroup, SyntaxToken token, int tokenType )
 	{
 		int startPosition = Math.min(mainGroup.getStartPosition(), token.getStartPosition());
 		int endPosition = Math.max(mainGroup.getEndPosition(), token.getEndPosition());
@@ -126,14 +126,16 @@ l0:			for(IToken parent: parents){
 l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){			
 			for(GrammemSet gs1 : token.getGrammemSets())
 			{				
-				Set<Gender> matchedGender = matchGender(gs0,gs1);
-				if(matchedGender==null||matchedGender.isEmpty()){
-					continue;
-				}
-
 				Map<SingularPlural,SingularPlural> matchedSp = matchSP(gs0,gs1);
 				if(matchedSp==null||matchedSp.isEmpty()){
 					continue;
+				}				
+				
+				if(matchedSp.size()!=1||!(matchedSp.containsKey(SingularPlural.PLURAL)||matchedSp.containsKey(SingularPlural.PLURAL))){
+					Set<Gender> matchedGender = matchGender(gs0,gs1);
+					if(matchedGender==null||matchedGender.isEmpty()){
+						continue;
+					}
 				}
 				
 				Map<Case, Case> matchedCase = matchCase(gs0,gs1);

@@ -22,7 +22,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn);
 	
 	private static final UnaryMatcher<SyntaxToken> verbMatchGrammems
-			= hasAll(PartOfSpeech.VERB, TransKind.tran);
+			= hasAll(PartOfSpeech.VERB);
 	
 
 	@SuppressWarnings("unchecked")

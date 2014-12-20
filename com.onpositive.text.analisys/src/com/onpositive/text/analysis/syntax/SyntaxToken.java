@@ -170,6 +170,16 @@ public class SyntaxToken extends AbstractToken{
 	public SyntaxToken getMainGroup(){
 		return mainGroup;
 	}
+	
+	public boolean hasMainDescendant(int type){
+		if(this.getType()==type){
+			return true;
+		}
+		if(this.mainGroup == this){
+			return false;
+		}
+		return this.mainGroup.hasMainDescendant(type);
+	}
 
 	@Override
 	public int hashCode() {

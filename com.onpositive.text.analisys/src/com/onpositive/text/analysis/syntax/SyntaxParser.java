@@ -31,10 +31,12 @@ public class SyntaxParser extends ParserComposition {
 		AdverbModificatorParser.class,
 		UniformAdverbParser.class,
 		AdjectiveAdverbParser.class,
+		VerbAdverbParser.class,
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
-		UniformNounsParser.class,
-		DirectSubjectParser.class,
+		NounDimensionParser.class,
+		UniformNounsParser.class,		
+		DirectObjectParser.class,
 		ClauseParser.class
 	};
 	
@@ -65,14 +67,20 @@ public class SyntaxParser extends ParserComposition {
 			List<IToken> tokens = new ArrayList<IToken>(sentence.getChildren());
 			for(AbstractParser parser : syntaxParsers){
 				do{
-					parser.resetTrigger();
-					tokens = parser.process(tokens);
+					tokens = applyParser(tokens, parser);
 				}
 				while(parser.hasTriggered()&&parser.isRecursive());
 			}
 			sentence.setChildren(tokens);
 		}
 		return sentences;
+	}
+
+
+	private final List<IToken> applyParser(List<IToken> tokens,	AbstractParser parser) {
+		parser.resetTrigger();
+		List<IToken> result = parser.process(tokens);
+		return result;
 	}
 	
 	

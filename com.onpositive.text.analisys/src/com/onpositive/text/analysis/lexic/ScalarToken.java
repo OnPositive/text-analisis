@@ -1,11 +1,22 @@
 package com.onpositive.text.analysis.lexic;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class ScalarToken extends SyntaxToken {
+	
+	private static final List<GrammemSet> scalarGrammems = new ArrayList<GrammemSet>();
+	{
+		List<Grammem> grammems = new ArrayList<Grammem>();
+		grammems.add(PartOfSpeech.NUMR);
+		grammems.addAll(uniformGrammems.get(0).grammems());
+		scalarGrammems.add(new GrammemSet(grammems));
+	}
 	
 	public ScalarToken(double value, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
 		super(TOKEN_TYPE_SCALAR, mainGroup,  grammemSets, startPosition, endPosition);
@@ -36,7 +47,7 @@ public class ScalarToken extends SyntaxToken {
 			return super.getGrammemSets();
 		}
 		else{
-			return uniformGrammems;
+			return scalarGrammems;
 		}
 	}
 

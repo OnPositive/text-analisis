@@ -22,8 +22,17 @@ public class NumericsParser extends AbstractParser {
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,
-			Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+		boolean allScalar=true;
+		for(IToken t : sample){
+			allScalar &= ( sample.peek().getType() == IToken.TOKEN_TYPE_SCALAR);
+			if(!allScalar){
+				break;
+			}
+		}
+		if(allScalar){
+			return;
+		}
 		double value = 0;
 		int start = Integer.MAX_VALUE;
 		int end = Integer.MIN_VALUE;

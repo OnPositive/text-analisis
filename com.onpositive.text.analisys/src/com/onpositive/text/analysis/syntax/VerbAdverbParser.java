@@ -1,5 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,10 +11,10 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
 
-public class NounAdjectiveParser extends AbstractSyntaxParser{
+public class VerbAdverbParser extends AbstractSyntaxParser{
 
 	
-	public NounAdjectiveParser(AbstractWordNet wordNet) {
+	public VerbAdverbParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
 
@@ -30,31 +31,35 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 			return;
 		}
 		
-		SyntaxToken newToken = matchMeanings(token0, token1);
-		if(newToken==null){
-			return;
+		ArrayList<IToken> rawTokens = matchMeanings(token0, token1);
+		ArrayList<IToken> tokens = new ArrayList<IToken>();
+		for(IToken newToken : rawTokens){
+			if(checkParents(newToken,sample)){
+				tokens.add(newToken);
+			}
 		}
-		if(checkParents(newToken,sample)){
-			if(newToken.hasMainDescendant(IToken.TOKEN_TYPE_UNIT)){
-				doubtfulTokens.add(newToken);
-			}
-			else{
-				reliableTokens.add(newToken);
-			}
+		
+		if(tokens.size()==1){
+			reliableTokens.add(tokens.get(0));
+		}
+		else if(!tokens.isEmpty()){
+			doubtfulTokens.addAll(tokens);
 		}
 	}
 
-	private SyntaxToken matchMeanings(SyntaxToken token0, SyntaxToken token1)
+	private ArrayList<IToken> matchMeanings(SyntaxToken token0, SyntaxToken token1)
 	{
-		int tokenType = IToken.TOKEN_TYPE_NOUN_ADJECTIVE;
-		SyntaxToken result = null;
-		if(token0.hasGrammem(PartOfSpeech.NOUN)&&hasAny(adjectiveLike).match(token1)){
-			result = combineNames(token0,token1,tokenType);
+		int startPosition = token0.getStartPosition();
+		int endPosition = token1.getEndPosition();
+		int tokenType = IToken.TOKEN_TYPE_VERB_ADVERB;
+		ArrayList<IToken> tokens = new ArrayList<IToken>();
+		if(token0.hasAnyGrammem(verbs)&&token1.hasGrammem(PartOfSpeech.ADVB)){
+			tokens.add(new SyntaxToken(tokenType, token0, null, startPosition, endPosition));
 		}
-		if(token1.hasGrammem(PartOfSpeech.NOUN)&&hasAny(adjectiveLike).match(token0)){
-			result = combineNames(token1,token0,tokenType);
+		if(token1.hasAnyGrammem(verbs)&&token0.hasGrammem(PartOfSpeech.ADVB)){
+			tokens.add(new SyntaxToken(tokenType, token1, null, startPosition, endPosition));
 		}
-		return result;
+		return tokens;
 	}
 	
 	
@@ -76,24 +81,24 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 		}
 		
 		SyntaxToken token0 = (SyntaxToken) sample.peek();		
-		if(token0.hasGrammem(PartOfSpeech.NOUN)){
-			if(hasAny(adjectiveLike).match(token1)){
+		if(token0.hasAnyGrammem(verbs)){
+			if(token1.hasGrammem(PartOfSpeech.ADVB)){
 				return ACCEPT_AND_BREAK;
 			}
 		}
-		if(hasAny(adjectiveLike).match(token0)){
-			if(token1.hasGrammem(PartOfSpeech.NOUN)){
+		if(token0.hasGrammem(PartOfSpeech.ADVB)){
+			if(token1.hasAnyGrammem(verbs)){
 				return ACCEPT_AND_BREAK;
 			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 	
-	private static final Set<PartOfSpeech> adjectiveLike
-			= new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.ADJF, PartOfSpeech.NUMR));
-	
 	private static final Set<PartOfSpeech> acceptedPartsOfSpeech
-			= new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.NOUN, PartOfSpeech.ADJF, PartOfSpeech.NUMR));
+			= new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.VERB, PartOfSpeech.INFN, PartOfSpeech.ADVB));
+	
+	private static final Set<PartOfSpeech> verbs
+			= new HashSet<Grammem.PartOfSpeech>(Arrays.asList(PartOfSpeech.VERB, PartOfSpeech.INFN));
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {

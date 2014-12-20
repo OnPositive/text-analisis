@@ -3,9 +3,7 @@ package com.onpositive.text.analysis.lexic.scalar;
 import java.util.ArrayList;
 
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.ScalarToken;
-import com.onpositive.text.analysis.utils.Utils;
-import com.onpositive.text.analysis.utils.VulgarFraction;
+import com.onpositive.text.analysis.lexic.SymbolToken;
 
 class ScalarProcessingData{
 	
@@ -62,6 +60,9 @@ class ScalarProcessingData{
 			}
 		}
 	}
+	public void addScalar(IToken token){
+		this.tokens.add(token);
+	}
 	
 
 
@@ -73,8 +74,18 @@ class ScalarProcessingData{
 		this.invalidPattern = b;		
 	}
 
-	public ArrayList<IToken> getTokens() {
-		return new ArrayList<IToken>(this.tokens);
+	public ArrayList<IToken> getTokens() {		
+		ArrayList<IToken> result = new ArrayList<IToken>();
+		IToken prev = this.tokens.get(0);
+		result.add(prev);
+		int size = this.tokens.size();
+		for(int i = 1 ; i < size ; i++){
+			IToken t = this.tokens.get(i);
+			result.add(new SymbolToken( ',', prev.getEndPosition(),t.getStartPosition()));
+			result.add(t);
+			prev=t;
+		}
+		return result;
 	}
 
 	public void setFraction(boolean b) {

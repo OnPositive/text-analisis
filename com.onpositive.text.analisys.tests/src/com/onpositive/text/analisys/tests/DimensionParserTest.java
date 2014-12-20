@@ -23,6 +23,8 @@ public class DimensionParserTest extends ParserTest{
 	
 	private Unit meterUnit = new Unit("метр",UnitKind.SIZE,1);
 	
+	private Unit squareMeterUnit = new Unit("метр^2",UnitKind.AREA,1);
+	
 	private Unit nanometerUnit = new Unit("нанометр",UnitKind.SIZE,0.000000001);
 	
 	private Unit mileUnit = new Unit("сухопутная миля",UnitKind.SIZE,1609.344);
@@ -96,5 +98,11 @@ public class DimensionParserTest extends ParserTest{
 		String str = "Мы проехали три сухопутных мили в сторону гор.";		
 		List<IToken> processed = process(str);
 		assertTestDimension(3.0,mileUnit,processed);
+	}
+	
+	public void testD009(){
+		String str = "92,8 м^2";		
+		List<IToken> processed = process(str);
+		assertTestDimension(92.8,squareMeterUnit,processed);
 	}
 }

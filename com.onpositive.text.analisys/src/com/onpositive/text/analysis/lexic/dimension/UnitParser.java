@@ -46,7 +46,8 @@ public class UnitParser extends AbstractParser {
 		
 		int startPosition = token.getStartPosition();
 		int endPosition = token.getEndPosition();
-		ArrayList<IToken> tokens = createUnitTokens(constructed, null, startPosition, endPosition);
+		SyntaxToken mainGroup = (token instanceof SyntaxToken) ? (SyntaxToken)token : null;
+		ArrayList<IToken> tokens = createUnitTokens(constructed, mainGroup, startPosition, endPosition);
 		appendTokens(tokens,reliableTokens,doubtfulTokens);
 	}
 

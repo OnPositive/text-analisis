@@ -102,26 +102,75 @@ public abstract class AbstractParser {
 		LinkedHashSet<IToken> doubtfulTokens = new LinkedHashSet<IToken>(); 
 		
 		ArrayList<IToken> result = new ArrayList<IToken>();
+		ArrayList<IToken> toDiscard = new ArrayList<IToken>();
 		for( int i = 0 ; i < tokens.size() ; i++ ){
 			IToken token = tokens.get(i);			
 			if(inspectBranch(token)){
 				continue;
 			}
-			reliableTokens.clear();
-			doubtfulTokens.clear();
 			parseStartingTokens(token,reliableTokens,doubtfulTokens);
 			
 			boolean tokenReleased = handleBounds(token, reliableTokens, doubtfulTokens);
 			if(!tokenReleased){
-				result.add(token);
+				insertToken(result, token);
 				parsedTokens.put(token.id(),token);
+			}
+			else{
+				toDiscard.add(token);
 			}
 
 			result.addAll(reliableTokens);
 			result.addAll(doubtfulTokens);
 			setTriggered(!(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()));			
 		}
+		discardToken(toDiscard);
 		return result;
+	}
+
+	private void discardToken(ArrayList<IToken> toDiscard) {
+		for(IToken t : toDiscard){
+			discardNeighbours(t, Direction.START);
+			discardNeighbours(t, Direction.END);
+		}
+	}
+
+	protected void discardNeighbours(IToken token, Direction dir) {
+		IToken neighbour = token.getNeighbour(dir);
+		if(neighbour!=null){
+			neighbour.removeNeighbour(dir.opposite(), token);
+		}
+		
+		List<IToken> neighbours = token.getNeighbours(dir);
+		if(neighbours!=null){
+			for(IToken n : neighbours){
+				n.removeNeighbour(dir.opposite(), token);
+			}
+		}
+	}
+
+	protected void insertToken(ArrayList<IToken> result, IToken token) {
+		
+		int sp = token.getStartPosition();
+		int ind = -1;
+		for( int i = result.size()-1; i >= 0 ; i--){
+			IToken t = result.get(i);
+			if(t.getStartPosition() <= sp){
+				break;
+			}
+			else{
+				ind = i;
+			}
+		}
+		if(ind<0){				
+			result.add(token);
+		}
+		else{
+			result.add(null);
+			for( int i = result.size()-1; i > ind ; i--){
+				result.set(i, result.get(i-1));
+			}
+			result.set(ind, token);
+		}
 	}
 	
 
@@ -188,12 +237,26 @@ public abstract class AbstractParser {
 				}
 			}
 		}
-		branchRegistry.remove(token);
+//		else{
+			branchRegistry.remove(token);
+//			List<IToken> parents = token.getParents();
+//			if(parents==null||parents.isEmpty()){
+//				return false;
+//			}
+//			for(IToken parent: parents){
+//				if(parsedTokens.containsKey(parent.id())){
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
 		return false;
 	}
 	
 	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
 		
+		reliableTokens.clear();
+		doubtfulTokens.clear();
 		prepare();
 		
 		ProcessingResult pr = checkPossibleStart(token);

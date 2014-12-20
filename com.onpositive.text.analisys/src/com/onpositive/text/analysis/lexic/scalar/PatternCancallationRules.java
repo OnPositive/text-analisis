@@ -30,7 +30,8 @@ public class PatternCancallationRules {
 				new DecimalDelimeter(),
 				new FractureDelimeter(),
 				new FractureDelimeterBeforeVulgarFraction(),
-				new SpaceValueDelimeter()
+				new SpaceValueDelimeter(),
+				new FractureDelimeterPromotion()
 			});
 		}
 		return  executionEngine;
@@ -225,6 +226,39 @@ public class PatternCancallationRules {
 				@Override
 				public void execute(String arg) {
 					patternManager.cancelFractureDelimeter(arg);
+				}
+			});
+		}		
+	}
+	
+	private class FractureDelimeterPromotion extends ConditionRule{
+		
+		public FractureDelimeterPromotion() {
+			super( new TernaryCondition<String>() {
+
+				private final TokenMaskTernaryCondition maskCondition
+						= new TokenMaskTernaryCondition(new int[] {
+								IToken.TOKEN_TYPE_DIGIT,
+								IToken.TOKEN_TYPE_SYMBOL,
+								IToken.TOKEN_TYPE_DIGIT								
+					});
+
+				@Override
+				public String compute(IToken token0, IToken token1,	IToken token2)
+				{
+					String val = token1.getStringValue();
+					if(token0.getType()==IToken.TOKEN_TYPE_SYMBOL && patternManager.iscanCancelledFractureDelimeter(val)){
+						return null;
+					}
+					if (!maskCondition.compute(token0, token1, token2)) {
+						return null;
+					}					
+					return val;
+				}
+			} , new RuleCallback<String>() {
+				@Override
+				public void execute(String arg) {
+					patternManager.voteForFractureDelimeter(arg);
 				}
 			});
 		}		

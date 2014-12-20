@@ -1,17 +1,18 @@
 package com.onpositive.text.analysis.lexic;
 
 import com.onpositive.text.analysis.AbstractToken;
+import com.onpositive.text.analysis.IToken;
 
 public class SymbolToken extends AbstractToken {
 
-	protected SymbolToken(String value, int tokenType, int startPosition, int endPosition) {
-		super(tokenType, startPosition, endPosition);
+	protected SymbolToken(String value, int startPosition, int endPosition) {
+		super(IToken.TOKEN_TYPE_SYMBOL, startPosition, endPosition);
 		
 		this.value = value.intern();
 	}
 	
-	public SymbolToken(char ch, int tokenType, int startPosition, int endPosition) {
-		super(tokenType, startPosition, endPosition);
+	public SymbolToken(char ch, int startPosition, int endPosition) {
+		super(IToken.TOKEN_TYPE_SYMBOL, startPosition, endPosition);
 		
 		this.value = ("" + ch).intern();
 	}

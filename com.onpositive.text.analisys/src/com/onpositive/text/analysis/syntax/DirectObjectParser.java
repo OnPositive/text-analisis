@@ -13,9 +13,9 @@ import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
-public class DirectSubjectParser extends AbstractSyntaxParser {
+public class DirectObjectParser extends AbstractSyntaxParser {
 
-	public DirectSubjectParser(AbstractWordNet wordNet) {
+	public DirectObjectParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
 
@@ -36,7 +36,7 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 	private final UnaryMatcher<SyntaxToken> nounbMatchGrammems = hasAny(
 			PartOfSpeech.NOUN, PartOfSpeech.NPRO);	
 	private final UnaryMatcher<SyntaxToken> infnGrammems = has(PartOfSpeech.INFN);
-
+	
 	@SuppressWarnings("unchecked")
 	UnaryMatcher<SyntaxToken> verbInforName = or(verbMatchGrammems,
 			infnGrammems, checkName);
@@ -70,8 +70,8 @@ public class DirectSubjectParser extends AbstractSyntaxParser {
 			return;
 		}
 
-		int subjType = infnGrammems.match(subjToken) ? IToken.TOKEN_TYPE_DIRECT_SUBJECT_INF
-				: IToken.TOKEN_TYPE_DIRECT_SUBJECT_NAME;
+		int subjType = infnGrammems.match(subjToken) ? IToken.TOKEN_TYPE_DIRECT_OBJECT_INF
+				: IToken.TOKEN_TYPE_DIRECT_OBJECT_NAME;
 		
 		int startPosition = token0.getStartPosition();
 		int endPosition = token1.getEndPosition();		

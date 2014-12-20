@@ -78,7 +78,7 @@ public class PrimitiveTokenizer {
 		if(type == IToken.TOKEN_TYPE_SYMBOL){
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
-				SymbolToken pt = new SymbolToken( ch, type, start+i, start+i+1 );
+				SymbolToken pt = new SymbolToken( ch, start+i, start+i+1 );
 				pt.setId(list.size());
 				list.add(pt);
 			}

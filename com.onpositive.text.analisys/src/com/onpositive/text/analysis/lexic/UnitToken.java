@@ -1,13 +1,25 @@
 package com.onpositive.text.analysis.lexic;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.Case;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class UnitToken extends SyntaxToken {
+	
+	private static final List<GrammemSet> unitGrammems = new ArrayList<GrammemSet>();
+	{
+		List<Grammem> grammems = new ArrayList<Grammem>();
+		grammems.add(PartOfSpeech.NOUN);
+		grammems.addAll(uniformGrammems.get(0).grammems());
+		unitGrammems.add(new GrammemSet(grammems));
+	}
 
 	public UnitToken(Unit unit, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
 		super(IToken.TOKEN_TYPE_UNIT, mainGroup, grammemSets, startPosition, endPosition);
@@ -28,11 +40,14 @@ public class UnitToken extends SyntaxToken {
 	@Override
 	public List<GrammemSet> getGrammemSets() {
 		if(this.mainGroup!=null){
-			return super.getGrammemSets();
+			List<GrammemSet> sets = super.getGrammemSets();
+			for(GrammemSet gs : sets){
+				if(!gs.extractGrammems(Case.class).isEmpty()){
+					return sets;
+				}
+			}
 		}
-		else{
-			return uniformGrammems;
-		}
+		return unitGrammems;
 	}
 
 	@Override

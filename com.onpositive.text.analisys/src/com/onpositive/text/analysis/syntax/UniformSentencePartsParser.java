@@ -147,6 +147,15 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 	@SuppressWarnings("unchecked")	
 	protected ProcessingResult checkToken(IToken newToken) {
 		
+		if(!(newToken instanceof SyntaxToken)){
+			return DO_NOT_ACCEPT_AND_BREAK;
+		}
+		
+		SyntaxToken token1 = (SyntaxToken) newToken;
+		if(token1.hasGrammem(PartOfSpeech.PREP)){
+			return DO_NOT_ACCEPT_AND_BREAK;
+		}
+		
 		if(or(partOfSpeechMatcher,conjunctionMatcher).match(newToken)){
 			return CONTINUE_PUSH;
 		}
