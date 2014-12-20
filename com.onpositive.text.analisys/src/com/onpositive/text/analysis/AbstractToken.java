@@ -2,6 +2,7 @@ package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -34,14 +35,32 @@ public abstract class AbstractToken implements IToken {
 	
 	private final int tokenType;
 	
-	private final int startPosition;
+	private int startPosition;
 	
-	private final int endPosition;
+	public void setStartPosition(int startPosition) {
+		this.startPosition = startPosition;
+	}
+
+	public void setEndPosition(int endPosition) {
+		this.endPosition = endPosition;
+	}
+
+	private int endPosition;
 	
 	protected List<IToken> children;
 	
 	private List<IToken> parents;
 	
+	private String link;
+	
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
+	}
+
 	private boolean isContinuous = true;
 	
 	public int id() {
@@ -213,6 +232,9 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public List<IToken> getChildren(){
+		/*if (this.children==null){
+			return Collections.emptyList();
+		}*/
 		return this.children;
 	}	
 	

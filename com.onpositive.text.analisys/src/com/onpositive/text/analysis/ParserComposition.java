@@ -13,10 +13,18 @@ public class ParserComposition {
 	}
 
 	AbstractParser[]parsers;
-	PrimitiveTokenizer pt=new PrimitiveTokenizer();
+	PrimitiveTokenizer tokenizer=new PrimitiveTokenizer();
 	
+	public PrimitiveTokenizer getTokenizer() {
+		return tokenizer;
+	}
+
+	public void setTokenizer(PrimitiveTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
+
 	public List<IToken>parse(String str){
-		List<IToken> tokenize = pt.tokenize(str);
+		List<IToken> tokenize = tokenizer.tokenize(str);
 		tokenize = process(tokenize);
 		return tokenize;
 	}

@@ -74,13 +74,18 @@ class ScalarProcessingData{
 		this.invalidPattern = b;		
 	}
 
-	public ArrayList<IToken> getTokens() {		
+	public ArrayList<IToken> getTokens() {
+		if (pattern.getValueDelimeter()!=null&&pattern.getValueDelimeter().equals(" ")){
+			return this.tokens;
+		}
 		ArrayList<IToken> result = new ArrayList<IToken>();
 		IToken prev = this.tokens.get(0);
 		result.add(prev);
 		int size = this.tokens.size();
+		
 		for(int i = 1 ; i < size ; i++){
 			IToken t = this.tokens.get(i);
+			
 			result.add(new SymbolToken( ',', prev.getEndPosition(),t.getStartPosition()));
 			result.add(t);
 			prev=t;

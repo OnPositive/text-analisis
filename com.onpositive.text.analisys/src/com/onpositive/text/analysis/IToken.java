@@ -68,6 +68,8 @@ public interface IToken {
 
 	static final int TOKEN_TYPE_MEASURED_NOUN = 11055;
 	
+	static final int TOKEN_TYPE_LINK = 11056;
+	
 	
 	
 	int id();
@@ -135,4 +137,9 @@ public interface IToken {
 	boolean hasSpaceBefore();
 	
 	boolean isContinuous();
+	
+	public String getLink();
+
+	public void setLink(String link) ;
+
 }

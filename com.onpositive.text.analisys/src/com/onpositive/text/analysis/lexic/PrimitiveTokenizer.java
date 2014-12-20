@@ -19,6 +19,14 @@ public class PrimitiveTokenizer {
 	
 	private ArrayList<ITokenizerExtension> extensions = new ArrayList<ITokenizerExtension>();
 	
+	public boolean add(ITokenizerExtension e) {
+		return extensions.add(e);
+	}
+
+	public boolean remove(ITokenizerExtension o) {
+		return extensions.remove(o);
+	}
+
 	public List<IToken> tokenize(String str){
 		
 		if( Utils.isEmptyString(str) ){
@@ -152,7 +160,7 @@ public class PrimitiveTokenizer {
 		return list;
 	}
 	
-	private int detectType(char ch) {
+	public static int detectType(char ch) {
 		
 		Integer type = map.get(ch);
 		if(type !=null)
