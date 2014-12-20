@@ -27,6 +27,19 @@ public class ScalarParserTest extends ParserTest{
 		assertTestScalar(1000000.0, processed);
 	}
 	
+	public void testS0022(){
+		String str = "1 223 232 ";		
+		List<IToken> processed = process(str);
+		printTokens(processed);
+		assertTestScalar(1223232.0, processed);
+	}
+	public void testS0023(){
+		String str = "1 223";		
+		List<IToken> processed = process(str);
+		printTokens(processed);
+		assertTestScalar(1223232.0, processed);
+	}
+	
 	public void testS003(){
 		String str = "Прилетело попугаев 1,000,000.2,000,000 -- это прилетело ворон.";		
 		List<IToken> processed = process(str);
