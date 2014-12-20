@@ -8,6 +8,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.AbstractParser;
@@ -41,7 +42,7 @@ public class ParserTest extends TestCase {
 		ArrayList<IToken> list = new ArrayList<>();
 		for(IToken t : processed){
 			if(t instanceof SentenceToken){
-				list.addAll(t.getChildren());
+				list.addAll(new BasicCleaner().clean(t.getChildren()));
 			}
 			else{
 				list.add(t);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.AbstractParser;
@@ -71,7 +72,7 @@ public class SyntaxParser extends ParserComposition {
 				}
 				while(parser.hasTriggered()&&parser.isRecursive());
 			}
-			sentence.setChildren(tokens);
+			sentence.setChildren(new BasicCleaner().clean(tokens));
 		}
 		return sentences;
 	}

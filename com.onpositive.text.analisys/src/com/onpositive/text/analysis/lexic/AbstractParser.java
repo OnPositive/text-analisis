@@ -127,14 +127,14 @@ public abstract class AbstractParser {
 		return result;
 	}
 
-	private void discardToken(ArrayList<IToken> toDiscard) {
+	public static void discardToken(List<IToken> toDiscard) {
 		for(IToken t : toDiscard){
 			discardNeighbours(t, Direction.START);
 			discardNeighbours(t, Direction.END);
 		}
 	}
 
-	protected void discardNeighbours(IToken token, Direction dir) {
+	protected static void discardNeighbours(IToken token, Direction dir) {
 		IToken neighbour = token.getNeighbour(dir);
 		if(neighbour!=null){
 			neighbour.removeNeighbour(dir.opposite(), token);
