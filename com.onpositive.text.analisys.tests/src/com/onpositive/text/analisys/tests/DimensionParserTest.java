@@ -104,5 +104,11 @@ public class DimensionParserTest extends ParserTest{
 		String str = "92,8 м^2";		
 		List<IToken> processed = process(str);
 		assertTestDimension(92.8,squareMeterUnit,processed);
+	}	
+	
+	public void testD010(){
+		String str = "Площадь страны равна 3 млрд. м^2.";		
+		List<IToken> processed = process(str);
+		assertTestDimension(3000000000.,squareMeterUnit,processed);
 	}
 }

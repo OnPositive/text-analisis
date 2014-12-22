@@ -12,6 +12,7 @@ import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.IToken;
@@ -36,7 +37,7 @@ public class WordFormParser extends AbstractParser {
 		IntObjectOpenHashMap<IToken> tokens = new IntObjectOpenHashMap<IToken>();
 		IToken firstToken = sample.get(0);
 		int startPosition = firstToken.getStartPosition();
-		int endPosition = firstToken.getEndPosition();
+		int endPosition = sample.peek().getEndPosition();
 		
 		boolean gotSequence = false;
 		for(WordSequenceData data : dataList){
@@ -139,11 +140,18 @@ public class WordFormParser extends AbstractParser {
 
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
-		if (newToken.getType()==IToken.TOKEN_TYPE_DIGIT){
+		int type = newToken.getType();
+		if (type==IToken.TOKEN_TYPE_DIGIT){
 			return DO_NOT_ACCEPT_AND_BREAK; 
 		}
-		ProcessingResult result = CONTINUE_PUSH;
 		
+		if(type==IToken.TOKEN_TYPE_SYMBOL){
+			if(isAbbr&&sample.size()==1&&newToken.getStringValue()=="."){
+				return ACCEPT_AND_BREAK;
+			}
+		}
+		
+		ProcessingResult result = CONTINUE_PUSH;
 		String value = newToken.getStringValue();
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		
@@ -185,6 +193,7 @@ public class WordFormParser extends AbstractParser {
 		}
 		
 		firstWordForms = possibleGrammarForms;
+		checkAbbr();
 		
 		for(GrammarRelation gr : possibleGrammarForms){
 			TextElement word = gr.getWord();
@@ -205,6 +214,18 @@ public class WordFormParser extends AbstractParser {
 		}
 		
 		return CONTINUE_PUSH;
+	}
+	
+	private boolean isAbbr = false;
+	
+	protected void checkAbbr() {
+		isAbbr = false;
+		for(GrammarRelation gr : firstWordForms){
+			if(gr.getWord().hasGrammem(SemanGramem.ABBR)){
+				isAbbr = true;
+				return;
+			}
+		}
 	};
 
 	protected ProcessingResult checkToken(IToken unit) {

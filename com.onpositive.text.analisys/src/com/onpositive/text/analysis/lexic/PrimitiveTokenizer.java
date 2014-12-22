@@ -63,7 +63,7 @@ public class PrimitiveTokenizer {
 			
 			char ch = str.charAt(i);
 			int cType = detectType(ch);
-			if(cType==type){
+			if(areCompatible(cType, type)){
 				continue;
 			}
 			
@@ -78,6 +78,16 @@ public class PrimitiveTokenizer {
 		tokenizeSegment(list, start, type, segment);
 		
 		return list;
+	}
+
+	protected boolean areCompatible(int cType, int type) {
+		if(cType==type){
+			return true;
+		}
+		if(cType==IToken.TOKEN_TYPE_LETTER&&type==IToken.TOKEN_TYPE_DIGIT){
+			return true;
+		}
+		return false;
 	}
 
 	private final void tokenizeSegment(ArrayList<IToken> list, int start, int type, String segment)
@@ -142,7 +152,7 @@ public class PrimitiveTokenizer {
 					type = cType;
 					continue;
 				}
-				if(cType==type){
+				if(areCompatible(type, cType)){
 					continue;
 				}				
 				if(type != IToken.TOKEN_TYPE_OTHER_WHITESPACE){
