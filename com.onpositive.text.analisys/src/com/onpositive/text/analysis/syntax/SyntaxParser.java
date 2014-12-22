@@ -59,7 +59,7 @@ public class SyntaxParser extends ParserComposition {
 	
 	
 	public List<IToken> parse(String str){
-		
+		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
 		List<IToken> lexicProcessed = lexicParser.process(primitiveTokens);
 		List<IToken> sentences = sentenceMaker.formSentences(lexicProcessed);
@@ -75,6 +75,14 @@ public class SyntaxParser extends ParserComposition {
 			sentence.setChildren(new BasicCleaner().clean(tokens));
 		}
 		return sentences;
+	}
+
+
+	public void setText(String str) {
+		lexicParser.setText(str);
+		for(AbstractParser ap : syntaxParsers){
+			ap.setText(str);
+		}
 	}
 
 

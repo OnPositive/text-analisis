@@ -237,19 +237,9 @@ public abstract class AbstractParser {
 				}
 			}
 		}
-//		else{
+		else{
 			branchRegistry.remove(token);
-//			List<IToken> parents = token.getParents();
-//			if(parents==null||parents.isEmpty()){
-//				return false;
-//			}
-//			for(IToken parent: parents){
-//				if(parsedTokens.containsKey(parent.id())){
-//					return true;
-//				}
-//			}
-//			return false;
-//		}
+		}
 		return false;
 	}
 	

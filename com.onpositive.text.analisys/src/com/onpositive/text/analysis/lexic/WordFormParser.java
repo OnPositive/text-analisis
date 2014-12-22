@@ -37,7 +37,7 @@ public class WordFormParser extends AbstractParser {
 		IntObjectOpenHashMap<IToken> tokens = new IntObjectOpenHashMap<IToken>();
 		IToken firstToken = sample.get(0);
 		int startPosition = firstToken.getStartPosition();
-		int endPosition = sample.peek().getEndPosition();
+		int endPosition = firstToken.getEndPosition();
 		
 		boolean gotSequence = false;
 		for(WordSequenceData data : dataList){
@@ -55,6 +55,16 @@ public class WordFormParser extends AbstractParser {
 					int id = me.id();
 					IToken token = tokens.get(id);
 					if(token == null){
+						if(me.getGrammems().contains(SemanGramem.ABBR)){
+							if (sample.size()>1){
+								IToken secondToken = sample.get(1);
+								if(secondToken.getStringValue().equals(".")){
+									if(endPosition==secondToken.getStartPosition()){
+										endPosition = secondToken.getEndPosition();
+									}
+								}
+							}
+						}
 						token = new WordFormToken(me, startPosition, endPosition);
 						tokens.put(id, token);
 					}

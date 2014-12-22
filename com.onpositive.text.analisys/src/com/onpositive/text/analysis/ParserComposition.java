@@ -24,14 +24,21 @@ public class ParserComposition {
 	}
 
 	public List<IToken>parse(String str){
-		List<IToken> tokenize = tokenizer.tokenize(str);
+		setText(str);
+		List<IToken> tokenize = tokenizer.tokenize(str);		
 		tokenize = process(tokenize);
 		return tokenize;
 	}
 
+	public void setText(String str) {
+		for (AbstractParser p:parsers){
+			p.setText(str);			
+		}
+	}
+
 	public List<IToken> process(List<IToken> tokenize) {
 		for (AbstractParser p:parsers){
-			tokenize=p.process(tokenize);
+			tokenize=p.process(tokenize);			
 		}
 		return tokenize;
 	}
