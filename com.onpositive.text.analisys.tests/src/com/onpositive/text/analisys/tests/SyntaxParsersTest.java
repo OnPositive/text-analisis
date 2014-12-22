@@ -67,17 +67,20 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM свой([мест-п, Анаф, ПРИЛ]), <main>WORD_FORM улица([жр, СУЩ, неод]))", processed);
 	}
 	
+	/**
+	 *  INVALID TEST !!!
+	 **/
 	public void test005(){
 		String str = "Но я люблю смотреть кино.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM я([МС, 1л])"
-				+ "DIRECT_OBJECT_NAME("
+				+ "<subject>WORD_FORM я([МС, 1л])"
+				+ "<predicate>DIRECT_OBJECT_NAME("
 					+ "<main>DIRECT_OBJECT_INF("
 						+ "<main>WORD_FORM люблю([ГЛ, перех, несов])"
 						+ "WORD_FORM смотреть([перех, несов, ИНФ])  )"
-				+ "WORD_FORM кино([СУЩ, ср, 0, неод])  )  )", processed);
+					+ "WORD_FORM кино([СУЩ, ср, 0, неод])  )  )", processed);
 	}
 	/**
 	 *  INVALID TEST !!!
@@ -87,8 +90,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM я([МС, 1л])"
-				+ "DIRECT_OBJECT_NAME("
+				+ "<subject>WORD_FORM я([МС, 1л])"
+				+ "<predicate>DIRECT_OBJECT_NAME("
 					+ "<main>WORD_FORM смотрю([ГЛ, перех, несов])"
 					+ "UNIFORM_NOUN("
 						+ "WORD_FORM сериал([мр, СУЩ, неод])"
@@ -102,8 +105,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM петя([имя, мр, од, СУЩ])"
-				+ "DIRECT_OBJECT_INF("
+				+ "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
+				+ "<predicate>DIRECT_OBJECT_INF("
 					+ "<main>WORD_FORM люблю([ГЛ, перех, несов])"
 					+ "WORD_FORM петь([перех, несов, ИНФ])  )  )", processed);
 	}
@@ -113,8 +116,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM мы([МС, 1л])"
-				+ "VERB_ADVERB("
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+				+ "<predicate>VERB_ADVERB("
 					+ "ADVERB_WITH_MODIFICATOR("
 						+ "WORD_FORM очень([Н])"
 						+ "<main>WORD_FORM быстро([Н])  )"
@@ -126,8 +129,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM мы([МС, 1л])"
-				+ "VERB_ADVERB("
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+				+ "<predicate>VERB_ADVERB("
 					+ "UNIFORM_ADVERB("
 							+ "WORD_FORM быстро([Н])"
 							+ "WORD_FORM и([СОЮЗ])"
@@ -140,8 +143,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM мы([МС, 1л])"
-				+ "VERB_ADVERB("
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+				+ "<predicate>VERB_ADVERB("
 					+ "UNIFORM_ADVERB("
 						+ "ADVERB_WITH_MODIFICATOR("
 							+ "WORD_FORM очень([])"
@@ -155,13 +158,13 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "В лесу стоит очень красивое дерево.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"CLAUSE("
-		        + "WORD_FORM стою([ГЛ, неперех, несов])"
-		        + "NOUN_ADJECTIVE("
+			"CLAUSE("		        
+		        + "<subject>NOUN_ADJECTIVE("
 			        + "ADJECTIVE_ADVERB("
 				        + "WORD_FORM очень([Н])"
 				        + "<main>WORD_FORM красивый([кач, ПРИЛ])  )"
-			        + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )  )", processed);
+			        + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )"
+			    + "<predicate>WORD_FORM стою([ГЛ, неперех, несов])  )", processed);
 	}
 	
 	public void test012(){
@@ -169,21 +172,21 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM мы([МС, 1л])"
-					+ "DIRECT_OBJECT_NAME("
-						+ "<main>WORD_FORM встретил([сов, ГЛ, перех])"
-							+ "UNIFORM_NOUN("
-								+ "NOUN_ADJECTIVE("
-									+ "WORD_FORM красивый([кач, ПРИЛ])"
-									+ "<main>WORD_FORM маша([имя, жр, од, СУЩ])  )"
-								+ "SYMBOL ,"
-								+ "NOUN_ADJECTIVE("
-									+ "WORD_FORM умный([кач, ПРИЛ])"
-									+ "<main>WORD_FORM петя([имя, мр, од, СУЩ])  )"
-								+ "WORD_FORM и([СОЮЗ])"
-								+ "<main>NOUN_ADJECTIVE("
-									+ "WORD_FORM весёлый([кач, ПРИЛ])"
-									+ "<main>WORD_FORM вася([имя, мр, од, СУЩ])  )  )  )  )", processed);
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>WORD_FORM встретил([сов, ГЛ, перех])"
+						+ "UNIFORM_NOUN("
+							+ "NOUN_ADJECTIVE("
+								+ "WORD_FORM красивый([кач, ПРИЛ])"
+								+ "<main>WORD_FORM маша([имя, жр, од, СУЩ])  )"
+							+ "SYMBOL ,"
+							+ "NOUN_ADJECTIVE("
+								+ "WORD_FORM умный([кач, ПРИЛ])"
+								+ "<main>WORD_FORM петя([имя, мр, од, СУЩ])  )"
+							+ "WORD_FORM и([СОЮЗ])"
+							+ "<main>NOUN_ADJECTIVE("
+								+ "WORD_FORM весёлый([кач, ПРИЛ])"
+								+ "<main>WORD_FORM вася([имя, мр, од, СУЩ])  )  )  )  )", processed);
 	}
 	
 	public void test013(){
@@ -191,14 +194,16 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "VERB_ADVERB("
-					+ "WORD_FORM вчера([Н])"
-					+ "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
-				+ "NOUN_ADJECTIVE("
+				+ "<subject>NOUN_ADJECTIVE("
 					+ "UNIFORM_ADJECTIVE("
 						+ "WORD_FORM суровый([кач, ПРИЛ])"
 						+ "<main>WORD_FORM злой([кач, ПРИЛ])  )"
-					+ "<main>WORD_FORM сантехник([мр, од, СУЩ])  )  )", processed);
+					+ "<main>WORD_FORM сантехник([мр, од, СУЩ])  )"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>VERB_ADVERB("
+						+ "WORD_FORM вчера([Н])"
+						+ "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
+					+ "WORD_FORM водопровод([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	public void test014(){
@@ -206,12 +211,14 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "VERB_ADVERB("
-					+ "WORD_FORM вчера([Н])"
-					+ "<main>WORD_FORM смотрю([ГЛ, перех, несов])"
-				+ "NOUN_ADJECTIVE("
+				+ "<subject>NOUN_ADJECTIVE("
 					+ "WORD_FORM наш([мест-п, ПРИЛ])"
-					+ "<main>WORD_FORM коллега([жр, од, СУЩ, ор])  )  )", processed);
+					+ "<main>WORD_FORM коллега([жр, од, СУЩ, ор])  )"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>VERB_ADVERB("
+						+ "WORD_FORM вчера([Н])"
+						+ "<main>WORD_FORM смотрю([ГЛ, перех, несов]) )"
+					+ "WORD_FORM фильм([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	
@@ -219,8 +226,8 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Я занял денег.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint("CLAUSE("
-			+ "WORD_FORM я([МС, 1л])"
-			+ "DIRECT_OBJECT_NAME("
+			+ "<subject>WORD_FORM я([МС, 1л])"
+			+ "<predicate>DIRECT_OBJECT_NAME("
 				+ "<main>WORD_FORM занял([сов, ГЛ, перех])"
 				+ "WORD_FORM деньга([жр, СУЩ, неод])))", processed);
 	}
@@ -231,8 +238,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM он([мр, Анаф, МС, 3л])"
-				+ "VERB_ADVERB("
+				+ "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
+				+ "<predicate>VERB_ADVERB("
 					+ "WORD_FORM быстро([Н])"
 					+ "<main>WORD_FORM бегу([ГЛ, неперех, несов])  )  )", processed);
 		assertTestTokenPrint(
@@ -246,8 +253,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM длина([жр, СУЩ, неод])"
-				+ "DIRECT_OBJECT_NAME("
+				+ "<subject>WORD_FORM длина([жр, СУЩ, неод])"
+				+ "<predicate>DIRECT_OBJECT_NAME("
 					+ "<main>WORD_FORM составляю([ГЛ, перех, несов])"
 					+ "DIMENSION 200.0 километр(SIZE)  )  )", processed);
 	}
@@ -257,8 +264,8 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "WORD_FORM длина([жр, СУЩ, неод])"
-				+ "DIRECT_OBJECT_NAME("
+				+ "<subject>WORD_FORM длина([жр, СУЩ, неод])"
+				+ " <predicate>DIRECT_OBJECT_NAME("
 					+ "<main>WORD_FORM составляю([ГЛ, перех, несов])"
 					+ "DIMENSION 200.0 километр(SIZE)  )  )", processed);
 	}

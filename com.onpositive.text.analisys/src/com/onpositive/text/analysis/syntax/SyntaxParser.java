@@ -41,6 +41,10 @@ public class SyntaxParser extends ParserComposition {
 		ClauseParser.class
 	};
 	
+	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
+		DirectObjectParser.class,
+	};
+	
 	public SyntaxParser(AbstractWordNet wordnet) {
 		super();
 		this.wordNet = wordnet;
@@ -52,6 +56,8 @@ public class SyntaxParser extends ParserComposition {
 	private ParserComposition lexicParser;
 	
 	private List<AbstractParser> syntaxParsers ;
+	
+	private List<AbstractParser> syntaxParsers2 ;
 	
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
@@ -71,6 +77,9 @@ public class SyntaxParser extends ParserComposition {
 					tokens = applyParser(tokens, parser);
 				}
 				while(parser.hasTriggered()&&parser.isRecursive());
+			}
+			for(AbstractParser parser : syntaxParsers2){
+				tokens = applyParser(tokens, parser);
 			}
 			sentence.setChildren(new BasicCleaner().clean(tokens));
 		}
@@ -96,7 +105,8 @@ public class SyntaxParser extends ParserComposition {
 	private void initParsers() {
 		List<AbstractParser> lp = createParsers(lexicParsersArray) ;
 		lexicParser = new ParserComposition(lp.toArray(new AbstractParser[lp.size()]));
-		this.syntaxParsers = createParsers(syntaxParsersArray);		
+		this.syntaxParsers = createParsers(syntaxParsersArray);
+		this.syntaxParsers2 = createParsers(syntaxParsersArray2);	
 	}
 
 	private List<AbstractParser> createParsers(Class<?>[] array) {

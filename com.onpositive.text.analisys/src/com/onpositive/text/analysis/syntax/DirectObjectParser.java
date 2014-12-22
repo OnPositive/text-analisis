@@ -33,8 +33,8 @@ public class DirectObjectParser extends AbstractSyntaxParser {
 			or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR)))));
 	private final UnaryMatcher<SyntaxToken> verbMatchGrammems = hasAll(
 			PartOfSpeech.VERB, TransKind.tran);
-	private final UnaryMatcher<SyntaxToken> nounbMatchGrammems = hasAny(
-			PartOfSpeech.NOUN, PartOfSpeech.NPRO);	
+//	private final UnaryMatcher<SyntaxToken> nounMatchGrammems = hasAny(
+//			PartOfSpeech.NOUN, PartOfSpeech.NPRO);	
 	private final UnaryMatcher<SyntaxToken> infnGrammems = has(PartOfSpeech.INFN);
 	
 	@SuppressWarnings("unchecked")
@@ -57,34 +57,59 @@ public class DirectObjectParser extends AbstractSyntaxParser {
 			return;
 		}
 
-		SyntaxToken verbToken = null;
-		SyntaxToken subjToken = null;
+		SyntaxToken predToken = null;
+		SyntaxToken objToken = null;
+		ClauseToken clauseToken = null;
 		if (verbMatchGrammems.match(token0) && or(checkName, infnGrammems).match(token1)) {
-			verbToken = token0;
-			subjToken = token1;
+			predToken = token0;
+			objToken = token1;
 		} else if (verbMatchGrammems.match(token1) && or(checkName, infnGrammems).match(token0)) {
-			verbToken = token1;
-			subjToken = token0;
+			predToken = token1;
+			objToken = token0;
+		}
+		else if(token0.getType()==IToken.TOKEN_TYPE_CLAUSE){
+			clauseToken = (ClauseToken) token0;
+			predToken = clauseToken.getPredicate();
+			token0=predToken;
+			objToken = token1;
+		}
+		else if(token1.getType()==IToken.TOKEN_TYPE_CLAUSE){
+			clauseToken = (ClauseToken) token1;
+			predToken = clauseToken.getPredicate();
+			token1=predToken;
+			objToken = token0;
 		}
 		else{
 			return;
 		}
 
-		int subjType = infnGrammems.match(subjToken) ? IToken.TOKEN_TYPE_DIRECT_OBJECT_INF
+		int subjType = infnGrammems.match(objToken) ? IToken.TOKEN_TYPE_DIRECT_OBJECT_INF
 				: IToken.TOKEN_TYPE_DIRECT_OBJECT_NAME;
 		
 		int startPosition = token0.getStartPosition();
 		int endPosition = token1.getEndPosition();		
-		IToken newToken = new SyntaxToken(subjType, verbToken, null, startPosition, endPosition, isContinuous);
-		if(!isContinuous){
-			ArrayList<IToken> children = new ArrayList<IToken>(Arrays.asList(token0,token1));
-			if (checkParents(newToken, children)) {
-				newToken.addChildren(children);
-				for(IToken ch: children){
-					ch.addParent(newToken);
+		SyntaxToken newToken = new SyntaxToken(subjType, predToken, null, startPosition, endPosition, isContinuous);
+
+		if(clauseToken!=null){
+			boolean doSet = false;
+			if(!isContinuous){
+				ArrayList<IToken> children = new ArrayList<IToken>(Arrays.asList(token0,token1));
+				if (checkParents(newToken, children)) {
+					newToken.addChildren(children);
+					for(IToken ch: children){
+						ch.addParent(newToken);
+					}
+					doSet = true;
 				}
-				reliableTokens.add(newToken);
-			}			
+			}
+			else{
+				doSet=true;
+			}
+			if(doSet){
+				newToken.addChild(token0);
+				newToken.addChild(token1);
+				clauseToken.setPredicate(newToken);
+			}
 		}
 		else if (checkParents(newToken, sample)) {
 			reliableTokens.add(newToken);
@@ -93,25 +118,29 @@ public class DirectObjectParser extends AbstractSyntaxParser {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ProcessingResult continuePush(Stack<IToken> sample,
-			IToken newToken) {
+	protected ProcessingResult continuePush(Stack<IToken> sample,IToken newToken)
+	{
 		IToken token0 = sample.get(0);
 		IToken token1 = newToken;
-		if (verbMatchGrammems.match(token0)
-				&& or(checkName, infnGrammems).match(token1)) {
-			return ACCEPT_AND_BREAK;
+		if (verbMatchGrammems.match(token0)||token0.getType()==IToken.TOKEN_TYPE_CLAUSE){
+			if(or(checkName, infnGrammems).match(token1)) {
+				return ACCEPT_AND_BREAK;
+			}
 		} else if (verbMatchGrammems.match(token1)) {
 			return ACCEPT_AND_BREAK;
 		}
-		else if(sample.size()==1 && nounbMatchGrammems.match(newToken)){
-			return CONTINUE_PUSH;
-		}
+//		else if(sample.size()==1 && nounbMatchGrammems.match(newToken)){
+//			return CONTINUE_PUSH;
+//		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
 		if (verbInforName.match(newToken)) {
+			return CONTINUE_PUSH;
+		}
+		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
 			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;

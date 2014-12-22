@@ -144,15 +144,32 @@ public class ParserTest extends TestCase {
 			SyntaxToken mainGroup = st.getMainGroup();
 			List<IToken> children = token.getChildren();
 			bld.append("(");
-			for(int i = 0 ; i < children.size() ; i++){
-				bld.append("\n");
-				IToken ch = children.get(i);
-				String childStr = printToken(ch,off + 2);
-				if(ch==mainGroup){
-					bld.append(offStr).append(childOffStr).append("<main>");
-					childStr = childStr.trim();
+			if(token.getType()==IToken.TOKEN_TYPE_CLAUSE){
+				ClauseToken ct = (ClauseToken) token;
+				{
+					bld.append("\n");
+					String childStr = printToken(ct.getSubject(),off + 2).trim();
+					bld.append(offStr).append(childOffStr).append("<subject>");
+					bld.append(childStr);
 				}
-				bld.append(childStr);
+				{
+					bld.append("\n");
+					String childStr = printToken(ct.getPredicate(),off + 2).trim();
+					bld.append(offStr).append(childOffStr).append("<predicate>");
+					bld.append(childStr);
+				}				
+			}
+			else{
+				for(int i = 0 ; i < children.size() ; i++){
+					bld.append("\n");
+					IToken ch = children.get(i);
+					String childStr = printToken(ch,off + 2);
+					if(ch==mainGroup){
+						bld.append(offStr).append(childOffStr).append("<main>");
+						childStr = childStr.trim();
+					}
+					bld.append(childStr);
+				}
 			}
 			bld.append("  )");
 		}

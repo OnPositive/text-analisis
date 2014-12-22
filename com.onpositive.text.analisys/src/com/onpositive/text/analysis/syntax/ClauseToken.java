@@ -14,6 +14,22 @@ public class ClauseToken extends SyntaxToken {
 	
 	private SyntaxToken predicate;
 
+	public SyntaxToken getSubject() {
+		return subject;
+	}
+
+	public SyntaxToken getPredicate() {
+		return predicate;
+	}
+
+	public void setSubject(SyntaxToken subject) {
+		this.subject = subject;
+	}
+
+	public void setPredicate(SyntaxToken predicate) {
+		this.predicate = predicate;
+	}
+
 	@Override
 	public String getStringValue() {
 		StringBuilder bld = new StringBuilder();
