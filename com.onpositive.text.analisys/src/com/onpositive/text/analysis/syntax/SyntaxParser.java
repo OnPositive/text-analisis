@@ -42,6 +42,7 @@ public class SyntaxParser extends ParserComposition {
 	};
 	
 	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
+		VerbAdverbParser.class,
 		DirectObjectParser.class,
 	};
 	

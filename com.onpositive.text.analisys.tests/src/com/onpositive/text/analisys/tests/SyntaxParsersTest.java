@@ -304,4 +304,70 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "WORD_FORM зелёный([кач, ПРИЛ])"
 						+ "<main>WORD_FORM яблоко([СУЩ, ср, неод])  )  )  )", processed);
 	}
+	
+	
+	public void test022(){
+		String str = "Читаем книгу мы быстро.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+			+ "<subject>WORD_FORM мы([МС, 1л])"
+			+ "<predicate>VERB_ADVERB("
+				+ "<main>DIRECT_OBJECT_NAME("
+					+ "<main>WORD_FORM читаю([ГЛ, перех, несов])"
+					+ "WORD_FORM книга([жр, СУЩ, неод])  )"
+				+ "WORD_FORM быстро([Н])  )  )", processed);
+	}
+	
+	public void test023(){
+		String str = "Читаем быстро мы книгу.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+	        + "<subject>WORD_FORM мы([МС, 1л])"
+	        + "<predicate>DIRECT_OBJECT_NAME("
+		        + "<main>VERB_ADVERB("
+		        	+ "<main>WORD_FORM читаю([ГЛ, перех, несов])"
+		        	+ "WORD_FORM быстро([Н])  )"
+		        + "WORD_FORM книга([жр, СУЩ, неод])  )  )", processed);
+	}
+	
+	public void test024(){
+		String str = "Быстро читаем мы книгу.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+	        + "<predicate>DIRECT_OBJECT_NAME("
+		        + "<main>VERB_ADVERB("
+			        + "WORD_FORM быстро([Н])"
+			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])  )"
+		        + "WORD_FORM книга([жр, СУЩ, неод])  )  )", processed);
+	}
+	
+	public void test025(){
+		String str = "Быстро мы читаем книгу.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+	        + "<subject>WORD_FORM мы([МС, 1л])"
+	        + "<predicate>VERB_ADVERB("
+		        + "WORD_FORM быстро([Н])"
+		        + "<main>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
+			        + "WORD_FORM книга([жр, СУЩ, неод])  )  )  )", processed);
+	}
+	
+	public void test026(){
+		String str = "Книгу мы читаем быстро.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+	        + "<subject>WORD_FORM мы([МС, 1л])"
+	        + "<predicate>DIRECT_OBJECT_NAME("
+		        + "WORD_FORM книга([жр, СУЩ, неод])"
+		        + "<main>VERB_ADVERB("
+			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
+			        + "WORD_FORM быстро([Н])  )  )  )", processed);
+	}
 }
