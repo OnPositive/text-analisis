@@ -38,6 +38,7 @@ public class SyntaxParser extends ParserComposition {
 		NounDimensionParser.class,
 		UniformNounsParser.class,		
 		DirectObjectParser.class,
+		VerbNameParser.class,
 		VerbNamePrepositionParser.class,
 		ClauseParser.class
 	};
@@ -45,6 +46,7 @@ public class SyntaxParser extends ParserComposition {
 	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
 		VerbAdverbParser.class,
 		DirectObjectParser.class,
+		VerbNameParser.class,
 		VerbNamePrepositionParser.class
 	};
 	

@@ -38,7 +38,19 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test001(){
 		String str = "Потом он красной ручкой расписался в дневнике.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM красный([кач, ПРИЛ]), <main>WORD_FORM ручка([жр, СУЩ, неод]))", processed);
+		assertTestTokenPrint(
+			"CLAUSE("
+		        + "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
+		        + "<predicate>VERB_ADVERB("
+			        + "WORD_FORM потом([Н])"
+			        + "<main>VERB_NOUN_PREP("
+				        + "<main>VERB_NOUN("
+					        + "NOUN_ADJECTIVE("
+						        + "WORD_FORM красный([ПРИЛ])"
+						        + "<main>WORD_FORM ручка([жр, СУЩ, неод])  )"
+					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])  )"
+				        + "WORD_FORM в([])"
+				        + "WORD_FORM дневник([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test002(){
@@ -402,5 +414,18 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "<main>VERB_ADVERB("
 			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
 			        + "WORD_FORM быстро([Н])  )  )  )", processed);
+	}
+	
+	public void test027(){
+		String str = "Я занял глебу денег.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+		        + "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+			        + "<main>VERB_NOUN("
+				        + "<main>WORD_FORM занял([сов, ГЛ, перех])"
+				        + "WORD_FORM глеб([имя, мр, од, СУЩ])  )"
+			        + "WORD_FORM деньга([жр, СУЩ, неод])  )  )", processed);
 	}
 }

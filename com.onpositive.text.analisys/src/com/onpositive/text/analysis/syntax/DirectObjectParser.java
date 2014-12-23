@@ -9,22 +9,28 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class DirectObjectParser extends VerbGroupParser {
 
+	
+
+
 	public DirectObjectParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
 
-	private final UnaryMatcher<SyntaxToken> acceptedNames = hasAny(
+	private static final UnaryMatcher<SyntaxToken> acceptedNames = hasAny(
 			PartOfSpeech.NOUN/*, PartOfSpeech.ADJF*/);
-	private final UnaryMatcher<SyntaxToken> acceptedAcc = hasAny(caseMatchMap
+	private static final UnaryMatcher<SyntaxToken> acceptedAcc = hasAny(caseMatchMap
 			.get(Case.ACCS));
 
-	private final UnaryMatcher<SyntaxToken> acceptedGC = hasAny(caseMatchMap
+	private static final UnaryMatcher<SyntaxToken> acceptedGC = hasAny(caseMatchMap
 			.get(Case.GENT));
 
+	protected static final UnaryMatcher<SyntaxToken> directObjectCasesMatch
+		= or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR))));
+	
 	@SuppressWarnings("unchecked")
 	private final UnaryMatcher<SyntaxToken> checkName = and(
 			acceptedNames,
-			or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR)))));
+			directObjectCasesMatch);
 	
 
 	@Override

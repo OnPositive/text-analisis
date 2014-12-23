@@ -24,10 +24,17 @@ public class ClauseToken extends SyntaxToken {
 
 	public void setSubject(SyntaxToken subject) {
 		this.subject = subject;
+		adjustBounds(subject);
 	}
 
 	public void setPredicate(SyntaxToken predicate) {
 		this.predicate = predicate;
+		adjustBounds(predicate);
+	}
+
+	protected void adjustBounds(SyntaxToken member) {
+		this.setStartPosition(Math.min(this.getStartPosition(), member.getStartPosition()));
+		this.setEndPosition(Math.max(this.getEndPosition(), member.getEndPosition()));
 	}
 
 	@Override
