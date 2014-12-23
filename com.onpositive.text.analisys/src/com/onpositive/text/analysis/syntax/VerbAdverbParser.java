@@ -6,7 +6,6 @@ import com.onpositive.text.analysis.IToken;
 
 public class VerbAdverbParser extends VerbGroupParser{
 
-	
 	public VerbAdverbParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
@@ -23,11 +22,6 @@ public class VerbAdverbParser extends VerbGroupParser{
 
 	@Override
 	protected boolean checkVerb(IToken token0) {
-		return hasAny(PartOfSpeech.VERB, PartOfSpeech.INFN).match(token0);
-	}
-
-	@Override
-	protected boolean acceptsPreposition() {
-		return false;
+		return verbMatch.match(token0);
 	}
 }
