@@ -48,4 +48,9 @@ public class DirectObjectParser extends VerbGroupParser {
 				: IToken.TOKEN_TYPE_DIRECT_OBJECT_NAME;
 		return subjType;
 	}
+
+	@Override
+	protected boolean acceptsPreposition() {
+		return false;
+	}
 }

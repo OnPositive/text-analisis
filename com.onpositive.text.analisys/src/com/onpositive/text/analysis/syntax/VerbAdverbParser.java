@@ -25,4 +25,9 @@ public class VerbAdverbParser extends VerbGroupParser{
 	protected boolean checkVerb(IToken token0) {
 		return hasAny(PartOfSpeech.VERB, PartOfSpeech.INFN).match(token0);
 	}
+
+	@Override
+	protected boolean acceptsPreposition() {
+		return false;
+	}
 }
