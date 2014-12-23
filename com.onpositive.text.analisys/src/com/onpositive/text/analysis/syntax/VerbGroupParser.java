@@ -108,12 +108,16 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			
 			if(prepMatch.match(sample.get(0))){
 				SyntaxToken[] result = fillMainTokenArray(sample.get(1),sample.get(2),new SyntaxToken[3]);
-				result[2]=(SyntaxToken) sample.get(0);
+				if(result!=null){
+					result[2]=(SyntaxToken) sample.get(0);
+				}
 				return result;
 			}
 			else if(checkPreposition(sample.get(1))){
 				SyntaxToken[] result = fillMainTokenArray(sample.get(0),sample.get(2),new SyntaxToken[3]);
-				result[2]=(SyntaxToken) sample.get(1);
+				if(result!=null){
+					result[2]=(SyntaxToken) sample.get(1);
+				}				
 				return result;
 			}
 		}
@@ -141,6 +145,9 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			arr[0] = (SyntaxToken) token1;
 			arr[1] = (SyntaxToken) token0;
 		}
+		else{
+			return null;
+		}
 		return arr;
 	}
 
@@ -155,7 +162,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			if(sample.size()>1){
 				return DO_NOT_ACCEPT_AND_BREAK;
 			}
-			if(checkAdditionalToken(last)){
+			if(!checkAdditionalToken(last)){
 				return CONTINUE_PUSH;
 			}
 			return DO_NOT_ACCEPT_AND_BREAK;
@@ -165,8 +172,14 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		}
 		if(checkAdditionalToken(newToken)&&(checkVerb(last)
 				||last.getType()==IToken.TOKEN_TYPE_CLAUSE
-				||(acceptsPreposition()&&checkPreposition(last)))){		
-			return ACCEPT_AND_BREAK;
+				||(acceptsPreposition()&&checkPreposition(last)))){
+
+			if(!acceptsPreposition()||sample.size()==2){
+				return ACCEPT_AND_BREAK;
+			}
+			else{
+				return CONTINUE_PUSH;
+			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}

@@ -54,6 +54,14 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_DIRECT_OBJECT_INF = 11015;
 	
+	static final int TOKEN_TYPE_VERB_NOUN = 11016;
+	
+	static final int TOKEN_TYPE_VERB_ADJECTIVE = 11017;
+	
+	static final int TOKEN_TYPE_VERB_NOUN_PREP = 11018;
+	
+	static final int TOKEN_TYPE_VERB_ADJECTIVE_PREP = 11019;
+	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
 	static final int TOKEN_TYPE_ADVERB_WITH_MODIFICATOR = 11041;
@@ -68,7 +76,7 @@ public interface IToken {
 
 	static final int TOKEN_TYPE_MEASURED_NOUN = 11055;
 	
-	static final int TOKEN_TYPE_LINK = 11056;
+	static final int TOKEN_TYPE_LINK = 11056;	
 	
 	
 	

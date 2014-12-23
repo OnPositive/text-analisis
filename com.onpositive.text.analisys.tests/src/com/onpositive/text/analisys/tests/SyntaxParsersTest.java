@@ -27,9 +27,12 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Идёт в большой магазин.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"NOUN_ADJECTIVE("
-				+ "WORD_FORM большой([кач, ПРИЛ]),"
-				+ "<main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
+			"VERB_NOUN_PREP("
+		     + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+		     + "WORD_FORM в([])"
+		     + "NOUN_ADJECTIVE("
+		       + "WORD_FORM большой([кач, ПРИЛ])"
+		       + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	public void test001(){
@@ -42,22 +45,42 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(""
-			+ "NOUN_ADJECTIVE("
-				+ "UNIFORM_ADJECTIVE("
-					+ "WORD_FORM красивый([кач, ПРИЛ]),"
-					+ "<main>WORD_FORM вязаный([ПРИЛ])),"
-				+ "<main>WORD_FORM шапка([жр, СУЩ, неод]))", processed);
-		assertTestTokenPrint(
-			"NOUN_ADJECTIVE("
-				+ "WORD_FORM большой([кач, ПРИЛ]),"
-				+ "<main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
+		+ "CLAUSE("
+		     + "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
+		     + "<predicate>VERB_NOUN_PREP("
+		       + "<main>VERB_NOUN_PREP("
+		         + "WORD_FORM в([])"
+		         + "NOUN_ADJECTIVE("
+		           + "UNIFORM_ADJECTIVE("
+		             + "WORD_FORM красивый([кач, ПРИЛ])"
+		             + "<main>WORD_FORM вязаный([ПРИЛ])  )"
+		           + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )"
+		         + "<main>WORD_FORM иду([ГЛ, неперех, несов])  )"
+		       + "WORD_FORM в([ПР])"
+		       + "NOUN_ADJECTIVE("
+		         + "WORD_FORM большой([кач, ПРИЛ])"
+		         + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test003(){
 		String str = "Петя в красивой красной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("NOUN_ADJECTIVE(UNIFORM_ADJECTIVE(WORD_FORM красивый([кач, ПРИЛ]),<main>WORD_FORM красный([ПРИЛ])),<main>WORD_FORM шапка([жр, СУЩ, неод]))", processed);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM большой([кач, ПРИЛ]), <main>WORD_FORM магазин([мр, СУЩ, неод]))", processed);
+		assertTestTokenPrint(
+			"CLAUSE("
+		     + "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
+		     + "<predicate>VERB_NOUN_PREP("
+		       + "<main>VERB_NOUN_PREP("
+		         + "WORD_FORM в([])"
+		         + "NOUN_ADJECTIVE("
+		           + "UNIFORM_ADJECTIVE("
+		             + "WORD_FORM красивый([кач, ПРИЛ])"
+		             + "<main>WORD_FORM красный([кач, ПРИЛ])  )"
+		           + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )"
+		         + "<main>WORD_FORM иду([ГЛ, неперех, несов])  )"
+		       + "WORD_FORM в([ПР])"
+		       + "NOUN_ADJECTIVE("
+		         + "WORD_FORM большой([кач, ПРИЛ])"
+		         + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test004(){
@@ -129,13 +152,16 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "<subject>WORD_FORM мы([МС, 1л])"
-				+ "<predicate>VERB_ADVERB("
-					+ "UNIFORM_ADVERB("
-							+ "WORD_FORM быстро([Н])"
-							+ "WORD_FORM и([СОЮЗ])"
-						+ "<main>WORD_FORM комфортно([Н])  )"
-					+ "<main>WORD_FORM еду([ГЛ, неперех, несов])  )  )", processed);
+			     + "<subject>WORD_FORM мы([МС, 1л])"
+			     + "<predicate>VERB_NOUN_PREP("
+			       + "<main>VERB_ADVERB("
+			         + "UNIFORM_ADVERB("
+			           + "WORD_FORM быстро([Н])"
+			           + "WORD_FORM и([СОЮЗ])"
+			           + "<main>WORD_FORM комфортно([Н])  )"
+			         + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
+			       + "WORD_FORM на([ПР])"
+			       + "WORD_FORM автобус([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	public void test010(){
@@ -143,28 +169,34 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "<subject>WORD_FORM мы([МС, 1л])"
-				+ "<predicate>VERB_ADVERB("
-					+ "UNIFORM_ADVERB("
-						+ "ADVERB_WITH_MODIFICATOR("
-							+ "WORD_FORM очень([])"
-							+ "<main>WORD_FORM быстро([Н])  )"
-						+ "WORD_FORM и([СОЮЗ])"
-						+ "<main>WORD_FORM комфортно([Н])  )"
-					+ "<main>WORD_FORM еду([ГЛ, неперех, несов])  )  )", processed);
+			     + "<subject>WORD_FORM мы([МС, 1л])"
+			     + "<predicate>VERB_NOUN_PREP("
+			       + "<main>VERB_ADVERB("
+			         + "UNIFORM_ADVERB("
+			           + "ADVERB_WITH_MODIFICATOR("
+			             + "WORD_FORM очень([Н])"
+			             + "<main>WORD_FORM быстро([Н])  )"
+			           + "WORD_FORM и([СОЮЗ])"
+			           + "<main>WORD_FORM комфортно([Н])  )"
+			         + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
+			       + "WORD_FORM на([])"
+			       + "WORD_FORM автобус([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	public void test011(){
 		String str = "В лесу стоит очень красивое дерево.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"CLAUSE("		        
-		        + "<subject>NOUN_ADJECTIVE("
-			        + "ADJECTIVE_ADVERB("
-				        + "WORD_FORM очень([Н])"
-				        + "<main>WORD_FORM красивый([кач, ПРИЛ])  )"
-			        + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )"
-			    + "<predicate>WORD_FORM стою([ГЛ, неперех, несов])  )", processed);
+			" CLAUSE("
+			     + "<subject>NOUN_ADJECTIVE("
+			       + "ADJECTIVE_ADVERB("
+			         + "WORD_FORM очень([Н])"
+			         + "<main>WORD_FORM красивый([кач, ПРИЛ])  )"
+			       + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )"
+			     + "<predicate>VERB_NOUN_PREP("
+			       + "WORD_FORM в([])"
+			       + "WORD_FORM лес([мр, СУЩ, неод])"
+			       + "<main>WORD_FORM стою([ГЛ, неперех, несов])  )  )", processed);
 	}
 	
 	public void test012(){
@@ -238,14 +270,15 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
-				+ "<predicate>VERB_ADVERB("
-					+ "WORD_FORM быстро([Н])"
-					+ "<main>WORD_FORM бегу([ГЛ, неперех, несов])  )  )", processed);
-		assertTestTokenPrint(
-			"NOUN_ADJECTIVE("
-				+ "WORD_FORM красивый([кач, ПРИЛ])"
-				+ "<main>WORD_FORM девушка([жр, од, СУЩ])  )", processed);
+		     + "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
+		     + "<predicate>VERB_NOUN_PREP("
+		       + "<main>VERB_ADVERB("
+		         + "WORD_FORM быстро([Н])"
+		         + "<main>WORD_FORM бегу([ГЛ, неперех, несов])  )"
+		       + "WORD_FORM за([ПР])"
+		       + "NOUN_ADJECTIVE("
+		         + "WORD_FORM красивый([кач, ПРИЛ])"
+		         + "<main>WORD_FORM девушка([жр, од, СУЩ])  )  )  )", processed);
 	}
 	
 	public void test017(){
