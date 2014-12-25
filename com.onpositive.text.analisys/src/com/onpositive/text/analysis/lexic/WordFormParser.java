@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
@@ -204,12 +205,15 @@ public class WordFormParser extends AbstractParser {
 		
 		firstWordForms = possibleGrammarForms;
 		checkAbbr();
-		
+		IntOpenHashSet set = new IntOpenHashSet();
 		for(GrammarRelation gr : possibleGrammarForms){
 			TextElement word = gr.getWord();
 			TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
 			if(possibleContinuations!=null){
 				for(TextElement te : possibleContinuations){
+					if(set.contains(te.id())){
+						continue;
+					}
 					TextElement[] parts = te.getParts();
 					IntArrayList arr = new IntArrayList();
 					for(TextElement part : parts){
@@ -217,8 +221,12 @@ public class WordFormParser extends AbstractParser {
 							arr.add(part.id());
 						}
 					}
+					if(arr.size()<2){
+						continue;
+					}
 					WordSequenceData data = new WordSequenceData(te,arr.toArray());
 					dataList.add(data);
+					set.add(te.id());
 				}
 			}
 		}
