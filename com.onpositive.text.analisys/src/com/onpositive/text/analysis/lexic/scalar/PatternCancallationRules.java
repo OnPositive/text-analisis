@@ -94,8 +94,9 @@ public class PatternCancallationRules {
 					int l0 = token0.getLength();
 					if(l0<=3){					
 						int l2 = token1.getLength();
-						int l2_ = ("" + Integer.parseInt(token1.getStringValue())).length();
-						if(l2!=l2_){
+						if(l2==3){
+							//int l2_ = ("" + Integer.parseInt(token1.getStringValue())).length();
+//							if(l2!=l2_)
 							return SPACE_STRING;
 						}
 					}
