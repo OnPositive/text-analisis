@@ -84,7 +84,7 @@ public class PrimitiveTokenizer {
 		if(cType==type){
 			return true;
 		}
-		if(cType==IToken.TOKEN_TYPE_LETTER&&type==IToken.TOKEN_TYPE_DIGIT){
+		if(type==IToken.TOKEN_TYPE_LETTER&&cType==IToken.TOKEN_TYPE_DIGIT){
 			return true;
 		}
 		return false;

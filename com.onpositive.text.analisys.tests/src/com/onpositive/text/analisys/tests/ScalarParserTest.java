@@ -55,4 +55,11 @@ public class ScalarParserTest extends ParserTest{
 		assertTestScalar(1.0/6.0, processed);
 	}
 	
+	public void testS005(){
+		String str = "Ширина картинки -- 18px";		
+		List<IToken> processed = process(str);
+		printTokens(processed);
+		assertTestScalar(18, processed);
+	}
+	
 }
