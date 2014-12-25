@@ -428,4 +428,25 @@ public class SyntaxParsersTest extends ParserTest{
 				        + "WORD_FORM глеб([имя, мр, од, СУЩ])  )"
 			        + "WORD_FORM деньга([жр, СУЩ, неод])  )  )", processed);
 	}
+	
+	public void test028(){
+		String str = "Ученые узнали о влиянии пальцев владельцев смартфонов на мозг.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"", processed);
+	}
+	
+	public void test030(){
+		String str = "Российские следователи ответили на упреки украинских силовиков.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"", processed);
+	}
+	
+	public void test031(){
+		String str = "В Якутии составят электронную родословную всего населения.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"", processed);
+	}
 }
