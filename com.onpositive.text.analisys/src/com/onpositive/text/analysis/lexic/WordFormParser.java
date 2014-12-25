@@ -104,19 +104,24 @@ public class WordFormParser extends AbstractParser {
 	private MeaningElement refinePrepositionOrConjunction(MeaningElement me, int sp, int ep) {
 		
 		TextElement te = me.getParentTextElement();
-		String basicForm = te.getBasicForm();
+		String str = te.getBasicForm();
 		if(te.isMultiWord()){
 			StringBuilder bld = new StringBuilder();			
 			for(TextElement t : te.getParts()){
 				bld.append(" ").append(t.getBasicForm());
 			}
-			basicForm = bld.toString();
+			str = bld.toString();
 		}
-		MeaningElement preposition = getPreposition(basicForm, sp, ep);
+		String txt = getText();
+		if(!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
+			return me;
+		}
+		
+		MeaningElement preposition = getPreposition(str);
 		if(preposition!=null){
 			return preposition;
 		}
-		MeaningElement conjunction = getConjunction(basicForm, sp, ep);
+		MeaningElement conjunction = getConjunction(str);
 		if(conjunction!=null){
 			return conjunction;
 		}
@@ -355,17 +360,15 @@ public class WordFormParser extends AbstractParser {
 	
 	private static PrepConjRegistry prepConjRegistry;	
 	
-	protected MeaningElement getPreposition(String str, int sp, int ep){
-		return lookupConjunctionOrPreposition(str, sp, ep, PartOfSpeech.PREP);
+	protected MeaningElement getPreposition(String str){
+		return lookupConjunctionOrPreposition(str, PartOfSpeech.PREP);
 	}
 	
-	protected MeaningElement getConjunction(String str, int sp, int ep){
-		return lookupConjunctionOrPreposition(str, sp, ep, PartOfSpeech.CONJ);
+	protected MeaningElement getConjunction(String str){
+		return lookupConjunctionOrPreposition(str, PartOfSpeech.CONJ);
 	}
 
-	protected MeaningElement lookupConjunctionOrPreposition(String str, int sp, int ep, PartOfSpeech pos) {
-
-		String txt = getText();
+	protected MeaningElement lookupConjunctionOrPreposition(String str, PartOfSpeech pos){ 
 
 		MeaningElement me = null;
 		if(pos==PartOfSpeech.PREP){
@@ -374,17 +377,8 @@ public class WordFormParser extends AbstractParser {
 		else if(pos==PartOfSpeech.CONJ){
 			me = getPrepConjRegistry().getConjunction(str);
 		}
-		if(me==null){
+		else{
 			return null;
-		}
-		if(str.trim().length()==1){
-			if(!str.equals(str.toLowerCase())){
-				if(txt.length()<ep){
-					if(!str.endsWith(" ")&&txt.charAt(ep)=='.'){
-						return null;
-					}
-				}
-			}
 		}
 		return me;
 	}
