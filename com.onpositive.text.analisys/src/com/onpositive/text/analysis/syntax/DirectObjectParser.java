@@ -41,7 +41,7 @@ public class DirectObjectParser extends VerbGroupParser {
 	@Override
 	@SuppressWarnings("unchecked")
 	protected boolean checkAdditionalToken(IToken token1) {
-		return or(checkName, infnMatch).match(token1);
+		return and(or(checkName, infnMatch),not(prepMatch)).match(token1);
 	}
 
 	@Override

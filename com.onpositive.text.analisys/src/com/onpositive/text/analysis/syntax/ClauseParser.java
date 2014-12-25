@@ -19,7 +19,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 			= hasAny(caseMatchMap.get(Case.NOMN));
 
 	@SuppressWarnings("unchecked")
-	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn);
+	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn, not(hasAny(PartOfSpeech.PREP)));
 	
 	private static final UnaryMatcher<SyntaxToken> verbMatchGrammems
 			= hasAll(PartOfSpeech.VERB);
@@ -74,6 +74,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
+		
 		if (verbOrNoun.match(newToken)) {
 			return CONTINUE_PUSH;
 		}

@@ -18,6 +18,8 @@ public class SyntaxParsersTest extends ParserTest{
 		wn.addUrl("/numerics.xml");
 		wn.addUrl("/dimensions.xml");
 		wn.addUrl("/modificator-adverb.xml");
+		wn.addUrl("/prepositions.xml");
+		wn.addUrl("/conjunctions.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
 		this.composition = syntaxParser;
@@ -29,7 +31,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint(
 			"VERB_NOUN_PREP("
 		     + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
-		     + "WORD_FORM в([])"
+		     + "WORD_FORM в([ПР])"
 		     + "NOUN_ADJECTIVE("
 		       + "WORD_FORM большой([кач, ПРИЛ])"
 		       + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )", processed);
@@ -43,15 +45,15 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
 		        + "<predicate>VERB_ADVERB("
 			        + "WORD_FORM потом([Н])"
-			        + "<main>VERB_NOUN_PREP("
-				        + "<main>VERB_NOUN("
-					        + "NOUN_ADJECTIVE("
-						        + "WORD_FORM красный([ПРИЛ])"
-						        + "<main>WORD_FORM ручка([жр, СУЩ, неод])  )"
-					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])  )"
-				        + "WORD_FORM в([])"
-				        + "WORD_FORM дневник([мр, СУЩ, неод])  )  )  )", processed);
-	}
+			        + "<main>VERB_NOUN("
+				        + "NOUN_ADJECTIVE("
+					        + "WORD_FORM красный([кач, ПРИЛ])"
+					        + "<main>WORD_FORM ручка([жр, СУЩ, неод])  )"
+				        + "<main>VERB_NOUN_PREP("
+					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])"
+					        + "WORD_FORM в([ПР])"
+					        + "WORD_FORM дневник([мр, СУЩ, неод])  )  )  )  )", processed);
+				}
 	
 	public void test002(){
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
@@ -61,7 +63,7 @@ public class SyntaxParsersTest extends ParserTest{
 		     + "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
 		     + "<predicate>VERB_NOUN_PREP("
 		       + "<main>VERB_NOUN_PREP("
-		         + "WORD_FORM в([])"
+		         + "WORD_FORM в([ПР])"
 		         + "NOUN_ADJECTIVE("
 		           + "UNIFORM_ADJECTIVE("
 		             + "WORD_FORM красивый([кач, ПРИЛ])"
@@ -79,20 +81,20 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-		     + "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
-		     + "<predicate>VERB_NOUN_PREP("
-		       + "<main>VERB_NOUN_PREP("
-		         + "WORD_FORM в([])"
-		         + "NOUN_ADJECTIVE("
-		           + "UNIFORM_ADJECTIVE("
-		             + "WORD_FORM красивый([кач, ПРИЛ])"
-		             + "<main>WORD_FORM красный([кач, ПРИЛ])  )"
-		           + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )"
-		         + "<main>WORD_FORM иду([ГЛ, неперех, несов])  )"
-		       + "WORD_FORM в([ПР])"
-		       + "NOUN_ADJECTIVE("
-		         + "WORD_FORM большой([кач, ПРИЛ])"
-		         + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )", processed);
+				+ "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
+				+ "<predicate>VERB_NOUN_PREP("
+					+ "<main>VERB_NOUN_PREP("
+						+ "WORD_FORM в([ПР])"
+						+ "NOUN_ADJECTIVE("
+							+ "UNIFORM_ADJECTIVE("
+								+ "WORD_FORM красивый([кач, ПРИЛ])"
+								+ "<main>WORD_FORM красный([кач, ПРИЛ])  )"
+						+ "<main>WORD_FORM шапка([жр, СУЩ, неод])  )"
+					+ "<main>WORD_FORM иду([ГЛ, неперех, несов])  )"
+						+ "WORD_FORM в([ПР])"
+						+ "NOUN_ADJECTIVE("
+							+ "WORD_FORM большой([кач, ПРИЛ])"
+							+ "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test004(){
@@ -191,7 +193,7 @@ public class SyntaxParsersTest extends ParserTest{
 			           + "WORD_FORM и([СОЮЗ])"
 			           + "<main>WORD_FORM комфортно([Н])  )"
 			         + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
-			       + "WORD_FORM на([])"
+			       + "WORD_FORM на([ПР])"
 			       + "WORD_FORM автобус([мр, СУЩ, неод])  )  )", processed);
 	}
 	
@@ -206,7 +208,7 @@ public class SyntaxParsersTest extends ParserTest{
 			         + "<main>WORD_FORM красивый([кач, ПРИЛ])  )"
 			       + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )"
 			     + "<predicate>VERB_NOUN_PREP("
-			       + "WORD_FORM в([])"
+			       + "WORD_FORM в([ПР])"
 			       + "WORD_FORM лес([мр, СУЩ, неод])"
 			       + "<main>WORD_FORM стою([ГЛ, неперех, несов])  )  )", processed);
 	}

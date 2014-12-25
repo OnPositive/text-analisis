@@ -53,20 +53,12 @@ public class WordFormParser extends AbstractParser {
 					if(!corresponds(me,gr)){
 						continue;
 					}
+					me = refinePrepositionOrConjunction(me,startPosition,endPosition);
 					int id = me.id();
 					IToken token = tokens.get(id);
-					if(token == null){
-						if(me.getGrammems().contains(SemanGramem.ABBR)){
-							if (sample.size()>1){
-								IToken secondToken = sample.get(1);
-								if(secondToken.getStringValue().equals(".")){
-									if(endPosition==secondToken.getStartPosition()){
-										endPosition = secondToken.getEndPosition();
-									}
-								}
-							}
-						}
-						token = new WordFormToken(me, startPosition, endPosition);
+					int endPosition1 = considerAbbrEndPosition(sample,endPosition, me);
+					if(token == null){						
+						token = new WordFormToken(me, startPosition, endPosition1);
 						tokens.put(id, token);
 					}
 					WordFormToken wft = (WordFormToken) token;
@@ -83,14 +75,17 @@ public class WordFormParser extends AbstractParser {
 				TextElement te = data.textElement();
 				MeaningElement[] concepts = te.getConcepts();
 				for(MeaningElement me : concepts){
+					me = refinePrepositionOrConjunction(me,startPosition,endPosition);
 					int id = me.id();
-					if(tokens.containsKey(id)){
-						continue;
-					}
+					IToken token = tokens.get(id);
 					int endIndex = data.getSequenceLength()-1;
-					endPosition = sample.get(endIndex).getEndPosition();
-					WordFormToken token = new WordFormToken(me, startPosition, endPosition);
-					registerGrammarRelation(null, token);
+					int endPosition1 = sample.get(endIndex).getEndPosition();
+					if(token == null){
+						token = new WordFormToken(me, startPosition, endPosition1);
+						tokens.put(id, token);
+					}
+					WordFormToken wft = (WordFormToken) token;
+					registerGrammarRelation(null, wft);
 					tokens.put(id,token);
 				}
 			}
@@ -104,6 +99,42 @@ public class WordFormParser extends AbstractParser {
 				doubtfulTokens.add(t);
 			}
 		}
+	}
+
+	private MeaningElement refinePrepositionOrConjunction(MeaningElement me, int sp, int ep) {
+		
+		TextElement te = me.getParentTextElement();
+		String basicForm = te.getBasicForm();
+		if(te.isMultiWord()){
+			StringBuilder bld = new StringBuilder();			
+			for(TextElement t : te.getParts()){
+				bld.append(" ").append(t.getBasicForm());
+			}
+			basicForm = bld.toString();
+		}
+		MeaningElement preposition = getPreposition(basicForm, sp, ep);
+		if(preposition!=null){
+			return preposition;
+		}
+		MeaningElement conjunction = getConjunction(basicForm, sp, ep);
+		if(conjunction!=null){
+			return conjunction;
+		}
+		return me;
+	}
+
+	protected int considerAbbrEndPosition(Stack<IToken> sample,	int endPosition, MeaningElement me) {
+		if(me.getGrammems().contains(SemanGramem.ABBR)){
+			if (sample.size()>1){
+				IToken secondToken = sample.get(1);
+				if(secondToken.getStringValue().equals(".")){
+					if(endPosition==secondToken.getStartPosition()){
+						endPosition = secondToken.getEndPosition();
+					}
+				}
+			}
+		}
+		return endPosition;
 	}
 
 	private boolean corresponds(MeaningElement me, GrammarRelation gr) {
@@ -320,6 +351,49 @@ public class WordFormParser extends AbstractParser {
 		public int getSequenceLength(){
 			return sequence.length;
 		}
+	}
+	
+	private static PrepConjRegistry prepConjRegistry;	
+	
+	protected MeaningElement getPreposition(String str, int sp, int ep){
+		return lookupConjunctionOrPreposition(str, sp, ep, PartOfSpeech.PREP);
+	}
+	
+	protected MeaningElement getConjunction(String str, int sp, int ep){
+		return lookupConjunctionOrPreposition(str, sp, ep, PartOfSpeech.CONJ);
+	}
+
+	protected MeaningElement lookupConjunctionOrPreposition(String str, int sp, int ep, PartOfSpeech pos) {
+
+		String txt = getText();
+
+		MeaningElement me = null;
+		if(pos==PartOfSpeech.PREP){
+			me = getPrepConjRegistry().getPreposition(str);
+		}
+		else if(pos==PartOfSpeech.CONJ){
+			me = getPrepConjRegistry().getConjunction(str);
+		}
+		if(me==null){
+			return null;
+		}
+		if(str.trim().length()==1){
+			if(!str.equals(str.toLowerCase())){
+				if(txt.length()<ep){
+					if(!str.endsWith(" ")&&txt.charAt(ep)=='.'){
+						return null;
+					}
+				}
+			}
+		}
+		return me;
+	}
+
+	protected PrepConjRegistry getPrepConjRegistry() {
+		if(prepConjRegistry==null){
+			prepConjRegistry = new PrepConjRegistry(wordNet);
+		}
+		return prepConjRegistry;
 	}
 
 }

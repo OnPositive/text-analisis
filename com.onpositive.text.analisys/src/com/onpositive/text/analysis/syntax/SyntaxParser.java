@@ -38,16 +38,16 @@ public class SyntaxParser extends ParserComposition {
 		NounDimensionParser.class,
 		UniformNounsParser.class,		
 		DirectObjectParser.class,
-		VerbNameParser.class,
 		VerbNamePrepositionParser.class,
+		VerbNameParser.class,		
 		ClauseParser.class
 	};
 	
 	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
 		VerbAdverbParser.class,
 		DirectObjectParser.class,
-		VerbNameParser.class,
-		VerbNamePrepositionParser.class
+		VerbNamePrepositionParser.class,
+		VerbNameParser.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {
