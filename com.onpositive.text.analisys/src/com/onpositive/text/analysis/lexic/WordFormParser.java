@@ -117,11 +117,11 @@ public class WordFormParser extends AbstractParser {
 			return me;
 		}
 		
-		MeaningElement preposition = getPreposition(str);
+		MeaningElement preposition = getPrepConjRegistry().getPreposition(str);
 		if(preposition!=null){
 			return preposition;
 		}
-		MeaningElement conjunction = getConjunction(str);
+		MeaningElement conjunction = getPrepConjRegistry().getConjunction(str);
 		if(conjunction!=null){
 			return conjunction;
 		}
@@ -359,29 +359,6 @@ public class WordFormParser extends AbstractParser {
 	}
 	
 	private static PrepConjRegistry prepConjRegistry;	
-	
-	protected MeaningElement getPreposition(String str){
-		return lookupConjunctionOrPreposition(str, PartOfSpeech.PREP);
-	}
-	
-	protected MeaningElement getConjunction(String str){
-		return lookupConjunctionOrPreposition(str, PartOfSpeech.CONJ);
-	}
-
-	protected MeaningElement lookupConjunctionOrPreposition(String str, PartOfSpeech pos){ 
-
-		MeaningElement me = null;
-		if(pos==PartOfSpeech.PREP){
-			me = getPrepConjRegistry().getPreposition(str);
-		}
-		else if(pos==PartOfSpeech.CONJ){
-			me = getPrepConjRegistry().getConjunction(str);
-		}
-		else{
-			return null;
-		}
-		return me;
-	}
 
 	protected PrepConjRegistry getPrepConjRegistry() {
 		if(prepConjRegistry==null){

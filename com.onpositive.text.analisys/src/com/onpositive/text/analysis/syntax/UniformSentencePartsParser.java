@@ -17,7 +17,7 @@ import com.onpositive.text.analysis.rules.matchers.HasGrammem;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
-public class UniformSentencePartsParser extends AbstractSyntaxParser {
+public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 	
 	private static final Set<String> noCommaConjunctions = new HashSet<String>(Arrays.asList(
 		"и", "да", "или", "либо"
@@ -63,13 +63,32 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 		if(count<2){
 			return;
 		}
+		
+		List<GrammemSet> refinedGrammemSets = refineGrammemSets(grammemSets);
+		boolean isReliable = refinedGrammemSets==null;
+		if(isReliable){
+			refinedGrammemSets = grammemSets;
+		}
+		if(refinedGrammemSets.isEmpty()){
+			return;
+		}
+		
 		SyntaxToken last = (SyntaxToken) parts.get(count-1);
 		int startPosition = sample.get(0).getStartPosition();
 		int endPosition = last.getEndPosition();
-		SyntaxToken newToken = new SyntaxToken(tokenType, last, grammemSets, startPosition, endPosition);
+		SyntaxToken newToken = new SyntaxToken(tokenType, last, refinedGrammemSets, startPosition, endPosition);
 		if(checkParents(newToken,sample)){
-			reliableTokens.add(newToken);
+			if(isReliable){
+				reliableTokens.add(newToken);
+			}
+			else{
+				doubtfulTokens.add(newToken);
+			}
 		}
+	}
+
+	protected List<GrammemSet> refineGrammemSets(List<GrammemSet> grammemSets) {
+		return grammemSets;
 	}
 
 	private List<GrammemSet> matchMembers(List<SyntaxToken> parts) {
@@ -84,8 +103,9 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 			SyntaxToken token = parts.get(i);
 			for(GrammemSet gs0 : grammemSets){
 				for(GrammemSet gs1 : token.getGrammemSets()){
-					if(checkGrammemSetCorrespondence(gs0,gs1)){
-						acceptedGrammemSets.add(gs0);
+					GrammemSet matchedSet = checkGrammemSetCorrespondence(gs0,gs1);
+					if(matchedSet!=null){
+						acceptedGrammemSets.add(matchedSet);
 						break;
 					}
 				}
@@ -106,9 +126,7 @@ public class UniformSentencePartsParser extends AbstractSyntaxParser {
 		return grammemSets;
 	}
 
-	protected boolean checkGrammemSetCorrespondence(GrammemSet gs0, GrammemSet gs1) {
-		return true;
-	}
+	protected abstract GrammemSet checkGrammemSetCorrespondence(GrammemSet gs0, GrammemSet gs1);
 
 	private List<SyntaxToken> collectParts(Stack<IToken> tokens) {
 		ArrayList<SyntaxToken> result = new ArrayList<SyntaxToken>();

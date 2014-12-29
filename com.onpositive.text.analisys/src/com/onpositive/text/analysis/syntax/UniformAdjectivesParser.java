@@ -1,9 +1,11 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
@@ -18,23 +20,28 @@ public class UniformAdjectivesParser extends UniformSentencePartsParser {
 		super(wordNet, IToken.TOKEN_TYPE_UNIFORM_ADJECTIVE, new PartOfSpeech[]{PartOfSpeech.ADJF});
 	}
 	
-	protected boolean checkGrammemSetCorrespondence(GrammemSet gs0, GrammemSet gs1) {
+	protected GrammemSet checkGrammemSetCorrespondence(GrammemSet gs0, GrammemSet gs1) {
 		
 		Set<Gender> matchedGender = matchGender(gs0,gs1);
 		if(matchedGender==null||matchedGender.isEmpty()){
-			return false;
+			return null;
 		}
 
 		Map<SingularPlural,SingularPlural> matchedSp = matchSP(gs0,gs1);
 		if(matchedSp==null||matchedSp.isEmpty()){
-			return false;
+			return null;
 		}
 		
 		Map<Case, Case> matchedCase = matchCase(gs0,gs1);
 		if(matchedCase==null||matchedCase.isEmpty()){
-			return false;
+			return null;
 		}
-		return true;
+		ArrayList<Grammem> list = new ArrayList<Grammem>();
+		list.add(PartOfSpeech.ADJF);
+		list.addAll(matchedGender);
+		list.addAll(matchedSp.values());
+		list.addAll(matchedCase.values());
+		return new GrammemSet(list);
 	}
 
 }

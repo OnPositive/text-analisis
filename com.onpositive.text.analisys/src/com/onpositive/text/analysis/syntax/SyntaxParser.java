@@ -39,7 +39,8 @@ public class SyntaxParser extends ParserComposition {
 		UniformNounsParser.class,		
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,
-		VerbNameParser.class,		
+//		GenitiveChainParser.class,
+		VerbNameParser.class,
 		ClauseParser.class
 	};
 	
@@ -47,6 +48,7 @@ public class SyntaxParser extends ParserComposition {
 		VerbAdverbParser.class,
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,
+//		GenitiveChainParser.class,
 		VerbNameParser.class
 	};
 	
@@ -86,7 +88,7 @@ public class SyntaxParser extends ParserComposition {
 			for(AbstractParser parser : syntaxParsers2){
 				tokens = applyParser(tokens, parser);
 			}
-			sentence.setChildren(new BasicCleaner().clean(tokens));
+			sentence.setChildren(tokens);//new BasicCleaner().clean(tokens));
 		}
 		return sentences;
 	}

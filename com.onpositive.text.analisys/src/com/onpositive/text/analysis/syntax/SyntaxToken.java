@@ -158,6 +158,9 @@ public class SyntaxToken extends AbstractToken{
 		SyntaxToken token = this;
 		SyntaxToken mainGroup = this.getMainGroup();
 		while(token!=mainGroup){
+			if(mainGroup==null){
+				return null;
+			}
 			token = mainGroup;
 			mainGroup = token.getMainGroup();
 		}
@@ -238,7 +241,8 @@ public class SyntaxToken extends AbstractToken{
 	}
 
 	public String getBasicForm() {
-		return getMainWord().getBasicForm();
+		WordFormToken mainWord = getMainWord();
+		return mainWord==null?null:mainWord.getBasicForm();
 	}
 
 

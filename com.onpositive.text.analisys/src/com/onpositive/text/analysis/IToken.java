@@ -76,9 +76,9 @@ public interface IToken {
 
 	static final int TOKEN_TYPE_MEASURED_NOUN = 11055;
 	
-	static final int TOKEN_TYPE_LINK = 11056;	
+	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;	
 	
-	
+	static final int TOKEN_TYPE_LINK = 20001;
 	
 	int id();
 	

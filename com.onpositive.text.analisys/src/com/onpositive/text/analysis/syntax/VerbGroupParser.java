@@ -102,20 +102,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		}
 	}
 
-	private boolean isContained(SyntaxToken token0,SyntaxToken token1)
-	{
-		int sp0 = token0.getStartPosition();
-		int ep0 = token0.getEndPosition();
-		
-		int sp1 = token1.getStartPosition();
-		int ep1 = token1.getEndPosition();
-		
-		if(sp0<ep1&&sp1<ep0){
-			return true;
-		}
-		return false;
-	}
-
 	private SyntaxToken[] extractMainTokens(Stack<IToken> sample) {
 		if(sample.size()==2){
 			return fillMainTokenArray(sample.get(0),sample.get(1),new SyntaxToken[2]); 

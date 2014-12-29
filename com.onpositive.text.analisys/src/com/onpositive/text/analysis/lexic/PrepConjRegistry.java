@@ -80,4 +80,20 @@ public class PrepConjRegistry {
 			}
 		}
 	}
+
+
+	public MeaningElement lookupConjunctionOrPreposition(String str, PartOfSpeech pos){ 
+
+		MeaningElement me = null;
+		if(pos==PartOfSpeech.PREP){
+			me = getPreposition(str);
+		}
+		else if(pos==PartOfSpeech.CONJ){
+			me = getConjunction(str);
+		}
+		else{
+			return null;
+		}
+		return me;
+	}
 }

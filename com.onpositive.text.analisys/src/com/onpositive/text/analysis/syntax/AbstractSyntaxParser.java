@@ -12,8 +12,10 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
+import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.AbstractParser;
+import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 import com.onpositive.text.analysis.rules.matchers.AndMatcher;
 import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
 import com.onpositive.text.analysis.rules.matchers.HasAnyOfGrammems;
@@ -33,7 +35,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		fillGrammemMap(Case.all, caseMatchMap);
 		fillGrammemMap(SingularPlural.all, spMatchMap);
 	}
-
+	
+	private static PrepConjRegistry prepConjRegistry;
 
 	public AbstractSyntaxParser(AbstractWordNet wordNet) {
 		super();
@@ -211,6 +214,19 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return false;
 	}
 
+	protected boolean isContained(IToken token0, IToken token1) {
+		int sp0 = token0.getStartPosition();
+		int ep0 = token0.getEndPosition();
+		
+		int sp1 = token1.getStartPosition();
+		int ep1 = token1.getEndPosition();
+		
+		if(sp0<ep1&&sp1<ep0){
+			return true;
+		}
+		return false;
+	}
+
 	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAll(T... tran) {
 		return new HasAllGrammems(tran);
 	}
@@ -241,5 +257,25 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 
 	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAny(Set<T> set) {
 		return hasAny(set.toArray(new Grammem[set.size()]));
+	}
+	
+	protected boolean isPrepOrConj(IToken newToken){
+		if(!(newToken instanceof SyntaxToken)){
+			return false;
+		}
+		String basicForm = ((SyntaxToken) newToken).getBasicForm();
+		if(basicForm==null){
+			return false;
+		}
+		MeaningElement prep = getPrepConjRegistry().getPreposition(basicForm);
+		MeaningElement conj = getPrepConjRegistry().getConjunction(basicForm);
+		return conj!=null || prep != null;
+	}
+	
+	protected PrepConjRegistry getPrepConjRegistry() {
+		if(prepConjRegistry==null){
+			prepConjRegistry = new PrepConjRegistry(wordNet);
+		}
+		return prepConjRegistry;
 	}
 }
