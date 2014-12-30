@@ -36,19 +36,19 @@ public class SyntaxParser extends ParserComposition {
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		NounDimensionParser.class,
-		UniformNounsParser.class,		
+		UniformNounsParser.class,
+		GenitiveChainParser.class,
 		DirectObjectParser.class,
-		VerbNamePrepositionParser.class,
-//		GenitiveChainParser.class,
-		VerbNameParser.class,
+		VerbNamePrepositionParser.class,		
+		VerbNameParser.class,		
 		ClauseParser.class
 	};
 	
 	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
 		VerbAdverbParser.class,
+		GenitiveChainParser.class,
 		DirectObjectParser.class,
-		VerbNamePrepositionParser.class,
-//		GenitiveChainParser.class,
+		VerbNamePrepositionParser.class,		
 		VerbNameParser.class
 	};
 	

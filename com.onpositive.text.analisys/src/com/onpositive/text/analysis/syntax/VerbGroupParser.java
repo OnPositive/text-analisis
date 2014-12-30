@@ -45,7 +45,12 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		}
 		if (sample.size() < 3 && requiresPreposition()) {
 			return;
-		}	
+		}
+		if(sample.size()==2 && !requiresPreposition()){
+			if(!matchTokensCouple(sample)){
+				return;
+			}
+		}
 	
 		SyntaxToken[] orderedTokens = extractMainTokens(sample);
 		if(orderedTokens==null){
@@ -184,6 +189,10 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
+	}
+
+	protected boolean matchTokensCouple(Stack<IToken> sample) {
+		return true;
 	}
 
 	@Override

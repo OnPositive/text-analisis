@@ -42,7 +42,7 @@ public class ParserTest extends TestCase {
 		ArrayList<IToken> list = new ArrayList<>();
 		for(IToken t : processed){
 			if(t instanceof SentenceToken){
-				list.addAll(new BasicCleaner().clean(t.getChildren()));
+				list.addAll(t.getChildren());//new BasicCleaner().clean(t.getChildren()));
 			}
 			else{
 				list.add(t);

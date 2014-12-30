@@ -53,7 +53,7 @@ public class SyntaxParsersTest extends ParserTest{
 					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])"
 					        + "WORD_FORM в([ПР])"
 					        + "WORD_FORM дневник([мр, СУЩ, неод])  )  )  )  )", processed);
-				}
+	}
 	
 	public void test002(){
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
