@@ -6,6 +6,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class VerbNamePrepositionParser extends VerbGroupParser {
+	
 
 	private static final UnaryMatcher<SyntaxToken> adjectiveMatch = hasAny(PartOfSpeech.ADJF);
 	
@@ -26,6 +27,16 @@ public class VerbNamePrepositionParser extends VerbGroupParser {
 			return IToken.TOKEN_TYPE_VERB_ADJECTIVE_PREP;
 		}
 		return -1;
+	}
+	
+	@Override
+	protected boolean adjustTokens(SyntaxToken[] orderedTokens) {
+		
+		String prepString = orderedTokens[2].getBasicForm();
+		UnaryMatcher<SyntaxToken> matcher = getPrepConjRegistry().getPrepCaseMatcher(prepString);
+		SyntaxToken nameToken = orderedTokens[1];
+		boolean result = matcher.match(nameToken);
+		return result;
 	}
 
 	@Override
