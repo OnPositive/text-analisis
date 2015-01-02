@@ -15,12 +15,12 @@ public abstract class AbstractToken implements IToken {
 		this.endPosition = endPosition;
 	}
 	
-	protected AbstractToken(int tokenType, int startPosition, int endPosition, boolean isContinuous)
+	protected AbstractToken(int tokenType, int startPosition, int endPosition, boolean isDoubtful)
 	{
 		this.tokenType = tokenType;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
-		this.isContinuous = isContinuous;
+		this.isDoubtful = isDoubtful;
 	}
 	
 	private int id;
@@ -61,7 +61,7 @@ public abstract class AbstractToken implements IToken {
 		this.link = link;
 	}
 
-	private boolean isContinuous = true;
+	private boolean isDoubtful = false;
 	
 	public int id() {
 		return id;
@@ -243,7 +243,6 @@ public abstract class AbstractToken implements IToken {
 			this.children = new ArrayList<IToken>();
 		}
 		this.children.add(child);
-		this.isContinuous &= child.isContinuous();
 	}
 	
 	public void addChildren(Collection<IToken> children){
@@ -251,9 +250,6 @@ public abstract class AbstractToken implements IToken {
 			this.children = new ArrayList<IToken>();
 		}
 		this.children.addAll(children);
-		for(IToken child : children){
-			this.isContinuous &= child.isContinuous();
-		}
 	}
 	
 	public void setChildren(Collection<IToken> children){
@@ -327,8 +323,8 @@ public abstract class AbstractToken implements IToken {
 		return this.startPosition > endOfPrevious;
 	}
 	
-	public boolean isContinuous() {
-		return isContinuous;
+	public boolean isDoubtful() {
+		return isDoubtful;
 	}
 
 	@Override

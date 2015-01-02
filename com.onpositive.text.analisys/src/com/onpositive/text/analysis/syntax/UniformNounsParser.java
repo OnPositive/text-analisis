@@ -42,15 +42,14 @@ public class UniformNounsParser extends UniformSentencePartsParser {
 	}
 	
 	@Override
-	protected List<GrammemSet> refineGrammemSets(List<GrammemSet> grammemSets) {
+	protected boolean isReliable(List<GrammemSet> grammemSets, Set<Grammem> occuredGrammems) {
 		
-		ArrayList<GrammemSet> list = new ArrayList<GrammemSet>();
-		for(GrammemSet gs : grammemSets){
-			if(!genCases.containsAll(gs.extractGrammems(Case.class))){
-				list.add(gs);
+		for(Case c : genCases){
+			if(occuredGrammems.contains(c)){
+				return false;
 			}
 		}
-		return list.size() == grammemSets.size() ? null : list;
+		return true;
 	}
 
 }

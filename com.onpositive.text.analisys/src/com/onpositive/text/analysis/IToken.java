@@ -144,7 +144,7 @@ public interface IToken {
 	
 	boolean hasSpaceBefore();
 	
-	boolean isContinuous();
+	boolean isDoubtful();
 	
 	public String getLink();
 

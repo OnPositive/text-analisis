@@ -42,9 +42,9 @@ public class SyntaxToken extends AbstractToken{
 			Collection<GrammemSet> grammemSets,
 			int startPosition,
 			int endPosition,
-			boolean isContinuous) {
+			boolean isDoubtful) {
 		
-		super(tokenType, startPosition, endPosition, isContinuous);
+		super(tokenType, startPosition, endPosition, isDoubtful);
 		this.mainGroup = mainGroup;
 		if(grammemSets!=null){
 			this.grammemSets = new ArrayList<SyntaxToken.GrammemSet>(grammemSets);

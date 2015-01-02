@@ -442,13 +442,35 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Российские следователи ответили на упреки украинских силовиков.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"", processed);
+			"CLAUSE("
+		        + "<subject>NOUN_ADJECTIVE("
+			        + "WORD_FORM российский([ПРИЛ])"
+			        + "<main>WORD_FORM следователь([мр, од, СУЩ])  )"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "<main>WORD_FORM ответил([сов, ГЛ, неперех])"
+			        + "WORD_FORM на([ПР])"
+			        + "GENITIVE_CHAIN("
+				        + "<main>WORD_FORM упрёк([мр, СУЩ, неод])"
+				        + "NOUN_ADJECTIVE("
+					        + "WORD_FORM украинский([ПРИЛ, гео])"
+					        + "<main>WORD_FORM силовик([мр, од, СУЩ])  )  )  )  )", processed);
 	}
 	
 	public void test031(){
 		String str = "В Якутии составят электронную родословную всего населения.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"", processed);
+			"VERB_NOUN_PREP("
+		        + "WORD_FORM в([ПР])"
+		        + "WORD_FORM якутия([sg, жр, СУЩ, гео, неод])"
+		        + "<main>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM составил([сов, ГЛ, перех])"
+			        + "GENITIVE_CHAIN("
+				        + "<main>NOUN_ADJECTIVE("
+					        + "WORD_FORM электронный([ПРИЛ])"
+					        + "<main>WORD_FORM родословная([жр, СУЩ, неод])  )"
+				        + "NOUN_ADJECTIVE("
+					        + "WORD_FORM весь([мест-п, ПРИЛ])"
+					        + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )", processed);
 	}
 }

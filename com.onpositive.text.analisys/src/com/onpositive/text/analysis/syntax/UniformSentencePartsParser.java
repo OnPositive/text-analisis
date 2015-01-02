@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.SymbolToken;
@@ -58,43 +59,43 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 		if(parts.size()<2){
 			return;
 		}
-		List<GrammemSet> grammemSets = matchMembers(parts);
+		if(!checkParents(null,sample)){
+			return;
+		}
+		HashSet<Grammem> occuredGrammems = new HashSet<Grammem>();
+		List<GrammemSet> grammemSets = matchMembers(parts, occuredGrammems);
 		int count = parts.size();
 		if(count<2){
 			return;
 		}
 		
-		List<GrammemSet> refinedGrammemSets = refineGrammemSets(grammemSets);
-		boolean isReliable = refinedGrammemSets==null;
-		if(isReliable){
-			refinedGrammemSets = grammemSets;
-		}
-		if(refinedGrammemSets.isEmpty()){
-			return;
-		}
+		boolean isReliable = isReliable(grammemSets,occuredGrammems);
 		
 		SyntaxToken last = (SyntaxToken) parts.get(count-1);
 		int startPosition = sample.get(0).getStartPosition();
 		int endPosition = last.getEndPosition();
-		SyntaxToken newToken = new SyntaxToken(tokenType, last, refinedGrammemSets, startPosition, endPosition);
-		if(checkParents(newToken,sample)){
-			if(isReliable){
-				reliableTokens.add(newToken);
-			}
-			else{
-				doubtfulTokens.add(newToken);
-			}
+
+		if(isReliable){
+			SyntaxToken newToken = new SyntaxToken(tokenType, last, grammemSets, startPosition, endPosition);
+			reliableTokens.add(newToken);
+		}
+		else{
+			SyntaxToken newToken = new SyntaxToken(tokenType, last, grammemSets, startPosition, endPosition, true);
+			doubtfulTokens.add(newToken);
 		}
 	}
 
-	protected List<GrammemSet> refineGrammemSets(List<GrammemSet> grammemSets) {
-		return grammemSets;
+	protected boolean isReliable(List<GrammemSet> grammemSets, Set<Grammem> occuredGrammems) {
+		return true;
 	}
 
-	private List<GrammemSet> matchMembers(List<SyntaxToken> parts) {
+	private List<GrammemSet> matchMembers(List<SyntaxToken> parts, Set<Grammem> grammems) {
 		
 		SyntaxToken token0 = (SyntaxToken)parts.get(0);
 		List<GrammemSet> grammemSets = new ArrayList<SyntaxToken.GrammemSet>(token0.getGrammemSets());
+		for(GrammemSet gs : grammemSets){
+			grammems.addAll(gs.grammems());
+		}
 		List<GrammemSet> acceptedGrammemSets = new ArrayList<SyntaxToken.GrammemSet>();
 		List<GrammemSet> tmpList;
 		int size = parts.size();
@@ -103,6 +104,7 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 			SyntaxToken token = parts.get(i);
 			for(GrammemSet gs0 : grammemSets){
 				for(GrammemSet gs1 : token.getGrammemSets()){
+					grammems.addAll(gs1.grammems());
 					GrammemSet matchedSet = checkGrammemSetCorrespondence(gs0,gs1);
 					if(matchedSet!=null){
 						acceptedGrammemSets.add(matchedSet);

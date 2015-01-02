@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.AnimateProperty;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
@@ -103,6 +104,9 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 			}
 			int s0 = children.size();
 l0:			for(IToken parent: parents){
+				if(parent.isDoubtful()){
+					continue;
+				}
 				List<IToken> children1 = parent.getChildren();
 				int s1 = children1.size();
 				if(s0!=s1){
@@ -129,7 +133,12 @@ l0:			for(IToken parent: parents){
 		ArrayList<GrammemSet> grammemSets = new ArrayList<SyntaxToken.GrammemSet>();
 l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){			
 			for(GrammemSet gs1 : token.getGrammemSets())
-			{				
+			{
+				Set<AnimateProperty> matchedAnim = matchAnimatedProperty(gs0,gs1);
+				if(matchedAnim==null){
+					continue;
+				}
+				
 				Map<SingularPlural,SingularPlural> matchedSp = matchSP(gs0,gs1);
 				if(matchedSp==null||matchedSp.isEmpty()){
 					continue;
@@ -157,6 +166,30 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return result;
 	}
 	
+	private static Set<AnimateProperty> matchAnimatedProperty(GrammemSet gs0, GrammemSet gs1) {
+		Set<AnimateProperty> anim0 = gs0.extractGrammems(AnimateProperty.class);
+		Set<AnimateProperty> anim1 = gs1.extractGrammems(AnimateProperty.class);
+		if(anim0.contains(AnimateProperty.ANim)){
+			return anim1;
+		}
+		if(anim0.isEmpty()){
+			return anim1;
+		}
+		if(anim1.contains(AnimateProperty.ANim)){
+			return anim0;
+		}
+		if(anim1.isEmpty()){
+			return anim0;
+		}
+		HashSet<AnimateProperty> set = new HashSet<AnimateProperty>();
+		for(AnimateProperty ap : anim0){
+			if(anim1.contains(ap)){
+				set.add(ap);
+			}
+		}
+		return set.isEmpty() ? null : set;
+	}
+
 	public static Set<Gender> matchGender(GrammemSet gs0, GrammemSet gs1){
 		return matchGender(gs0.extractGrammems(Gender.class), gs1.extractGrammems(Gender.class));
 	}
