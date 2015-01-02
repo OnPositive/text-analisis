@@ -473,4 +473,21 @@ public class SyntaxParsersTest extends ParserTest{
 					        + "WORD_FORM весь([мест-п, ПРИЛ])"
 					        + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )", processed);
 	}
+	
+	public void test032(){
+		String str = "Президент Гамбии опроверг попытку государственного переворота.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+		        + "<subject>GENITIVE_CHAIN("
+			        + "<main>WORD_FORM президент([мр, од, СУЩ])"
+			        + "WORD_FORM гамбия([sg, жр, СУЩ, гео, неод])  )"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM опроверг([сов, ГЛ, перех])"
+			        + "GENITIVE_CHAIN("
+				        + "<main>WORD_FORM попытка([жр, СУЩ, неод])"
+				        + "NOUN_ADJECTIVE("
+					        + "WORD_FORM государственный([ПРИЛ])"
+					        + "<main>WORD_FORM переворот([мр, СУЩ, неод])  )  )  )  )", processed);
+	}
 }
