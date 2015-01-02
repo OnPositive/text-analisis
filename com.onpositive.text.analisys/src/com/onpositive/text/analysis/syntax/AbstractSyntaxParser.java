@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -253,6 +254,15 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 
 	public static final UnaryMatcher<SyntaxToken> hasAny(Grammem...gf) {
 		return new HasAnyOfGrammems(gf);
+	}
+	
+	public static final UnaryMatcher<SyntaxToken> createCaseMatcher(Collection<Case> cases){
+		HashSet<Case> set = new HashSet<Grammem.Case>();
+		for(Case c : cases){
+			set.addAll(caseMatchMap.get(c));
+		}
+		Case[] arr = set.toArray(new Case[set.size()]);
+		return hasAny(arr);
 	}
 
 	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAny(Set<T> set) {

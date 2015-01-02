@@ -112,8 +112,7 @@ public class PrepConjRegistry {
 						Grammem grammem = Grammem.get(caseName.toLowerCase());
 						list.add((Case) grammem);
 					}
-					Case[] caseArr = list.toArray(new Case[list.size()]);
-					matcher = AbstractSyntaxParser.hasAny(caseArr);
+					matcher = AbstractSyntaxParser.createCaseMatcher(list);
 					caseMatchersCache.put(canonicString, matcher);
 				}
 				prepCaseMap.put(basicForm, list);
