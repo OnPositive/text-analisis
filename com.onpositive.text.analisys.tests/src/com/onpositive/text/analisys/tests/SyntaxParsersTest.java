@@ -490,4 +490,21 @@ public class SyntaxParsersTest extends ParserTest{
 					        + "WORD_FORM государственный([ПРИЛ])"
 					        + "<main>WORD_FORM переворот([мр, СУЩ, неод])  )  )  )  )", processed);
 	}
+	
+	public void test033(){
+		String str = "Инфляция в России достигла 10 процентов.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+			   + "<subject>WORD_FORM инфляция([жр, СУЩ, неод])"
+			   		+ "<predicate>VERB_NOUN_PREP("
+			   			+ "WORD_FORM в([ПР])"
+			   			+ "WORD_FORM россия([sg, жр, СУЩ, гео, неод])"
+			   			+ "<main>DIRECT_OBJECT_NAME("
+			   				+ "<main>WORD_FORM достиг([сов, ГЛ, перех])"
+			   				+ "NOUN_ADJECTIVE("
+			   					+ "SCALAR 10.0"
+			   					+ "<main>WORD_FORM процент([мр, СУЩ, неод])  )  )  )  )", processed);
+	}
+
 }

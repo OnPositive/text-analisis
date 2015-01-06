@@ -20,8 +20,4 @@ public class VerbAdverbParser extends VerbGroupParser{
 		return hasAll(PartOfSpeech.ADVB).match(token);
 	}
 
-	@Override
-	protected boolean checkVerb(IToken token0) {
-		return verbMatch.match(token0);
-	}
 }

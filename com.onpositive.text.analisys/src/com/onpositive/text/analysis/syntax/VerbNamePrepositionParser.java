@@ -45,11 +45,6 @@ public class VerbNamePrepositionParser extends VerbGroupParser {
 	}
 
 	@Override
-	protected boolean checkVerb(IToken token) {
-		return verbMatch.match(token);
-	}
-
-	@Override
 	protected boolean acceptsPreposition() {
 		return true;
 	}

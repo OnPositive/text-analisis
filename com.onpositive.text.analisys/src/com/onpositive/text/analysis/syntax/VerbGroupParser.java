@@ -20,7 +20,9 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 
 	protected abstract boolean checkAdditionalToken(IToken token);
 
-	protected abstract boolean checkVerb(IToken token);
+	protected boolean checkVerb(IToken token) {
+		return verbLikeMatch.match(token);
+	}
 	
 	protected boolean acceptsPreposition(){
 		return false;
@@ -32,9 +34,12 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	
 	protected static final UnaryMatcher<SyntaxToken> prepMatch = hasAny(PartOfSpeech.PREP);
 	
-	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny(PartOfSpeech.VERB, PartOfSpeech.INFN);
+	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
-	protected static final UnaryMatcher<SyntaxToken> transitiveVerbMatch = and(verbMatch,hasAny(TransKind.tran));
+	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
+			PartOfSpeech.VERB, PartOfSpeech.INFN, PartOfSpeech.PRTF, PartOfSpeech.PRTS, PartOfSpeech.GRND);
+	
+	protected static final UnaryMatcher<SyntaxToken> transitiveVerbMatch = and(verbLikeMatch,hasAny(TransKind.tran));
 
 	protected static final UnaryMatcher<SyntaxToken> infnMatch = has(PartOfSpeech.INFN);
 

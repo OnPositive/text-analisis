@@ -40,7 +40,8 @@ public class SyntaxParser extends ParserComposition {
 		GenitiveChainParser.class,
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,		
-		VerbNameParser.class,		
+		VerbNameParser.class,
+		DirectObjectParser.class,
 		ClauseParser.class
 	};
 	
@@ -49,7 +50,8 @@ public class SyntaxParser extends ParserComposition {
 		GenitiveChainParser.class,
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,		
-		VerbNameParser.class
+		VerbNameParser.class,
+		DirectObjectParser.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {
