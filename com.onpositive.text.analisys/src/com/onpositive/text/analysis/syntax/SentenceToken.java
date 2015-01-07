@@ -1,25 +1,33 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.util.List;
-
 import com.onpositive.text.analysis.AbstractToken;
 import com.onpositive.text.analysis.IToken;
 
 public class SentenceToken extends AbstractToken{
 
-	protected SentenceToken(int startPosition, int endPosition) {
-		super(IToken.TOKEN_TYPE_SENTENCE, startPosition, endPosition);		
+	public SentenceToken(int startPosition, int endPosition) {
+		super(IToken.TOKEN_TYPE_SENTENCE, startPosition, endPosition);
 	}
 
 	@Override
 	public String getStringValue() {
-		
-		StringBuilder bld = new StringBuilder();
-		List<IToken> children = getChildren();
-		for(IToken t : children){
-			bld.append(t.getStringValue()).append("\n");
+		if(children==null||children.isEmpty()){
+			return "";
 		}
-		return bld.toString();
+		StringBuilder bld = new StringBuilder();
+		IToken prev = children.get(0);
+		bld.append(prev.getStringValue());
+		int size = children.size();
+		for(int i = 1 ; i < size ; i++){
+			IToken token = children.get(i);
+			if(prev.getEndPosition() != token.getStartPosition()){
+				bld.append(" ");
+			}
+			bld.append(token.getStringValue());
+			prev = token;
+		}
+		String result = bld.toString();
+		return result;
 	}
-
+	
 }

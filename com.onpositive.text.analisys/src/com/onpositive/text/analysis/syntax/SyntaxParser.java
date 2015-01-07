@@ -70,14 +70,14 @@ public class SyntaxParser extends ParserComposition {
 	
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
-	private PrimitiveSentenceMaker sentenceMaker = new PrimitiveSentenceMaker();
+	private SentenceSplitter sentenceSplitter = new SentenceSplitter();
 	
 	
 	public List<IToken> parse(String str){
 		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
 		List<IToken> lexicProcessed = lexicParser.process(primitiveTokens);
-		List<IToken> sentences = sentenceMaker.formSentences(lexicProcessed);
+		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		
 		for(IToken sentence : sentences){
 			List<IToken> tokens = new ArrayList<IToken>(sentence.getChildren());
