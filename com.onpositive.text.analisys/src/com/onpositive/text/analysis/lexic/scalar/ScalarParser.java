@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.conditions.BinaryCondition;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.rules.RuleExecutionEngine;
 import com.onpositive.text.analysis.utils.Utils;

@@ -8,8 +8,8 @@ import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.TextElement;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.StringToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;

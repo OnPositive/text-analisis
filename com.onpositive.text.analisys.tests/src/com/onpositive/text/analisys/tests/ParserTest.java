@@ -8,10 +8,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;

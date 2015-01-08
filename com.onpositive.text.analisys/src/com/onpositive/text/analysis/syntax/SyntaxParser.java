@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -28,30 +28,25 @@ public class SyntaxParser extends ParserComposition {
 		NumericsParser.class
 	};
 	
-	private static final Class<?>[] syntaxParsersArray = new Class<?>[]{
+	private static final Class<?>[] nameSyntaxParsersArray = new Class<?>[]{
 		AdverbModificatorParser.class,
 		UniformAdverbParser.class,
-		AdjectiveAdverbParser.class,
-		VerbAdverbParser.class,
+		AdjectiveAdverbParser.class,		
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		NounDimensionParser.class,
-		UniformNounsParser.class,
-		GenitiveChainParser.class,
-		DirectObjectParser.class,
-		VerbNamePrepositionParser.class,		
-		VerbNameParser.class,
-		DirectObjectParser.class,
-		ClauseParser.class
+		UniformNounsParser.class
 	};
 	
-	private static final Class<?>[] syntaxParsersArray2 = new Class<?>[]{
+	private static final Class<?>[] nameSyntaxRecursiveParsersArray = new Class<?>[]{
+		GenitiveChainParser.class
+	};
+	
+	private static final Class<?>[] verbGroupSyntaxParsersArray = new Class<?>[]{
 		VerbAdverbParser.class,
-		GenitiveChainParser.class,
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,		
 		VerbNameParser.class,
-		DirectObjectParser.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {
@@ -62,12 +57,16 @@ public class SyntaxParser extends ParserComposition {
 
 	private AbstractWordNet wordNet;
 	
-	private ParserComposition lexicParser;
+	private ParserComposition lexicParsers;
 	
-	private List<AbstractParser> syntaxParsers ;
+	private ParserComposition nameSyntaxParsers;
 	
-	private List<AbstractParser> syntaxParsers2 ;
+	private ParserComposition nameRecursiveSyntaxParsers;
 	
+	private ParserComposition verbGroupSyntaxParsers;
+	
+	private ClauseParser clauseParser;
+
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
 	private SentenceSplitter sentenceSplitter = new SentenceSplitter();
@@ -76,20 +75,18 @@ public class SyntaxParser extends ParserComposition {
 	public List<IToken> parse(String str){
 		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
-		List<IToken> lexicProcessed = lexicParser.process(primitiveTokens);
+		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		
 		for(IToken sentence : sentences){
-			List<IToken> tokens = new ArrayList<IToken>(sentence.getChildren());
-			for(AbstractParser parser : syntaxParsers){
-				do{
-					tokens = applyParser(tokens, parser);
-				}
-				while(parser.hasTriggered()&&parser.isRecursive());
-			}
-			for(AbstractParser parser : syntaxParsers2){
-				tokens = applyParser(tokens, parser);
-			}
+			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());
+			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
+			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
+			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
+			ArrayList<IToken> clausesFormed = clauseParser.process(verbsProcessed1);
+			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
+			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
+			List<IToken> tokens = verbsProcessed2;
 			sentence.setChildren(tokens);//new BasicCleaner().clean(tokens));
 		}
 		return sentences;
@@ -97,28 +94,22 @@ public class SyntaxParser extends ParserComposition {
 
 
 	public void setText(String str) {
-		lexicParser.setText(str);
-		for(AbstractParser ap : syntaxParsers){
-			ap.setText(str);
-		}
+		lexicParsers.setText(str);		
+		this.verbGroupSyntaxParsers.setText(str);
+		this.nameSyntaxParsers.setText(str);
+		this.nameRecursiveSyntaxParsers.setText(str);
+		this.clauseParser.setText(str);
 	}
-
-
-	private final List<IToken> applyParser(List<IToken> tokens,	AbstractParser parser) {
-		parser.resetTrigger();
-		List<IToken> result = parser.process(tokens);
-		return result;
-	}
-	
 	
 	private void initParsers() {
-		List<AbstractParser> lp = createParsers(lexicParsersArray) ;
-		lexicParser = new ParserComposition(lp.toArray(new AbstractParser[lp.size()]));
-		this.syntaxParsers = createParsers(syntaxParsersArray);
-		this.syntaxParsers2 = createParsers(syntaxParsersArray2);	
+		this.lexicParsers = createParsers(lexicParsersArray,false) ;		
+		this.verbGroupSyntaxParsers = createParsers(verbGroupSyntaxParsersArray,true);
+		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
+		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, true);
+		this.clauseParser = new ClauseParser(this.wordNet);
 	}
 
-	private List<AbstractParser> createParsers(Class<?>[] array) {
+	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {
 		
 		ArrayList<AbstractParser> list = new ArrayList<AbstractParser>();
 		for(Class<?> clazz : array){
@@ -127,7 +118,9 @@ public class SyntaxParser extends ParserComposition {
 				list.add(parser);
 			}
 		}
-		return list;
+		AbstractParser[] arr = list.toArray(new AbstractParser[list.size()]);
+		ParserComposition result = new ParserComposition(isGloballyRecursive, arr);
+		return result;
 	}
 
 	private AbstractParser createParser(Class<?> clazz) {

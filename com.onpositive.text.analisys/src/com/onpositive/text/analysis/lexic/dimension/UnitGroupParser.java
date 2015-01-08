@@ -7,11 +7,11 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.conditions.BinaryCondition;
 import com.onpositive.text.analysis.conditions.BinaryDisjunction;
 import com.onpositive.text.analysis.conditions.TokenMaskBinaryCondition;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;

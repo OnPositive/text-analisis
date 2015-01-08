@@ -15,8 +15,8 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.MeaningElement;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 import com.onpositive.text.analysis.rules.matchers.AndMatcher;
 import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
@@ -320,5 +320,9 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 			prepConjRegistry = new PrepConjRegistry(wordNet);
 		}
 		return prepConjRegistry;
+	}
+	
+	public boolean isRecursive() {
+		return true;
 	}
 }

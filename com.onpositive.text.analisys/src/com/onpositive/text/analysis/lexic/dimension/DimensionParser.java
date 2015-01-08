@@ -3,8 +3,8 @@ package com.onpositive.text.analysis.lexic.dimension;
 import java.util.Set;
 import java.util.Stack;
 
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.AbstractParser;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.UnitToken;

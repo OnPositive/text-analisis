@@ -6,6 +6,7 @@ import java.util.Stack;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.words3.MetaLayer;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
 
 public class NumericsParser extends AbstractParser {

@@ -1,4 +1,4 @@
-package com.onpositive.text.analysis.lexic;
+package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
-import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.IToken.Direction;
 
 public abstract class AbstractParser {
@@ -481,7 +480,7 @@ public abstract class AbstractParser {
 	}
 
 	public boolean isRecursive() {
-		return true;
+		return false;
 	}
 	
 }

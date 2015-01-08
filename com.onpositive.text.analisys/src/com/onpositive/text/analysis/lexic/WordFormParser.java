@@ -16,6 +16,7 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
+import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
