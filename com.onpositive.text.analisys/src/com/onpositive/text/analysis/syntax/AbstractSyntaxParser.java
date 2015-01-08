@@ -292,7 +292,10 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	public static final UnaryMatcher<SyntaxToken> createCaseMatcher(Collection<Case> cases){
 		HashSet<Case> set = new HashSet<Grammem.Case>();
 		for(Case c : cases){
-			set.addAll(caseMatchMap.get(c));
+			Set<Case> c2 = caseMatchMap.get(c);
+			if(c2!=null){
+			set.addAll(c2);
+			}
 		}
 		Case[] arr = set.toArray(new Case[set.size()]);
 		return hasAny(arr);
