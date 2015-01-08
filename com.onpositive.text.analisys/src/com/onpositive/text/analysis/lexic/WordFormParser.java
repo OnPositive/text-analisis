@@ -63,6 +63,7 @@ public class WordFormParser extends AbstractParser {
 						tokens.put(id, token);
 					}
 					WordFormToken wft = (WordFormToken) token;
+					wft.setLink(firstToken.getLink());
 					registerGrammarRelation(gr, wft);
 				}
 			}
@@ -114,7 +115,7 @@ public class WordFormParser extends AbstractParser {
 			str = bld.toString();
 		}
 		String txt = getText();
-		if(!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
+		if(ep<txt.length()&&!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
 			return me;
 		}
 		

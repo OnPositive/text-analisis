@@ -3,7 +3,7 @@ package com.onpositive.semantic.wikipedia.properties;
 public class PropertyInfo {
 	public final String templateName;
 	public final String propertyName;
-	public final String source;
+	public final Object source;
 
 	public String getKey(){
 		return templateName+"/"+propertyName;
@@ -53,7 +53,7 @@ public class PropertyInfo {
 	}
 
 	public PropertyInfo(String templateName, String propertyName,
-			String proprtyValue, boolean isSimple,String source) {
+			String proprtyValue, boolean isSimple,Object source) {
 		super();
 		this.templateName = templateName.trim().toLowerCase();
 		this.propertyName = propertyName.trim().toLowerCase();
