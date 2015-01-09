@@ -42,7 +42,7 @@ public class ParserTest extends TestCase {
 		ArrayList<IToken> list = new ArrayList<>();
 		for(IToken t : processed){
 			if(t instanceof SentenceToken){
-				list.addAll(t.getChildren());//new BasicCleaner().clean(t.getChildren()));
+				list.addAll(new BasicCleaner().clean(t.getChildren()));
 			}
 			else{
 				list.add(t);
@@ -148,13 +148,15 @@ public class ParserTest extends TestCase {
 				ClauseToken ct = (ClauseToken) token;
 				{
 					bld.append("\n");
-					String childStr = printToken(ct.getSubject(),off + 2).trim();
+					SyntaxToken subject = ct.getSubject();
+					String childStr = subject != null? printToken(subject,off + 2).trim() : "no subject";
 					bld.append(offStr).append(childOffStr).append("<subject>");
 					bld.append(childStr);
 				}
 				{
 					bld.append("\n");
-					String childStr = printToken(ct.getPredicate(),off + 2).trim();
+					SyntaxToken predicate = ct.getPredicate();
+					String childStr = predicate != null ? printToken(predicate,off + 2).trim() : "no predicate";;
 					bld.append(offStr).append(childOffStr).append("<predicate>");
 					bld.append(childStr);
 				}				

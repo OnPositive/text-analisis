@@ -66,6 +66,8 @@ public class SyntaxParser extends ParserComposition {
 	private ParserComposition verbGroupSyntaxParsers;
 	
 	private ClauseParser clauseParser;
+	
+	private IncompleteClauseParser incompleteClauseParser;
 
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
@@ -83,11 +85,12 @@ public class SyntaxParser extends ParserComposition {
 			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
 			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
 			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
-			ArrayList<IToken> clausesFormed = clauseParser.process(verbsProcessed1);
+			List<IToken> clausesFormed = clauseParser.process(verbsProcessed1);			
 			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
 			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
-			List<IToken> tokens = verbsProcessed2;
-			sentence.setChildren(tokens);//new BasicCleaner().clean(tokens));
+			List<IToken> incompleteClausesFormed = incompleteClauseParser.process(verbsProcessed2);
+			List<IToken> tokens = incompleteClausesFormed;
+			sentence.setChildren(new BasicCleaner().clean(tokens));
 		}
 		return sentences;
 	}
@@ -99,6 +102,7 @@ public class SyntaxParser extends ParserComposition {
 		this.nameSyntaxParsers.setText(str);
 		this.nameRecursiveSyntaxParsers.setText(str);
 		this.clauseParser.setText(str);
+		this.incompleteClauseParser.setText(str);
 	}
 	
 	private void initParsers() {
@@ -107,6 +111,7 @@ public class SyntaxParser extends ParserComposition {
 		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
 		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, true);
 		this.clauseParser = new ClauseParser(this.wordNet);
+		this.incompleteClauseParser = new IncompleteClauseParser(this.wordNet);
 	}
 
 	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {

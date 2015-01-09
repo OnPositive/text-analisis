@@ -43,9 +43,15 @@ public class ClauseToken extends SyntaxToken {
 		if(subject!=null){
 			bld.append(subject);
 		}
+		else{
+			bld.append("no subject");
+		}
 		bld.append(" ");
 		if(predicate!=null){
 			bld.append(predicate);
+		}
+		else{
+			bld.append("no predicate");
 		}
 		return bld.toString().trim();
 	}

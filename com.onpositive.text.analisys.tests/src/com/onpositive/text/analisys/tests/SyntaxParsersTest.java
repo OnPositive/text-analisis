@@ -29,12 +29,14 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Идёт в большой магазин.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"VERB_NOUN_PREP("
-		     + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
-		     + "WORD_FORM в([ПР])"
-		     + "NOUN_ADJECTIVE("
-		       + "WORD_FORM большой([кач, ПРИЛ])"
-		       + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )", processed);
+			"CLAUSE("
+		        + "<subject>no subject"
+		        + "<predicate>VERB_NOUN_PREP("
+				     + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+				     + "WORD_FORM в([ПР])"
+				     + "NOUN_ADJECTIVE("
+				       + "WORD_FORM большой([кач, ПРИЛ])"
+				       + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test001(){
@@ -100,8 +102,18 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test004(){
 		String str = "Тот дом, своя улица.";		
 		List<IToken> processed = process(str);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ]), <main>WORD_FORM дом([мр, СУЩ, неод]))", processed);
-		assertTestTokenPrint("NOUN_ADJECTIVE(WORD_FORM свой([мест-п, Анаф, ПРИЛ]), <main>WORD_FORM улица([жр, СУЩ, неод]))", processed);
+		assertTestTokenPrint(
+			"CLAUSE("
+		        + "<subject>NOUN_ADJECTIVE("
+			          + "WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ])"
+			          + "<main>WORD_FORM дом([мр, СУЩ, неод])  )"
+		        + "<predicate>no predicate  )", processed);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>NOUN_ADJECTIVE("
+			          + "WORD_FORM свой([мест-п, Анаф, ПРИЛ])"
+			          + "<main>WORD_FORM улица([жр, СУЩ, неод])  )"
+		        + "<predicate>no predicate  )", processed);
 	}
 	
 	/**
@@ -321,35 +333,41 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Дайте 5 апельсинов.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"DIRECT_OBJECT_NAME("
-				+ "<main>WORD_FORM дал([сов, ГЛ, перех])"
-				+ "NOUN_ADJECTIVE("
-					+ "SCALAR 5.0"
-					+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )", processed);
+			"CLAUSE("
+				+ "<subject>no subject"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>WORD_FORM дал([сов, ГЛ, перех])"
+					+ "NOUN_ADJECTIVE("
+						+ "SCALAR 5.0"
+						+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test020(){
 		String str = "Взвесьте 5 кг апельсинов.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"DIRECT_OBJECT_NAME("
-				+ "<main>WORD_FORM взвесил([сов, ГЛ, перех])"
-				+ "MEASURED_NOUN("
-					+ "DIMENSION 5.0 килограмм(WEIGHT)"
-					+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )", processed);
+			"CLAUSE("
+				+ "<subject>no subject"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>WORD_FORM взвесил([сов, ГЛ, перех])"
+					+ "MEASURED_NOUN("
+						+ "DIMENSION 5.0 килограмм(WEIGHT)"
+						+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test021(){
 		String str = "Взвесьте 5 кг зелёных яблок.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"DIRECT_OBJECT_NAME("
-				+ "<main>WORD_FORM взвесил([сов, ГЛ, перех])"
-				+ "MEASURED_NOUN("
-					+ "DIMENSION 5.0 килограмм(WEIGHT)"
-					+ "<main>NOUN_ADJECTIVE("
-						+ "WORD_FORM зелёный([кач, ПРИЛ])"
-						+ "<main>WORD_FORM яблоко([СУЩ, ср, неод])  )  )  )", processed);
+			"CLAUSE("
+		        + "<subject>no subject"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM взвесил([сов, ГЛ, перех])"
+			        + "MEASURED_NOUN("
+				        + "DIMENSION 5.0 килограмм(WEIGHT)"
+				        + "<main>NOUN_ADJECTIVE("
+					        + "WORD_FORM зелёный([кач, ПРИЛ])"
+					        + "<main>WORD_FORM яблоко([СУЩ, ср, неод])  )  )  )  )", processed);
 	}
 	
 	
@@ -460,18 +478,20 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "В Якутии составят электронную родословную всего населения.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"VERB_NOUN_PREP("
-		        + "WORD_FORM в([ПР])"
-		        + "WORD_FORM якутия([sg, жр, СУЩ, гео, неод])"
-		        + "<main>DIRECT_OBJECT_NAME("
-			        + "<main>WORD_FORM составил([сов, ГЛ, перех])"
-			        + "GENITIVE_CHAIN("
-				        + "<main>NOUN_ADJECTIVE("
-					        + "WORD_FORM электронный([ПРИЛ])"
-					        + "<main>WORD_FORM родословная([жр, СУЩ, неод])  )"
-				        + "NOUN_ADJECTIVE("
-					        + "WORD_FORM весь([мест-п, ПРИЛ])"
-					        + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )", processed);
+			"CLAUSE("
+				+ "<subject>no subject"
+				+ "<predicate>VERB_NOUN_PREP("
+			        + "WORD_FORM в([ПР])"
+			        + "WORD_FORM якутия([sg, жр, СУЩ, гео, неод])"
+			        + "<main>DIRECT_OBJECT_NAME("
+				        + "<main>WORD_FORM составил([сов, ГЛ, перех])"
+				        + "GENITIVE_CHAIN("
+					        + "<main>NOUN_ADJECTIVE("
+						        + "WORD_FORM электронный([ПРИЛ])"
+						        + "<main>WORD_FORM родословная([жр, СУЩ, неод])  )"
+					        + "NOUN_ADJECTIVE("
+						        + "WORD_FORM весь([мест-п, ПРИЛ])"
+						        + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )  )", processed);
 	}
 	
 	public void test032(){

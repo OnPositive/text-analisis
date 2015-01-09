@@ -57,17 +57,17 @@ public class BasicCleaner {
 					}
 					return ep2-ep1;
 				}
-				int d1 = computeDepth(t1, depthMap);
-				int d2 = computeDepth(t2, depthMap);
-				if(d1!=d2){
-					if(d2<d1){
-						toRemove.add(t2.id());
-					}
-					else{
-						toRemove.add(t1.id());
-					}
-					return d2-d1;
-				}
+//				int d1 = computeDepth(t1, depthMap);
+//				int d2 = computeDepth(t2, depthMap);
+//				if(d1!=d2){
+//					if(d2<d1){
+//						toRemove.add(t2.id());
+//					}
+//					else{
+//						toRemove.add(t1.id());
+//					}
+//					return d2-d1;
+//				}
 				return 0;
 			}
 		});

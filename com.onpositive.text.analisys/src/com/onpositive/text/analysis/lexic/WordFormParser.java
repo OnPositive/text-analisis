@@ -48,6 +48,7 @@ public class WordFormParser extends AbstractParser {
 		
 		if(!gotSequence){
 			for(GrammarRelation gr : firstWordForms){
+				gr.getGrammems();
 				TextElement word = gr.getWord();
 				MeaningElement[] concepts = word.getConcepts();
 				for(MeaningElement me : concepts){
@@ -57,7 +58,7 @@ public class WordFormParser extends AbstractParser {
 					me = refinePrepositionOrConjunction(me,startPosition,endPosition);
 					int id = me.id();
 					IToken token = tokens.get(id);
-					int endPosition1 = considerAbbrEndPosition(sample,endPosition, me);
+					int endPosition1 = considerAbbrEndPosition(sample,endPosition, me, gr);
 					if(token == null){						
 						token = new WordFormToken(me, startPosition, endPosition1);
 						tokens.put(id, token);
@@ -130,8 +131,8 @@ public class WordFormParser extends AbstractParser {
 		return me;
 	}
 
-	protected int considerAbbrEndPosition(Stack<IToken> sample,	int endPosition, MeaningElement me) {
-		if(me.getGrammems().contains(SemanGramem.ABBR)){
+	protected int considerAbbrEndPosition(Stack<IToken> sample,	int endPosition, MeaningElement me, GrammarRelation gr) {
+		if(me.getGrammems().contains(SemanGramem.ABBR)||gr.hasGrammem(SemanGramem.ABBR)){
 			if (sample.size()>1){
 				IToken secondToken = sample.get(1);
 				if(secondToken.getStringValue().equals(".")){
