@@ -19,7 +19,7 @@ public class AdjectiveAdverbParser extends AbstractSyntaxParser{
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()<2){
 			return;
@@ -40,10 +40,10 @@ public class AdjectiveAdverbParser extends AbstractSyntaxParser{
 		}
 		
 		if(tokens.size()==1){
-			reliableTokens.add(tokens.get(0));
+			processingData.addReliableToken(tokens.get(0));
 		}
 		else if(!tokens.isEmpty()){
-			doubtfulTokens.addAll(tokens);
+			processingData.addDoubtfulTokens(tokens);
 		}
 	}
 

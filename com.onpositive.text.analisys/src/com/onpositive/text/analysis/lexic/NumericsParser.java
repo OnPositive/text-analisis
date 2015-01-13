@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.lexic;
 
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -23,7 +22,7 @@ public class NumericsParser extends AbstractParser {
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		boolean allScalar=true;
 		for(IToken t : sample){
 			allScalar &= ( sample.peek().getType() == IToken.TOKEN_TYPE_SCALAR);
@@ -53,7 +52,7 @@ public class NumericsParser extends AbstractParser {
 						if (value == 0 || differentOrder(m1, m2)) {
 							value += tk.getValue();
 						} else {
-							reliableTokens.add(new ScalarToken(value,lastWordFormToken, null,
+							processingData.addReliableToken(new ScalarToken(value,lastWordFormToken, null,
 									start, lastEnd));
 							start = tk.getStartPosition();
 							value = tk.getValue();
@@ -78,7 +77,7 @@ public class NumericsParser extends AbstractParser {
 					Double value2 = (Double) layer.getValue(meaningElement);
 					if (value2 == null) {
 						if (end > 0) {
-							reliableTokens.add(new ScalarToken(value,lastWordFormToken, null, start,
+							processingData.addReliableToken(new ScalarToken(value,lastWordFormToken, null, start,
 									lastEnd));
 							value = 0;
 							start = Integer.MAX_VALUE;
@@ -94,7 +93,7 @@ public class NumericsParser extends AbstractParser {
 					} else {
 						if (lastScalar) {
 							
-							reliableTokens.add(new ScalarToken(value, lastWordFormToken, null,
+							processingData.addReliableToken(new ScalarToken(value, lastWordFormToken, null,
 									start, lastEnd));
 							value = value2;
 							start =tk.getStartPosition();
@@ -106,7 +105,7 @@ public class NumericsParser extends AbstractParser {
 							if (value == 0 || differentOrder(m1, m2)) {
 								value += value2;
 							} else {
-								reliableTokens.add(new ScalarToken(value, lastWordFormToken, null,
+								processingData.addReliableToken(new ScalarToken(value, lastWordFormToken, null,
 										start, lastEnd));
 								start = tk.getStartPosition();
 								value = value2;
@@ -117,7 +116,7 @@ public class NumericsParser extends AbstractParser {
 				
 			} else {
 				if (end > 0) {
-					reliableTokens.add(new ScalarToken(value, lastWordFormToken, null, start,
+					processingData.addReliableToken(new ScalarToken(value, lastWordFormToken, null, start,
 							lastEnd));
 					value = 0;
 					start = Integer.MAX_VALUE;
@@ -128,7 +127,7 @@ public class NumericsParser extends AbstractParser {
 			}
 		}
 		if (end != Integer.MIN_VALUE) {
-			reliableTokens.add(new ScalarToken(value, lastWordFormToken, null, start, end));
+			processingData.addReliableToken(new ScalarToken(value, lastWordFormToken, null, start, end));
 		}
 	}
 

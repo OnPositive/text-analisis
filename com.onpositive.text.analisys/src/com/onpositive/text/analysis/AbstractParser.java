@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,6 +23,88 @@ public abstract class AbstractParser {
 		return isAccepted;
 	}
 	
+	public static class ProcessingData{
+		
+		private Set<IToken> reliableTokens = new LinkedHashSet<IToken>();
+		
+		private Set<IToken> doubtfulTokens = new LinkedHashSet<IToken>();
+		
+		private boolean stop;
+		
+		public void clear(){
+			reliableTokens.clear();
+			doubtfulTokens.clear();
+			stop = false;
+		}
+
+		public final boolean isStop() {
+			return stop;
+		}
+
+		public final void setStop(boolean stop) {
+			this.stop = stop;
+		}
+		
+		public final void dump(Collection<IToken> col){
+			col.addAll(reliableTokens);
+			col.addAll(doubtfulTokens);
+		}
+		
+		public final void dump(ProcessingData data){
+			data.addReliableTokens(this.reliableTokens);
+			data.addDoubtfulTokens(this.doubtfulTokens);
+		}
+		
+		public final boolean triggered(){
+			return !reliableTokens.isEmpty() || !doubtfulTokens.isEmpty();
+		}
+
+		public final Set<IToken> getReliableTokens() {
+			return reliableTokens;
+		}
+
+		public final Set<IToken> getDoubtfulTokens() {
+			return doubtfulTokens;
+		}
+		
+		public final void addDoubtfulToken(IToken token){
+			this.doubtfulTokens.add(token);
+		}
+		
+		public final void addReliableToken(IToken token){
+			this.reliableTokens.add(token);
+		}
+		
+		public final void addDoubtfulTokens(Collection<? extends IToken> tokens){
+			this.doubtfulTokens.addAll(tokens);
+		}
+		
+		public final void addReliableTokens(Collection<? extends IToken> tokens){
+			this.reliableTokens.addAll(tokens);
+		}
+		
+		public final <T extends IToken>void addDoubtfulTokens(T[] tokens){
+			for(T token: tokens){
+				this.doubtfulTokens.add(token);
+			}
+		}
+		
+		public final <T extends IToken>void addReliableTokens(T[] tokens){
+			for(T token: tokens){
+				this.reliableTokens.add(token);
+			}
+		}
+		
+		public final boolean hasDoubtfulTokens(){
+			return !doubtfulTokens.isEmpty();
+		}
+		
+		public final boolean hasReliableTokens(){
+			return !reliableTokens.isEmpty();
+		}
+		
+	}
+	
 	public static class ProcessingResult{
 		
 		final protected int stepBack;
@@ -37,14 +120,13 @@ public abstract class AbstractParser {
 			this.stop = stop;
 		}
 		
-		protected boolean tokenAccepted(){
+		protected final boolean tokenAccepted(){
 			return acceptToken;
 		}
 		
-		protected boolean stopped(){
+		protected final boolean stopped(){
 			return stop;
 		}
-		
 	}
 	
 	protected String text;
@@ -63,7 +145,7 @@ public abstract class AbstractParser {
 		return new ProcessingResult(count,false,true);
 	}
 	
-	abstract protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens);
+	abstract protected void combineTokens(Stack<IToken> sample, ProcessingData processingData);
 	
 	protected ProcessingResult continuePush(Stack<IToken> sample,IToken newToken){
 		return checkToken(newToken);
@@ -97,9 +179,8 @@ public abstract class AbstractParser {
 		prepareParser(tokens);		
 		beforeProcess(tokens);
 		
-		LinkedHashSet<IToken> reliableTokens = new LinkedHashSet<IToken>();
-		LinkedHashSet<IToken> doubtfulTokens = new LinkedHashSet<IToken>(); 
-		
+		ProcessingData data = new ProcessingData();
+	
 		ArrayList<IToken> result = new ArrayList<IToken>();
 		ArrayList<IToken> toDiscard = new ArrayList<IToken>();
 		for( int i = 0 ; i < tokens.size() ; i++ ){
@@ -107,9 +188,10 @@ public abstract class AbstractParser {
 			if(inspectBranch(token)){
 				continue;
 			}
-			parseStartingTokens(token,reliableTokens,doubtfulTokens);
+			data.clear();
+			parseStartingTokens(token,data);
 			
-			boolean tokenReleased = handleBounds(token, reliableTokens, doubtfulTokens);
+			boolean tokenReleased = handleBounds(token, data);
 			if(!tokenReleased){
 				insertToken(result, token);
 				parsedTokens.put(token.id(),token);
@@ -117,10 +199,9 @@ public abstract class AbstractParser {
 			else{
 				toDiscard.add(token);
 			}
-
-			result.addAll(reliableTokens);
-			result.addAll(doubtfulTokens);
-			setTriggered(!(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()));			
+			
+			data.dump(result);
+			setTriggered(data.triggered());			
 		}
 		discardToken(toDiscard);
 		return result;
@@ -175,6 +256,9 @@ public abstract class AbstractParser {
 
 	private boolean checkNextMatches(IToken token,	Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
 	{
+//		if(!checkNextMatch(token,reliableTokens,doubtfulTokens)){
+//			return false;
+//		}
 		IToken next = token.getNext();
 		if(next!=null){
 			return checkNextMatch(next,reliableTokens,doubtfulTokens);
@@ -242,10 +326,8 @@ public abstract class AbstractParser {
 		return false;
 	}
 	
-	private void parseStartingTokens(IToken token, LinkedHashSet<IToken> reliableTokens, LinkedHashSet<IToken> doubtfulTokens) {
+	private void parseStartingTokens(IToken token, ProcessingData data) {
 		
-		reliableTokens.clear();
-		doubtfulTokens.clear();
 		prepare();
 		
 		ProcessingResult pr = checkPossibleStart(token);
@@ -255,13 +337,17 @@ public abstract class AbstractParser {
 		
 		Stack<IToken> sample = new Stack<IToken>();
 		sample.add(token);		
-		parseRecursively(sample,pr,reliableTokens,doubtfulTokens);
+		parseRecursively(sample,pr,data);
 		
-		if(reliableTokens.isEmpty()&&doubtfulTokens.isEmpty()){
-			return;
+		Set<IToken> reliableTokens = data.getReliableTokens();
+		if(!reliableTokens.isEmpty()){
+			registerParsedTokens(reliableTokens);
 		}
-		registerParsedTokens(reliableTokens);
-		registerParsedTokens(doubtfulTokens);		
+		
+		Set<IToken> doubtfulTokens = data.getDoubtfulTokens();
+		if(!doubtfulTokens.isEmpty()){
+			registerParsedTokens(doubtfulTokens);
+		}
 		cleanUp();
 	}
 
@@ -275,8 +361,10 @@ public abstract class AbstractParser {
 		}		
 	}
 
-	private boolean handleBounds(IToken token, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	private boolean handleBounds(IToken token, ProcessingData data)
 	{
+		Set<IToken> reliableTokens = data.getReliableTokens();
+		Set<IToken> doubtfulTokens = data.getDoubtfulTokens();
 		boolean isUnitLength = true;
 		for(IToken t : reliableTokens){
 			if(t.getChildren().size()>1){
@@ -356,7 +444,7 @@ public abstract class AbstractParser {
 	}
 
 	
-	private boolean parseRecursively( Stack<IToken> sample, ProcessingResult pr, LinkedHashSet<IToken> reliableTokens, HashSet<IToken> doubtfulTokens)
+	private boolean parseRecursively( Stack<IToken> sample, ProcessingResult pr, ProcessingData data)
 	{
 		int inputSize = sample.size();
 		IToken last = sample.peek();
@@ -374,19 +462,19 @@ public abstract class AbstractParser {
 			else{
 				List<IToken> nextTokens = last.getNextTokens();
 				if(nextTokens!=null&&!nextTokens.isEmpty()){					
-					int beforeCount1 = reliableTokens.size();
-					int beforeCount2 = doubtfulTokens.size();
+					int beforeCount1 = data.getReliableTokens().size();
+					int beforeCount2 = data.getDoubtfulTokens().size();
 					for(IToken nt : nextTokens){
 						pr = continuePush(sample,nt);
 						if(pr.tokenAccepted()){
 							sample.add(nt);
-							parseRecursively(sample, pr, reliableTokens,doubtfulTokens);
+							parseRecursively(sample, pr, data);
 							sample.pop();
 							rollBackState(1);
 						}						
 					}
-					int afterCount1 = reliableTokens.size();
-					int afterCount2 = doubtfulTokens.size();
+					int afterCount1 = data.getReliableTokens().size();
+					int afterCount2 = data.getDoubtfulTokens().size();
 					gotRecursion |= afterCount1 != beforeCount1 || afterCount2 != beforeCount2;
 				}
 				break;
@@ -400,17 +488,15 @@ public abstract class AbstractParser {
 		}
 		
 		if(!gotRecursion){
-			LinkedHashSet<IToken> rt = new LinkedHashSet<IToken>();
-			LinkedHashSet<IToken> dt = new LinkedHashSet<IToken>();
-			combineTokens(sample,rt,dt);
-			if(!rt.isEmpty()){
-				handleChildrenAndParents(sample, rt);
-				reliableTokens.addAll(rt);
+			ProcessingData pd = new ProcessingData();
+			combineTokens(sample,pd);
+			if(pd.hasReliableTokens()){
+				handleChildrenAndParents(sample, pd.getReliableTokens());
 			}
-			if(!dt.isEmpty()){
-				handleChildrenAndParents(sample, dt);
-				doubtfulTokens.addAll(dt);
+			if(pd.hasDoubtfulTokens()){
+				handleChildrenAndParents(sample, pd.getDoubtfulTokens());
 			}
+			pd.dump(data);
 		}
 		popCount = sample.size()-inputSize;
 		rollBackState(popCount);

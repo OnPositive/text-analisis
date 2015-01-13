@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -14,8 +13,7 @@ public class NounParticipleParser extends AbstractSyntaxParser {
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,
-			Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		// TODO Auto-generated method stub
 		
 	}

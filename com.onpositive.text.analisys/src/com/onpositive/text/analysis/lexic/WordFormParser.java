@@ -34,7 +34,7 @@ public class WordFormParser extends AbstractParser {
 	private GrammarRelation[] firstWordForms;
 	
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData){
 		
 		IntObjectOpenHashMap<IToken> tokens = new IntObjectOpenHashMap<IToken>();
 		IToken firstToken = sample.get(0);
@@ -95,12 +95,10 @@ public class WordFormParser extends AbstractParser {
 		}
 		IToken[] array = tokens.values().toArray(IToken.class);
 		if(array.length==1){			
-			reliableTokens.add(array[0]);
+			processingData.addReliableToken(array[0]);
 		}
 		else if(array.length>0){
-			for(IToken t : array){
-				doubtfulTokens.add(t);
-			}
+			processingData.addDoubtfulTokens(array);
 		}
 	}
 

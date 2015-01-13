@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -15,7 +14,7 @@ public class NounDimensionParser extends AbstractSyntaxParser{
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()<2){
 			return;
@@ -35,7 +34,7 @@ public class NounDimensionParser extends AbstractSyntaxParser{
 		
 		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_MEASURED_NOUN, mainGroup, null, startPosition, endPosition);		
 		if(checkParents(newToken,sample)){
-			reliableTokens.add(newToken);
+			processingData.addReliableToken(newToken);
 		}
 	}
 	

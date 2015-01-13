@@ -3,7 +3,6 @@ package com.onpositive.text.analysis.lexic.dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -33,7 +32,7 @@ public class UnitGroupParser extends AbstractParser{
 	private UnitsProvider unitsProvider;
 	
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		List<UnitToken> newUnitTokens = null;
 		int startPosition = sample.get(0).getStartPosition();
@@ -58,10 +57,10 @@ public class UnitGroupParser extends AbstractParser{
 		}
 		if(newUnitTokens!=null){
 			if(newUnitTokens.size()==1){
-				reliableTokens.addAll(newUnitTokens);
+				processingData.addReliableTokens(newUnitTokens);
 			}
 			else{
-				doubtfulTokens.addAll(newUnitTokens);
+				processingData.addDoubtfulTokens(newUnitTokens);
 			}
 		}
 	}

@@ -11,6 +11,7 @@ import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.TokenVisitor;
 import com.onpositive.text.analysis.lexic.WordFormToken;
@@ -33,7 +34,7 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 	private ModalLikeVerbsRegistry modalLikeVerbsRegistry;
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		
 		List<SyntaxToken> words = extractWords(sample);
 		
@@ -55,9 +56,8 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 			}
 		}
 		else if(words.size()>2&&gerundMatch.match(words.get(2))){
-			return;
-//			orderedTokens[0] = words.get(1);
-//			orderedTokens[1] = words.get(2);
+			orderedTokens[0] = words.get(1);
+			orderedTokens[1] = words.get(2);
 		}
 		else{
 			return;
@@ -68,7 +68,7 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 			return;
 		}
 		else if (checkParents(newToken, sample)) {
-			reliableTokens.add(newToken);
+			processingData.addReliableToken(newToken);
 		}
 	}
 
@@ -101,8 +101,7 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 			result = doAppendGerund(gerundToken,lDump, gStartPos, gEndPos);
 		}
 		else{
-			return null;
-			//result = doAppendGerund(gerundToken,rDump, gStartPos, gEndPos);
+			result = doAppendGerund(gerundToken,rDump, gStartPos, gEndPos);
 		}
 		return result;
 	}
