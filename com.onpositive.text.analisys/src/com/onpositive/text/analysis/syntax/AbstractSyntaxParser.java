@@ -97,7 +97,15 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
+		int startPosition = newToken==null? Integer.MIN_VALUE : newToken.getStartPosition();
+		int endPosition = newToken==null? Integer.MAX_VALUE : newToken.getEndPosition();
 		for(IToken ch : children){
+			if(ch.getStartPosition()<startPosition){
+				continue;
+			}
+			if(ch.getEndPosition()>endPosition){
+				break;
+			}
 			List<IToken> parents = ch.getParents();
 			if(parents==null){
 				continue;
@@ -327,5 +335,9 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	
 	public boolean isRecursive() {
 		return true;
+	}
+
+	protected boolean isComma(IToken newToken) {
+		return newToken.getType()==IToken.TOKEN_TYPE_SYMBOL&&newToken.getStringValue().equals(",");
 	}
 }

@@ -3,6 +3,8 @@ package com.onpositive.text.analysis;
 import java.util.Collection;
 import java.util.List;
 
+import com.onpositive.text.analysis.syntax.SyntaxToken;
+
 public interface IToken {
 	
 	public static enum Direction{
@@ -120,11 +122,11 @@ public interface IToken {
 	
 	void addNeighbour(IToken token, Direction direction);
 	
-	public void removeNextToken(IToken token);
+	void removeNextToken(IToken token);
 	
-	public void removePreviousToken(IToken token);
+	void removePreviousToken(IToken token);
 	
-	public void removeNeighbour(Direction direction, IToken token);
+	void removeNeighbour(Direction direction, IToken token);
 	
 	List<IToken> getChildren();
 	
@@ -148,8 +150,12 @@ public interface IToken {
 	
 	boolean isDoubtful();
 	
-	public String getLink();
+	String getLink();
 
-	public void setLink(String link) ;
+	void setLink(String link);
+	
+	int childrenCount();
+	
+	void replaceChild(SyntaxToken oldChild, SyntaxToken newChild);
 
 }

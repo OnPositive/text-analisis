@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.onpositive.text.analysis.syntax.SyntaxToken;
+
 
 public abstract class AbstractToken implements IToken {
 	
@@ -325,6 +327,29 @@ public abstract class AbstractToken implements IToken {
 	
 	public boolean isDoubtful() {
 		return isDoubtful;
+	}
+	
+	@Override
+	public int childrenCount() {
+		return children == null ? 0 : children.size();
+	}
+	
+
+
+	public void replaceChild(SyntaxToken oldChild, SyntaxToken newChild) {
+		
+		int ind = children.indexOf(oldChild);
+		children.set(ind, newChild);
+		
+		int sp = newChild.getStartPosition();
+		if(sp<this.getStartPosition()){
+			this.setStartPosition(sp);
+		}
+		
+		int ep = newChild.getEndPosition();
+		if(ep>this.getEndPosition()){
+			this.setEndPosition(ep);
+		}
 	}
 
 	@Override

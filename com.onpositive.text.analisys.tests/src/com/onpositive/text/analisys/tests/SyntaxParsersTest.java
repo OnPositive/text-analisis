@@ -20,6 +20,7 @@ public class SyntaxParsersTest extends ParserTest{
 		wn.addUrl("/modificator-adverb.xml");
 		wn.addUrl("/prepositions.xml");
 		wn.addUrl("/conjunctions.xml");
+		wn.addUrl("/modalLikeVerbs.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
 		this.composition = syntaxParser;
@@ -525,6 +526,13 @@ public class SyntaxParsersTest extends ParserTest{
 			   				+ "NOUN_ADJECTIVE("
 			   					+ "SCALAR 10.0"
 			   					+ "<main>WORD_FORM процент([мр, СУЩ, неод])  )  )  )  )", processed);
+	}
+	
+	public void test034(){
+		String str = "Я люблю, напевая, гулять.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"", processed);
 	}
 
 }
