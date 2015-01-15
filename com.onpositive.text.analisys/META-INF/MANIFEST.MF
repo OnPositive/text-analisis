@@ -9,6 +9,7 @@ Export-Package: com.onpositive.semantic.parsing,
  com.onpositive.semantic.references,
  com.onpositive.text.analysis,
  com.onpositive.text.analysis.lexic,
+ com.onpositive.text.analysis.lexic.dates,
  com.onpositive.text.analysis.lexic.dimension,
  com.onpositive.text.analysis.lexic.scalar,
  com.onpositive.text.analysis.syntax

@@ -12,6 +12,7 @@ import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
+import com.onpositive.text.analysis.lexic.DateToken;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
@@ -119,6 +120,27 @@ public class ParserTest extends TestCase {
 			if (z instanceof ScalarToken){
 				ScalarToken k=(ScalarToken) z;
 				if (k.getValue()==value){
+					found=true;
+				}
+			}
+		}
+		TestCase.assertTrue(found);
+	}
+	void assertTestDate(Integer year,Integer month,Integer day,List<IToken>tk){
+		boolean found=false;
+		for (IToken z:tk){
+			if (z instanceof DateToken){
+				DateToken k=(DateToken) z;
+				if (year!=null){
+					TestCase.assertEquals(year, k.getYear());
+					found=true;
+				}
+				if (month!=null){
+					TestCase.assertEquals(month, k.getMonth());
+					found=true;
+				}
+				if (day!=null){
+					TestCase.assertEquals(day, k.getDay());
 					found=true;
 				}
 			}

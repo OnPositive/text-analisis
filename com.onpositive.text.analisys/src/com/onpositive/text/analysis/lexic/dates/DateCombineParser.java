@@ -32,7 +32,7 @@ public class DateCombineParser extends AbstractParser {
 					&& dateToken1.getMonth() == null) {
 				result.setMonth(dateToken0.getMonth());
 				result.setYear(dateToken1.getYear());
-				result.setDay(dateToken0.getYear());
+				result.setDay(dateToken0.getDay());
 				reliableTokens.add(result);
 			}
 		} else {
