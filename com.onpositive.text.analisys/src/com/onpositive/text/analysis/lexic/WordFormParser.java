@@ -136,7 +136,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 
 	private boolean matchPreposition(IToken token) {
 
-		String val = token.getStringValue();
+		String val = token.getStringValue().toLowerCase();
 		UnaryMatcher<SyntaxToken> matcher = prepConjRegistry.getPrepCaseMatcher(val);
 		if (matcher == null) {
 			return false;
