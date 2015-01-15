@@ -12,6 +12,7 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.matchers.HasGrammem;
@@ -53,7 +54,7 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 	private PartOfSpeech[] acceptedParts;
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		List<SyntaxToken> parts = collectParts(sample);
 		if(parts.size()<2){
@@ -77,11 +78,11 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 
 		if(isReliable){
 			SyntaxToken newToken = new SyntaxToken(tokenType, last, grammemSets, startPosition, endPosition);
-			reliableTokens.add(newToken);
+			processingData.addReliableToken(newToken);
 		}
 		else{
 			SyntaxToken newToken = new SyntaxToken(tokenType, last, grammemSets, startPosition, endPosition, true);
-			doubtfulTokens.add(newToken);
+			processingData.addDoubtfulToken(newToken);
 		}
 	}
 

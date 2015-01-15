@@ -3,7 +3,6 @@ package com.onpositive.text.analysis.lexic.dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -24,14 +23,14 @@ public class UnitParser extends AbstractParser {
 	private UnitsProvider unitsProvider;
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		IToken token = sample.peek();
 		if(token instanceof WordFormToken){
 			
 			List<IToken> tokens = processWordForm((WordFormToken) token);
 			if(tokens!=null&&!tokens.isEmpty()){
-				appendTokens(tokens,reliableTokens,doubtfulTokens);
+				appendTokens(tokens,processingData);
 				return;
 			}			
 		}		
@@ -48,7 +47,7 @@ public class UnitParser extends AbstractParser {
 		int endPosition = token.getEndPosition();
 		SyntaxToken mainGroup = (token instanceof SyntaxToken) ? (SyntaxToken)token : null;
 		ArrayList<IToken> tokens = createUnitTokens(constructed, mainGroup, startPosition, endPosition);
-		appendTokens(tokens,reliableTokens,doubtfulTokens);
+		appendTokens(tokens,processingData);
 	}
 
 	private String getUnitName(IToken token) {
@@ -63,15 +62,15 @@ public class UnitParser extends AbstractParser {
 		return null;
 	}
 
-	private void appendTokens(List<IToken> tokens, Set<IToken> reliableTokens,Set<IToken> doubtfulTokens) {
+	private void appendTokens(List<IToken> tokens, ProcessingData processingData) {
 		if(tokens==null||tokens.isEmpty()){
 			return;
 		}
 		else if(tokens.size()==1){
-			reliableTokens.add(tokens.get(0));
+			processingData.addReliableToken(tokens.get(0));
 		}
 		else{
-			doubtfulTokens.addAll(tokens);
+			processingData.addDoubtfulTokens(tokens);
 		}
 	}
 

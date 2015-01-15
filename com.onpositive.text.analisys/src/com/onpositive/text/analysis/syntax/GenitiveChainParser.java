@@ -1,7 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -23,7 +22,7 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 	private static final UnaryMatcher<SyntaxToken> nounMatcher	= hasAll(PartOfSpeech.NOUN);
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()<2){
 			return;
@@ -85,7 +84,7 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			int startPosition = token0.getStartPosition();
 			int endPosition = token1.getEndPosition();
 			SyntaxToken newToken = new SyntaxToken(type, mainGroup, null, startPosition, endPosition);
-			doubtfulTokens.add(newToken);
+			processingData.addDoubtfulToken(newToken);
 		}
 		else{
 			int startPosition = Integer.MAX_VALUE;

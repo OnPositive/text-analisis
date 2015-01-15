@@ -3,7 +3,6 @@ package com.onpositive.text.analysis.syntax;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -25,7 +24,7 @@ public class AdverbModificatorParser extends AbstractSyntaxParser {
 	
 	
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		List<IToken> rawTokens = matchTokens(sample);
 		ArrayList<IToken> tokens = new ArrayList<IToken>();
@@ -35,10 +34,10 @@ public class AdverbModificatorParser extends AbstractSyntaxParser {
 			}
 		}
 		if(tokens.size()==1){
-			reliableTokens.addAll(tokens);
+			processingData.addReliableTokens(tokens);
 		}
 		else{
-			doubtfulTokens.addAll(tokens);
+			processingData.addDoubtfulTokens(tokens);
 		}
 	}
 

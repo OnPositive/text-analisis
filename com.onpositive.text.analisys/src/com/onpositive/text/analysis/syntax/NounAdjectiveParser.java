@@ -18,7 +18,7 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()<2){
 			return;
@@ -36,10 +36,10 @@ public class NounAdjectiveParser extends AbstractSyntaxParser{
 		}
 		if(checkParents(newToken,sample)){
 			if(newToken.hasMainDescendant(IToken.TOKEN_TYPE_UNIT)){
-				doubtfulTokens.add(newToken);
+				processingData.addDoubtfulToken(newToken);
 			}
 			else{
-				reliableTokens.add(newToken);
+				processingData.addReliableToken(newToken);
 			}
 		}
 	}

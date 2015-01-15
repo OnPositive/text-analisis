@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.lexic.dimension;
 
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.text.analysis.AbstractParser;
@@ -12,7 +11,7 @@ import com.onpositive.text.analysis.lexic.UnitToken;
 public class DimensionParser extends AbstractParser {
 	
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()!=2){
 			return;
@@ -32,7 +31,7 @@ public class DimensionParser extends AbstractParser {
 		int startPosition = token0.getStartPosition();
 		int endPosition = token1.getEndPosition();		
 		DimensionToken dimensionToken = new DimensionToken(scalarToken, unitToken, startPosition, endPosition);
-		reliableTokens.add(dimensionToken);
+		processingData.addReliableToken(dimensionToken);
 	}
 
 	@Override

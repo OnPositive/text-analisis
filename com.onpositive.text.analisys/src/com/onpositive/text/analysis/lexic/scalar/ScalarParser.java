@@ -3,7 +3,6 @@ package com.onpositive.text.analysis.lexic.scalar;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.text.analysis.AbstractParser;
@@ -28,24 +27,24 @@ public class ScalarParser extends AbstractParser {
 	
 	
 	@Override
-	protected void combineTokens(Stack<IToken> tokens, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens){
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData){
 		
 		
 		boolean gotPattern = false;
 		List<DelimeterPattern> possiblePatterns = patternManager.getRankedPatterns();
 		for(DelimeterPattern pattern : possiblePatterns){
 				
-			Collection<IToken> values = applyPattern(pattern, tokens);
+			Collection<IToken> values = applyPattern(pattern, sample);
 			if(values != null && !values.isEmpty()){
 				gotPattern = true;
-				reliableTokens.addAll(values);
+				processingData.addReliableTokens(values);
 				break;
 			}
 
 		}
 		if(!gotPattern){
-			int size = tokens.size();
-			reliableTokens.addAll(createBasicScalars(tokens, size));
+			int size = sample.size();
+			processingData.addReliableTokens(createBasicScalars(sample, size));
 		}
 	}
 

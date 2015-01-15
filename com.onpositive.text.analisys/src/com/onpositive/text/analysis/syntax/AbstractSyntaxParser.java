@@ -97,12 +97,32 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
+		int startPosition = newToken==null? children.get(0).getStartPosition() : newToken.getStartPosition();
+		int endPosition = newToken==null? children.get(children.size()-1).getEndPosition() : newToken.getEndPosition();
+		
+		int childrenStart = 0;
+		int childrenEnd = 1;
+		for(IToken ch:children){
+			if( ch.getStartPosition() < startPosition){
+				childrenStart++;
+			}
+			if(ch.getEndPosition()<endPosition){
+				childrenEnd++;
+			}
+		}		
+		int s0 = childrenEnd-childrenStart;
 		for(IToken ch : children){
+			if(ch.getStartPosition()<startPosition){
+				continue;
+			}
+			if(ch.getEndPosition()>endPosition){
+				break;
+			}
 			List<IToken> parents = ch.getParents();
 			if(parents==null){
 				continue;
 			}
-			int s0 = children.size();
+			
 l0:			for(IToken parent: parents){
 				if(parent.isDoubtful()){
 					continue;
@@ -113,7 +133,7 @@ l0:			for(IToken parent: parents){
 					continue;
 				}
 				for(int i = 0 ; i < s0 ; i++){
-					IToken ch0 = children.get(i);
+					IToken ch0 = children.get(childrenStart+i);
 					IToken ch1 = children1.get(i);
 					if(!ch0.equals(ch1)){
 						continue l0;
@@ -327,5 +347,9 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	
 	public boolean isRecursive() {
 		return true;
+	}
+
+	protected boolean isComma(IToken newToken) {
+		return newToken.getType()==IToken.TOKEN_TYPE_SYMBOL&&newToken.getStringValue().equals(",");
 	}
 }

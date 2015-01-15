@@ -8,6 +8,7 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public abstract class VerbGroupParser extends AbstractSyntaxParser {
@@ -44,7 +45,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	protected static final UnaryMatcher<SyntaxToken> infnMatch = has(PartOfSpeech.INFN);
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample, Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		if (sample.size() < 2) {
 			return;
 		}
@@ -113,7 +114,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 //			}
 		}
 		else if (checkParents(newToken, sample)) {
-			reliableTokens.add(newToken);
+			processingData.addReliableToken(newToken);
 		}
 	}
 

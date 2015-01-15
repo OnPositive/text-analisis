@@ -1,13 +1,11 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
@@ -34,7 +32,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
 	{
 		if(sample.size()<2){
 			return;
@@ -57,7 +55,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 		
 		IToken newToken = new ClauseToken(nounToken, verbToken, startPosition, endPosition);
 		if(checkParents(newToken, sample)){
-			reliableTokens.add(newToken);
+			processingData.addReliableToken(newToken);
 		}
 	}
 
