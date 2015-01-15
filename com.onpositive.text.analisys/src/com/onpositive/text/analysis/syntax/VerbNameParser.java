@@ -43,7 +43,7 @@ public class VerbNameParser extends VerbGroupParser {
 		if(token instanceof DimensionToken){
 			return true;
 		}
-		return and(nounAdjectiveMatch,not(prepMatch)).match(token);
+		return and(nounAdjectiveMatch,not(prepConjMatch)).match(token);
 	}
 	
 	@Override

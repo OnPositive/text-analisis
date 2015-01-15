@@ -33,8 +33,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		return false;
 	};
 	
-	protected static final UnaryMatcher<SyntaxToken> prepMatch = hasAny(PartOfSpeech.PREP);
-	
 	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
 	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
@@ -135,7 +133,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 				}
 				return result;
 			}
-			else if(checkPreposition(sample.get(1))){
+			else if(prepMatch.match(sample.get(1))){
 				SyntaxToken[] result = fillMainTokenArray(sample.get(0),sample.get(2),new SyntaxToken[3]);
 				if(result!=null){
 					result[2]=(SyntaxToken) sample.get(1);
@@ -144,10 +142,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			}
 		}
 		return null;
-	}
-
-	protected boolean checkPreposition(IToken token) {
-		return prepMatch.match(token);
 	}
 
 	private SyntaxToken[] fillMainTokenArray(IToken token0, IToken token1,	SyntaxToken[] arr) {
@@ -177,7 +171,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
 		IToken last = sample.peek();
-		if(checkPreposition(newToken)){
+		if(prepMatch.match(newToken)){
 			if(!acceptsPreposition()){
 				return DO_NOT_ACCEPT_AND_BREAK;
 			}
@@ -194,7 +188,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		}
 		if(checkAdditionalToken(newToken)&&(checkVerb(last)
 				||last.getType()==IToken.TOKEN_TYPE_CLAUSE
-				||(acceptsPreposition()&&checkPreposition(last)))){
+				||(acceptsPreposition()&&prepMatch.match(last)))){
 
 			if(!acceptsPreposition()||sample.size()==2){
 				return ACCEPT_AND_BREAK;
@@ -218,7 +212,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
 			return CONTINUE_PUSH;
 		}
-		if(acceptsPreposition()&&checkPreposition(newToken)){
+		if(acceptsPreposition()&&prepMatch.match(newToken)){
 			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;

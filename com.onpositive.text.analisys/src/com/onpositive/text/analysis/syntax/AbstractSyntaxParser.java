@@ -13,6 +13,7 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.AnimateProperty;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.AbstractParser;
@@ -39,6 +40,10 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	private static PrepConjRegistry prepConjRegistry;
+	
+	protected static final UnaryMatcher<SyntaxToken> prepMatch = hasAny(PartOfSpeech.PREP);
+
+	protected static final UnaryMatcher<SyntaxToken> prepConjMatch = hasAny(PartOfSpeech.PREP,PartOfSpeech.CONJ);
 
 	public AbstractSyntaxParser(AbstractWordNet wordNet) {
 		super();

@@ -41,7 +41,7 @@ public class VerbNamePrepositionParser extends VerbGroupParser {
 
 	@Override
 	protected boolean checkAdditionalToken(IToken token) {		
-		return and(nounAdjectiveMatch,not(prepMatch)).match(token);
+		return and(nounAdjectiveMatch,not(prepConjMatch)).match(token);
 	}
 
 	@Override

@@ -25,8 +25,6 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 	}
 
 	
-	protected static final UnaryMatcher<SyntaxToken> prepMatch = hasAny(PartOfSpeech.PREP);
-	
 	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
 	protected static final UnaryMatcher<SyntaxToken> gerundMatch = hasAny(PartOfSpeech.GRND);
