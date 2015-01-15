@@ -125,4 +125,8 @@ public class ScalarToken extends SyntaxToken {
 		return Double.parseDouble((""+value1).replace((CharSequence)".0", "")+"."+(""+value2).replace((CharSequence)".", ""));
 	}
 
+	public boolean isDecimal() {
+		return isDecimal;
+	}
+
 }

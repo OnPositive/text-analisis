@@ -12,6 +12,8 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
+import com.onpositive.text.analysis.lexic.dates.DateCombineParser;
+import com.onpositive.text.analysis.lexic.dates.DateParser;
 import com.onpositive.text.analysis.lexic.dimension.DimensionParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
@@ -25,7 +27,9 @@ public class SyntaxParser extends ParserComposition {
 		UnitParser.class,
 		UnitGroupParser.class,
 		DimensionParser.class,
-		NumericsParser.class
+		NumericsParser.class,
+		DateParser.class,
+		DateCombineParser.class
 	};
 	
 	private static final Class<?>[] nameSyntaxParsersArray = new Class<?>[]{
