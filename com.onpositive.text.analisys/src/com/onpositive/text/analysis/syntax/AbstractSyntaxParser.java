@@ -97,19 +97,19 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	protected static boolean checkParents(IToken newToken, List<IToken> children) {
-		int startPosition = newToken==null? Integer.MIN_VALUE : newToken.getStartPosition();
-		int endPosition = newToken==null? Integer.MAX_VALUE : newToken.getEndPosition();
+		int startPosition = newToken==null? children.get(0).getStartPosition() : newToken.getStartPosition();
+		int endPosition = newToken==null? children.get(children.size()-1).getEndPosition() : newToken.getEndPosition();
 		
 		int childrenStart = 0;
-		int childrenEnd = children.size();//1;
-//		for(IToken ch:children){
-//			if( ch.getStartPosition() < startPosition){
-//				childrenStart++;
-//			}
-//			if(ch.getEndPosition()<endPosition){
-//				childrenEnd++;
-//			}
-//		}		
+		int childrenEnd = 1;
+		for(IToken ch:children){
+			if( ch.getStartPosition() < startPosition){
+				childrenStart++;
+			}
+			if(ch.getEndPosition()<endPosition){
+				childrenEnd++;
+			}
+		}		
 		int s0 = childrenEnd-childrenStart;
 		for(IToken ch : children){
 			if(ch.getStartPosition()<startPosition){

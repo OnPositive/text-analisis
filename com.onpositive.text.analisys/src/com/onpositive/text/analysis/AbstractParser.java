@@ -37,7 +37,7 @@ public abstract class AbstractParser {
 			stop = false;
 		}
 
-		public final boolean isStop() {
+		public final boolean stopped() {
 			return stop;
 		}
 
@@ -53,6 +53,7 @@ public abstract class AbstractParser {
 		public final void dump(ProcessingData data){
 			data.addReliableTokens(this.reliableTokens);
 			data.addDoubtfulTokens(this.doubtfulTokens);
+			data.setStop(this.stop);
 		}
 		
 		public final boolean triggered(){
@@ -256,24 +257,26 @@ public abstract class AbstractParser {
 
 	private boolean checkNextMatches(IToken token,	Set<IToken> reliableTokens, Set<IToken> doubtfulTokens)
 	{
-//		if(!checkNextMatch(token,reliableTokens,doubtfulTokens)){
-//			return false;
-//		}
 		IToken next = token.getNext();
+		boolean result = true;
 		if(next!=null){
-			return checkNextMatch(next,reliableTokens,doubtfulTokens);
+			result = checkNextMatch(next,reliableTokens,doubtfulTokens);
 		}
 		else{
 			List<IToken> nextTokens = token.getNextTokens();
 			if(nextTokens!=null){
-				boolean result = true;
 				for(IToken t : nextTokens){
 					result &= checkNextMatch(t,reliableTokens,doubtfulTokens);
 				}
-				return result;
 			}
-			return false;
+			else{
+				result = false;
+			}
 		}
+		if(!checkNextMatch(token,reliableTokens,doubtfulTokens)){
+			result = false;
+		}
+		return result;
 	}
 
 	private boolean checkNextMatch(IToken next,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
@@ -487,7 +490,7 @@ public abstract class AbstractParser {
 			sample.pop();
 		}
 		
-		if(!gotRecursion){
+		if(!gotRecursion&&!data.stopped()){
 			ProcessingData pd = new ProcessingData();
 			combineTokens(sample,pd);
 			if(pd.hasReliableTokens()){
@@ -502,8 +505,7 @@ public abstract class AbstractParser {
 		rollBackState(popCount);
 		for(int i = 0 ; i < popCount ; i++ ){
 			sample.pop();
-		}	
-		
+		}
 		return gotRecursion;
 	}
 
@@ -526,6 +528,9 @@ public abstract class AbstractParser {
 				if(child.getStartPosition()>=sp){
 					newToken.addChild(child);
 					child.addParent(newToken);
+				}
+				else{
+					this.parsedTokens.put(child.id(), child);
 				}
 				childIndex++;
 				if(childIndex>=sample.size()){

@@ -70,6 +70,9 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		else if (checkParents(newToken, sample)) {
 			processingData.addReliableToken(newToken);
 		}
+		else{
+			processingData.setStop(true);
+		}
 	}
 
 	private SyntaxToken appendGerund(SyntaxToken[] orderedTokens,Stack<IToken> sample) {

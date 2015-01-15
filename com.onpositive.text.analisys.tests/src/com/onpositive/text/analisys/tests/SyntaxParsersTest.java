@@ -532,7 +532,15 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Я люблю, напевая, гулять.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"", processed);
+			"CLAUSE("
+				+ "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>DIRECT_OBJECT_INF("
+			        + "<main>WORD_FORM люблю([ГЛ, перех, несов])"
+			        + "VERB_GERUND("
+			            + "SYMBOL ,"
+			            + "WORD_FORM напевая([ДЕЕПР, перех, несов])"
+			            + "SYMBOL ,"
+			            + "<main>WORD_FORM гулять([неперех, несов, ИНФ])  )  )  )", processed);
 	}
 
 }
