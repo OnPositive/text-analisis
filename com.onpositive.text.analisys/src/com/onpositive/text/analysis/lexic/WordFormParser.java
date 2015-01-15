@@ -137,7 +137,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	private boolean matchPreposition(IToken token) {
 
 		String val = token.getStringValue().toLowerCase();
-		UnaryMatcher<SyntaxToken> matcher = prepConjRegistry.getPrepCaseMatcher(val);
+		UnaryMatcher<SyntaxToken> matcher = getPrepConjRegistry().getPrepCaseMatcher(val);
 		if (matcher == null) {
 			return false;
 		}
@@ -179,10 +179,10 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		for(GrammarRelation gr : possibleGrammarForms){
 			TextElement word = gr.getWord();
 			String bf = word.getBasicForm();
-			if(prepConjRegistry.getPreposition(bf)!=null){
+			if(getPrepConjRegistry().getPreposition(bf)!=null){
 				continue;
 			}
-			if(prepConjRegistry.getConjunction(bf)!=null){
+			if(getPrepConjRegistry().getConjunction(bf)!=null){
 				continue;
 			}
 			MeaningElement[] concepts = word.getConcepts();
