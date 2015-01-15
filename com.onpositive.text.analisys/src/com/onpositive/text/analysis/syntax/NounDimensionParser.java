@@ -51,7 +51,7 @@ public class NounDimensionParser extends AbstractSyntaxParser{
 		}
 		
 		SyntaxToken token1 = (SyntaxToken) newToken;
-		if(token1.hasGrammem(PartOfSpeech.PREP)){
+		if(isPrepOrConj(token1)){
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		if(!token1.hasGrammem(PartOfSpeech.NOUN)){

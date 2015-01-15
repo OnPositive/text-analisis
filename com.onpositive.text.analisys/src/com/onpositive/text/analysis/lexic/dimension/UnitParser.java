@@ -9,18 +9,22 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 import com.onpositive.text.analysis.lexic.StringToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class UnitParser extends AbstractParser {
 	
 	public UnitParser(AbstractWordNet wordNet) {
 		this.unitsProvider = new UnitsProvider(wordNet);
+		this.prepConjRegistry = new PrepConjRegistry(wordNet);
 	}	  
 	
 	private UnitsProvider unitsProvider;
+	PrepConjRegistry prepConjRegistry;
 
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)
@@ -43,11 +47,43 @@ public class UnitParser extends AbstractParser {
 			return;
 		}
 		
+		if(canBePreposition(token)){
+			return;
+		}
+		
 		int startPosition = token.getStartPosition();
 		int endPosition = token.getEndPosition();
 		SyntaxToken mainGroup = (token instanceof SyntaxToken) ? (SyntaxToken)token : null;
 		ArrayList<IToken> tokens = createUnitTokens(constructed, mainGroup, startPosition, endPosition);
 		appendTokens(tokens,processingData);
+	}
+
+	private boolean canBePreposition(IToken token) {
+		
+		String val = token.getStringValue();
+		UnaryMatcher<SyntaxToken> matcher = prepConjRegistry.getPrepCaseMatcher(val);
+		if(matcher==null){
+			return false;
+		}
+		
+		IToken next = token.getNext();
+		if(next!=null){
+			if(matcher.match(next)){
+				return true;
+			}
+		}
+		else{
+			List<IToken> nextTokens = token.getNextTokens();
+			if(nextTokens!=null){
+				for(IToken n : nextTokens){
+					if(matcher.match(n)){
+						return true;
+					}					
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	private String getUnitName(IToken token) {
@@ -76,13 +112,17 @@ public class UnitParser extends AbstractParser {
 
 	private List<IToken> processWordForm(WordFormToken token) {
 
-		int startPosition = token.getStartPosition();
-		int endPosition = token.getEndPosition();
-		
 		List<Unit> units = unitsProvider.getUnits(token.getMeaningElement());
 		if(units==null){
 			return null;
 		}
+		if(canBePreposition(token)){
+			return null;
+		}
+		
+		int startPosition = token.getStartPosition();
+		int endPosition = token.getEndPosition();
+		
 		ArrayList<IToken> tokens = createUnitTokens(units, token, startPosition, endPosition);
 		return tokens;
 	}

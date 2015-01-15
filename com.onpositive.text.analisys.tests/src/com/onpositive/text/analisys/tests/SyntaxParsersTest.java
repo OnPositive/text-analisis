@@ -542,5 +542,44 @@ public class SyntaxParsersTest extends ParserTest{
 			            + "SYMBOL ,"
 			            + "<main>WORD_FORM гулять([неперех, несов, ИНФ])  )  )  )", processed);
 	}
+	
+	public void test035(){
+		String str = "Я иду с Машей.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+			        + "WORD_FORM с([ПР])"
+			        + "WORD_FORM маша([имя, жр, од, СУЩ])  )  )", processed);
+	}
+	
+	public void test036(){
+		String str = "Полёт длился 254 с и завершился удачно.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+			        + "WORD_FORM с([ПР])"
+			        + "WORD_FORM маша([имя, жр, од, СУЩ])  )  )", processed);
+	}
+	
+	public void test037(){
+		String str = "Время полёта составило 254 с.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>GENITIVE_CHAIN("
+					+ "<main>WORD_FORM время([СУЩ, ср, неод])"
+					+ "WORD_FORM полёт([мр, СУЩ, неод]) )"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM составил([сов, ГЛ, перех])"
+		            + "NOUN_ADJECTIVE("
+		                + "SCALAR 254.0"
+		                + "<main>WORD_FORM с([СУЩ, ср, 0, аббр, неод])  )  )  )", processed);
+	}
 
 }

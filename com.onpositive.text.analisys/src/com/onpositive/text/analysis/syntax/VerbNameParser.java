@@ -6,6 +6,7 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class VerbNameParser extends VerbGroupParser {
@@ -38,7 +39,10 @@ public class VerbNameParser extends VerbGroupParser {
 	}
 
 	@Override
-	protected boolean checkAdditionalToken(IToken token) {		
+	protected boolean checkAdditionalToken(IToken token) {
+		if(token instanceof DimensionToken){
+			return true;
+		}
 		return and(nounAdjectiveMatch,not(prepMatch)).match(token);
 	}
 	

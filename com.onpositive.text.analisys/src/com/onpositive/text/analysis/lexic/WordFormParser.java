@@ -1,6 +1,8 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -18,6 +20,8 @@ import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class WordFormParser extends AbstractParser {
@@ -47,7 +51,7 @@ public class WordFormParser extends AbstractParser {
 		}
 		
 		if(!gotSequence){
-			for(GrammarRelation gr : firstWordForms){
+l0:			for(GrammarRelation gr : firstWordForms){
 				gr.getGrammems();
 				TextElement word = gr.getWord();
 				MeaningElement[] concepts = word.getConcepts();
@@ -55,7 +59,17 @@ public class WordFormParser extends AbstractParser {
 					if(!corresponds(me,gr)){
 						continue;
 					}
-					me = refinePrepositionOrConjunction(me,startPosition,endPosition);
+					
+					boolean matchPrep = false;
+					MeaningElement prep = refinePrepositionOrConjunction(me,startPosition,endPosition);
+					if(prep!=null){
+						me = prep;
+						matchPrep = matchPreposition(firstToken);
+						if(matchPrep){
+							tokens.clear();
+						}
+					}
+					
 					int id = me.id();
 					IToken token = tokens.get(id);
 					int endPosition1 = considerAbbrEndPosition(sample,endPosition, me, gr);
@@ -66,6 +80,10 @@ public class WordFormParser extends AbstractParser {
 					WordFormToken wft = (WordFormToken) token;
 					wft.setLink(firstToken.getLink());
 					registerGrammarRelation(gr, wft);
+					
+					if(matchPrep){
+						break l0;
+					}
 				}
 			}
 		}
@@ -78,7 +96,17 @@ public class WordFormParser extends AbstractParser {
 				TextElement te = data.textElement();
 				MeaningElement[] concepts = te.getConcepts();
 				for(MeaningElement me : concepts){
-					me = refinePrepositionOrConjunction(me,startPosition,endPosition);
+					
+					boolean matchPrep = false;
+					MeaningElement prep = refinePrepositionOrConjunction(me,startPosition,endPosition);
+					if(prep!=null){
+						me = prep;
+						matchPrep = matchPreposition(firstToken);
+						if(matchPrep){
+							tokens.clear();
+						}
+					}
+					
 					int id = me.id();
 					IToken token = tokens.get(id);
 					int endIndex = data.getSequenceLength()-1;
@@ -90,6 +118,10 @@ public class WordFormParser extends AbstractParser {
 					WordFormToken wft = (WordFormToken) token;
 					registerGrammarRelation(null, wft);
 					tokens.put(id,token);
+					
+					if(matchPrep){
+						break;
+					}
 				}
 			}
 		}
@@ -100,6 +132,78 @@ public class WordFormParser extends AbstractParser {
 		else if(array.length>0){
 			processingData.addDoubtfulTokens(array);
 		}
+	}
+
+	private boolean matchPreposition(IToken token) {
+
+		String val = token.getStringValue();
+		UnaryMatcher<SyntaxToken> matcher = prepConjRegistry.getPrepCaseMatcher(val);
+		if (matcher == null) {
+			return false;
+		}
+
+		IToken next = token.getNext();
+		ArrayList<WordFormToken> nextWFTs = new ArrayList<WordFormToken>();
+		if (next != null) {			
+			nextWFTs.addAll(createDrafts(next));
+		} else {
+			List<IToken> nextTokens = token.getNextTokens();
+			if (nextTokens != null) {
+				for (IToken n : nextTokens) {
+					nextWFTs.addAll(createDrafts(n));
+				}
+			}
+		}
+		for(WordFormToken t : nextWFTs){
+			if(matcher.match(t)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Collection<? extends WordFormToken> createDrafts(IToken next) {
+		
+		ArrayList<WordFormToken> list = new ArrayList<WordFormToken>();
+		if(next.getType() != IToken.TOKEN_TYPE_LETTER){
+			return list;
+		}
+		
+		int startPosition = next.getStartPosition();
+		int endPosition = next.getEndPosition();
+		
+		IntObjectOpenHashMap<WordFormToken> map = new IntObjectOpenHashMap<WordFormToken>();
+		
+		String sv = next.getStringValue().toLowerCase();
+		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(sv);		
+		for(GrammarRelation gr : possibleGrammarForms){
+			TextElement word = gr.getWord();
+			String bf = word.getBasicForm();
+			if(prepConjRegistry.getPreposition(bf)!=null){
+				continue;
+			}
+			if(prepConjRegistry.getConjunction(bf)!=null){
+				continue;
+			}
+			MeaningElement[] concepts = word.getConcepts();
+			for(MeaningElement me : concepts){
+				
+				if(!corresponds(me,gr)){
+					continue;
+				}
+				
+				int id = me.id();
+				WordFormToken t = map.get(id);
+				if(t==null){
+					t = new WordFormToken(me, startPosition, endPosition);
+					map.put(id, t);
+				}
+				registerGrammarRelation(gr, t);
+			}
+		}
+		
+		list.addAll(Arrays.asList(map.values().toArray(WordFormToken.class)));
+		return list;
 	}
 
 	private MeaningElement refinePrepositionOrConjunction(MeaningElement me, int sp, int ep) {
@@ -115,7 +219,7 @@ public class WordFormParser extends AbstractParser {
 		}
 		String txt = getText();
 		if(ep<txt.length()&&!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
-			return me;
+			return null;
 		}
 		
 		MeaningElement preposition = getPrepConjRegistry().getPreposition(str);
@@ -126,7 +230,7 @@ public class WordFormParser extends AbstractParser {
 		if(conjunction!=null){
 			return conjunction;
 		}
-		return me;
+		return null;
 	}
 
 	protected int considerAbbrEndPosition(Stack<IToken> sample,	int endPosition, MeaningElement me, GrammarRelation gr) {
