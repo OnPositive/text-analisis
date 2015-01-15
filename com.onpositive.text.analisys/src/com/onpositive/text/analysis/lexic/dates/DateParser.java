@@ -48,8 +48,7 @@ public class DateParser extends AbstractParser {
 	}
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,
-			Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		if (sample.size() != 2) {
 			return;
 		}
@@ -76,7 +75,7 @@ public class DateParser extends AbstractParser {
 			if (!scalarToken.isFracture()&&!scalarToken.isDecimal()){
 			int parseInt = (int) scalarToken.getValue();
 			dimensionToken.setYear(parseInt);
-			reliableTokens.add(dimensionToken);
+			processingData.addReliableToken(dimensionToken);
 			}
 		} else {
 			DateToken dimensionToken = new DateToken(scalarToken, unitToken,
@@ -86,7 +85,7 @@ public class DateParser extends AbstractParser {
 			if (parseInt > 0 && parseInt < 32) {
 				dimensionToken.setDay(parseInt);
 				dimensionToken.setMonth(months.indexOf(basicForm));
-				reliableTokens.add(dimensionToken);
+				processingData.addReliableToken(dimensionToken);
 			}}
 		}
 	}

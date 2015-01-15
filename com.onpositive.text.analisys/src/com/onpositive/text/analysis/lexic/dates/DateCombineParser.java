@@ -11,8 +11,7 @@ import com.onpositive.text.analysis.syntax.SyntaxToken;
 public class DateCombineParser extends AbstractParser {
 
 	@Override
-	protected void combineTokens(Stack<IToken> sample,
-			Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
+	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		if (sample.size() != 2) {
 			return;
 		}
@@ -33,7 +32,7 @@ public class DateCombineParser extends AbstractParser {
 				result.setMonth(dateToken0.getMonth());
 				result.setYear(dateToken1.getYear());
 				result.setDay(dateToken0.getDay());
-				reliableTokens.add(result);
+				processingData.addReliableToken(result);
 			}
 		} else {
 			IToken token1 = sample.get(1);
@@ -50,7 +49,7 @@ public class DateCombineParser extends AbstractParser {
 				int indexOf = DateParser.months.indexOf(basicForm);
 				if (indexOf != -1) {
 					result.setMonth(indexOf);
-					reliableTokens.add(result);
+					processingData.addReliableToken(result);
 				}
 			}
 		}
