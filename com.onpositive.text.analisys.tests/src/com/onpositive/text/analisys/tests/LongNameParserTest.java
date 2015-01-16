@@ -100,7 +100,7 @@ public class LongNameParserTest extends ParserTest {
 		boolean found=false;
 		for (IToken c:parse){
 			if (c instanceof LongNameToken){
-				if (c.getStringValue().contains("павел(")&&c.getStringValue().contains("а")){
+				if (c.getStringValue().contains("петроченко(")&&c.getStringValue().contains("a(")){
 					found=true;
 				}
 				if (c.getStringValue().contains("арме")){

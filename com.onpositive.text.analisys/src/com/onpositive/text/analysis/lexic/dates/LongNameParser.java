@@ -13,6 +13,7 @@ import com.onpositive.text.analysis.lexic.LongNameToken;
 import com.onpositive.text.analysis.lexic.StringToken;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class LongNameParser extends AbstractParser {
 
@@ -107,34 +108,67 @@ public class LongNameParser extends AbstractParser {
 					ArrayList<IToken> tc = trySelect(a, sample, consumed);
 					consumed.addAll(tc);
 					if (tc.size() > 1) {
-						int start = Integer.MAX_VALUE;
-						int end = Integer.MIN_VALUE;
-						WordFormToken mn = null;
-						for (IToken q : tc) {
-							end = Math.max(end, q.getEndPosition());
-							start = Math.min(start, q.getStartPosition());
-							if (isBetter(mn, q)) {
-								mn = (WordFormToken) q;
+						consumTokens(processingData, tc);
+					}
+					else if (canBeSurName(tc.get(0))){
+						for (int i=a+1;i<sample.size();i++){
+							if(tc.size()==3){
+								break;
 							}
-						}
-						if (mn == null) {
-							for (IToken q : tc) {
-								if (q instanceof WordFormToken) {
-									mn = (WordFormToken) q;
-									break;
+							IToken iToken = sample.get(i);
+							
+							if (iToken instanceof SyntaxToken){
+								SyntaxToken m=(SyntaxToken) iToken;
+								if (m.getBasicForm().length()==1){
+									tc.add(m);
+									continue;
 								}
 							}
+							
+							if (iToken instanceof StringToken){
+								StringToken mm=(StringToken) iToken;
+								if (mm.getStringValue().length()==1){
+									tc.add(mm);
+									continue;
+								}
+							}
+							break;
 						}
-						if (mn != null) {
-							LongNameToken longNameToken = new LongNameToken(mn,
-									start, end);
-							processingData.addReliableToken(longNameToken);
+						if (tc.size()>1){
+							consumTokens(processingData, tc);
+							consumed.addAll(tc);
 						}
 					}
 				}
 				a++;
 			}
 
+		}
+	}
+
+	void consumTokens(ProcessingData processingData, ArrayList<IToken> tc) {
+		int start = Integer.MAX_VALUE;
+		int end = Integer.MIN_VALUE;
+		WordFormToken mn = null;
+		for (IToken q : tc) {
+			end = Math.max(end, q.getEndPosition());
+			start = Math.min(start, q.getStartPosition());
+			if (isBetter(mn, q)) {
+				mn = (WordFormToken) q;
+			}
+		}
+		if (mn == null) {
+			for (IToken q : tc) {
+				if (q instanceof WordFormToken) {
+					mn = (WordFormToken) q;
+					break;
+				}
+			}
+		}
+		if (mn != null) {
+			LongNameToken longNameToken = new LongNameToken(mn,
+					start, end);
+			processingData.addReliableToken(longNameToken);
 		}
 	}
 
