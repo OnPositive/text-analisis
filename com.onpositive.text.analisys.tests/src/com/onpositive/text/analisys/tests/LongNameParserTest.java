@@ -45,6 +45,21 @@ public class LongNameParserTest extends ParserTest {
 		}
 		TestCase.assertTrue(found);
 	}
+	public void testS0066() {
+		List<IToken> parse = composition
+				.parse("касающихся романа Бориса Пастернака «Доктор Живаго»");
+		boolean found=false;
+		for (IToken c:parse){
+			if (c instanceof LongNameToken){
+				if (c.getStringValue().contains("борис(")&&c.getStringValue().contains("пастернак(")){
+					found=true;
+				}
+				
+			}
+		}
+		TestCase.assertTrue(found);
+	}
+	
 	public void testS002() {
 		List<IToken> parse = composition
 				.parse("Премьер Министр Армении Павел Петроченко");
