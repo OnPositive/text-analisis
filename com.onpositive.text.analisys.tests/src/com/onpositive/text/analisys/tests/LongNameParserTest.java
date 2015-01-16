@@ -125,4 +125,21 @@ public class LongNameParserTest extends ParserTest {
 		}
 		TestCase.assertTrue(found);
 	}
+	public void testS008() {
+		List<IToken> parse = composition
+				.parse("Владимир Нестеров");
+		boolean found=false;
+		for (IToken c:parse){
+			if (c instanceof LongNameToken){
+				if (c.getStringValue().contains("владимир(")&&c.getStringValue().contains("естер")){
+					found=true;
+				}
+				if (c.getStringValue().contains("арме")){
+					TestCase.assertTrue(false);			
+				}
+			}
+		}
+		TestCase.assertTrue(found);
+	}
+	     
 }

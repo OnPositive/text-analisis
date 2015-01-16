@@ -215,20 +215,20 @@ public class LongNameParser extends AbstractParser {
 					break;
 				}
 				if (canBeName(tk)) {
-					if (!hasName) {
+					//if (!hasName) {
 						result.add(tk);
 						hasName = true;
 						continue;
-					} else {
-						break;
-					}
+					//} else {
+					//	break;
+					//}
 				}
 				if (canBeSurName(tk)) {
-					if (!hasSurName) {
+					//if (!hasSurName) {
 						result.add(tk);
 						hasSurName = true;
 						continue;
-					}
+					//}
 				}
 				if (canBePatr(tk) && !hasPatr) {
 					result.add(tk);
@@ -250,20 +250,20 @@ public class LongNameParser extends AbstractParser {
 					break;
 				}
 				if (canBeName(tk)) {
-					if (!hasName) {
+					//if (!hasName) {
 						result.add(tk);
 						hasName = true;
 						continue;
-					} else {
-						break;
-					}
+					//} else {
+//						break;
+					//}
 				}
 				if (canBeSurName(tk)) {
-					if (!hasSurName) {
+					//if (!hasSurName) {
 						result.add(tk);
 						hasSurName = true;
 						continue;
-					}
+					///}
 				}
 				if (canBePatr(tk) && !hasPatr) {
 					result.add(tk);
