@@ -216,4 +216,17 @@ public class ParserTest extends TestCase {
 		}
 		TestCase.assertTrue(gotPrint);
 	}
+	
+	protected static void assertTestTokenPrintContains(String print, List<IToken> tokens){
+		String str = print.replaceAll("(\\s|\\,)", "");
+		boolean gotPrint = false;
+		for(IToken token : tokens){
+			String s1 = printToken(token,0).replaceAll("(\\s|\\,)", "");
+			if(s1.contains(str)){
+				gotPrint = true;
+				break;
+			}
+		}
+		TestCase.assertTrue(gotPrint);
+	}
 }
