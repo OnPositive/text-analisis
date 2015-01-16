@@ -85,6 +85,8 @@ public interface IToken {
 	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;	
 	
 	static final int TOKEN_TYPE_LINK = 20001;
+
+	static final int TOKEN_TYPE_NAME = 20002;
 	
 	int id();
 	
