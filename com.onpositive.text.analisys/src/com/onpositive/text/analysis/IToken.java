@@ -66,6 +66,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_VERB_GERUND = 11020;
 	
+	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11021;
+	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
 	static final int TOKEN_TYPE_ADVERB_WITH_MODIFICATOR = 11041;

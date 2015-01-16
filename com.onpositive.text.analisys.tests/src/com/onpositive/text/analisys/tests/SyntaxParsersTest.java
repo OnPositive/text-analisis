@@ -454,7 +454,21 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Ученые узнали о влиянии пальцев владельцев смартфонов на мозг.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
-			"", processed);
+			"CLAUSE("
+				+ "<subject>WORD_FORM учёный([мр, од, СУЩ])"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "<main>VERB_NOUN_PREP("
+				        + "<main>WORD_FORM узнал([сов, ГЛ, перех])"
+				        	+ "WORD_FORM о([ПР])"
+				        	+ "GENITIVE_CHAIN("
+						        + "<main>GENITIVE_CHAIN("
+							        + "<main>GENITIVE_CHAIN("
+								        + "<main>WORD_FORM влияние([СУЩ, ср, неод])"
+								        	+ "WORD_FORM палец([мр, СУЩ, неод])  )"
+								    + "WORD_FORM владелец([мр, од, СУЩ])  )"
+								+ "WORD_FORM смартфон([мр, СУЩ, неод])  )  )"
+				        + "WORD_FORM на([ПР])"
+				        + "WORD_FORM мозг([мр, СУЩ, неод])  )  )", processed);
 	}
 	
 	public void test030(){
@@ -581,5 +595,39 @@ public class SyntaxParsersTest extends ParserTest{
 		                + "SCALAR 254.0"
 		                + "<main>WORD_FORM с([СУЩ, ср, 0, аббр, неод])  )  )  )", processed);
 	}
+	
+	public void test038(){
+		String str = "В 1960 году сформировалась новая граница Москвы";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>GENITIVE_CHAIN("
+					+ "<main>NOUN_ADJECTIVE("
+						+ "WORD_FORM новый([кач, ПРИЛ])"
+						+ "<main>WORD_FORM граница([жр, СУЩ, неод])  )"
+					+ "WORD_FORM москва([sg, жр, СУЩ, гео, неод])  )"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "WORD_FORM в([ПР])"
+			        + "DATE 1960.0 год([мр, СУЩ, неод])" 
+			        + "<main>WORD_FORM сформировался([сов, ГЛ, неперех])  )  )", processed);
+	}
+	
+	
+	public void test039(){
+		String str = "С победой большевиков в 1920 году в войне началась новая, советская эпоха в развитии города";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint(
+			"CLAUSE("
+				+ "<subject>GENITIVE_CHAIN("
+					+ "<main>NOUN_ADJECTIVE("
+						+ "WORD_FORM новый([кач, ПРИЛ])"
+						+ "<main>WORD_FORM граница([жр, СУЩ, неод])  )"
+					+ "WORD_FORM москва([sg, жр, СУЩ, гео, неод])  )"
+		        + "<predicate>VERB_NOUN_PREP("
+			        + "WORD_FORM в([ПР])"
+			        + "DATE 1960.0 год([мр, СУЩ, неод])" 
+			        + "<main>WORD_FORM сформировался([сов, ГЛ, неперех])  )  )", processed);
+	}
+	
 
 }

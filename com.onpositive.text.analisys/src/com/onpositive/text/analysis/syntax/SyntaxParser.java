@@ -51,7 +51,9 @@ public class SyntaxParser extends ParserComposition {
 		DirectObjectParser.class,
 		VerbNamePrepositionParser.class,		
 		VerbNameParser.class,
-		VerbGerundParser.class
+		VerbGerundParser.class,
+		VerbNamePrepositionParser.class,
+		NounNamePrepositionParser.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {
