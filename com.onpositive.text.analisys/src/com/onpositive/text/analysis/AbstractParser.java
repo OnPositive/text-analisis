@@ -136,7 +136,9 @@ public abstract class AbstractParser {
 	
 	private int currentTokenId;
 	
-	protected IntObjectOpenHashMap<IToken> parsedTokens = new IntObjectOpenHashMap<IToken>();
+	protected IntObjectOpenHashMap<IToken> resultTokens = new IntObjectOpenHashMap<IToken>();
+	
+	protected IntObjectOpenHashMap<IToken> newTokens = new IntObjectOpenHashMap<IToken>();
 	
 	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(0,true,false);
 	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0,true,true);
@@ -192,10 +194,10 @@ public abstract class AbstractParser {
 			data.clear();
 			parseStartingTokens(token,data);
 			
-			boolean tokenReleased = handleBounds(token, data);
+			boolean tokenReleased = checkMatch(token, data);
 			if(!tokenReleased){
 				insertToken(result, token);
-				parsedTokens.put(token.id(),token);
+				resultTokens.put(token.id(),token);
 			}
 			else{
 				toDiscard.add(token);
@@ -204,8 +206,15 @@ public abstract class AbstractParser {
 			data.dump(result);
 			setTriggered(data.triggered());			
 		}
+		handleBounds(result);
 		discardToken(toDiscard);
 		return result;
+	}
+
+	public void handleBounds(ArrayList<IToken> result) {
+		for(IToken t : result){
+			handleBounds(t, newTokens.containsKey(t.id()));
+		}
 	}
 
 	public static void discardToken(List<IToken> toDiscard) {
@@ -317,7 +326,7 @@ public abstract class AbstractParser {
 			List<IToken> parents = token.getParents();
 			if(parents!=null&&!parents.isEmpty()){
 				for(IToken parent: parents){
-					if(parsedTokens.containsKey(parent.id())){
+					if(resultTokens.containsKey(parent.id())){
 						return true;
 					}
 				}
@@ -360,11 +369,12 @@ public abstract class AbstractParser {
 		for(IToken token : tokens){
 			int id = ++currentTokenId;
 			token.setId(id);
-			parsedTokens.put(id, token);
+			resultTokens.put(id, token);
+			newTokens.put(id, token);
 		}		
 	}
 
-	private boolean handleBounds(IToken token, ProcessingData data)
+	private boolean checkMatch(IToken token, ProcessingData data)
 	{
 		Set<IToken> reliableTokens = data.getReliableTokens();
 		Set<IToken> doubtfulTokens = data.getDoubtfulTokens();
@@ -386,15 +396,6 @@ public abstract class AbstractParser {
 		boolean matchesAll = checkNextMatches(token, reliableTokens, doubtfulTokens);
 		if(isUnitLength){
 			matchesAll = !reliableTokens.isEmpty() || (!keepInputToken()&&!doubtfulTokens.isEmpty());
-		}
-		for(IToken t : reliableTokens){
-			handleBounds(t,true);
-		}
-		for(IToken t : doubtfulTokens){
-			handleBounds(t,true);
-		}
-		if(!matchesAll){
-			handleBounds(token,false);
 		}
 		return matchesAll;
 	}
@@ -425,7 +426,7 @@ public abstract class AbstractParser {
 	}
 
 	private void handleBounds(IToken neighbour, IToken boundToken,IToken token) {
-		if(parsedTokens.containsKey(neighbour.id())){
+		if(resultTokens.containsKey(neighbour.id())){
 			neighbour.addNeighbour(token, Direction.END);
 			token.addNeighbour(neighbour, Direction.START);
 		}
@@ -434,7 +435,7 @@ public abstract class AbstractParser {
 			return;
 		}
 		for(IToken parent : parents){
-			if(!parsedTokens.containsKey(parent.id())){
+			if(!resultTokens.containsKey(parent.id())){
 				continue;
 			}
 			IToken lastChildOfParent = parent.getChild(0, Direction.END);
@@ -530,7 +531,7 @@ public abstract class AbstractParser {
 					child.addParent(newToken);
 				}
 				else{
-					this.parsedTokens.put(child.id(), child);
+					this.resultTokens.put(child.id(), child);
 				}
 				childIndex++;
 				if(childIndex>=sample.size()){
@@ -563,7 +564,8 @@ public abstract class AbstractParser {
 	
 	private void prepareParser(List<IToken> tokens) {
 		
-		parsedTokens.clear();		
+		resultTokens.clear();
+		newTokens.clear();
 		currentTokenId = 0;
 		for(IToken token : tokens){
 			currentTokenId = Math.max(currentTokenId, token.id());
