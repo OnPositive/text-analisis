@@ -136,6 +136,8 @@ public abstract class AbstractParser {
 	
 	private int currentTokenId;
 	
+	private boolean handleBounds;
+	
 	protected IntObjectOpenHashMap<IToken> resultTokens = new IntObjectOpenHashMap<IToken>();
 	
 	protected IntObjectOpenHashMap<IToken> newTokens = new IntObjectOpenHashMap<IToken>();
@@ -212,8 +214,11 @@ public abstract class AbstractParser {
 	}
 
 	public void handleBounds(ArrayList<IToken> result) {
-		for(IToken t : result){
-			handleBounds(t, newTokens.containsKey(t.id()));
+		
+		if(handleBounds){
+			for(IToken t : result){
+				handleBounds(t, newTokens.containsKey(t.id()));
+			}
 		}
 	}
 
@@ -574,6 +579,14 @@ public abstract class AbstractParser {
 
 	public boolean isRecursive() {
 		return false;
+	}
+
+	public boolean isHandleBounds() {
+		return handleBounds;
+	}
+
+	public void setHandleBounds(boolean handleBounds) {
+		this.handleBounds = handleBounds;
 	}
 	
 }

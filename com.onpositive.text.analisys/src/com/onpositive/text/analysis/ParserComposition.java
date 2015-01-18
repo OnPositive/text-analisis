@@ -17,7 +17,7 @@ public class ParserComposition {
 		this.isGloballyRecursive = isGloballyRecursive;
 	}
 
-	private AbstractParser[]parsers;
+	protected AbstractParser[]parsers;
 	
 	private PrimitiveTokenizer tokenizer=new PrimitiveTokenizer();
 	
