@@ -602,6 +602,8 @@ public abstract class AbstractParser {
 		
 		resultTokens.clear();
 		newTokens.clear();
+		parentsMap.clear();
+		branchRegistry.clear();
 		currentTokenId = 0;
 		for(IToken token : tokens){
 			currentTokenId = Math.max(currentTokenId, token.id());
