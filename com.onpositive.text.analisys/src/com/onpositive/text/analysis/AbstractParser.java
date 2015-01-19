@@ -136,11 +136,13 @@ public abstract class AbstractParser {
 	
 	private int currentTokenId;
 	
-	private boolean handleBounds;
+	private boolean handleBounds = true;
 	
 	protected IntObjectOpenHashMap<IToken> resultTokens = new IntObjectOpenHashMap<IToken>();
 	
 	protected IntObjectOpenHashMap<IToken> newTokens = new IntObjectOpenHashMap<IToken>();
+	
+	private IntObjectOpenHashMap<Set<IToken>> parentsMap = new IntObjectOpenHashMap<Set<IToken>>();
 	
 	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(0,true,false);
 	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0,true,true);
@@ -295,7 +297,7 @@ public abstract class AbstractParser {
 
 	private boolean checkNextMatch(IToken next,Set<IToken> reliableTokens, Set<IToken> doubtfulTokens) {
 		
-		List<IToken> parents = next.getParents();
+		Collection<IToken> parents = retrieveParents(next);
 		if(parents==null||parents.isEmpty()){
 			branchRegistry.add(next);
 			return false;
@@ -314,6 +316,18 @@ public abstract class AbstractParser {
 			}
 			return true;
 		}
+	}
+
+	protected Collection<IToken> retrieveParents(IToken next) {
+		Collection<IToken> parents = parentsMap.get(next.id());
+		if(parents==null){
+			parents = new HashSet<IToken>();
+		}
+		List<IToken> ps = next.getParents();
+		if(ps!=null){
+			parents.addAll(ps);
+		}
+		return parents;
 	}
 
 	private boolean inspectBranch(IToken token) {
@@ -406,6 +420,13 @@ public abstract class AbstractParser {
 	}
 
 	private void handleBounds(IToken token, boolean newLevel) {
+		
+		if(newLevel){
+			List<IToken> children = token.getChildren();
+			for(IToken ch : children){
+				ch.addParent(token);
+			}
+		}
 		
 		IToken boundToken = null;
 		if(newLevel){
@@ -533,7 +554,7 @@ public abstract class AbstractParser {
 			while(child.getEndPosition()<=ep){
 				if(child.getStartPosition()>=sp){
 					newToken.addChild(child);
-					child.addParent(newToken);
+					registerParent(child,newToken);
 				}
 				else{
 					this.resultTokens.put(child.id(), child);
@@ -545,6 +566,16 @@ public abstract class AbstractParser {
 				child = sample.get(childIndex);
 			}
 		}
+	}
+
+	private void registerParent(IToken child, IToken newToken) {
+		int id = child.id();
+		Set<IToken> parents = this.parentsMap.get(id);
+		if(parents==null){
+			parents = new HashSet<IToken>();
+			parentsMap.put(id, parents);
+		}
+		parents.add(newToken);		
 	}
 
 	public String getText() {
