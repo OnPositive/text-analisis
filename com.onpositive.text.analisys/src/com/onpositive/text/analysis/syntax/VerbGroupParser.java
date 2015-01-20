@@ -25,14 +25,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		return verbLikeMatch.match(token);
 	}
 	
-	protected boolean acceptsPreposition(){
-		return false;
-	};
-	
-	protected boolean requiresPreposition(){
-		return false;
-	};
-	
 	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
 	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
@@ -47,14 +39,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		if (sample.size() < 2) {
 			return;
 		}
-		if (sample.size() < 3 && requiresPreposition()) {
-			return;
-		}
-		if(sample.size()==2 && !requiresPreposition()){
-			if(!matchTokensCouple(sample)){
-				return;
-			}
-		}
 	
 		SyntaxToken[] orderedTokens = extractMainTokens(sample);
 		if(orderedTokens==null){
@@ -65,10 +49,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			return;
 		}
 		if(isContained(orderedTokens[0], orderedTokens[1])){
-			return;
-		}
-		
-		if(!adjustTokens(orderedTokens)){
 			return;
 		}
 		
@@ -114,10 +94,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		else if (checkParents(newToken, sample)) {
 			processingData.addReliableToken(newToken);
 		}
-	}
-
-	protected boolean adjustTokens(SyntaxToken[] orderedTokens) {
-		return true;
 	}
 
 	private SyntaxToken[] extractMainTokens(Stack<IToken> sample) {
@@ -170,32 +146,18 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
-		IToken last = sample.peek();
-		if(prepMatch.match(newToken)){
-			if(!acceptsPreposition()){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			if(sample.size()>1){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			if(!checkAdditionalToken(last)){
-				return CONTINUE_PUSH;
-			}
+		if(prepMatch.match(newToken)){			
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
+		
+		IToken last = sample.peek();
 		if((checkVerb(newToken)||(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE))&&checkAdditionalToken(last)){
 			return ACCEPT_AND_BREAK;
 		}
 		if(checkAdditionalToken(newToken)&&(checkVerb(last)
-				||last.getType()==IToken.TOKEN_TYPE_CLAUSE
-				||(acceptsPreposition()&&prepMatch.match(last)))){
+				||last.getType()==IToken.TOKEN_TYPE_CLAUSE)){
 
-			if(!acceptsPreposition()||sample.size()==2){
-				return ACCEPT_AND_BREAK;
-			}
-			else{
-				return CONTINUE_PUSH;
-			}
+			return ACCEPT_AND_BREAK;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
@@ -206,13 +168,14 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
+		
+		if(prepMatch.match(newToken)){			
+			return DO_NOT_ACCEPT_AND_BREAK;
+		}
 		if (checkVerb(newToken)||checkAdditionalToken(newToken)) {
 			return CONTINUE_PUSH;
 		}
 		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
-			return CONTINUE_PUSH;
-		}
-		if(acceptsPreposition()&&prepMatch.match(newToken)){
 			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;

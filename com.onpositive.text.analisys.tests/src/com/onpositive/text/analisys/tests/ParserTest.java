@@ -17,12 +17,13 @@ import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.dimension.Unit;
 import com.onpositive.text.analysis.syntax.ClauseToken;
+import com.onpositive.text.analysis.syntax.PrepositionGroupToken;
 import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class ParserTest extends TestCase {
 	
-	private static final Set<Class<?>> prinTreeClasses = new HashSet<Class<?>>(Arrays.asList(SyntaxToken.class, ClauseToken.class));
+	private static final Set<Class<?>> printTreeClasses = new HashSet<Class<?>>(Arrays.asList(SyntaxToken.class, ClauseToken.class, PrepositionGroupToken.class));
 	
 	private static final String childOffStr = "  ";
 	protected ParserComposition composition;
@@ -161,7 +162,7 @@ public class ParserTest extends TestCase {
 		bld.append(offStr);
 		bld.append(TokenTypeResolver.getResolvedType(token));
 		
-		if(prinTreeClasses.contains(token.getClass())){
+		if(printTreeClasses.contains(token.getClass())){
 			SyntaxToken st = (SyntaxToken) token;
 			SyntaxToken mainGroup = st.getMainGroup();
 			List<IToken> children = token.getChildren();
@@ -182,6 +183,23 @@ public class ParserTest extends TestCase {
 					bld.append(offStr).append(childOffStr).append("<predicate>");
 					bld.append(childStr);
 				}				
+			}
+			else if(token.getType() == IToken.TOKEN_TYPE_PREPOSITION_GROUP){
+				PrepositionGroupToken pgt = (PrepositionGroupToken) token;
+				{
+					bld.append("\n");
+					SyntaxToken prepToken = pgt.getPrepToken();
+					String childStr = printToken(prepToken,off + 2).trim();
+					bld.append(offStr).append(childOffStr).append("<preposition>");
+					bld.append(childStr);
+				}
+				{
+					bld.append("\n");
+					SyntaxToken word = pgt.getWord();
+					String childStr = word != null ? printToken(word,off + 2).trim() : "no predicate";;
+					bld.append(offStr).append(childOffStr);
+					bld.append(childStr);
+				}
 			}
 			else{
 				for(int i = 0 ; i < children.size() ; i++){

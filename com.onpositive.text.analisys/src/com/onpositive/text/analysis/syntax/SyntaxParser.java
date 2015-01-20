@@ -41,7 +41,9 @@ public class SyntaxParser extends ParserComposition {
 		UniformAdjectivesParser.class,
 		NounAdjectiveParser.class,
 		NounDimensionParser.class,
-		UniformNounsParser.class
+		UniformNounsParser.class,
+		GenitiveChainParser.class,
+		PrepositionGroupParser.class
 	};
 	
 	private static final Class<?>[] nameSyntaxRecursiveParsersArray = new Class<?>[]{
@@ -92,8 +94,7 @@ public class SyntaxParser extends ParserComposition {
 		for(IToken sentence : sentences){
 			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());
 			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
-			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
-			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
+			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(namesProcessed);
 			List<IToken> clausesFormed = clauseParser.process(verbsProcessed1);			
 			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
 			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);

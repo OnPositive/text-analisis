@@ -64,9 +64,11 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_VERB_ADJECTIVE_PREP = 11019;
 	
-	static final int TOKEN_TYPE_VERB_GERUND = 11020;
+	static final int TOKEN_TYPE_VERB_ADVERB_PREP = 11020;
 	
-	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11021;
+	static final int TOKEN_TYPE_VERB_GERUND = 11021;
+	
+	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11022;
 	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
@@ -82,7 +84,9 @@ public interface IToken {
 
 	static final int TOKEN_TYPE_MEASURED_NOUN = 11055;
 	
-	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;	
+	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;
+	
+	static final int TOKEN_TYPE_PREPOSITION_GROUP = 11057;
 	
 	static final int TOKEN_TYPE_LINK = 20001;
 

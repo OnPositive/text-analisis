@@ -11,12 +11,6 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class VerbNameParser extends VerbGroupParser {
 
-	private static final UnaryMatcher<SyntaxToken> adjectiveMatch
-			= and(hasAny(PartOfSpeech.ADJF),not(DirectObjectParser.directObjectCasesMatch),not(hasAny(Case.NOMN)));
-	
-	private static final UnaryMatcher<SyntaxToken> nounMatch
-			= and(hasAny(PartOfSpeech.NOUN),not(DirectObjectParser.directObjectCasesMatch),not(hasAny(Case.NOMN)));
-	
 	private static final UnaryMatcher<SyntaxToken> nounAdjectiveMatch
 			= and(hasAny(PartOfSpeech.NOUN,PartOfSpeech.ADJF),not(DirectObjectParser.directObjectCasesMatch),not(hasAny(Case.NOMN)));
 	

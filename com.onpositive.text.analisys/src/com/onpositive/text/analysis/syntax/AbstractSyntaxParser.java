@@ -45,6 +45,12 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 
 	protected static final UnaryMatcher<SyntaxToken> prepConjMatch = hasAny(PartOfSpeech.PREP,PartOfSpeech.CONJ);
 
+	protected static final UnaryMatcher<SyntaxToken> adjectiveMatch = hasAny(PartOfSpeech.ADJF);
+
+	protected static final UnaryMatcher<SyntaxToken> nounMatch = hasAny(PartOfSpeech.NOUN);
+	
+	protected static final UnaryMatcher<SyntaxToken> adverbMatch = hasAny(PartOfSpeech.ADVB);
+
 	public AbstractSyntaxParser(AbstractWordNet wordNet) {
 		super();
 		this.wordNet = wordNet;

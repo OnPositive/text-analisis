@@ -39,8 +39,6 @@ public class NounNamePrepositionParser extends AbstractSyntaxParser {
 	
 	protected static final UnaryMatcher<SyntaxToken> nameMatch = hasAny( PartOfSpeech.NOUN, PartOfSpeech.ADJF );
 	
-	protected static final UnaryMatcher<SyntaxToken> nounMatch = hasAny(PartOfSpeech.NOUN);
-	
 	@Override
 	public boolean isRecursive() {
 		return true;

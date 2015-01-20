@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -218,9 +219,10 @@ public abstract class AbstractParser {
 	public void handleBounds(ArrayList<IToken> result) {
 		
 		if(handleBounds){
-			for(IToken t : result){
-				handleBounds(t, newTokens.containsKey(t.id()));
-			}
+			TokenBoundsHandler tbh = new TokenBoundsHandler();
+			tbh.setNewTokens(newTokens);
+			tbh.setResultTokens(resultTokens);
+			tbh.handleBounds(result);
 		}
 	}
 
@@ -418,61 +420,6 @@ public abstract class AbstractParser {
 		}
 		return matchesAll;
 	}
-
-	private void handleBounds(IToken token, boolean newLevel) {
-		
-		if(newLevel){
-			List<IToken> children = token.getChildren();
-			for(IToken ch : children){
-				ch.addParent(token);
-			}
-		}
-		
-		IToken boundToken = null;
-		if(newLevel){
-			boundToken = token.getFirstChild(Direction.START);
-		}
-		else{
-			boundToken = token;
-		}
-
-		IToken neighbour = boundToken.getNeighbour(Direction.START);
-		if(neighbour!=null){
-			handleBounds(neighbour,boundToken,token);
-		}
-		else{
-			List<IToken> neighbours = boundToken.getNeighbours(Direction.START);
-			if(neighbours!=null){
-				neighbours = new ArrayList<IToken>(neighbours);
-				for(IToken n : neighbours){
-					handleBounds(n,boundToken,token);
-				}
-			}
-		}
-	}
-
-	private void handleBounds(IToken neighbour, IToken boundToken,IToken token) {
-		if(resultTokens.containsKey(neighbour.id())){
-			neighbour.addNeighbour(token, Direction.END);
-			token.addNeighbour(neighbour, Direction.START);
-		}
-		List<IToken> parents = neighbour.getParents();
-		if(parents==null){
-			return;
-		}
-		for(IToken parent : parents){
-			if(!resultTokens.containsKey(parent.id())){
-				continue;
-			}
-			IToken lastChildOfParent = parent.getChild(0, Direction.END);
-			if(lastChildOfParent!=neighbour){
-				continue;
-			}
-			parent.addNeighbour(token, Direction.END);
-			token.addNeighbour(parent, Direction.START);
-		}
-	}
-
 	
 	private boolean parseRecursively( Stack<IToken> sample, ProcessingResult pr, ProcessingData data)
 	{
@@ -620,6 +567,10 @@ public abstract class AbstractParser {
 
 	public void setHandleBounds(boolean handleBounds) {
 		this.handleBounds = handleBounds;
+	}
+
+	public List<IToken> getNewTokens() {
+		return new ArrayList<IToken>(Arrays.asList(newTokens.values().toArray(IToken.class)));
 	}
 	
 }
