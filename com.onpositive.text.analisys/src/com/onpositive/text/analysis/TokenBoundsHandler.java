@@ -80,6 +80,27 @@ public class TokenBoundsHandler {
 			token.addNeighbour(parent, Direction.START);
 		}
 	}
+	
+	public static void discardTokens(List<IToken> toDiscard) {
+		for(IToken t : toDiscard){
+			discardNeighbours(t, Direction.START);
+			discardNeighbours(t, Direction.END);
+		}
+	}
+
+	protected static void discardNeighbours(IToken token, Direction dir) {
+		IToken neighbour = token.getNeighbour(dir);
+		if(neighbour!=null){
+			neighbour.removeNeighbour(dir.opposite(), token);
+		}
+		
+		List<IToken> neighbours = token.getNeighbours(dir);
+		if(neighbours!=null){
+			for(IToken n : neighbours){
+				n.removeNeighbour(dir.opposite(), token);
+			}
+		}
+	}
 
 
 }

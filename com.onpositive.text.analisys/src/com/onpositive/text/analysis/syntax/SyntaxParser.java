@@ -7,6 +7,7 @@ import java.util.List;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
+import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.NumericsParser;
@@ -42,8 +43,8 @@ public class SyntaxParser extends ParserComposition {
 		NounAdjectiveParser.class,
 		NounDimensionParser.class,
 		UniformNounsParser.class,
-		GenitiveChainParser.class,
-		PrepositionGroupParser.class
+		GenitiveChainParser.class//,
+//		PrepositionGroupParser.class
 	};
 	
 	private static final Class<?>[] nameSyntaxRecursiveParsersArray = new Class<?>[]{
@@ -53,11 +54,9 @@ public class SyntaxParser extends ParserComposition {
 	private static final Class<?>[] verbGroupSyntaxParsersArray = new Class<?>[]{
 		VerbAdverbParser.class,
 		DirectObjectParser.class,
-		VerbNamePrepositionParser.class,		
-		VerbNameParser.class,
+		VerbNameComposition.class,		
 		VerbGerundParser.class,
-		VerbNamePrepositionParser.class,
-		NounNamePrepositionParser.class
+		VerbNameComposition.class
 	};
 	
 	public SyntaxParser(AbstractWordNet wordnet) {
@@ -94,7 +93,8 @@ public class SyntaxParser extends ParserComposition {
 		for(IToken sentence : sentences){
 			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());
 			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
-			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(namesProcessed);
+			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
+			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
 			List<IToken> clausesFormed = clauseParser.process(verbsProcessed1);			
 			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
 			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
@@ -126,21 +126,21 @@ public class SyntaxParser extends ParserComposition {
 
 	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {
 		
-		ArrayList<AbstractParser> list = new ArrayList<AbstractParser>();
+		ArrayList<IParser> list = new ArrayList<IParser>();
 		for(Class<?> clazz : array){
-			AbstractParser parser = createParser(clazz);
+			IParser parser = createParser(clazz);
 			if(parser != null){
 				list.add(parser);
 			}
 		}
-		AbstractParser[] arr = list.toArray(new AbstractParser[list.size()]);
+		IParser[] arr = list.toArray(new IParser[list.size()]);
 		ParserComposition result = new ParserComposition(isGloballyRecursive, arr);
 		return result;
 	}
 
-	private AbstractParser createParser(Class<?> clazz) {
+	private IParser createParser(Class<?> clazz) {
 		
-		boolean isParser = extendsClass(clazz,AbstractParser.class);
+		boolean isParser = extendsClass(clazz,AbstractParser.class) || hasInterface(clazz, IParser.class);
 		if(!isParser){
 			return null;
 		}
@@ -162,13 +162,13 @@ public class SyntaxParser extends ParserComposition {
 		if(constr==null){
 			return null;
 		}
-		AbstractParser instance = null;
+		IParser instance = null;
 		try{
 			if(constr.getParameterTypes().length==0){
-				instance = (AbstractParser) constr.newInstance();
+				instance = (IParser) constr.newInstance();
 			}
 			else{
-				instance = (AbstractParser) constr.newInstance(this.wordNet);
+				instance = (IParser) constr.newInstance(this.wordNet);
 			}
 		}
 		catch(Exception e){
@@ -177,12 +177,34 @@ public class SyntaxParser extends ParserComposition {
 		return instance;
 	}
 
+
 	private boolean extendsClass(Class<?> clazz, Class<?> parent) {
 		boolean isParser = false;
 		for(Class<?> cl = clazz ; cl != null ; cl = cl.getSuperclass()){
 			isParser = (cl==parent);
 			if(isParser){
 				break;
+			}
+		}
+		return isParser;
+	}
+
+	private boolean hasInterface(Class<?> clazz, Class<IParser> iClass) {
+		boolean isParser = false;
+		for(Class<?> cl = clazz ; cl != null ; cl = cl.getSuperclass()){
+			
+			if(cl==iClass){
+				return true;
+			}
+			
+			Class<?>[] interfaces = cl.getInterfaces();
+			if(interfaces==null){
+				continue;
+			}
+			for(Class<?> i : interfaces){
+				if(hasInterface(i, iClass)){
+					return true;
+				}
 			}
 		}
 		return isParser;

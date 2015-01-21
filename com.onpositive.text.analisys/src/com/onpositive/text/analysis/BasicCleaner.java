@@ -81,7 +81,7 @@ public class BasicCleaner {
 				listToRemove.add(t);
 			}
 		}
-		AbstractParser.discardToken(listToRemove);
+		TokenBoundsHandler.discardTokens(listToRemove);
 		return list2;
 	}
 	

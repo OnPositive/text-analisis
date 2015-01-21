@@ -12,7 +12,7 @@ import java.util.Stack;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.onpositive.text.analysis.IToken.Direction;
 
-public abstract class AbstractParser {
+public abstract class AbstractParser implements IParser {
 	
 	protected static boolean isOneOf(IToken token, String[] acceptedSymbols)
 	{
@@ -135,7 +135,7 @@ public abstract class AbstractParser {
 	
 	protected boolean hasTriggered = false;
 	
-	private int currentTokenId;
+	private TokenIdProvider tokenIdProvider = new TokenIdProvider();
 	
 	private boolean handleBounds = true;
 	
@@ -143,7 +143,7 @@ public abstract class AbstractParser {
 	
 	protected IntObjectOpenHashMap<IToken> newTokens = new IntObjectOpenHashMap<IToken>();
 	
-	private IntObjectOpenHashMap<Set<IToken>> parentsMap = new IntObjectOpenHashMap<Set<IToken>>();
+	protected IntObjectOpenHashMap<Set<IToken>> parentsMap = new IntObjectOpenHashMap<Set<IToken>>();
 	
 	protected static final ProcessingResult CONTINUE_PUSH = new ProcessingResult(0,true,false);
 	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0,true,true);
@@ -182,7 +182,7 @@ public abstract class AbstractParser {
 	private Set<IToken> branchRegistry = new HashSet<IToken>();
 	
 	
-	public ArrayList<IToken> process(List<IToken> tokens){
+	public List<IToken> process(List<IToken> tokens){
 		
 		prepareParser(tokens);		
 		beforeProcess(tokens);
@@ -211,39 +211,18 @@ public abstract class AbstractParser {
 			data.dump(result);
 			setTriggered(data.triggered());			
 		}
-		handleBounds(result);
-		discardToken(toDiscard);
+		handleBounds(result, toDiscard);		
 		return result;
 	}
 
-	public void handleBounds(ArrayList<IToken> result) {
+	public void handleBounds(ArrayList<IToken> result, ArrayList<IToken> toDiscard) {
 		
 		if(handleBounds){
 			TokenBoundsHandler tbh = new TokenBoundsHandler();
 			tbh.setNewTokens(newTokens);
 			tbh.setResultTokens(resultTokens);
 			tbh.handleBounds(result);
-		}
-	}
-
-	public static void discardToken(List<IToken> toDiscard) {
-		for(IToken t : toDiscard){
-			discardNeighbours(t, Direction.START);
-			discardNeighbours(t, Direction.END);
-		}
-	}
-
-	protected static void discardNeighbours(IToken token, Direction dir) {
-		IToken neighbour = token.getNeighbour(dir);
-		if(neighbour!=null){
-			neighbour.removeNeighbour(dir.opposite(), token);
-		}
-		
-		List<IToken> neighbours = token.getNeighbours(dir);
-		if(neighbours!=null){
-			for(IToken n : neighbours){
-				n.removeNeighbour(dir.opposite(), token);
-			}
+			TokenBoundsHandler.discardTokens(toDiscard);
 		}
 	}
 
@@ -344,7 +323,7 @@ public abstract class AbstractParser {
 //		}
 //		return false;
 		if(!branchRegistry.contains(token)){
-			List<IToken> parents = token.getParents();
+			Set<IToken> parents = parentsMap.get(token.id());
 			if(parents!=null&&!parents.isEmpty()){
 				for(IToken parent: parents){
 					if(resultTokens.containsKey(parent.id())){
@@ -388,7 +367,7 @@ public abstract class AbstractParser {
 
 	private void registerParsedTokens(Set<IToken> tokens) {
 		for(IToken token : tokens){
-			int id = ++currentTokenId;
+			int id = tokenIdProvider.getVacantId();
 			token.setId(id);
 			resultTokens.put(id, token);
 			newTokens.put(id, token);
@@ -525,14 +504,17 @@ public abstract class AbstractParser {
 		parents.add(newToken);		
 	}
 
+
 	public String getText() {
 		return text;
 	}
 
+	
 	public void setText(String text) {
 		this.text = text;
 	}
 
+	
 	public boolean hasTriggered() {
 		return hasTriggered;
 	}
@@ -551,10 +533,7 @@ public abstract class AbstractParser {
 		newTokens.clear();
 		parentsMap.clear();
 		branchRegistry.clear();
-		currentTokenId = 0;
-		for(IToken token : tokens){
-			currentTokenId = Math.max(currentTokenId, token.id());
-		}
+		tokenIdProvider.prepare(tokens);
 	}
 
 	public boolean isRecursive() {
@@ -571,6 +550,16 @@ public abstract class AbstractParser {
 
 	public List<IToken> getNewTokens() {
 		return new ArrayList<IToken>(Arrays.asList(newTokens.values().toArray(IToken.class)));
+	}
+
+	@Override
+	public TokenIdProvider getTokenIdProvider() {
+		return tokenIdProvider;
+	}
+
+	@Override
+	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
+		this.tokenIdProvider = tokenIdProvider;
 	}
 	
 }

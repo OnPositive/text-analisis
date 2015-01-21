@@ -4,36 +4,38 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
+import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class ParserComposition2 extends ParserComposition {
 	
-	public ParserComposition2(AbstractParser... parsers) {
+	public ParserComposition2(boolean isGloballyRecursive, IParser... parsers) {
+		super(isGloballyRecursive,parsers);
+		setHandleBoundsFalse();
+		initRegistry();
+	}
+	
+	public ParserComposition2(IParser... parsers) {
 		super(parsers);
 		setHandleBoundsFalse();
 		initRegistry();
 	}
 	
-	TokenModificationRegistry reg;
+	protected TokenModificationRegistry reg;
 
 
-	private void initRegistry() {
+	protected void initRegistry() {
 		reg = new TokenModificationRegistry(this.parsers);
 	}
-
-
-	public ParserComposition2(boolean isGloballyRecursive, AbstractParser... parsers) {
-		super(isGloballyRecursive,parsers);
-		setHandleBoundsFalse();
-	}	
 	
 	
 	private void setHandleBoundsFalse() {
-		for(AbstractParser ap : this.parsers){
+		for(IParser ap : this.parsers){
 			ap.setHandleBounds(false);
 		}
 	}
@@ -49,7 +51,7 @@ public class ParserComposition2 extends ParserComposition {
 	protected static class ParserData{
 		
 		
-		public ParserData(TokenModificationRegistry reg, AbstractParser ap, int id) {
+		public ParserData(TokenModificationRegistry reg, IParser ap, int id) {
 			super();
 			this.reg = reg;
 			this.parser = ap;
@@ -58,7 +60,7 @@ public class ParserComposition2 extends ParserComposition {
 
 		private final TokenModificationRegistry reg;
 		
-		private final AbstractParser parser;
+		private final IParser parser;
 		
 		private final int parserId;
 		
@@ -84,7 +86,6 @@ public class ParserComposition2 extends ParserComposition {
 			
 			for( IToken token : newTokens){
 				
-				int tokenId = token.id();				
 				IToken mainGroup = null;
 				if(token instanceof SyntaxToken){
 					mainGroup = ((SyntaxToken)token).getMainGroup();
@@ -94,7 +95,7 @@ public class ParserComposition2 extends ParserComposition {
 					int modType = ( mainGroup == null || ch !=mainGroup )
 							? TokenModificationData.CONSUMED : TokenModificationData.ENRICHED;					
 					
-					TokenModificationData md = new TokenModificationData(reg, tokenId, parserId, modType);
+					TokenModificationData md = new TokenModificationData(reg, ch, token, parserId, modType);
 					reg.registerData(ch.id(),md);
 				}
 			}
@@ -110,7 +111,7 @@ public class ParserComposition2 extends ParserComposition {
 		}
 
 		public boolean isFinished() {
-			return !isFinished ;
+			return isFinished ;
 		}
 		
 		public void setFinished(boolean isFinished) {
@@ -120,29 +121,46 @@ public class ParserComposition2 extends ParserComposition {
 		public void setNeedRepeat(){
 			this.isFinished = false;
 		}
+		
+		@Override
+		public String toString() {
+			String name = parser.getClass().getSimpleName();
+			StringBuilder bld = new StringBuilder(name);
+			if(isFinished){
+				bld.append(", finished");
+			}
+			return bld.toString();
+		}
+
+		public void setTokenIdProvider(TokenIdProvider tip) {
+			this.parser.setTokenIdProvider(tip);			
+		}
 	}
 	
 	
-	private static class TokenModificationData{
+	protected static class TokenModificationData{
 		
-		public TokenModificationData(TokenModificationRegistry reg, int producedTokenId, int parserId, int modType) {
+		public TokenModificationData(TokenModificationRegistry reg, IToken token, IToken producedToken, int parserId, int modType) {
 			super();
 			this.reg = reg;
 			this.parserId = parserId;
-			this.producedTokenId = producedTokenId;
+			this.producedToken = producedToken;
 			this.modType = modType;
+			this.token = token;
 		}
 		
 		
 		private static int CONSUMED = 0;
 		
-		private static int ENRICHED = 0;
+		private static int ENRICHED = 1;
 		
 		private TokenModificationRegistry reg;
 		
 		private int parserId;
 		
-		private int producedTokenId;
+		private IToken token;
+		
+		private IToken producedToken;
 
 		private int modType;
 		
@@ -164,24 +182,33 @@ public class ParserComposition2 extends ParserComposition {
 			this.modType = modType;
 		}
 
+		public IToken getProducedToken() {
+			return producedToken;
+		}
+
 		public boolean isCanceled() {
 			return isCanceled;
 		}
 
-		public void setCanceled(boolean isCanceled) {
+		public void setCanceled(boolean isCanceled, int validParserId) {
 			this.isCanceled = isCanceled;
-			if(isCanceled){
+			if(isCanceled && validParserId != parserId){
 				reg.enableParserRepeat(parserId);
-				reg.cancelProducedToken(parserId);
+				reg.cancelProducedToken(producedToken.id());
 			}
 		}
 
 		public boolean isEnriched() {
 			return getModType() == ENRICHED;
 		}
+		
+		@Override
+		public String toString() {
+			return token.toString() + " -> " + producedToken.toString();
+		}
 	}
 	
-	private static class TokenModificationRegistry{
+	protected static class TokenModificationRegistry{
 		
 		private ArrayList<ParserData> parserDataList = new ArrayList<ParserData>();
 		
@@ -190,13 +217,17 @@ public class ParserComposition2 extends ParserComposition {
 		
 		private List<IToken> original;
 		
-		private IntOpenHashSet cancelledProducedTokens;
+		private List<IToken> currentTokensArray;
+		
+		private IntOpenHashSet cancelledProducedTokens = new IntOpenHashSet();
+		
+		private HashSet<IToken> modifiedTokens = new HashSet<IToken>();
 		
 		public void cancelProducedToken(int id){
 			cancelledProducedTokens.add(id);
 		}
 
-		public TokenModificationRegistry(AbstractParser[] parsers) {
+		public TokenModificationRegistry(IParser[] parsers) {
 			
 			
 			for(int i = 0 ; i < parsers.length ; i++){
@@ -217,9 +248,10 @@ public class ParserComposition2 extends ParserComposition {
 
 		public List<IToken> process(List<IToken> tokens) {
 			
-			clean();
+			prepare(tokens);
 			
 			this.original = tokens;
+			this.currentTokensArray = this.original;
 			
 			while(true){
 
@@ -227,20 +259,20 @@ public class ParserComposition2 extends ParserComposition {
 					if(pd.isFinished()){
 						continue;
 					}
-					pd.process(tokens);
+					pd.process(this.currentTokensArray);
 					pd.setFinished(true);
 				}
 				
 				resolveConflicts();
 				
+				this.currentTokensArray = collectTokens();				
 				boolean finished = finished();
 				if(finished){
 					break;
 				}
+				clean();
 			}
-			
-			List<IToken> result = collectTokens();
-			return result;			
+			return this.currentTokensArray;
 		}
 
 		private List<IToken> collectTokens() {
@@ -260,25 +292,16 @@ public class ParserComposition2 extends ParserComposition {
 					else{
 						newTokensMap.put(id,token);
 						List<IToken> children = token.getChildren();						
-						for(IToken ch : children){
-							ignoreSet.add(ch.id());
-						}
+						modifiedTokens.addAll(children);
 					}
 				}
 			}
 			
+			markPreservedTokens(newTokensMap,resultTokensMap);
+			
 			ArrayList<IToken> result = new ArrayList<IToken>();
-			for(ParserData pd : parserDataList){
-				List<IToken> res = pd.getResult();
-				for(IToken t : res){
-					int id = t.id();
-					if(ignoreSet.contains(id)){
-						continue;
-					}
-					result.add(t);
-					resultTokensMap.put(t.id(),t);
-				}
-			}
+			result.addAll(Arrays.asList(resultTokensMap.values().toArray(IToken.class)));
+			result.addAll(Arrays.asList(newTokensMap.values().toArray(IToken.class)));
 			Collections.sort(result, new Comparator<IToken>() {
 
 				@Override
@@ -287,23 +310,94 @@ public class ParserComposition2 extends ParserComposition {
 				}
 			});
 			
+			resultTokensMap.putAll(newTokensMap);
+			
 			TokenBoundsHandler tbh = new TokenBoundsHandler();
 			tbh.setNewTokens(newTokensMap);
 			tbh.setResultTokens(resultTokensMap);
 			tbh.handleBounds(result);
 			
+			TokenBoundsHandler.discardTokens(new ArrayList<IToken>(modifiedTokens));			
 			return result;
 		}
 
-		private void clean() {
-			this.cancelledProducedTokens.clear();
-			this.map.clear();
+		protected void markPreservedTokens(	IntObjectOpenHashMap<IToken> newTokensMap, IntObjectOpenHashMap<IToken> resultTokensMap) {
+			for(IToken t : currentTokensArray){
+				if(!modifiedTokens.contains(t)){
+					resultTokensMap.put(t.id(), t);
+				}
+			}
+			
+			int size = 0;
+			while(size != resultTokensMap.size()){
+				size = resultTokensMap.size();
+				for(IToken newToken : newTokensMap.values().toArray(IToken.class))
+				{
+					List<IToken> children = newToken.getChildren();
+					int childrenCount = children.size();
+					if(childrenCount==1){
+						continue;
+					}
+					
+					IToken first = children.get(0);
+					IToken last = children.get(childrenCount-1);
+					checkNeighbours(resultTokensMap, first, Direction.END);
+					for(int i = 1; i < childrenCount-1 ; i++ ){
+						IToken ch = children.get(i);
+						checkNeighbours(resultTokensMap, ch,Direction.END);
+						checkNeighbours(resultTokensMap, ch,Direction.START);
+					}
+					checkNeighbours(resultTokensMap, last, Direction.START);
+				}
+			}
+		}
+
+		private void checkNeighbours(IntObjectOpenHashMap<IToken> resultTokensMap, IToken token, Direction dir) {
+			
+			IToken neighbour = token.getNeighbour(dir);
+			if(neighbour!=null){
+				if(!modifiedTokens.contains(neighbour)){
+					resultTokensMap.put(token.id(), token);
+					modifiedTokens.remove(token);
+				}
+			}
+			else{
+				List<IToken> neighbours = token.getNeighbours(dir);
+				if(neighbours!=null){
+					for(IToken n : neighbours){
+						if(!modifiedTokens.contains(n)){
+							resultTokensMap.put(token.id(), token);
+							modifiedTokens.remove(token);
+							break;
+						}						
+					}
+				}
+			}
+			
+		}
+
+		private void prepare(List<IToken> tokens) {
+			
+			clean();			
+			
+			this.original = null;
+			TokenIdProvider tip = new TokenIdProvider();			
+			tip.prepare(tokens);
+			tip.block();
+			
 			for(ParserData pd : this.parserDataList){
+				pd.setTokenIdProvider(tip);
 				pd.setFinished(false);
 			}
 		}
 
-		private void resolveConflicts() {
+		protected void clean() {
+			this.map.clear();
+			this.cancelledProducedTokens.clear();
+			this.modifiedTokens.clear();
+		}
+
+		protected void resolveConflicts() {
 			
 			for(IToken t : original){
 				
@@ -316,7 +410,7 @@ public class ParserComposition2 extends ParserComposition {
 			
 		}
 
-		private void resolveConflict(List<TokenModificationData> dataList) {
+		protected void resolveConflict(List<TokenModificationData> dataList) {
 			
 			List<TokenModificationData> enriched = new ArrayList<TokenModificationData>();
 			for(TokenModificationData tmd : dataList){
@@ -330,7 +424,7 @@ public class ParserComposition2 extends ParserComposition {
 			else{
 				for(TokenModificationData tmd : dataList){
 					if(!tmd.isEnriched()){
-						tmd.setCanceled(true);
+						tmd.setCanceled(true,-1);
 					}
 				}
 				if(enriched.size()>1){
@@ -340,9 +434,10 @@ public class ParserComposition2 extends ParserComposition {
 			
 		}
 
-		private void resolveConflictPrecisely(List<TokenModificationData> dataList) {
+		protected void resolveConflictPrecisely(List<TokenModificationData> dataList) {
+			int validParserId = dataList.get(0).getParserId();
 			for(int i = 2 ; i < dataList.size() ; i++){
-				dataList.get(i).setCanceled(true);
+				dataList.get(i).setCanceled(true, validParserId);
 			}
 		}
 

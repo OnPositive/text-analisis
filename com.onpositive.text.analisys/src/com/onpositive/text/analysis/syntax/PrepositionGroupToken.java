@@ -17,7 +17,7 @@ public class PrepositionGroupToken extends SyntaxToken {
 	}
 
 	public PrepositionGroupToken(SyntaxToken prepToken, SyntaxToken word, int startPosition, int endPosition) {
-		super(IToken.TOKEN_TYPE_PREPOSITION_GROUP, prepToken, null, startPosition, endPosition);
+		super(IToken.TOKEN_TYPE_PREPOSITION_GROUP, word, null, startPosition, endPosition);
 		this.prepToken = prepToken;
 		this.word = word;
 	}

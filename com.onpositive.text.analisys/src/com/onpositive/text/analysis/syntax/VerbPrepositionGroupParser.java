@@ -11,9 +11,9 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
-public abstract class VerbGroupParser extends AbstractSyntaxParser {
+public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {
 
-	public VerbGroupParser(AbstractWordNet wordNet) {
+	public VerbPrepositionGroupParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
 
@@ -36,7 +36,7 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
-		if (sample.size() < 2) {
+		if (sample.size() < 3) {
 			return;
 		}
 	
@@ -97,8 +97,19 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	}
 
 	private SyntaxToken[] extractMainTokens(Stack<IToken> sample) {
-		if(sample.size()==2){
-			return fillMainTokenArray(sample.get(0),sample.get(1),new SyntaxToken[2]); 
+		if(prepMatch.match(sample.get(0))){
+			SyntaxToken[] result = fillMainTokenArray(sample.get(1),sample.get(2),new SyntaxToken[3]);
+			if(result!=null){
+				result[2]=(SyntaxToken) sample.get(0);
+			}
+			return result;
+		}
+		else if(prepMatch.match(sample.get(1))){
+			SyntaxToken[] result = fillMainTokenArray(sample.get(0),sample.get(2),new SyntaxToken[3]);
+			if(result!=null){
+				result[2]=(SyntaxToken) sample.get(1);
+			}				
+			return result;
 		}
 		return null;
 	}
@@ -129,17 +140,23 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
-		if(prepMatch.match(newToken)){			
+		IToken last = sample.peek();
+		if(prepMatch.match(newToken)){
+			int size = sample.size();
+			if(size>1){
+				return DO_NOT_ACCEPT_AND_BREAK;
+			}
+			if(checkVerb(last)||last.getType() == IToken.TOKEN_TYPE_CLAUSE){
+				return CONTINUE_PUSH;
+			}
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
-		
-		IToken last = sample.peek();
 		if((checkVerb(newToken)||(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE))&&checkAdditionalToken(last)){
-			return ACCEPT_AND_BREAK;
+			return sample.size() == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
 		}
-		if(checkAdditionalToken(newToken)&&(checkVerb(last)||last.getType()==IToken.TOKEN_TYPE_CLAUSE)){
 
-			return ACCEPT_AND_BREAK;
+		if(checkAdditionalToken(newToken)&&prepMatch.match(last)){
+			return sample.size() == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
@@ -151,10 +168,10 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
 		
-		if(prepMatch.match(newToken)){			
-			return DO_NOT_ACCEPT_AND_BREAK;
+		if(prepMatch.match(newToken)){
+			return CONTINUE_PUSH;
 		}
-		if (checkVerb(newToken)||checkAdditionalToken(newToken)) {
+		if (checkVerb(newToken)) {
 			return CONTINUE_PUSH;
 		}
 		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){

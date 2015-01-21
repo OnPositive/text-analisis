@@ -4,24 +4,26 @@ import java.util.List;
 
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 
-public class ParserComposition {
+public class ParserComposition implements IParser {
 
-	public ParserComposition(AbstractParser... parsers) {
+	public ParserComposition(IParser... parsers) {
 		super();
 		this.parsers = parsers;
 	}
 	
-	public ParserComposition(boolean isGloballyRecursive, AbstractParser... parsers) {
+	public ParserComposition(boolean isGloballyRecursive, IParser... parsers) {
 		super();
 		this.parsers = parsers;
 		this.isGloballyRecursive = isGloballyRecursive;
 	}
 
-	protected AbstractParser[]parsers;
+	protected IParser[]parsers;
 	
 	private PrimitiveTokenizer tokenizer=new PrimitiveTokenizer();
 	
 	private boolean isGloballyRecursive = false;
+	
+	private String text;	
 	
 	public PrimitiveTokenizer getTokenizer() {
 		return tokenizer;
@@ -39,9 +41,16 @@ public class ParserComposition {
 	}
 
 	public void setText(String str) {
-		for (AbstractParser p:parsers){
+		this.text = str;
+		for (IParser p:parsers){
 			p.setText(str);			
 		}
+	}
+	
+
+	@Override
+	public String getText() {
+		return text;
 	}
 
 	public List<IToken> process(List<IToken> tokens) {
@@ -52,7 +61,7 @@ public class ParserComposition {
 		while(globalTriggered){
 			
 			globalTriggered = false;
-			for (AbstractParser parser : parsers){
+			for (IParser parser : parsers){
 				do{
 					tokens = applyParser(tokens, parser);
 					localTriggered = parser.hasTriggered();
@@ -67,9 +76,47 @@ public class ParserComposition {
 		return tokens;
 	}
 	
-	private final List<IToken> applyParser(List<IToken> tokens,	AbstractParser parser) {
+	private final List<IToken> applyParser(List<IToken> tokens,	IParser parser) {
 		parser.resetTrigger();
 		List<IToken> result = parser.process(tokens);
 		return result;
 	}
+
+	@Override
+	public void resetTrigger() {
+		for(IParser p : parsers){
+			p.resetTrigger();
+		}		
+	}
+
+	@Override
+	public boolean hasTriggered() {
+		for(IParser p : parsers){
+			if(p.hasTriggered()){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isRecursive() {
+		return isGloballyRecursive;
+	}
+
+	@Override
+	public void setHandleBounds(boolean handleBounds) {}
+
+	@Override
+	public List<IToken> getNewTokens() {
+		return null;
+	}
+
+	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
+	}
+
+	public TokenIdProvider getTokenIdProvider() {
+		return null;
+	}
+
 }

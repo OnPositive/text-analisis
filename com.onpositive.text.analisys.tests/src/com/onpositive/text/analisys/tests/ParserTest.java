@@ -8,8 +8,8 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
+import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.lexic.DateToken;
@@ -29,7 +29,7 @@ public class ParserTest extends TestCase {
 	protected ParserComposition composition;
 	
 
-	protected void setParsers(AbstractParser... parsers){
+	protected void setParsers(IParser... parsers){
 		if(parsers==null||parsers.length==0){
 			return;
 		}

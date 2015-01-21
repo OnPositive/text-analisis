@@ -29,15 +29,9 @@ public class NounNamePrepositionParser extends AbstractSyntaxParser {
 		return nounMatch.match(token);
 	}
 	
-	protected boolean acceptsPreposition(){
-		return false;
-	};
-	
-	protected boolean requiresPreposition(){
-		return false;
-	};
-	
 	protected static final UnaryMatcher<SyntaxToken> nameMatch = hasAny( PartOfSpeech.NOUN, PartOfSpeech.ADJF );
+	
+	private static final UnaryMatcher<SyntaxToken> matcher = hasAny(PartOfSpeech.ADJF,PartOfSpeech.NOUN,PartOfSpeech.ADVB);
 	
 	@Override
 	public boolean isRecursive() {
@@ -51,28 +45,19 @@ public class NounNamePrepositionParser extends AbstractSyntaxParser {
 			return;
 		}
 		
-		if(checkParents(null, sample)){
+		if(!checkParents(null, sample)){
 			return;
 		}
 		
-		IToken token0 = sample.get(0);
-		SyntaxToken mainToken = (SyntaxToken) (prepMatch.match(token0) ? sample.get(2) : token0);
-		ClauseToken clauseToken = null;
-		if(mainToken instanceof ClauseToken){
-			clauseToken = (ClauseToken) mainToken;
-			mainToken = clauseToken.getSubject();
-		}
+		SyntaxToken token0 = (SyntaxToken) sample.get(0);
+		IToken token2 = sample.peek();
+
+		int startPosition = token0.getStartPosition();		
+		int endPosition = token2.getEndPosition();
 		
-		int startPosition = token0.getStartPosition();
-		int endPosition = sample.peek().getEndPosition();
-			
-		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_NOUN_NAME_PREP, mainToken, null, startPosition, endPosition, true);
+		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_NOUN_NAME_PREP, (SyntaxToken) token0, null, startPosition, endPosition, true);
 	
-		if(clauseToken!=null){
-			newToken.addChildren(sample);
-			clauseToken.setSubject(newToken);
-		}
-		else if (checkParents(newToken, sample)) {
+		if (checkParents(newToken, sample)) {
 			processingData.addReliableToken(newToken);
 		}
 	}
@@ -80,68 +65,12 @@ public class NounNamePrepositionParser extends AbstractSyntaxParser {
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
-		IToken last = sample.peek();
-		if(prepMatch.match(newToken)){
-			if(sample.size()>1){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			if(prepMatch.match(last)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			if(!nounMatch.match(last)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
+		int size = sample.size();
+		if(prepMatch.match(newToken)&&size==1){
 			return CONTINUE_PUSH;
 		}
-		if(checkName(newToken)){
-			if(sample.size()<2){
-				return CONTINUE_PUSH;
-			}
-			boolean gotNoun = nounMatch.match(newToken);
-			boolean gotPrep = false;
-			int prepInd = 0 ;
-			for(int i = 0 ; i < sample.size() ; i++){
-				IToken t = sample.get(i);
-				gotNoun|=(nounMatch.match(t)||t instanceof ClauseToken);
-				if(prepMatch.match(t)){
-					gotPrep = true;
-					prepInd = i;
-				}
-			}
-			if(!(gotPrep&&gotNoun)){
-				return DO_NOT_ACCEPT_AND_BREAK;				
-			}
-			SyntaxToken prepToken = (SyntaxToken)sample.get(prepInd);
-			SyntaxToken nameToken = (SyntaxToken) (prepInd == 0 ? sample.get(1) : newToken);
-			UnaryMatcher<SyntaxToken> prepCaseMatcher
-				= getPrepConjRegistry().getPrepCaseMatcher(prepToken.getBasicForm());
-			
-			if(!prepCaseMatcher.match(nameToken)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			return ACCEPT_AND_BREAK;			
-		}
-		if(newToken instanceof ClauseToken){
-			
-			if(sample.size()<2){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-
-			SyntaxToken prepToken = (SyntaxToken)sample.get(0);
-			SyntaxToken nameToken = (SyntaxToken)sample.get(1);
-			if(!prepMatch.match(prepToken)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			if(!checkName(nameToken)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			UnaryMatcher<SyntaxToken> prepCaseMatcher
-				= getPrepConjRegistry().getPrepCaseMatcher(prepToken.getBasicForm());
-			
-			if(!prepCaseMatcher.match(nameToken)){
-				return DO_NOT_ACCEPT_AND_BREAK;
-			}
-			return ACCEPT_AND_BREAK;			
+		else if(matcher.match(newToken)&&size==2){
+			return ACCEPT_AND_BREAK;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
@@ -152,14 +81,11 @@ public class NounNamePrepositionParser extends AbstractSyntaxParser {
 
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
-		if (checkName(newToken)) {
-			return CONTINUE_PUSH;
-		}
-		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
-			return CONTINUE_PUSH;
-		}
 		if(prepMatch.match(newToken)){
-			return DO_NOT_ACCEPT_AND_BREAK;//CONTINUE_PUSH;
+			return DO_NOT_ACCEPT_AND_BREAK;
+		}
+		if (checkNoun(newToken)) {
+			return CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}

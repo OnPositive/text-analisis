@@ -1,32 +1,29 @@
 package com.onpositive.text.analysis.syntax;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
-public class VerbNamePrepositionParser extends VerbGroupParser {
+public class VerbNamePrepositionParser extends VerbPrepositionGroupParser {
 	
 
 	public VerbNamePrepositionParser(AbstractWordNet wordNet) {
 		super(wordNet);
 	}
+	
+	private static final UnaryMatcher<SyntaxToken> matcher = hasAny(PartOfSpeech.ADJF,PartOfSpeech.NOUN,PartOfSpeech.ADVB);
 
 	@Override
 	protected int getType(SyntaxToken token) {
 		
-		if(!(token instanceof PrepositionGroupToken)){
-			return -1;
-		}
-		
-		PrepositionGroupToken prepToken = (PrepositionGroupToken) token;
-		SyntaxToken word = prepToken.getWord();
-		
-		if(nounMatch.match(word)){
+		if(nounMatch.match(token)){
 			return IToken.TOKEN_TYPE_VERB_NOUN_PREP;
 		}
-		else if(adjectiveMatch.match(word)){
+		else if(adjectiveMatch.match(token)){
 			return IToken.TOKEN_TYPE_VERB_ADJECTIVE_PREP;
 		}
-		else if(adverbMatch.match(word)){
+		else if(adverbMatch.match(token)){
 			return IToken.TOKEN_TYPE_VERB_ADVERB_PREP;
 		}
 		return -1;
@@ -34,7 +31,7 @@ public class VerbNamePrepositionParser extends VerbGroupParser {
 
 	@Override
 	protected boolean checkAdditionalToken(IToken token) {		
-		boolean result = token.getType() == IToken.TOKEN_TYPE_PREPOSITION_GROUP;
+		boolean result = matcher.match(token);
 		return result;
 	}
 

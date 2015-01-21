@@ -107,7 +107,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		}
 	}
 	
-	protected static boolean checkParents(IToken newToken, List<IToken> children) {
+	protected boolean checkParents(IToken newToken, List<IToken> children) {
 		int startPosition = newToken==null? children.get(0).getStartPosition() : newToken.getStartPosition();
 		int endPosition = newToken==null? children.get(children.size()-1).getEndPosition() : newToken.getEndPosition();
 		
@@ -129,7 +129,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 			if(ch.getEndPosition()>endPosition){
 				break;
 			}
-			List<IToken> parents = ch.getParents();
+			
+			List<IToken> parents = collectParents(ch);
 			if(parents==null){
 				continue;
 			}
@@ -154,6 +155,20 @@ l0:			for(IToken parent: parents){
 			}
 		}
 		return true;
+	}
+
+	protected List<IToken> collectParents(IToken ch) {
+		List<IToken> parents = ch.getParents();
+		Set<IToken> newParents = parentsMap.get(ch.id());
+		if(parents!=null || newParents!=null){
+			if(parents==null){
+				parents = new ArrayList<IToken>();
+			}
+			if(newParents!=null){
+				parents.addAll(newParents);
+			}
+		}
+		return parents;
 	}
 	
 	protected static SyntaxToken combineNames(SyntaxToken mainGroup, SyntaxToken token, int tokenType )
@@ -267,8 +282,8 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	}
 
 	protected boolean checkIfAlreadyProcessed(SyntaxToken token0, SyntaxToken token1) {
-		List<IToken> parents1 = token1.getParents();
-		List<IToken> parents0 = token0.getParents();
+		List<IToken> parents1 = collectParents(token1);
+		List<IToken> parents0 = collectParents(token0);
 		if((parents1!=null&&!parents1.isEmpty())&&(parents0!=null&&!parents0.isEmpty())){
 			for(IToken parent : parents0){
 				if(parents1.contains(parent)){
