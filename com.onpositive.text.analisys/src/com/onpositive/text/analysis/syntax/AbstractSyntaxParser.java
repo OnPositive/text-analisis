@@ -282,18 +282,35 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return matchGrammem(set0, set1, caseMatchMap);
 	}
 
-	protected boolean checkIfAlreadyProcessed(SyntaxToken token0, SyntaxToken token1) {
-		List<IToken> parents1 = collectParents(token1);
-		List<IToken> parents0 = collectParents(token0);
-		if((parents1!=null&&!parents1.isEmpty())&&(parents0!=null&&!parents0.isEmpty())){
-			for(IToken parent : parents0){
-				if(parents1.contains(parent)){
-					return true;
+	protected boolean checkIfAlreadyProcessed(SyntaxToken... tokens) {
+		
+		if(tokens==null||tokens.length<2){
+			return false;
+		}
+		List<IToken> commonParents = collectParents(tokens[0]);
+		if(commonParents==null||commonParents.isEmpty()){
+			return false;
+		}
+		for(int i = 1 ; i < tokens.length ; i++){
+			List<IToken> parents = collectParents(tokens[i]);
+			if(parents==null||parents.isEmpty()){
+				return false;
+			}
+			List<IToken> toRemove = new ArrayList<IToken>();
+			for(IToken t : commonParents){
+				if(!parents.contains(t)){
+					toRemove.add(t);
 				}
 			}
+			commonParents.retainAll(toRemove);
+			if(commonParents.isEmpty()){
+				break;
+			}
 		}
-		return false;
+		boolean result = !commonParents.isEmpty();
+		return result;
 	}
+
 
 	protected boolean isContained(IToken token0, IToken token1) {
 		int sp0 = token0.getStartPosition();

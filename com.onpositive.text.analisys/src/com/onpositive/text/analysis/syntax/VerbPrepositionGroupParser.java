@@ -45,7 +45,7 @@ public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {
 			return;
 		}
 		
-		if (checkIfAlreadyProcessed(orderedTokens[0], orderedTokens[1])) {
+		if (checkIfAlreadyProcessed(orderedTokens[0], orderedTokens[1], orderedTokens[2])) {
 			return;
 		}
 		if(isContained(orderedTokens[0], orderedTokens[1])){
@@ -141,8 +141,8 @@ public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		
 		IToken last = sample.peek();
-		if(prepMatch.match(newToken)){
-			int size = sample.size();
+		int size = sample.size();
+		if(prepMatch.match(newToken)){			
 			if(size>1){
 				return DO_NOT_ACCEPT_AND_BREAK;
 			}
@@ -152,11 +152,11 @@ public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		if((checkVerb(newToken)||(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE))&&checkAdditionalToken(last)){
-			return sample.size() == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
+			return size == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
 		}
 
 		if(checkAdditionalToken(newToken)&&prepMatch.match(last)){
-			return sample.size() == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
+			return size == 2 ? ACCEPT_AND_BREAK : CONTINUE_PUSH;
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}

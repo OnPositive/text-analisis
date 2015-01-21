@@ -616,16 +616,29 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint(
 			"CLAUSE("
-				+ "<subject>GENITIVE_CHAIN("
-					+ "<main>NOUN_ADJECTIVE("
-						+ "WORD_FORM новый([кач, ПРИЛ])"
-						+ "<main>WORD_FORM граница([жр, СУЩ, неод])  )"
-					+ "WORD_FORM москва([sg, жр, СУЩ, гео, неод])  )"
+		        + "<subject>NOUN_NAME_PREP("
+			        + "<main>NOUN_ADJECTIVE("
+				        + "UNIFORM_ADJECTIVE("
+					        + "WORD_FORM новый([кач, ПРИЛ])"
+					        + "SYMBOL ,"
+					        + "<main>WORD_FORM советский([ПРИЛ])  )"
+				        + "<main>WORD_FORM эпоха([жр, СУЩ, неод])  )"
+			        + "WORD_FORM в([ПР])"
+			        + "GENITIVE_CHAIN("
+				        + "<main>WORD_FORM развитие([СУЩ, ср, неод])"
+				        + "WORD_FORM город([мр, СУЩ, неод])  )  )"
 		        + "<predicate>VERB_NOUN_PREP("
-			        + "PREPOSITION_GROUP("
-				        + "<preposition>WORD_FORM в([ПР])"
-				        + "DATE 1960.0 год([мр, СУЩ, неод])  )" 
-			        + "<main>WORD_FORM сформировался([сов, ГЛ, неперех])  )  )", processed);
+			        + "WORD_FORM с([ПР])"
+			        + "NOUN_NAME_PREP("
+				        + "<main>GENITIVE_CHAIN("
+					        + "<main>WORD_FORM победа([жр, СУЩ, неод])"
+					        + "WORD_FORM большевик([мр, од, СУЩ])  )"
+					    + "WORD_FORM в([ПР])"
+					    + "DATE 1920.0 год([мр, СУЩ, неод])   )"
+					+ "<main>VERB_NOUN_PREP("
+				        + "WORD_FORM в([ПР])"
+				        + "WORD_FORM война([жр, СУЩ, неод])"
+				        + "<main>WORD_FORM начался([сов, ГЛ, неперех])  )  )  )", processed);
 	}
 	
 
