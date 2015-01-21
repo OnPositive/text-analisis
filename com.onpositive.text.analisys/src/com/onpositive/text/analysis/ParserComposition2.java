@@ -399,7 +399,7 @@ public class ParserComposition2 extends ParserComposition {
 
 		protected void resolveConflicts() {
 			
-			for(IToken t : original){
+			for(IToken t : currentTokensArray){
 				
 				List<TokenModificationData> dataList = map.get(t.id());
 				if(dataList==null||dataList.size()<2){

@@ -84,6 +84,9 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			int startPosition = token0.getStartPosition();
 			int endPosition = token1.getEndPosition();
 			SyntaxToken newToken = new SyntaxToken(type, mainGroup, null, startPosition, endPosition);
+			if(!checkParents(newToken, sample)){
+				return;
+			}
 			processingData.addDoubtfulToken(newToken);
 		}
 		else{

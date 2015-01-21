@@ -457,18 +457,16 @@ public class SyntaxParsersTest extends ParserTest{
 			"CLAUSE("
 				+ "<subject>WORD_FORM учёный([мр, од, СУЩ])"
 		        + "<predicate>VERB_NOUN_PREP("
-			        + "<main>VERB_NOUN_PREP("
-				        + "<main>WORD_FORM узнал([сов, ГЛ, перех])"
-				        	+ "PREPOSITION_GROUP("
-					        	+ "<preposition>WORD_FORM о([ПР])"
-					        	+ "GENITIVE_CHAIN("
-					        		+ "<main>WORD_FORM влияние([СУЩ, ср, неод])"
-							        + "WORD_FORM палец([мр, СУЩ, неод])"
-									+ "WORD_FORM владелец([мр, од, СУЩ])"
-									+ "WORD_FORM смартфон([мр, СУЩ, неод])  )  )  )"
-				        + "PREPOSITION_GROUP("
-					       + "<preposition>WORD_FORM на([ПР])"
-					        + "WORD_FORM мозг([мр, СУЩ, неод])  )  )  )", processed);
+			        + "<main>WORD_FORM узнал([сов, ГЛ, перех])"
+			        + "WORD_FORM о([ПР])"
+			        + "NOUN_NAME_PREP("
+				        + "<main>GENITIVE_CHAIN("
+					        + "<main>WORD_FORM влияние([СУЩ, ср, неод])"
+					        + "WORD_FORM палец([мр, СУЩ, неод])"
+					        + "WORD_FORM владелец([мр, од, СУЩ])"
+					        + "WORD_FORM смартфон([мр, СУЩ, неод])  )"
+				        + "WORD_FORM на([ПР])"
+				        + "WORD_FORM мозг([мр, СУЩ, неод])  )  )  )", processed);
 	}
 	
 	public void test030(){
