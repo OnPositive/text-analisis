@@ -64,9 +64,11 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		else{
 			predToken = orderedTokens[0];
 		}	
-		int subjType = getType(orderedTokens[1]);
+		int objType = getType(orderedTokens[1]);
+		
+		boolean isDoubtful = isDoubtful(orderedTokens);
 			
-		SyntaxToken newToken = new SyntaxToken(subjType, predToken, null, startPosition, endPosition, true);
+		SyntaxToken newToken = new SyntaxToken(objType, predToken, null, startPosition, endPosition,isDoubtful);
 	
 		if(clauseToken!=null){
 //			boolean doSet = false;
@@ -92,8 +94,17 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 //			}
 		}
 		else if (checkParents(newToken, sample)) {
-			processingData.addReliableToken(newToken);
+			if(isDoubtful){
+				processingData.addDoubtfulToken(newToken);
+			}
+			else{
+				processingData.addReliableToken(newToken);
+			}
 		}
+	}
+
+	protected boolean isDoubtful(SyntaxToken[] orderedTokens) {
+		return false;
 	}
 
 	private SyntaxToken[] extractMainTokens(Stack<IToken> sample) {

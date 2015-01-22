@@ -222,14 +222,16 @@ public class ParserTest extends TestCase {
 		return result;
 	}
 	
-	protected static void assertTestTokenPrint(String print, List<IToken> tokens){
-		String str = print.replaceAll("(\\s|\\,)", "");
+	protected static void assertTestTokenPrint(List<IToken> tokens, String... print){
 		boolean gotPrint = false;
-		for(IToken token : tokens){
-			String s1 = printToken(token,0).replaceAll("(\\s|\\,)", "");
-			if(str.equals(s1)){
-				gotPrint = true;
-				break;
+l0:		for(String s : print){
+			String str = s.replaceAll("(\\s|\\,)", "");			
+			for(IToken token : tokens){
+				String s1 = printToken(token,0).replaceAll("(\\s|\\,)", "");
+				if(str.equals(s1)){
+					gotPrint = true;
+					break l0;
+				}
 			}
 		}
 		TestCase.assertTrue(gotPrint);

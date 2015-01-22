@@ -291,8 +291,10 @@ public class ParserComposition2 extends ParserComposition {
 					}
 					else{
 						newTokensMap.put(id,token);
-						List<IToken> children = token.getChildren();						
-						modifiedTokens.addAll(children);
+						//if(!token.isDoubtful()){
+							List<IToken> children = token.getChildren();						
+							modifiedTokens.addAll(children);
+						//}
 					}
 				}
 			}

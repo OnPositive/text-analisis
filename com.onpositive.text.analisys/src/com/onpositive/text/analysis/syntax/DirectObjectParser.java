@@ -9,7 +9,7 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public class DirectObjectParser extends VerbGroupParser {
 
-	
+	private static final UnaryMatcher<SyntaxToken> nomnCaseMatcher = hasAny(Case.NOMN);
 
 
 	public DirectObjectParser(AbstractWordNet wordNet) {
@@ -49,5 +49,12 @@ public class DirectObjectParser extends VerbGroupParser {
 		int subjType = infnMatch.match(objToken) ? IToken.TOKEN_TYPE_DIRECT_OBJECT_INF
 				: IToken.TOKEN_TYPE_DIRECT_OBJECT_NAME;
 		return subjType;
+	}
+	
+	@Override
+	protected boolean isDoubtful(SyntaxToken[] orderedTokens) {		
+		SyntaxToken objToken = orderedTokens[1];
+		boolean result = nomnCaseMatcher.match(objToken);
+		return result;
 	}
 }

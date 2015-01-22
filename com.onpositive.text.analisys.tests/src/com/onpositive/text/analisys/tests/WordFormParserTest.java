@@ -29,7 +29,7 @@ public class WordFormParserTest extends TestCase{
 		
 		String str = "Сработал автоматический определитель номера. Чудовище село на ковёр-самолёт и полетело.";		
 		List<IToken> tokens = pt.tokenize(str);		
-		ArrayList<IToken> processed = wfParser.process(tokens);
+		List<IToken> processed = wfParser.process(tokens);
 		
 		for(IToken t : processed){
 			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
