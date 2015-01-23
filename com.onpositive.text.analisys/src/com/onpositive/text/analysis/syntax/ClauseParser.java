@@ -62,17 +62,14 @@ public class ClauseParser extends AbstractSyntaxParser{
 	protected int computeEndPoosition(SyntaxToken token) {
 		
 		int endPosition = token.getEndPosition();
-		
-		List<IToken> children = token.getChildren();
-		IToken last = children.get(children.size()-1);
-		IToken next = last.getNext();
+		IToken next = token.getNext();
 		if(next!=null){
 			if(next.getType()==IToken.TOKEN_TYPE_SYMBOL&&next.getStringValue().equals(".")){
 				endPosition = next.getEndPosition();
 			}
 		}
 		else{
-			List<IToken> nextTokens = last.getNextTokens();
+			List<IToken> nextTokens = token.getNextTokens();
 			if(nextTokens!=null){
 				for(IToken n : nextTokens){
 					if(n.getType()==IToken.TOKEN_TYPE_SYMBOL&&n.getStringValue().equals(".")){

@@ -3,8 +3,6 @@ package com.onpositive.text.analysis;
 import java.util.Collection;
 import java.util.List;
 
-import com.onpositive.text.analysis.syntax.SyntaxToken;
-
 public interface IToken {
 	
 	public static enum Direction{
@@ -13,6 +11,14 @@ public interface IToken {
 		
 		public Direction opposite(){
 			return this == START ? END : START;
+		}
+		
+		public boolean isBeyondMyBound(int myBound, int other){
+			return this == START ? myBound >= other : myBound <= other;
+		}
+		
+		public int absolutBound(){
+			return this == START ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		}
 	}
 	
@@ -70,6 +76,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11022;
 	
+	static final int TOKEN_TYPE_NOUN_PARTICIPLE = 11023;
+	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
 	static final int TOKEN_TYPE_ADVERB_WITH_MODIFICATOR = 11041;
@@ -103,6 +111,8 @@ public interface IToken {
 	int getStartPosition();
 	
 	int getEndPosition();
+	
+	int getBoundPosition(Direction dir);
 	
 	int getLength();
 	
@@ -164,6 +174,10 @@ public interface IToken {
 	
 	int childrenCount();
 	
-	void replaceChild(SyntaxToken oldChild, SyntaxToken newChild);
+	void replaceChild(IToken token, IToken newToken);
+
+	void adjustStartPosition(int startPosition);
+
+	void adjustEndPosition(int endPosition);
 
 }

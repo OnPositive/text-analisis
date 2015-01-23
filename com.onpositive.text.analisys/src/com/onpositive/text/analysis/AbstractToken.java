@@ -84,6 +84,19 @@ public abstract class AbstractToken implements IToken {
 	public int getEndPosition() {
 		return endPosition;
 	}
+	
+	@Override
+	public int getBoundPosition(Direction dir) {
+		if(dir == null){
+			throw new RuntimeException("Bound position for 'null' direction is undefined");
+		}
+		if(dir == Direction.END){
+			return getEndPosition();
+		}
+		else {
+			return getStartPosition();
+		}
+	}
 
 	public int getLength() {
 		return endPosition - startPosition;
@@ -336,7 +349,7 @@ public abstract class AbstractToken implements IToken {
 	
 
 
-	public void replaceChild(SyntaxToken oldChild, SyntaxToken newChild) {
+	public void replaceChild(IToken oldChild, IToken newChild) {
 		
 		int ind = children.indexOf(oldChild);
 		children.set(ind, newChild);
@@ -350,6 +363,16 @@ public abstract class AbstractToken implements IToken {
 		if(ep>this.getEndPosition()){
 			this.setEndPosition(ep);
 		}
+	}
+	
+	@Override
+	public void adjustStartPosition(int startPosition) {
+		this.startPosition = Math.min(startPosition, this.startPosition);
+	}
+	
+	@Override
+	public void adjustEndPosition(int endPosition) {
+		this.endPosition = Math.max(endPosition, this.endPosition);		
 	}
 
 	@Override

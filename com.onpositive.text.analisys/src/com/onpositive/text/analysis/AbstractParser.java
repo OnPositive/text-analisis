@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.text.analysis.IToken.Direction;
 
 public abstract class AbstractParser implements IParser {
@@ -28,7 +29,7 @@ public abstract class AbstractParser implements IParser {
 		
 		private Set<IToken> reliableTokens = new LinkedHashSet<IToken>();
 		
-		private Set<IToken> doubtfulTokens = new LinkedHashSet<IToken>();
+		private Set<IToken> doubtfulTokens = new LinkedHashSet<IToken>();		
 		
 		private boolean stop;
 		
@@ -149,6 +150,34 @@ public abstract class AbstractParser implements IParser {
 	protected static final ProcessingResult ACCEPT_AND_BREAK = new ProcessingResult(0,true,true);
 	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(0,false,true);
 	
+	private List<IToken> baseTokens;
+	
+	private IntOpenHashSet baseTokenIDs;
+
+	public IntOpenHashSet getBaseTokenIDs() {
+		return baseTokenIDs;
+	}
+
+	public List<IToken> getBaseTokens() {
+		return baseTokens;
+	}
+
+	public void setBaseTokens(List<IToken> baseTokens) {
+		this.baseTokens = baseTokens;
+		if(this.baseTokens!=null){
+			if(this.baseTokenIDs==null){
+				this.baseTokenIDs = new IntOpenHashSet();
+			}
+			baseTokenIDs.clear();
+			for(IToken t : baseTokens){
+				baseTokenIDs.add(t.id());
+			}
+		}
+		else{
+			baseTokenIDs = null;
+		}
+	}
+
 	protected static ProcessingResult stepBack(int count){
 		return new ProcessingResult(count,false,true);
 	}

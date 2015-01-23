@@ -23,7 +23,10 @@ public interface IParser {
 	void setTokenIdProvider(TokenIdProvider tokenIdProvider);
 
 	TokenIdProvider getTokenIdProvider();
-
+	
+	List<IToken> getBaseTokens();
+	
+	void setBaseTokens(List<IToken> baseTokens);
 
 	public class TokenIdProvider{
 		

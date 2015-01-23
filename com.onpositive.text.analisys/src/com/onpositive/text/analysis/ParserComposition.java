@@ -23,7 +23,20 @@ public class ParserComposition implements IParser {
 	
 	private boolean isGloballyRecursive = false;
 	
-	private String text;	
+	private String text;
+	
+	public List<IToken> getBaseTokens() {
+		if(parsers==null||parsers.length==0){
+			return null;
+		}
+		return parsers[0].getBaseTokens();		
+	}
+
+	public void setBaseTokens(List<IToken> baseTokens) {
+		for(IParser p : parsers){
+			p.setBaseTokens(baseTokens);
+		}
+	}
 	
 	public PrimitiveTokenizer getTokenizer() {
 		return tokenizer;

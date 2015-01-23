@@ -59,6 +59,10 @@ public class SyntaxParser extends ParserComposition {
 		VerbNameComposition.class
 	};
 	
+	private static final Class<?>[] participleParserArray = new Class<?>[]{
+		ParticipleAttachingParser.class
+	};
+	
 	public SyntaxParser(AbstractWordNet wordnet) {
 		super();
 		this.wordNet = wordnet;
@@ -75,6 +79,8 @@ public class SyntaxParser extends ParserComposition {
 	
 	private ParserComposition verbGroupSyntaxParsers;
 	
+	private ParserComposition participleParsers;
+	
 	private ClauseParser clauseParser;
 	
 	private IncompleteClauseParser incompleteClauseParser;
@@ -82,6 +88,8 @@ public class SyntaxParser extends ParserComposition {
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
 	private SentenceSplitter sentenceSplitter = new SentenceSplitter();
+	
+	private ArrayList<IParser> syntaxParsers;
 	
 	
 	public List<IToken> parse(String str){
@@ -92,10 +100,14 @@ public class SyntaxParser extends ParserComposition {
 		
 		for(IToken sentence : sentences){
 			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());
+			for(IParser p : syntaxParsers){
+				p.setBaseTokens(initialTokens);
+			}
 			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
 			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
 			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
-			List<IToken> clausesFormed = clauseParser.process(verbsProcessed1);			
+			List<IToken> participlesProcessed = participleParsers.process(verbsProcessed1);
+			List<IToken> clausesFormed = clauseParser.process(participlesProcessed);			
 			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
 			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
 			List<IToken> incompleteClausesFormed = incompleteClauseParser.process(verbsProcessed2);
@@ -120,8 +132,17 @@ public class SyntaxParser extends ParserComposition {
 		this.verbGroupSyntaxParsers = createParsers(verbGroupSyntaxParsersArray,true);
 		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
 		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, true);
+		this.participleParsers = createParsers(participleParserArray, false);
 		this.clauseParser = new ClauseParser(this.wordNet);
 		this.incompleteClauseParser = new IncompleteClauseParser(this.wordNet);
+		this.syntaxParsers = new ArrayList<IParser>();
+		
+		this.syntaxParsers.add(nameSyntaxParsers);
+		this.syntaxParsers.add(nameRecursiveSyntaxParsers);
+		this.syntaxParsers.add(verbGroupSyntaxParsers);
+		this.syntaxParsers.add(clauseParser);
+		this.syntaxParsers.add(incompleteClauseParser);
+		this.syntaxParsers.add(participleParsers);
 	}
 
 	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {

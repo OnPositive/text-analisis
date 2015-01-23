@@ -50,6 +50,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	protected static final UnaryMatcher<SyntaxToken> nounMatch = hasAny(PartOfSpeech.NOUN);
 	
 	protected static final UnaryMatcher<SyntaxToken> adverbMatch = hasAny(PartOfSpeech.ADVB);
+	
+	protected static final UnaryMatcher<SyntaxToken> participleMatch = hasAny(PartOfSpeech.PRTF);
 
 	public AbstractSyntaxParser(AbstractWordNet wordNet) {
 		super();
