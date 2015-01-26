@@ -30,6 +30,9 @@ public class SyntaxTokenAttacher extends TokenAttacher {
 			for(int i  = 0 ; i < list.size() ; i++){
 				SyntaxToken t = list.get(i);
 				List<IToken> parents = t.getParents();
+				if(parents==null){
+					continue;
+				}
 				for(IToken p : parents){
 					if(p instanceof ClauseToken){
 						set.add(new AttachmentPlace(p, t));
