@@ -53,6 +53,11 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	
 	protected static final UnaryMatcher<SyntaxToken> participleMatch = hasAny(PartOfSpeech.PRTF);
 
+	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
+
+	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
+				PartOfSpeech.VERB, PartOfSpeech.INFN, PartOfSpeech.PRTF, PartOfSpeech.PRTS, PartOfSpeech.GRND);
+
 	public AbstractSyntaxParser(AbstractWordNet wordNet) {
 		super();
 		this.wordNet = wordNet;
@@ -384,6 +389,30 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return conj!=null || prep != null;
 	}
 	
+	protected MeaningElement getPreposition(IToken newToken){
+		if(!(newToken instanceof SyntaxToken)){
+			return null;
+		}
+		String basicForm = ((SyntaxToken) newToken).getBasicForm();
+		if(basicForm==null){
+			return null;
+		}
+		MeaningElement prep = getPrepConjRegistry().getPreposition(basicForm);
+		return prep;
+	}
+	
+	protected MeaningElement getConjugation(IToken newToken){
+		if(!(newToken instanceof SyntaxToken)){
+			return null;
+		}
+		String basicForm = ((SyntaxToken) newToken).getBasicForm();
+		if(basicForm==null){
+			return null;
+		}
+		MeaningElement conj = getPrepConjRegistry().getConjunction(basicForm);
+		return conj;
+	}
+	
 	protected PrepConjRegistry getPrepConjRegistry() {
 		if(prepConjRegistry==null){
 			prepConjRegistry = new PrepConjRegistry(wordNet);
@@ -397,5 +426,9 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 
 	protected boolean isComma(IToken newToken) {
 		return newToken.getType()==IToken.TOKEN_TYPE_SYMBOL&&newToken.getStringValue().equals(",");
+	}
+	
+	public static boolean matchParticiple(IToken token){
+		return participleMatch.match(token);
 	}
 }

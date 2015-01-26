@@ -5,11 +5,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenAttacher;
 
 public class SyntaxTokenAttacher extends TokenAttacher {
 	
+	private IntOpenHashSet uniformPartsTokenTypes;
+	
+	public SyntaxTokenAttacher() {
+		super();
+		initUniformPartTypes();
+	}
+
+
 	@Override
 	protected Set<AttachmentPlace> findAttachmentPlaces(IToken token) {
 		
@@ -27,7 +36,10 @@ public class SyntaxTokenAttacher extends TokenAttacher {
 					}
 					if(p instanceof SyntaxToken){
 						SyntaxToken stp = (SyntaxToken) p;
-						if(stp.getMainWord()==t){
+						if(stp.getMainGroup()==t){
+							list.add(stp);
+						}
+						else if(uniformPartsTokenTypes.contains(stp.getType())){
 							list.add(stp);
 						}
 						else{
@@ -68,6 +80,16 @@ public class SyntaxTokenAttacher extends TokenAttacher {
 		
 		
 		return newToken;
+	}
+	
+
+	protected void initUniformPartTypes() {
+		
+		this.uniformPartsTokenTypes = new IntOpenHashSet();
+		this.uniformPartsTokenTypes.add(IToken.TOKEN_TYPE_UNIFORM_PREDICATIVE);		
+		this.uniformPartsTokenTypes.add(IToken.TOKEN_TYPE_UNIFORM_ADVERB);
+		this.uniformPartsTokenTypes.add(IToken.TOKEN_TYPE_UNIFORM_ADJECTIVE);
+		this.uniformPartsTokenTypes.add(IToken.TOKEN_TYPE_UNIFORM_NOUN);
 	}
 
 }

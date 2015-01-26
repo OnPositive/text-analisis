@@ -25,11 +25,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		return verbLikeMatch.match(token);
 	}
 	
-	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
-	
-	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
-			PartOfSpeech.VERB, PartOfSpeech.INFN, PartOfSpeech.PRTF, PartOfSpeech.PRTS, PartOfSpeech.GRND);
-	
 	protected static final UnaryMatcher<SyntaxToken> transitiveVerbMatch = and(verbLikeMatch,hasAny(TransKind.tran));
 
 	protected static final UnaryMatcher<SyntaxToken> infnMatch = has(PartOfSpeech.INFN);

@@ -683,5 +683,23 @@ public class SyntaxParsersTest extends ParserTest{
 							+ "WORD_FORM угол([мр, СУЩ, неод])  )  )  )  )");
 	}
 	
+	public void test041(){
+		String str = "Мы наблюдаем рыжего играющего в углу кота.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+				+ "<subject>WORD_FORM мы([МС, 1л])"
+				+ "<predicate>DIRECT_OBJECT_NAME("
+					+ "<main>WORD_FORM наблюдаю([ГЛ, перех, несов])"					
+					+ "NOUN_PARTICIPLE("
+						+ "<main>NOUN_ADJECTIVE("
+							+ "WORD_FORM рыжий([кач, ПРИЛ])"
+							+ "<main>WORD_FORM кот([мр, од, СУЩ])  )"
+						+ "VERB_NOUN_PREP("
+							+ "<main>WORD_FORM играющий([действ, ПРИЧ, перех, наст, несов])"
+							+ "WORD_FORM в([ПР])"
+							+ "WORD_FORM угол([мр, СУЩ, неод])  )  )  )  )");
+	}
+	
 
 }

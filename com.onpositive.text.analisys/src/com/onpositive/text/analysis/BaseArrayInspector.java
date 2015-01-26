@@ -4,11 +4,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntOpenHashSet;
+import com.onpositive.text.analysis.AbstractParser.ProcessingResult;
 import com.onpositive.text.analysis.IToken.Direction;
 
 public abstract class BaseArrayInspector {
 	
+	public static class ArrayProcessingReesult{
+		
+		public ArrayProcessingReesult(boolean accept, boolean stop) {
+			super();
+			this.stop = stop;
+			this.accept = accept;
+		}
+		
+		boolean accept;
+		
+		boolean stop;
+		
+		public boolean stopped() {
+			return stop;
+		}
+
+		public boolean accepted() {
+			return accept;
+		}
+	}
+	
+	public static ArrayProcessingReesult ACCEPT = new ArrayProcessingReesult(true, false);
+	
+	public static ArrayProcessingReesult BREAK = new ArrayProcessingReesult(false, true);
+	
+	public static ArrayProcessingReesult ACCEPT_AND_BREAK = new ArrayProcessingReesult(true, true);
+	
+	public static ArrayProcessingReesult CONTINUE = new ArrayProcessingReesult(false, false);
+	
+	
+	
 	public List<IToken> findToken(IToken startPoint, Direction dir, List<IToken> baseArray, IntOpenHashSet baseTokenIDs){
+		
+		prepare();
 		
 		ArrayList<IToken> result = new ArrayList<IToken>();		
 		IntOpenHashSet set = new IntOpenHashSet();
@@ -17,7 +51,8 @@ public abstract class BaseArrayInspector {
 		for(int i = 0 ; i < list.size() ; i++ ){
 			IToken t = list.get(i);
 			int bp = t.getBoundPosition(dir.opposite());
-			if(match(t)){				
+			ArrayProcessingReesult pr = match(t,dir);
+			if(pr.accepted()){				
 				if(dir.isBeyondMyBound(bp, bound)){
 					if(bp!=bound){
 						result.clear();
@@ -26,6 +61,9 @@ public abstract class BaseArrayInspector {
 					set.add(t.id());
 					result.add(t);
 				}
+			}
+			if(pr.stopped()){
+				break;
 			}
 			else{
 				if(dir.isBeyondMyBound(bound,bp)){
@@ -56,7 +94,9 @@ public abstract class BaseArrayInspector {
 		return result;		
 	}
 
-	protected abstract boolean match(IToken t);
+	protected abstract  void prepare();
+
+	protected abstract ArrayProcessingReesult match(IToken token, Direction dir);
 
 	private List<IToken> getStartList(IToken startPoint, Direction dir,List<IToken> baseArray, IntOpenHashSet baseTokenIDs) {
 		
