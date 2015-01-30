@@ -48,6 +48,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_UNIT = 10213;
 	
+	static final int TOKEN_TYPE_REGION_BOUND = 10301;
+	
 	static final int TOKEN_TYPE_WORD_FORM = 11000;
 	
 	static final int TOKEN_TYPE_SENTENCE = 11001;
@@ -95,6 +97,14 @@ public interface IToken {
 	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;
 	
 	static final int TOKEN_TYPE_PREPOSITION_GROUP = 11057;
+	
+	static final int TOKEN_TYPE_BRACKETS = 12001;
+	
+	static final int TOKEN_TYPE_ENUMERATION = 12002;
+	
+	static final int TOKEN_TYPE_DIRECT_SPEACH = 12003;
+	
+	static final int TOKEN_TYPE_TITLE = 12004;
 	
 	static final int TOKEN_TYPE_LINK = 20001;
 
@@ -145,6 +155,12 @@ public interface IToken {
 	void removePreviousToken(IToken token);
 	
 	void removeNeighbour(Direction direction, IToken token);
+	
+	void cleanNeighbours(Direction direction);
+	
+	void cleanNextNeighbours();
+	
+	void cleanPreviousNeighbours();
 	
 	List<IToken> getChildren();
 	

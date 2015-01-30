@@ -7,9 +7,15 @@ import java.util.List;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
+import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.ParserComposition;
+import com.onpositive.text.analysis.SentenceTreeBuilder;
+import com.onpositive.text.analysis.SentenceTreeRuleFactory;
+import com.onpositive.text.analysis.SentenceTreeBuilder.DecisionRule;
+import com.onpositive.text.analysis.SentenceTreeBuilder.TokenArrayBuffer;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -22,6 +28,92 @@ import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 
 public class SyntaxParser extends ParserComposition {
+	
+	public class TreeBuilder extends SentenceTreeBuilder{
+		
+		private TokenIdProvider tip;
+
+		public TreeBuilder() {
+			super();
+			SentenceTreeRuleFactory factory = new SentenceTreeRuleFactory();
+			this.setRules(factory.getDetectionRules());
+			this.setDecisionRules(factory.getRules());
+		}
+		
+		@Override
+		public List<IToken> gatherTree(List<IToken> tokens) {
+			this.tip = new TokenIdProvider();
+			tip.prepare(tokens);
+			return super.gatherTree(tokens);
+		}
+
+		@Override
+		protected List<IToken> produceResultToken(SentenceNode node, IToken parent,DecisionRule rule, List<IToken> regionTokens) {
+			int startPosition = Math.min(parent.getStartPosition(), regionTokens.get(0).getStartPosition());
+			int endPosition = Math.max(parent.getEndPosition(), regionTokens.get(regionTokens.size()-1).getEndPosition());
+			SyntaxToken newToken = new SyntaxToken(parent.getType(), (SyntaxToken) parent, null, startPosition, endPosition);
+			if(parent.getStartPosition() < regionTokens.get(0).getStartPosition()){
+				newToken.addChild(parent);
+				newToken.addChildren(regionTokens);
+			}
+			else{
+				newToken.addChildren(regionTokens);
+				newToken.addChild(parent);
+			}
+			newToken.setId(tip.getVacantId());
+			ArrayList<IToken> result = new ArrayList<IToken>();
+			result.add(newToken);
+			return result;
+		}
+
+		@Override
+		protected List<IToken> processContent(List<IToken> tokens,DecisionRule rule) {			
+			return SyntaxParser.this.parseSyntax(tokens,tip);
+		}
+
+		@Override
+		protected List<IToken> processBound(List<IToken> tokens,DecisionRule rule, Direction dir)
+		{
+			int startPosition = tokens.get(0).getStartPosition();
+			int endPosition = tokens.get(tokens.size()-1).getEndPosition();			
+			CompositToken newToken = new CompositToken(tokens,IToken.TOKEN_TYPE_REGION_BOUND,startPosition,endPosition);
+			newToken.addChildren(tokens);
+			newToken.setId(tip.getVacantId());
+			ArrayList<IToken> result = new ArrayList<IToken>();
+			result.add(newToken);
+			return result;
+		}
+
+		@Override
+		protected List<IToken> produceRegionToken(List<IToken> content, List<IToken> startBound, List<IToken> endBound, DecisionRule rule) {
+			int startPosition = !startBound.isEmpty()
+					? startBound.get(0).getStartPosition()
+					: content.get(0).getStartPosition();
+					
+			int endPosition = !endBound.isEmpty()
+					? endBound.get(endBound.size()-1).getEndPosition()
+					: content.get(content.size()-1).getEndPosition();
+			
+			ArrayList<IToken> tokens = new ArrayList<IToken>();
+			tokens.addAll(startBound);
+			tokens.addAll(content);
+			tokens.addAll(endBound);
+			
+			CompositToken newToken = new CompositToken(tokens,rule.getResultTokenType(),startPosition,endPosition);
+			newToken.setId(tip.getVacantId());
+			newToken.addChildren(tokens);
+			ArrayList<IToken> result = new ArrayList<IToken>();
+			result.add(newToken);
+			return result;
+		}
+
+		public TokenIdProvider getTokenIdProvider() {
+			return tip;
+		}
+		
+	}
+	
+	private TreeBuilder treeBuilder = new TreeBuilder();
 	
 	private static final Class<?>[] lexicParsersArray = new Class<?>[]{
 		WordFormParser.class,
@@ -99,24 +191,30 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		
 		for(IToken sentence : sentences){
-			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());
-			for(IParser p : syntaxParsers){
-				p.setBaseTokens(initialTokens);
-			}
-			List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
-			List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
-			List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
-			List<IToken> participlesProcessed = participleParsers.process(verbsProcessed1);
-			List<IToken> clausesFormed = clauseParser.process(participlesProcessed);			
-			List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
-			List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
-			List<IToken> incompleteClausesFormed = incompleteClauseParser.process(verbsProcessed2);
-			List<IToken> tokens = incompleteClausesFormed;
-			sentence.setChildren(new BasicCleaner().clean(tokens));
+			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
+			List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
+			List<IToken> tokens1 = parseSyntax(tokens,treeBuilder.getTokenIdProvider());
+			sentence.setChildren(new BasicCleaner().clean(tokens1));
 		}
 		return sentences;
 	}
 
+
+	protected List<IToken> parseSyntax(List<IToken> initialTokens, TokenIdProvider tip) {
+		for(IParser p : syntaxParsers){
+			p.setBaseTokens(initialTokens);
+		}
+		List<IToken> namesProcessed = nameSyntaxParsers.process(initialTokens);
+		List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
+		List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
+		List<IToken> participlesProcessed = participleParsers.process(verbsProcessed1);
+		List<IToken> clausesFormed = clauseParser.process(participlesProcessed);			
+		List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
+		List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
+		List<IToken> incompleteClausesFormed = incompleteClauseParser.process(verbsProcessed2);
+		List<IToken> tokens = incompleteClausesFormed;
+		return tokens;
+	}
 
 	public void setText(String str) {
 		lexicParsers.setText(str);		

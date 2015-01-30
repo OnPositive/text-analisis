@@ -246,6 +246,30 @@ public abstract class AbstractToken implements IToken {
 		}
 	}
 	
+	@Override
+	public void cleanNextNeighbours() {
+		this.next=null;
+		this.nextTokens=null;
+	}
+	
+	@Override
+	public void cleanPreviousNeighbours() {
+		this.previous = null;
+		this.previousTokens = null;
+	}
+	
+	@Override
+	public void cleanNeighbours(Direction dir) {
+		if(dir==Direction.END){
+			cleanNextNeighbours();
+		}
+		else if(dir==Direction.START){
+			cleanPreviousNeighbours();
+		}
+		
+	}
+	
+	
 	public List<IToken> getChildren(){
 		/*if (this.children==null){
 			return Collections.emptyList();
@@ -287,6 +311,9 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public IToken getFirstChild(Direction direction){
+		if(children==null){
+			return null;
+		}
 		if(direction==Direction.START){
 			return children.get(0);
 		}

@@ -9,6 +9,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import com.onpositive.text.analysis.BasicCleaner;
+import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
@@ -23,7 +24,8 @@ import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class ParserTest extends TestCase {
 	
-	private static final Set<Class<?>> printTreeClasses = new HashSet<Class<?>>(Arrays.asList(SyntaxToken.class, ClauseToken.class, PrepositionGroupToken.class));
+	private static final Set<Class<?>> printTreeClasses = new HashSet<Class<?>>(Arrays.asList(
+			SyntaxToken.class, ClauseToken.class, PrepositionGroupToken.class, CompositToken.class));
 	
 	private static final String childOffStr = "  ";
 	protected ParserComposition composition;
@@ -163,8 +165,7 @@ public class ParserTest extends TestCase {
 		bld.append(TokenTypeResolver.getResolvedType(token));
 		
 		if(printTreeClasses.contains(token.getClass())){
-			SyntaxToken st = (SyntaxToken) token;
-			SyntaxToken mainGroup = st.getMainGroup();
+			IToken mainGroup = token instanceof SyntaxToken ? ((SyntaxToken)token).getMainGroup() : null;
 			List<IToken> children = token.getChildren();
 			bld.append("(");
 			if(token.getType()==IToken.TOKEN_TYPE_CLAUSE){

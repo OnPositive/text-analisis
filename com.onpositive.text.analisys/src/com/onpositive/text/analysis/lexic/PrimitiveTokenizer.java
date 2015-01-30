@@ -209,10 +209,20 @@ public class PrimitiveTokenizer {
 		char[] symbols = new char[]{
 				'`', '~', '!',  '@',  '#', '$', '%', '^', '&', '*', '(', ')',
 				'-', '_', '=',  '+', '\\', '|', ',', '.', '<', '>', '/', '?',
-				';', ':', '\'', '"', '[', ']', '{', '}' ,  '—', '«', '»'
+				';', ':', '\'', '"', '[', ']', '{', '}' ,  '—', '«', '»', '„', '“'
 			};
 		for(char ch : symbols){
 			map.put(ch, IToken.TOKEN_TYPE_SYMBOL);
 		}
+	}
+	
+	
+	public static boolean isSymbols(char ch){
+		Integer type = map.get(ch);
+		if(type==null){
+			return false;		
+		}
+		boolean result = type == IToken.TOKEN_TYPE_SYMBOL;
+		return result;
 	}
 }

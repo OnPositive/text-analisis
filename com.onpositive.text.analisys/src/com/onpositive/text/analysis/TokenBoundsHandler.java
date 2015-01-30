@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
@@ -20,10 +21,68 @@ public class TokenBoundsHandler {
 		this.newTokens = newTokens;
 	}
 
-	public void handleBounds(List<IToken> tokens){		
+	public void handleBounds(List<IToken> tokens){
+		List<IToken> nextTokens = addBounds(tokens);
+		
 		for(IToken t : tokens){
 			processToken(t, newTokens.containsKey(t.id()));
-		}		
+		}
+		for(IToken t : nextTokens){
+			processToken(t, newTokens.containsKey(t.id()));
+		}
+	}
+
+	protected List<IToken> addBounds(List<IToken> tokens) {
+		
+		int startPosition = Integer.MAX_VALUE;
+		int endPosition = Integer.MIN_VALUE;
+		for(IToken t : tokens){
+			startPosition = Math.min(startPosition, t.getStartPosition());
+			endPosition = Math.max(endPosition, t.getEndPosition());
+		}
+		
+		HashSet<IToken> nextTokens = new HashSet<IToken>();
+		for(IToken t : tokens){
+			
+			if(t.getStartPosition()==startPosition){
+				IToken t0 = resultTokens.containsKey(t.id()) ? t.getFirstChild(Direction.START) : t;
+				if(t0!=null){
+					IToken prev = t0.getPrevious();
+					if(prev!=null){
+						resultTokens.put(prev.id(), prev);
+					}
+					else{
+						List<IToken> prevTokens = t0.getPreviousToken();
+						if(prevTokens!=null){
+							for(IToken n : prevTokens){
+								resultTokens.put(n.id(), n);
+							}
+						}
+					}
+				}
+			}
+			if(t.getEndPosition()==endPosition){
+				IToken t0 = resultTokens.containsKey(t.id()) ? t.getFirstChild(Direction.END) : t;
+				if(t0!=null){
+					IToken next = t0.getNext();
+					if(next!=null){
+						resultTokens.put(next.id(), next);
+						nextTokens.add(next);
+					}
+					else{
+						List<IToken> nts = t0.getNextTokens();			
+						if(nts!=null){
+							nextTokens.addAll(nts);
+							for(IToken n : nts){
+								resultTokens.put(n.id(), n);
+							}
+						}
+					}
+				}
+			}
+		}
+		ArrayList<IToken> result = new ArrayList<IToken>(nextTokens);
+		return result;
 	}
 	
 	private void processToken(IToken token, boolean newLevel) {
