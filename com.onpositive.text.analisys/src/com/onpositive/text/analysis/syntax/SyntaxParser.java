@@ -31,21 +31,26 @@ import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 public class SyntaxParser extends ParserComposition {
 	
 	public class TreeBuilder extends SentenceTreeBuilder{
-		
-		private TokenIdProvider tip;
 
-		public TreeBuilder() {
+		private TokenIdProvider tip;
+		
+		public TreeBuilder(TokenIdProvider tip) {
 			super();
+			this.tip = tip;
 			SentenceTreeRuleFactory factory = new SentenceTreeRuleFactory();
 			this.setRules(factory.getDetectionRules());
 			this.setDecisionRules(factory.getRules());
 		}
 		
-		@Override
-		public List<IToken> gatherTree(List<IToken> tokens) {
-			this.tip = new TokenIdProvider();
-			tip.prepare(tokens);
-			return super.gatherTree(tokens);
+//		@Override
+//		public List<IToken> gatherTree(List<IToken> tokens) {
+//			this.tip = new TokenIdProvider();
+//			tip.prepare(tokens);
+//			return super.gatherTree(tokens);
+//		}
+
+		public void setTokenIdProvider(TokenIdProvider tip) {
+			this.tip = tip;
 		}
 
 		@Override
@@ -121,7 +126,9 @@ public class SyntaxParser extends ParserComposition {
 		
 	}
 	
-	private TreeBuilder treeBuilder = new TreeBuilder();
+	private TokenIdProvider tip;
+	
+	private TreeBuilder treeBuilder = new TreeBuilder(tip);
 	
 	private static final Class<?>[] lexicParsersArray = new Class<?>[]{
 		WordFormParser.class,
@@ -195,6 +202,7 @@ public class SyntaxParser extends ParserComposition {
 	public List<IToken> parse(String str){
 		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
+		resetTokenIdProvider(primitiveTokens);
 		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		
@@ -205,6 +213,14 @@ public class SyntaxParser extends ParserComposition {
 			sentence.setChildren(new BasicCleaner().clean(tokens1));
 		}
 		return sentences;
+	}
+
+
+	private void resetTokenIdProvider(List<IToken> tokens) {
+		this.tip = new TokenIdProvider();
+		tip.prepare(tokens);
+		this.treeBuilder.setTokenIdProvider(tip);
+		setTokenIdProvider(tip);
 	}
 
 
@@ -223,15 +239,6 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> tokens = incompleteClausesFormed;
 		return tokens;
 	}
-
-	public void setText(String str) {
-		lexicParsers.setText(str);		
-		this.verbGroupSyntaxParsers.setText(str);
-		this.nameSyntaxParsers.setText(str);
-		this.nameRecursiveSyntaxParsers.setText(str);
-		this.clauseParser.setText(str);
-		this.incompleteClauseParser.setText(str);
-	}
 	
 	private void initParsers() {
 		this.lexicParsers = createParsers(lexicParsersArray,false) ;		
@@ -249,6 +256,15 @@ public class SyntaxParser extends ParserComposition {
 		this.syntaxParsers.add(clauseParser);
 		this.syntaxParsers.add(incompleteClauseParser);
 		this.syntaxParsers.add(participleParsers);
+		
+		this.parsers = new IParser[]{
+				lexicParsers,
+				verbGroupSyntaxParsers,
+				nameSyntaxParsers,
+				nameRecursiveSyntaxParsers,
+				participleParsers,
+				clauseParser,
+				incompleteClauseParser };
 	}
 
 	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {

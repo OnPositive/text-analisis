@@ -126,10 +126,14 @@ public class ParserComposition implements IParser {
 	}
 
 	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
+		for(IParser p : this.parsers){
+			p.setTokenIdProvider(tokenIdProvider);
+		}
 	}
 
 	public TokenIdProvider getTokenIdProvider() {
 		return null;
 	}
+
 
 }
