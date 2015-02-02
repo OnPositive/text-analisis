@@ -48,12 +48,6 @@ public class ParserComposition2 extends ParserComposition {
 		return result;
 	}
 	
-	@Override
-	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
-		this.reg.setTokenIdProvider(tokenIdProvider);
-		super.setTokenIdProvider(tokenIdProvider);
-	}
-	
 	protected static class ParserData{
 		
 		
@@ -136,10 +130,6 @@ public class ParserComposition2 extends ParserComposition {
 				bld.append(", finished");
 			}
 			return bld.toString();
-		}
-
-		public void setTokenIdProvider(TokenIdProvider tip) {
-			this.parser.setTokenIdProvider(tip);			
 		}
 	}
 	
@@ -387,22 +377,9 @@ public class ParserComposition2 extends ParserComposition {
 		private void prepare(List<IToken> tokens) {
 			
 			clean();			
-			
 			this.original = null;
-//			TokenIdProvider tip = new TokenIdProvider();			
-//			tip.prepare(tokens);
-//			tip.block();
-			
 			for(ParserData pd : this.parserDataList){
-				//pd.setTokenIdProvider(tip);
 				pd.setFinished(false);
-			}
-		}
-		
-		private void setTokenIdProvider(TokenIdProvider tip){
-				
-			for(ParserData pd : this.parserDataList){
-				pd.setTokenIdProvider(tip);
 			}
 		}
 

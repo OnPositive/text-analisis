@@ -219,6 +219,7 @@ public class SyntaxParser extends ParserComposition {
 	private void resetTokenIdProvider(List<IToken> tokens) {
 		this.tip = new TokenIdProvider();
 		tip.prepare(tokens);
+		this.tip.block();
 		this.treeBuilder.setTokenIdProvider(tip);
 		setTokenIdProvider(tip);
 	}
