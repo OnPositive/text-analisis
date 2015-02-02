@@ -6,7 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntArrayList;
+import com.carrotsearch.hppc.IntIntMap;
+import com.carrotsearch.hppc.IntIntOpenHashMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.cursors.IntCursor;
+import com.onpositive.semantic.words3.hds.IntIntArrayBasedMap;
 import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.basic.matchers.BasicRule;
 import com.onpositive.text.analysis.basic.matchers.ITokenArrayMatcher;
@@ -17,7 +22,7 @@ import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 
 public abstract class SentenceTreeBuilder {
 	
-	protected abstract List<IToken> produceResultToken(SentenceNode node, IToken parent, DecisionRule rule, List<IToken> regionTokens);
+	protected abstract IntObjectOpenHashMap<List<IToken>> produceResultToken(SentenceNode node, IntIntMap parents, DecisionRule rule, List<IToken> regionTokens, TokenArrayBuffer buffer);
 	
 	protected abstract List<IToken> processContent(List<IToken> tokens, DecisionRule rule);
 	
@@ -134,7 +139,7 @@ public abstract class SentenceTreeBuilder {
 		}
 
 		public static void handleNeighbours(ArrayList<IToken> list, int ind) {
-			if(ind==0){
+			if(ind<=0||ind>=list.size()){
 				return;
 			}
 			IToken token = list.get(ind);
@@ -310,6 +315,31 @@ public abstract class SentenceTreeBuilder {
 		}
 	}
 	
+	public static class BufferIndex implements TokenArrayBufferListener{
+
+		public BufferIndex(int value) {
+			super();
+			this.value = value;
+		}
+
+		private int value;
+		
+		@Override
+		public void onChange(int start, int oldLength, int newLength) {
+			if(this.value<start){
+				return;
+			}
+			if(this.value > start + oldLength){
+				this.value += newLength - oldLength;
+			}
+		}
+
+		public int value() {
+			return value;
+		}
+		
+	}
+	
 	private List<BasicRule> rules;
 	
 	private List<DecisionRule> decisionRules;
@@ -413,24 +443,41 @@ l0:		for(int i = 0 ; i < size ; i++){
 			if(!matchEnd){
 				continue;
 			}
-			int parentIndex = findParentIndex(node,rule,buffer);
-			IToken parent = buffer.get(parentIndex);
-			List<IToken> newTokens = fillNewTokenChildren(node, rule, parent, buffer);			
-			replaceTokens(node,parentIndex,newTokens,buffer);
+			IntIntMap parents = findParents(node,rule,buffer);
+			IntObjectOpenHashMap<List<IToken>> newTokens = createNewToken(node, rule, parents, buffer);
+			replaceTokens(node,parents,newTokens,buffer);
 			node.setCollapse(false);
 			break;
 		}
 	}
 
-	private void replaceTokens(SentenceNode node, int parentIndex, List<IToken> newTokens,TokenArrayBuffer buffer)
+	private void replaceTokens(SentenceNode node, IntIntMap parents, IntObjectOpenHashMap<List<IToken>> newTokens,TokenArrayBuffer buffer)
 	{
-		int start = Math.min(node.getStartTokenIndex(),parentIndex);
-		int end = Math.max(node.getEndTokenIndex(),parentIndex);
-		buffer.replace(newTokens, start, end);
+		
+		IntObjectOpenHashMap<BufferIndex> map = new IntObjectOpenHashMap<SentenceTreeBuilder.BufferIndex>();
+		for(IntCursor cr : parents.keys()){
+			int id = cr.value;
+			int ind = parents.get(id);
+			BufferIndex bi = new BufferIndex(ind);
+			map.put(id, bi);
+			buffer.addListener(bi);
+		}
+		
+		int start = node.getStartTokenIndex();
+		int end = node.getEndTokenIndex();
+		buffer.replace(new ArrayList<IToken>(), start, end);
+		
+		for(IntCursor cr : map.keys()){
+			int id = cr.value;
+			BufferIndex bi = map.get(id);
+			int parentIndex = bi.value();
+			List<IToken> replacement = newTokens.get(id);
+			buffer.replace(replacement, parentIndex, parentIndex+1);
+		}
 	}
 
-	protected List<IToken> fillNewTokenChildren(
-			SentenceNode node, DecisionRule rule, IToken parent, TokenArrayBuffer buffer) {
+	protected IntObjectOpenHashMap<List<IToken>> createNewToken(
+			SentenceNode node, DecisionRule rule, IntIntMap parents, TokenArrayBuffer buffer) {
 
 		int start = node.getStartTokenIndex() + rule.getStartBound().getBoundOffset();
 		int contentStart = start + rule.getStartBound().getLength();				
@@ -466,9 +513,15 @@ l0:		for(int i = 0 ; i < size ; i++){
 		handleParents(regionTokens);
 		handleBounds(regionTokens,regionTokens);
 		
-		List<IToken> resultTokens = produceResultToken(node, parent, rule, regionTokens);
-		handleParents(resultTokens);
-		handleBounds(resultTokens,resultTokens);
+		IntObjectOpenHashMap<List<IToken>> resultTokens = produceResultToken(node, parents, rule, regionTokens, buffer);
+		ArrayList<IToken> producedTokens = new ArrayList<IToken>(); 
+		for(IntCursor i : parents.keys()){
+			List<IToken> lst = resultTokens.get(i.value);
+			producedTokens.addAll(lst);
+		}
+		
+		handleParents(producedTokens);
+		handleBounds(producedTokens,producedTokens);
 
 		return resultTokens;
 	}
@@ -508,32 +561,46 @@ l0:		for(int i = 0 ; i < size ; i++){
 		tbh.handleBounds(tokens);
 	}
 
-	private int findParentIndex(SentenceNode node, DecisionRule rule, TokenArrayBuffer buffer) {
+	private IntIntMap findParents(SentenceNode node, DecisionRule rule, TokenArrayBuffer buffer) {
 		
 		Direction dir = rule.getParentDirection();
-		int result = -1;
+		int sp = -1;
+		int ep = -1;
+		ArrayList<IToken> tokens = buffer.getTokens();
 		if(dir == null || dir==Direction.START){
 			for(int i = node.getStartTokenIndex(); i > 0 ; i--){
 				int ind = i-1;
-				IToken token = buffer.get(ind);
+				IToken token = tokens.get(ind);
 				int type = token.getType();
 				if(type==IToken.TOKEN_TYPE_LETTER || type == IToken.TOKEN_TYPE_WORD_FORM){
-					result = ind;
+					sp = token.getStartPosition();
+					ep = token.getEndPosition();
 					break;
 				}
 			}
 		}
-		if((dir == null || dir==Direction.END) && result<0 ){
+		if((dir == null || dir==Direction.END) && sp<0 ){
 			int length = buffer.length();
 			for(int i = node.getEndTokenIndex(); i < length ; i++){
-				IToken token = buffer.get(i);
+				IToken token = tokens.get(i);
 				int type = token.getType();
 				if(type==IToken.TOKEN_TYPE_LETTER || type == IToken.TOKEN_TYPE_WORD_FORM){
-					result = i;
+					sp = token.getStartPosition();
+					ep = token.getEndPosition();
 					break;
 				}
 			}
-		}		
+		}
+		IntIntOpenHashMap result = new IntIntOpenHashMap();
+		for(int i = 0 ; i < tokens.size() ; i ++){
+			IToken t = tokens.get(i);
+			int sp0 = t.getStartPosition();
+			int ep0 = t.getEndPosition();
+			if(sp0!=sp || ep0 != ep){
+				continue;
+			}
+			result.put(t.id(),i);
+		}
 		return result;
 	}
 

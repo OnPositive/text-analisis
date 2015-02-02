@@ -4,6 +4,9 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.carrotsearch.hppc.IntIntMap;
+import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.BasicCleaner;
@@ -14,8 +17,6 @@ import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
-import com.onpositive.text.analysis.SentenceTreeBuilder.DecisionRule;
-import com.onpositive.text.analysis.SentenceTreeBuilder.TokenArrayBuffer;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -48,21 +49,28 @@ public class SyntaxParser extends ParserComposition {
 		}
 
 		@Override
-		protected List<IToken> produceResultToken(SentenceNode node, IToken parent,DecisionRule rule, List<IToken> regionTokens) {
-			int startPosition = Math.min(parent.getStartPosition(), regionTokens.get(0).getStartPosition());
-			int endPosition = Math.max(parent.getEndPosition(), regionTokens.get(regionTokens.size()-1).getEndPosition());
-			SyntaxToken newToken = new SyntaxToken(parent.getType(), (SyntaxToken) parent, null, startPosition, endPosition);
-			if(parent.getStartPosition() < regionTokens.get(0).getStartPosition()){
-				newToken.addChild(parent);
-				newToken.addChildren(regionTokens);
+		protected IntObjectOpenHashMap<List<IToken>> produceResultToken(SentenceNode node, IntIntMap parentIndices, DecisionRule rule, List<IToken> regionTokens, TokenArrayBuffer buffer) {
+			IntObjectOpenHashMap<List<IToken>> result = new IntObjectOpenHashMap<List<IToken>>();
+			for(IntCursor i : parentIndices.keys()){
+				int id = i.value;
+				int ind = parentIndices.get(id);
+				IToken parent = buffer.get(ind);
+				int startPosition = Math.min(parent.getStartPosition(), regionTokens.get(0).getStartPosition());
+				int endPosition = Math.max(parent.getEndPosition(), regionTokens.get(regionTokens.size()-1).getEndPosition());
+				SyntaxToken newToken = new SyntaxToken(parent.getType(), (SyntaxToken) parent, null, startPosition, endPosition);
+				if(parent.getStartPosition() < regionTokens.get(0).getStartPosition()){
+					newToken.addChild(parent);
+					newToken.addChildren(regionTokens);
+				}
+				else{
+					newToken.addChildren(regionTokens);
+					newToken.addChild(parent);
+				}
+				newToken.setId(tip.getVacantId());
+				ArrayList<IToken> list = new ArrayList<IToken>();
+				list.add(newToken);
+				result.put(id, list);
 			}
-			else{
-				newToken.addChildren(regionTokens);
-				newToken.addChild(parent);
-			}
-			newToken.setId(tip.getVacantId());
-			ArrayList<IToken> result = new ArrayList<IToken>();
-			result.add(newToken);
 			return result;
 		}
 
