@@ -140,7 +140,7 @@ public interface IToken {
 	
 	List<IToken> getNextTokens();
 	
-	List<IToken> getPreviousToken();
+	List<IToken> getPreviousTokens();
 	
 	List<IToken> getNeighbours(Direction direction);
 	

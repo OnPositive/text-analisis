@@ -182,7 +182,7 @@ public abstract class AbstractToken implements IToken {
 		}
 	}
 
-	public List<IToken> getPreviousToken() {
+	public List<IToken> getPreviousTokens() {
 		return previousTokens;
 	}
 
@@ -232,7 +232,7 @@ public abstract class AbstractToken implements IToken {
 			return getNextTokens();
 		}
 		else{
-			return getPreviousToken();
+			return getPreviousTokens();
 		}
 	}
 

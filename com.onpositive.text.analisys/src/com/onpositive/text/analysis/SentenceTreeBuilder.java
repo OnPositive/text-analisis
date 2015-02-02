@@ -10,6 +10,7 @@ import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntIntOpenHashMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.words3.hds.IntIntArrayBasedMap;
 import com.onpositive.text.analysis.IToken.Direction;
@@ -110,16 +111,7 @@ public abstract class SentenceTreeBuilder {
 			buf.addAll(list);
 			buf.addAll(tokens.subList(end, tokens.size()));
 			
-			int i0 = start;
-			if(i0>0){
-				handleNeighbours(buf,i0);
-			}
-			if(newLength!=0){
-				int i1 = start+newLength;
-				if(i1<buf.size()){
-					handleNeighbours(buf,i1);
-				}
-			}
+			removeRangeFromNeighbours(start, end, list);
 			
 			ArrayList<IToken> tmp = this.tokens;
 			this.tokens = buf;
@@ -129,6 +121,78 @@ public abstract class SentenceTreeBuilder {
 			fireChanges(start,end-start,newLength);
 		}
 
+		protected void removeRangeFromNeighbours(int start, int end, List<IToken> list) {
+			
+			IntOpenHashSet neighboursToRemove = new IntOpenHashSet();
+			for(int i = start; i < end ; i++){
+				neighboursToRemove.add(tokens.get(i).id());
+			}			
+			List<IToken> startNeighbours = removeFromSide(start, neighboursToRemove, Direction.START);
+			List<IToken> endNeighbours = removeFromSide(end-1, neighboursToRemove, Direction.END);
+			
+			if(list.isEmpty()){
+				gluePieces(startNeighbours, endNeighbours);
+			}
+			else{
+				int size = list.size();
+				List<IToken> leftSide = list.subList(0, 1);				
+				List<IToken> rightSide = list.subList(size-1, size);
+				gluePieces(startNeighbours, leftSide);
+				gluePieces(rightSide, endNeighbours);
+			}
+		}
+
+		private void gluePieces(List<IToken> left,	List<IToken> right) {
+			
+			for(IToken l : left){
+				for(IToken r : right){
+					l.addNextToken(r);
+					r.addPreviousToken(l);
+				}
+			}
+		}
+
+		protected List<IToken> removeFromSide(int start, IntOpenHashSet neighboursToRemove, Direction dir)
+		{
+			List<IToken> startRangeNeighbours = collectNeighbours(start, dir);			
+			for(IToken t : startRangeNeighbours){
+				IToken neighbour = t.getNeighbour(dir.opposite());
+				if(neighbour!=null&&neighboursToRemove.contains(neighbour.id())){
+					t.removeNeighbour(dir.opposite(), neighbour);
+				}
+				else{
+					List<IToken> neighbours = t.getNeighbours(dir.opposite());
+					if(neighbours!=null){
+						neighbours = new ArrayList<IToken>(neighbours);
+						for(IToken n : neighbours){
+							if(neighboursToRemove.contains(n.id())){
+								t.removeNeighbour(dir.opposite(), n);
+								n.removeNeighbour(dir, t);
+							}							
+						}
+					}
+				}
+			}
+			return startRangeNeighbours;
+		}
+
+		private List<IToken> collectNeighbours(int start, Direction dir) {
+			
+			ArrayList<IToken> result = new ArrayList<IToken>();
+			IToken token = tokens.get(start);
+			IToken nbr = token.getNeighbour(dir);
+			if(nbr != null){
+				result.add(nbr);
+			}
+			else{
+				List<IToken> neighbours = token.getNeighbours(dir);
+				if(neighbours!=null){
+					result.addAll(neighbours);
+				}
+			}
+			return result;
+		}
+
 		private void fireChanges(int start, int oldLength, int newLength) {
 			if(this.listeners==null){
 				return;
@@ -136,18 +200,6 @@ public abstract class SentenceTreeBuilder {
 			for(TokenArrayBufferListener l : listeners){
 				l.onChange(start, oldLength, newLength);
 			}
-		}
-
-		public static void handleNeighbours(ArrayList<IToken> list, int ind) {
-			if(ind<=0||ind>=list.size()){
-				return;
-			}
-			IToken token = list.get(ind);
-			IToken prev = list.get(ind-1);
-			token.cleanPreviousNeighbours();
-			prev.cleanNextNeighbours();
-			token.addPreviousToken(prev);
-			prev.addNextToken(token);
 		}
 		
 		public void addListener(TokenArrayBufferListener l){
@@ -329,7 +381,7 @@ public abstract class SentenceTreeBuilder {
 			if(this.value<start){
 				return;
 			}
-			if(this.value > start + oldLength){
+			if(this.value >= start + oldLength){
 				this.value += newLength - oldLength;
 			}
 		}

@@ -52,7 +52,7 @@ public class TokenBoundsHandler {
 						resultTokens.put(prev.id(), prev);
 					}
 					else{
-						List<IToken> prevTokens = t0.getPreviousToken();
+						List<IToken> prevTokens = t0.getPreviousTokens();
 						if(prevTokens!=null){
 							for(IToken n : prevTokens){
 								resultTokens.put(n.id(), n);

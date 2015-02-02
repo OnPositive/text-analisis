@@ -81,7 +81,7 @@ public class SyntaxParser extends ParserComposition {
 
 		@Override
 		protected List<IToken> processContent(List<IToken> tokens,DecisionRule rule) {			
-			return SyntaxParser.this.parseSyntax(tokens,tip);
+			return SyntaxParser.this.parseSyntax(tokens);
 		}
 
 		@Override
@@ -209,7 +209,7 @@ public class SyntaxParser extends ParserComposition {
 		for(IToken sentence : sentences){
 			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
 			List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
-			List<IToken> tokens1 = parseSyntax(tokens,treeBuilder.getTokenIdProvider());
+			List<IToken> tokens1 = parseSyntax(tokens);
 			sentence.setChildren(new BasicCleaner().clean(tokens1));
 		}
 		return sentences;
@@ -225,7 +225,7 @@ public class SyntaxParser extends ParserComposition {
 	}
 
 
-	protected List<IToken> parseSyntax(List<IToken> initialTokens, TokenIdProvider tip) {
+	protected List<IToken> parseSyntax(List<IToken> initialTokens) {
 		for(IParser p : syntaxParsers){
 			p.setBaseTokens(initialTokens);
 		}

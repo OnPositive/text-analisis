@@ -64,8 +64,8 @@ public class LongNameParser extends AbstractParser {
 			IToken child = tc.getChild(0, Direction.START);
 			if (child != null
 					&& Character.isUpperCase(child.getStringValue().charAt(0))) {
-				if (tc.getPreviousToken() != null
-						&& !tc.getPreviousToken().isEmpty()) {
+				if (tc.getPreviousTokens() != null
+						&& !tc.getPreviousTokens().isEmpty()) {
 					return CONTINUE_PUSH;
 				}
 			}
