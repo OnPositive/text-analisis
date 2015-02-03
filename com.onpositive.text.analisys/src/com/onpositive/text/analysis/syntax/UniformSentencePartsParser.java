@@ -134,6 +134,9 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 	private List<SyntaxToken> collectParts(Stack<IToken> tokens) {
 		ArrayList<SyntaxToken> result = new ArrayList<SyntaxToken>();
 		for(IToken token : tokens){
+			if(conjunctionMatcher.match(token)){
+				continue;
+			}
 			if(partOfSpeechMatcher.match(token)){
 				result.add((SyntaxToken) token);
 			}
@@ -148,19 +151,22 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 		if(commaMatcher.match(token0)){
 			return checkToken(newToken);
 		}
-		else if(conjunctionMatcher.match(newToken)){
-			if(partOfSpeechMatcher.match(token0)){
+		else if(conjunctionMatcher.match(token0)){
+			return checkToken(newToken);
+		}
+		else if(partOfSpeechMatcher.match(token0)){
+			if(conjunctionMatcher.match(newToken)){
+				return CONTINUE_PUSH;
+			}
+			if(commaMatcher.match(newToken)){
 				return CONTINUE_PUSH;
 			}
 			else{
 				return DO_NOT_ACCEPT_AND_BREAK;
 			}
-		}
+		}		
 		else{
-			if(commaMatcher.match(newToken)){
-				return CONTINUE_PUSH;
-			}
-			return checkToken(newToken);
+			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 	}
 

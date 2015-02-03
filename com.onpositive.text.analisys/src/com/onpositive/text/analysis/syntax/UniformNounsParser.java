@@ -30,7 +30,7 @@ public class UniformNounsParser extends UniformSentencePartsParser {
 	protected GrammemSet checkGrammemSetCorrespondence(GrammemSet gs0, GrammemSet gs1) {
 		
 		Map<Case, Case> matchedCase = matchCase(gs0,gs1);
-		if(matchedCase==null||matchedCase.isEmpty()||nomCases.containsAll(matchedCase.values())){
+		if(matchedCase==null||matchedCase.isEmpty()){//||nomCases.containsAll(matchedCase.values())){
 			return null;
 		}
 		if(genCases.containsAll(matchedCase.values())){

@@ -285,6 +285,11 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public void addChildren(Collection<IToken> children){
+		
+		if(children==null){
+			return;
+		}
+		
 		if(this.children==null){
 			this.children = new ArrayList<IToken>();
 		}
@@ -292,10 +297,9 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public void setChildren(Collection<IToken> children){
-		if(this.children==null){
-			this.children = new ArrayList<IToken>();
+		if(this.children!=null){
+			this.children.clear();
 		}
-		this.children.clear();
 		this.addChildren(children);
 	}
 	
@@ -308,6 +312,14 @@ public abstract class AbstractToken implements IToken {
 			this.parents = new ArrayList<IToken>();
 		}
 		this.parents.add(parent);
+	}
+	
+	@Override
+	public void removeParent(IToken token) {
+		if(this.parents == null){
+			return;
+		}
+		this.parents.remove(token);
 	}
 	
 	public IToken getFirstChild(Direction direction){

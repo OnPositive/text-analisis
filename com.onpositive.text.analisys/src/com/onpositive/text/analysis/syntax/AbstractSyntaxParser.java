@@ -63,7 +63,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 		this.wordNet = wordNet;
 	}
 	
-	private AbstractWordNet wordNet;
+	protected AbstractWordNet wordNet;
 	
 	public boolean isIterative(){
 		return false;

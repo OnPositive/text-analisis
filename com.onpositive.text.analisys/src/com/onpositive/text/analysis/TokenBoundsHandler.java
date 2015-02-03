@@ -142,10 +142,15 @@ public class TokenBoundsHandler {
 	
 	public static void discardTokens(List<IToken> toDiscard) {
 		for(IToken t : toDiscard){
-			discardNeighbours(t, Direction.START);
-			discardNeighbours(t, Direction.END);
+			discardToken(t);
 		}
 	}
+
+	public static void discardToken(IToken t) {
+		discardNeighbours(t, Direction.START);
+		discardNeighbours(t, Direction.END);
+	}
+
 
 	protected static void discardNeighbours(IToken token, Direction dir) {
 		IToken neighbour = token.getNeighbour(dir);
@@ -160,6 +165,23 @@ public class TokenBoundsHandler {
 			}
 		}
 	}
+
+	public void handleBounds(IToken predicateToken) {
+	
+		ArrayList<IToken> list = new ArrayList<IToken>();
+		list.add(predicateToken);
+		
+		IntObjectOpenHashMap<IToken> newMap = new IntObjectOpenHashMap<IToken>();
+		newMap.put(predicateToken.id(), predicateToken);
+		
+		IntObjectOpenHashMap<IToken> resultMap = new IntObjectOpenHashMap<IToken>();
+		resultMap.put(predicateToken.id(), predicateToken);
+
+		setResultTokens(resultMap);
+		setNewTokens(newMap);
+		handleBounds(list);
+	}
+
 
 
 }

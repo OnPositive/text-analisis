@@ -63,20 +63,20 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,""
 		+ "CLAUSE("
-	        + "<subject>NOUN_NAME_PREP("
-		        + "<main>WORD_FORM петя([имя, мр, од, СУЩ])"
-		        + "WORD_FORM в([ПР])"
-		        + "NOUN_ADJECTIVE("
-			        + "UNIFORM_ADJECTIVE("
-				        + "WORD_FORM красивый([кач, ПРИЛ])"
-				        + "<main>WORD_FORM вязаный([ПРИЛ])  )"
-			        + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )  )"
-	        + "<predicate>VERB_NOUN_PREP("
-		        + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
-		        + "WORD_FORM в([ПР])"
-		        + "NOUN_ADJECTIVE("
-			        + "WORD_FORM большой([кач, ПРИЛ])"
-			        + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
+		        + "<subject>NOUN_NAME_PREP("
+		          + "<main>WORD_FORM петя([имя, мр, од, СУЩ])"
+		          + "WORD_FORM в([ПР])"
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM красивый([кач, ПРИЛ])"
+		            + "<main>NOUN_ADJECTIVE("
+		              + "WORD_FORM вязаный([ПРИЛ])"
+		              + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )  )  )"
+		        + "<predicate>VERB_NOUN_PREP("
+		          + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+		          + "WORD_FORM в([ПР])"
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM большой([кач, ПРИЛ])"
+		            + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
 	}
 	
 	public void test003(){
@@ -84,20 +84,20 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>NOUN_NAME_PREP("
-					+ "<main>WORD_FORM петя([имя, мр, од, СУЩ])"
-					+ "WORD_FORM в([ПР])"
-					+ "NOUN_ADJECTIVE("
-						+ "UNIFORM_ADJECTIVE("
-							+ "WORD_FORM красивый([кач, ПРИЛ])"
-							+ "<main>WORD_FORM красный([кач, ПРИЛ])  )"
-						+ "<main>WORD_FORM шапка([жр, СУЩ, неод])  )  )"
-				+ "<predicate>VERB_NOUN_PREP("
-					+ "<main>WORD_FORM иду([ГЛ, неперех, несов])"
-					+ "WORD_FORM в([ПР])"
-					+ "NOUN_ADJECTIVE("
-						+ "WORD_FORM большой([кач, ПРИЛ])"
-						+ "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
+		        + "<subject>NOUN_NAME_PREP("
+		          + "<main>WORD_FORM петя([имя, мр, од, СУЩ])"
+		          + "WORD_FORM в([ПР])"
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM красивый([кач, ПРИЛ])"
+		            + "<main>NOUN_ADJECTIVE("
+		              + "WORD_FORM красный([кач, ПРИЛ])"
+		              + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )  )  )"
+		        + "<predicate>VERB_NOUN_PREP("
+		          + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
+		          + "WORD_FORM в([ПР])"
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM большой([кач, ПРИЛ])"
+		            + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
 	}
 	
 	public void test004(){
@@ -105,15 +105,14 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-		        + "<subject>NOUN_ADJECTIVE("
-			          + "WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ])"
-			          + "<main>WORD_FORM дом([мр, СУЩ, неод])  )"
-		        + "<predicate>no predicate  )");
-		assertTestTokenPrint( processed,
-			"CLAUSE("
-				+ "<subject>NOUN_ADJECTIVE("
-			          + "WORD_FORM свой([мест-п, Анаф, ПРИЛ])"
-			          + "<main>WORD_FORM улица([жр, СУЩ, неод])  )"
+		        + "<subject>UNIFORM_NOUN("
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ])"
+		            + "<main>WORD_FORM дом([мр, СУЩ, неод])  )"
+		          + "SYMBOL ,"
+		          + "<main>NOUN_ADJECTIVE("
+		            + "WORD_FORM свой([мест-п, Анаф, ПРИЛ])"
+		            + "<main>WORD_FORM улица([жр, СУЩ, неод])  )  )"
 		        + "<predicate>no predicate  )");
 	}
 	
@@ -140,14 +139,14 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>WORD_FORM я([МС, 1л])"
-				+ "<predicate>DIRECT_OBJECT_NAME("
-					+ "<main>WORD_FORM смотрю([ГЛ, перех, несов])"
-					+ "UNIFORM_NOUN("
-						+ "WORD_FORM сериал([мр, СУЩ, неод])"
-						+ "<main>NOUN_ADJECTIVE("
-							+ "WORD_FORM каждый([мест-п, ПРИЛ])"
-							+ "<main>WORD_FORM неделя([жр, СУЩ, неод])  )  )  )  )");
+		        + "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+		          + "<main>DIRECT_OBJECT_NAME("
+		            + "<main>WORD_FORM смотрю([ГЛ, перех, несов])"
+		            + "WORD_FORM сериал([мр, СУЩ, неод])  )"
+		          + "NOUN_ADJECTIVE("
+		            + "WORD_FORM каждый([мест-п, ПРИЛ])"
+		            + "<main>WORD_FORM неделя([жр, СУЩ, неод])  )  )  )");
 	}
 	
 	public void test007(){
@@ -253,16 +252,16 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>NOUN_ADJECTIVE("
-					+ "UNIFORM_ADJECTIVE("
-						+ "WORD_FORM суровый([кач, ПРИЛ])"
-						+ "<main>WORD_FORM злой([кач, ПРИЛ])  )"
-					+ "<main>WORD_FORM сантехник([мр, од, СУЩ])  )"
-				+ "<predicate>DIRECT_OBJECT_NAME("
-					+ "<main>VERB_ADVERB("
-						+ "WORD_FORM вчера([Н])"
-						+ "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
-					+ "WORD_FORM водопровод([мр, СУЩ, неод])  )  )");
+		        + "<subject>NOUN_ADJECTIVE("
+		          + "WORD_FORM суровый([кач, ПРИЛ])"
+		          + "<main>NOUN_ADJECTIVE("
+		            + "WORD_FORM злой([кач, ПРИЛ])"
+		            + "<main>WORD_FORM сантехник([мр, од, СУЩ])  )  )"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+		          + "<main>VERB_ADVERB("
+		            + "WORD_FORM вчера([Н])"
+		            + "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
+		          + "WORD_FORM водопровод([мр, СУЩ, неод])  )  )");
 	}
 	
 	public void test014(){
@@ -699,6 +698,72 @@ public class SyntaxParsersTest extends ParserTest{
 							+ "<main>WORD_FORM играющий([действ, ПРИЧ, перех, наст, несов])"
 							+ "WORD_FORM в([ПР])"
 							+ "WORD_FORM угол([мр, СУЩ, неод])  )  )  )  )");
+	}
+	
+	public void test042(){
+		String str = "Москва - столица России.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM москва([sg, жр, СУЩ, гео, неод])"
+		        + "<predicate>VERB_NOUN("
+		          + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
+		          + "GENITIVE_CHAIN("
+		            + "<main>WORD_FORM столица([жр, СУЩ, неод])"
+		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])  )  )  )");
+	}
+	
+	public void test043(){
+		String str = "Александр Сергеевич Пушкин (26 мая [6 июня] 1799, Москва — 29 января [10 февраля] 1837, Санкт-Петербург) — русский поэт, драматург и прозаик.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		          + "<subject>GENITIVE_CHAIN("
+		            + "NAME александра([имя, жр, од, СУЩ]) сергеевич([мр, од, СУЩ, отч]) "
+		            + "<main>WORD_FORM("
+		              + "<main>WORD_FORM пушкин([sg, мр, од, СУЩ, фам])"
+		              + "BRACKETS("
+		                + "REGION_BOUND("
+		                  + "SYMBOL (  )"
+		                + "CLAUSE("
+		                  + "<subject>NOUN_ADJECTIVE("
+		                    + "SCALAR 26.0"
+		                    + "<main>WORD_FORM мая([sg, жр, СУЩ, гео, неод])  )"
+		                  + "<predicate>no predicate  )"
+		                + "DATE 26.0 май([sg, мр, СУЩ, неод]) "
+		                + "SCALAR 26.0"
+		                + "SYMBOL ["
+		                + "DATE 6.0 июнь([мр, СУЩ, неод]) "
+		                + "SYMBOL ]"
+		                + "SCALAR 1799.0"
+		                + "SYMBOL ,"
+		                + "CLAUSE("
+		                  + "<subject>WORD_FORM москва([sg, жр, СУЩ, гео, неод])"
+		                  + "<predicate>no predicate  )"
+		                + "SYMBOL —"
+		                + "DATE 29.0 январь([мр, СУЩ, неод]) "
+		                + "SYMBOL ["
+		                + "DATE 10.0 февраль([мр, СУЩ, неод]) "
+		                + "SYMBOL ]"
+		                + "SCALAR 1837.0"
+		                + "SYMBOL ,"
+		                + "WORD_FORM санкт([])"
+		                + "SYMBOL -"
+		                + "CLAUSE("
+		                  + "<subject>WORD_FORM петербург([мр, СУЩ, гео, неод])"
+		                  + "<predicate>no predicate  )"
+		                + "REGION_BOUND("
+		                  + "SYMBOL )  )  )  )  )"
+		          + "<predicate>VERB_NOUN("
+		            + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
+		            + "UNIFORM_NOUN("
+		              + "NOUN_ADJECTIVE("
+		                + "WORD_FORM русский([субст?, ПРИЛ])"
+		                + "<main>WORD_FORM поэт([мр, од, СУЩ])  )"
+		              + "SYMBOL ,"
+		              + "WORD_FORM драматург([мр, од, СУЩ])"
+		              + "WORD_FORM и([СОЮЗ])"
+		              + "<main>WORD_FORM прозаик([мр, од, СУЩ])  )  )  )");
 	}
 	
 

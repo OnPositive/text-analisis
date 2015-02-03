@@ -11,7 +11,6 @@ import java.util.Stack;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
-import com.onpositive.text.analysis.IToken.Direction;
 
 public abstract class AbstractParser implements IParser {
 	
@@ -182,6 +181,16 @@ public abstract class AbstractParser implements IParser {
 		return new ProcessingResult(count,false,true);
 	}
 	
+	protected static void cleanParentship(IToken token) {
+		List<IToken> children = token.getChildren();
+		if(children!=null){
+			for(IToken ch : children){
+				ch.removeParent(token);
+			}
+			token.setChildren(null);
+		}
+	}
+
 	abstract protected void combineTokens(Stack<IToken> sample, ProcessingData processingData);
 	
 	protected ProcessingResult continuePush(Stack<IToken> sample,IToken newToken){

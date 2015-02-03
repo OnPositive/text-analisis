@@ -30,51 +30,25 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 		if(!checkParents(null, sample)){
 			return;
 		}
-		
 		IToken token0 = sample.get(0);
-		IToken token1 = sample.peek();
 		
-		boolean isMember0 = nounGenMatcher.match(token0);
-		boolean isMember1 = nounGenMatcher.match(token1);
-		
-		int type = 0;		
 		ClauseToken clauseToken = null;
-		SyntaxToken mainGroup = null;
-		if(isMember1&&!isMember0){
-			if(token0 instanceof ClauseToken){
-				clauseToken = (ClauseToken) token0;
-				mainGroup = clauseToken.getSubject();
-			}
-			else{
-				mainGroup = (SyntaxToken) token0;
-			}
-			type = IToken.TOKEN_TYPE_GENITIVE_CHAIN;
+		SyntaxToken mainGroup = (SyntaxToken) token0;		
+		
+		if(token0 instanceof ClauseToken){
+			clauseToken = (ClauseToken) token0;
+			mainGroup = clauseToken.getSubject();
 		}
-		else if(isMember0&&!isMember1){
-			if(token1 instanceof ClauseToken){
-				clauseToken = (ClauseToken) token1;
-				mainGroup = clauseToken.getSubject();
-			}
-			else{
+		else if(sample.size()==2){
+			
+			IToken token1 = sample.peek();			
+			boolean isMember0 = nounGenMatcher.match(token0);
+			boolean isMember1 = nounGenMatcher.match(token1);
+			if(isMember0&&!isMember1){
 				mainGroup = (SyntaxToken) token1;
 			}
-			type = IToken.TOKEN_TYPE_GENITIVE_CHAIN;
 		}
-		else{
-			if(token0 instanceof ClauseToken){
-				clauseToken = (ClauseToken) token0;
-				mainGroup = clauseToken.getSubject();
-			}
-			else if(token1 instanceof ClauseToken){
-				clauseToken = (ClauseToken) token1;
-				mainGroup = clauseToken.getSubject();
-			}
-			else{
-				mainGroup = (SyntaxToken) token0;
-			}
-			type = IToken.TOKEN_TYPE_UNIFORM_NOUN;
-		}
-		
+		int type = IToken.TOKEN_TYPE_GENITIVE_CHAIN;
 		if(mainGroup instanceof ClauseToken){
 			clauseToken = (ClauseToken) mainGroup;
 			mainGroup = clauseToken.getSubject();
@@ -82,7 +56,7 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 		
 		if(clauseToken==null){
 			int startPosition = token0.getStartPosition();
-			int endPosition = token1.getEndPosition();
+			int endPosition = sample.peek().getEndPosition();
 			SyntaxToken newToken = new SyntaxToken(type, mainGroup, null, startPosition, endPosition);
 			if(!checkParents(newToken, sample)){
 				return;
@@ -147,8 +121,9 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
-		return nounMatcher.match(newToken)||newToken.getType()==IToken.TOKEN_TYPE_CLAUSE ?
+		ProcessingResult result = nounMatcher.match(newToken)||newToken.getType()==IToken.TOKEN_TYPE_CLAUSE ?
 				CONTINUE_PUSH : DO_NOT_ACCEPT_AND_BREAK;
+		return result;
 	}
 	
 	@Override

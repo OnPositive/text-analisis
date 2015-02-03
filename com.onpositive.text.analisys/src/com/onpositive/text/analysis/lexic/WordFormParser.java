@@ -335,7 +335,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	}
 	
 	protected ProcessingResult checkPossibleStart(IToken token){
-		if (token.getType()==IToken.TOKEN_TYPE_DIGIT){
+		if (token.getType()!=IToken.TOKEN_TYPE_LETTER){
 			return DO_NOT_ACCEPT_AND_BREAK; 
 		}
 		String value = token.getStringValue();

@@ -95,11 +95,26 @@ public class ParserComposition2 extends ParserComposition {
 					int modType = ( mainGroup == null || ch !=mainGroup )
 							? TokenModificationData.CONSUMED : TokenModificationData.ENRICHED;					
 					
-					TokenModificationData md = new TokenModificationData(reg, ch, token, parserId, modType);
-					reg.registerData(ch.id(),md);
+					List<TokenModificationData> list = collectModificationData(ch,token,modType, new ArrayList<TokenModificationData>());
+					for(TokenModificationData md : list){
+						reg.registerData(md.token.id(),md);
+					}
 				}
 			}
 			
+		}
+
+		private List<TokenModificationData> collectModificationData(IToken modified, IToken produced, int modType, List<TokenModificationData> list) {
+			
+			TokenModificationData md = new TokenModificationData(reg, modified, produced, parserId, modType);
+			list.add(md);
+			List<IToken> children = modified.getChildren();
+			if(children!=null){
+				for(IToken ch: children){
+					collectModificationData(ch,produced,modType, list);
+				}
+			}			
+			return list;
 		}
 
 		public List<IToken> getResult() {

@@ -178,6 +178,8 @@ public interface IToken {
 	
 	void addParent(IToken parent);
 
+	void removeParent(IToken token);
+
 	boolean hasSpaceAfter();
 	
 	boolean hasSpaceBefore();

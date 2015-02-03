@@ -150,7 +150,7 @@ public class SyntaxParser extends ParserComposition {
 		NounAdjectiveParser.class,
 		NounDimensionParser.class,
 		UniformNounsParser.class,
-		GenitiveChainParser.class//,
+//		GenitiveChainParser.class//,
 //		PrepositionGroupParser.class
 	};
 	
@@ -187,6 +187,8 @@ public class SyntaxParser extends ParserComposition {
 	private ParserComposition verbGroupSyntaxParsers;
 	
 	private ParserComposition participleParsers;
+	
+	private IParser dashClauseParser;
 	
 	private ClauseParser clauseParser;
 	
@@ -233,7 +235,8 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> recNamesProcessed1 = nameRecursiveSyntaxParsers.process(namesProcessed);
 		List<IToken> verbsProcessed1 = verbGroupSyntaxParsers.process(recNamesProcessed1);
 		List<IToken> participlesProcessed = participleParsers.process(verbsProcessed1);
-		List<IToken> clausesFormed = clauseParser.process(participlesProcessed);			
+		List<IToken> dashClausesFormed = dashClauseParser.process(participlesProcessed);
+		List<IToken> clausesFormed = clauseParser.process(dashClausesFormed);
 		List<IToken> recNamesProcessed2 = nameRecursiveSyntaxParsers.process(clausesFormed);
 		List<IToken> verbsProcessed2 = verbGroupSyntaxParsers.process(recNamesProcessed2);
 		List<IToken> incompleteClausesFormed = incompleteClauseParser.process(verbsProcessed2);
@@ -245,9 +248,10 @@ public class SyntaxParser extends ParserComposition {
 		this.lexicParsers = createParsers(lexicParsersArray,false) ;		
 		this.verbGroupSyntaxParsers = createParsers(verbGroupSyntaxParsersArray,true);
 		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
-		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, true);
+		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, false);
 		this.participleParsers = createParsers(participleParserArray, false);
 		this.clauseParser = new ClauseParser(this.wordNet);
+		this.dashClauseParser = new DashClauseParser(this.wordNet);
 		this.incompleteClauseParser = new IncompleteClauseParser(this.wordNet);
 		this.syntaxParsers = new ArrayList<IParser>();
 		
@@ -264,6 +268,7 @@ public class SyntaxParser extends ParserComposition {
 				nameSyntaxParsers,
 				nameRecursiveSyntaxParsers,
 				participleParsers,
+				dashClauseParser,
 				clauseParser,
 				incompleteClauseParser };
 	}
