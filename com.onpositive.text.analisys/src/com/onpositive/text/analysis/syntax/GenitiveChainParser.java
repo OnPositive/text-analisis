@@ -121,9 +121,16 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
-		ProcessingResult result = nounMatcher.match(newToken)||newToken.getType()==IToken.TOKEN_TYPE_CLAUSE ?
-				CONTINUE_PUSH : DO_NOT_ACCEPT_AND_BREAK;
-		return result;
+		if(nounMatcher.match(newToken)){
+			return CONTINUE_PUSH;
+		}
+		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
+			ClauseToken ct = (ClauseToken) newToken;
+			if(ct.getPredicate().getStartPosition()<ct.getSubject().getStartPosition()){
+				return CONTINUE_PUSH;
+			}
+		}
+		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 	
 	@Override
