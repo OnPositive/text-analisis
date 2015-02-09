@@ -771,12 +771,11 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-		        + "<subject>WORD_FORM москва([sg, жр, СУЩ, гео, неод])"
-		        + "<predicate>VERB_NOUN("
-		          + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
-		          + "GENITIVE_CHAIN("
-		            + "<main>WORD_FORM столица([жр, СУЩ, неод])"
-		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])  )  )  )");
+		        + "<subject>no subject"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+			        + "<main>WORD_FORM купил([сов, ГЛ, перех])"
+			        + "WORD_FORM хлеб([мр, СУЩ, неод])  )  )");
+		assertEquals(processed.size(), 1);		
 	}
 	
 

@@ -276,10 +276,15 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 	public static boolean matchSP(SyntaxToken token0, SyntaxToken token1){
 		
 		List<GrammemSet> grammemSets0 = token0.getGrammemSets();
+		List<GrammemSet> grammemSets1 = token1.getGrammemSets();
+		return matchSP(grammemSets0, grammemSets1);
+	}
+	
+	public static boolean matchSP(List<GrammemSet> grammemSets0, List<GrammemSet> grammemSets1){
+		
 		if(grammemSets0==null){
 			return false;
 		}
-		List<GrammemSet> grammemSets1 = token1.getGrammemSets();
 		if(grammemSets1==null){
 			return false;
 		}

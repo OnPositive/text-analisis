@@ -1,5 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -8,6 +9,7 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
+import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class ClauseParser extends AbstractSyntaxParser{
 	
@@ -50,9 +52,9 @@ public class ClauseParser extends AbstractSyntaxParser{
 			verbToken = token1;
 			nounToken = token0;
 		}
-//		if(!matchSP(nounToken, verbToken)){
-//			return;
-//		}
+		if(!matchSP(nounToken, verbToken)){
+			return;
+		}
 		int startPosition = token0.getStartPosition();
 		int endPosition = computeEndPoosition(token1);		
 		
@@ -91,11 +93,31 @@ public class ClauseParser extends AbstractSyntaxParser{
 		IToken token0 = sample.get(0);
 		IToken token1 = newToken;
 		if (verbMatchGrammems.match(token0)	&& checkNoun.match(token1)){
+			List<GrammemSet> nGramems = getNomnGrammems((SyntaxToken) token1);
+			List<GrammemSet> vGrammems = ((SyntaxToken)token0).getGrammemSets();
+			if(!matchSP(vGrammems, nGramems)){
+				return DO_NOT_ACCEPT_AND_BREAK;
+			}
 			return ACCEPT_AND_BREAK;
-		} else if (verbMatchGrammems.match(token1)) {
+		} else if (verbMatchGrammems.match(token1) && checkNoun.match(token0)) {
+			List<GrammemSet> nGramems = getNomnGrammems((SyntaxToken) token0);
+			List<GrammemSet> vGrammems = ((SyntaxToken)token1).getGrammemSets();
+			if(!matchSP(vGrammems, nGramems)){
+				return DO_NOT_ACCEPT_AND_BREAK;
+			}
 			return ACCEPT_AND_BREAK;
 		}		
 		return DO_NOT_ACCEPT_AND_BREAK;
+	}
+
+	private List<GrammemSet> getNomnGrammems(SyntaxToken token) {
+		ArrayList<GrammemSet> list = new ArrayList<SyntaxToken.GrammemSet>();
+		for(GrammemSet gs : token.getGrammemSets()){
+			if(gs.hasAnyGrammem(caseMatchMap.get(Case.NOMN))){
+				list.add(gs);
+			}
+		}
+		return list;
 	}
 
 	@Override
