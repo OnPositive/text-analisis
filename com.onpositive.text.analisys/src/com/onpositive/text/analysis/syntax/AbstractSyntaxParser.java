@@ -54,6 +54,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	protected static final UnaryMatcher<SyntaxToken> participleMatch = hasAny(PartOfSpeech.PRTF);
 
 	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
+	
+	protected static final UnaryMatcher<SyntaxToken> nproMatch = hasAny( PartOfSpeech.NPRO );
 
 	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(
 				PartOfSpeech.VERB, PartOfSpeech.INFN, PartOfSpeech.PRTF, PartOfSpeech.PRTS, PartOfSpeech.GRND);
@@ -269,6 +271,28 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 			}
 		}
 		return result.isEmpty() ? null : result;
+	}
+	
+	public static boolean matchSP(SyntaxToken token0, SyntaxToken token1){
+		
+		List<GrammemSet> grammemSets0 = token0.getGrammemSets();
+		if(grammemSets0==null){
+			return false;
+		}
+		List<GrammemSet> grammemSets1 = token1.getGrammemSets();
+		if(grammemSets1==null){
+			return false;
+		}
+		
+		for(GrammemSet gs0 : grammemSets0){
+			for(GrammemSet gs1 : grammemSets1){
+				Map<SingularPlural, SingularPlural> matchSP = matchSP(gs0, gs1);
+				if(matchSP!=null&&!matchSP.isEmpty()){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public static Map<SingularPlural,SingularPlural> matchSP(GrammemSet gs0, GrammemSet gs1){

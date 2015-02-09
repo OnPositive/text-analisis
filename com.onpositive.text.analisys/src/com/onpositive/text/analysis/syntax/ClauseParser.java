@@ -50,6 +50,9 @@ public class ClauseParser extends AbstractSyntaxParser{
 			verbToken = token1;
 			nounToken = token0;
 		}
+//		if(!matchSP(nounToken, verbToken)){
+//			return;
+//		}
 		int startPosition = token0.getStartPosition();
 		int endPosition = computeEndPoosition(token1);		
 		

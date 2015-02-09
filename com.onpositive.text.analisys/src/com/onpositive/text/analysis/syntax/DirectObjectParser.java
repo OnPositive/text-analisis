@@ -17,7 +17,7 @@ public class DirectObjectParser extends VerbGroupParser {
 	}
 
 	private static final UnaryMatcher<SyntaxToken> acceptedNames = hasAny(
-			PartOfSpeech.NOUN/*, PartOfSpeech.ADJF*/);
+			PartOfSpeech.NOUN, PartOfSpeech.NPRO/*, PartOfSpeech.ADJF*/);
 	private static final UnaryMatcher<SyntaxToken> acceptedAcc = hasAny(caseMatchMap
 			.get(Case.ACCS));
 

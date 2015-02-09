@@ -766,5 +766,18 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "<main>WORD_FORM прозаик([мр, од, СУЩ])  )  )  )");
 	}
 	
+	public void test044(){
+		String str = "Купил хлеба";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM москва([sg, жр, СУЩ, гео, неод])"
+		        + "<predicate>VERB_NOUN("
+		          + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
+		          + "GENITIVE_CHAIN("
+		            + "<main>WORD_FORM столица([жр, СУЩ, неод])"
+		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])  )  )  )");
+	}
+	
 
 }

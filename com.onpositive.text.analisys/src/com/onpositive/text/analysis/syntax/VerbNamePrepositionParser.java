@@ -12,7 +12,7 @@ public class VerbNamePrepositionParser extends VerbPrepositionGroupParser {
 		super(wordNet);
 	}
 	
-	private static final UnaryMatcher<SyntaxToken> matcher = hasAny(PartOfSpeech.ADJF,PartOfSpeech.NOUN,PartOfSpeech.ADVB);
+	private static final UnaryMatcher<SyntaxToken> matcher = hasAny(PartOfSpeech.ADJF,PartOfSpeech.NOUN,PartOfSpeech.ADVB,PartOfSpeech.NPRO);
 
 	@Override
 	protected int getType(SyntaxToken token) {
