@@ -193,6 +193,8 @@ public class SyntaxParser extends ParserComposition {
 	private ClauseParser clauseParser;
 	
 	private IncompleteClauseParser incompleteClauseParser;
+	
+	private ComplexClauseParser complexClauseParser;
 
 	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
@@ -212,7 +214,8 @@ public class SyntaxParser extends ParserComposition {
 			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
 			List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
 			List<IToken> tokens1 = parseSyntax(tokens);
-			sentence.setChildren(new BasicCleaner().clean(tokens1));
+			List<IToken> tokens2 = complexClauseParser.process(tokens1);
+			sentence.setChildren(new BasicCleaner().clean(tokens2));
 		}
 		return sentences;
 	}
@@ -251,6 +254,7 @@ public class SyntaxParser extends ParserComposition {
 		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, false);
 		this.participleParsers = createParsers(participleParserArray, false);
 		this.clauseParser = new ClauseParser(this.wordNet);
+		this.complexClauseParser = new ComplexClauseParser(wordNet);
 		this.dashClauseParser = new DashClauseParser(this.wordNet);
 		this.incompleteClauseParser = new IncompleteClauseParser(this.wordNet);
 		this.syntaxParsers = new ArrayList<IParser>();
@@ -261,6 +265,7 @@ public class SyntaxParser extends ParserComposition {
 		this.syntaxParsers.add(clauseParser);
 		this.syntaxParsers.add(incompleteClauseParser);
 		this.syntaxParsers.add(participleParsers);
+		this.syntaxParsers.add(complexClauseParser);
 		
 		this.parsers = new IParser[]{
 				lexicParsers,
@@ -270,7 +275,8 @@ public class SyntaxParser extends ParserComposition {
 				participleParsers,
 				dashClauseParser,
 				clauseParser,
-				incompleteClauseParser };
+				incompleteClauseParser,
+				complexClauseParser };
 	}
 
 	private ParserComposition createParsers(Class<?>[] array,boolean isGloballyRecursive) {

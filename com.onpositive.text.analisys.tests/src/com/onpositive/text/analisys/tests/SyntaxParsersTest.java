@@ -778,5 +778,36 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 1);		
 	}
 	
+	
+	public void test045(){
+		String str = "Мы смотрим на кота, который лежит на ковре, который лежит на полу.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"COMPLEX_CLAUSE("
+		        + "<main>CLAUSE("
+		          + "<subject>WORD_FORM мы([МС, 1л])"
+		          + "<predicate>VERB_NOUN_PREP("
+		            + "<main>WORD_FORM смотрю([ГЛ, перех, несов])"
+		            + "WORD_FORM на([ПР])"
+		            + "WORD_FORM кот([мр, од, СУЩ])  )  )"
+		        + "SYMBOL ,"
+		        + "WORD_FORM который([СОЮЗ])"
+		        + "CLAUSE("
+		          + "<subject>no subject"
+		          + "<predicate>VERB_NOUN_PREP("
+		            + "<main>WORD_FORM лежу([ГЛ, неперех, несов])"
+		            + "WORD_FORM на([ПР])"
+		            + "WORD_FORM ковёр([мр, СУЩ, неод])  )  )"
+		        + "SYMBOL ,"
+		        + "WORD_FORM который([СОЮЗ])"
+		        + "CLAUSE("
+		          + "<subject>no subject"
+		          + "<predicate>VERB_NOUN_PREP("
+		            + "<main>WORD_FORM лежу([ГЛ, неперех, несов])"
+		            + "WORD_FORM на([ПР])"
+		            + "WORD_FORM пол([жр, СУЩ, 0, аббр, неод])  )  )  )");
+		assertEquals(processed.size(), 1);		
+	}
+	
 
 }

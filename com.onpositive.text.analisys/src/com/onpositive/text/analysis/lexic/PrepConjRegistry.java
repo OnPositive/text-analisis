@@ -24,15 +24,29 @@ public class PrepConjRegistry {
 		this.wordNet = wordNet;
 	}
 	
+	public static final String CONJUNCTION_TYPE_SUBORDINATE = "sbrd";
+	
+	public static final String CONJUNCTION_TYPE_COORDINATE = "crd";
+	
 	private AbstractWordNet wordNet;
 	
 	private HashMap<String,MeaningElement> prepMap;
 	
 	private HashMap<String,MeaningElement> conjMap;
 	
+	private HashMap<String,String> conjKindMap = new HashMap<String, String>();
+	
 	private HashMap<String,List<Case>> prepCaseMap = new HashMap<String, List<Case>>();
 	
-	private HashMap<String,UnaryMatcher<SyntaxToken>> prepCaseMatchersMap = new HashMap<String, UnaryMatcher<SyntaxToken>>(); 
+	private HashMap<String,UnaryMatcher<SyntaxToken>> prepCaseMatchersMap = new HashMap<String, UnaryMatcher<SyntaxToken>>();
+	
+	public boolean isCoordinateConjunction(String basicForm){
+		return CONJUNCTION_TYPE_COORDINATE.equals(conjKindMap.get(basicForm));
+	}
+	
+	public boolean isSubordinateConjunction(String basicForm){
+		return CONJUNCTION_TYPE_SUBORDINATE.equals(conjKindMap.get(basicForm));
+	}
 
 	public MeaningElement getPreposition(String str){
 		initMaps();
@@ -48,16 +62,16 @@ public class PrepConjRegistry {
 		
 		if(prepMap==null){
 			prepMap = new HashMap<String, MeaningElement>();
-			initMap(prepMap, "prepositions", PartOfSpeech.PREP, true);
+			initMap(prepMap, "prepositions", PartOfSpeech.PREP, new PrepositionRegistrator());
 		}
 		if(conjMap==null){
 			conjMap = new HashMap<String, MeaningElement>();
-			initMap(conjMap, "conjunctions", PartOfSpeech.CONJ, false);
+			initMap(conjMap, "conjunctions", PartOfSpeech.CONJ, new ConjugationRegistrator());
 		}
 		
 	}
 
-	private void initMap( HashMap<String, MeaningElement> map, String layerId, PartOfSpeech partOfSpeech, boolean readValue) {
+	private void initMap( HashMap<String, MeaningElement> map, String layerId, PartOfSpeech partOfSpeech, Registrator registrator) {
 		
 		MetaLayer<Object> layer = wordNet.getMetaLayers().getLayer(layerId);
 		if(layer==null){
@@ -94,29 +108,9 @@ public class PrepConjRegistry {
 				}
 			}
 			
-			if(gotMeaning && readValue){
+			if(gotMeaning && registrator != null){
 				String valueString = layer.getValue(id).toString();
-				ArrayList<String> orderedCases = new ArrayList<String>(Arrays.asList(valueString.split(" ")));
-				StringBuilder bld = new StringBuilder();
-				bld.append(orderedCases.get(0));
-				for(int i = 1 ; i < orderedCases.size(); i++){
-					bld.append(" ").append(orderedCases.get(i));
-				}
-				String canonicString = bld.toString();
-				List<Case> list = caseListCache.get(canonicString);
-				UnaryMatcher<SyntaxToken> matcher = caseMatchersCache.get(basicForm);
-				if(list==null||matcher==null){
-					list = new ArrayList<Grammem.Case>();
-					caseListCache.put(canonicString, list);
-					for(String caseName : orderedCases){
-						Grammem grammem = Grammem.get(caseName.toLowerCase());
-						list.add((Case) grammem);
-					}
-					matcher = AbstractSyntaxParser.createCaseMatcher(list);
-					caseMatchersCache.put(canonicString, matcher);
-				}
-				prepCaseMap.put(basicForm, list);
-				prepCaseMatchersMap.put(basicForm, matcher);
+				registrator.register(valueString, basicForm);
 			}
 		}
 	}
@@ -144,4 +138,60 @@ public class PrepConjRegistry {
 	public UnaryMatcher<SyntaxToken> getPrepCaseMatcher(String basicForm){
 		return prepCaseMatchersMap.get(basicForm);
 	}
+	
+	public static abstract class Registrator{
+		
+		public abstract void register(String valueString, String basicForm);
+		
+	}
+	
+	public class PrepositionRegistrator extends Registrator{
+
+		HashMap<String,List<Case>> caseListCache = new HashMap<String, List<Case>>();
+		HashMap<String,UnaryMatcher<SyntaxToken>> caseMatchersCache = new HashMap<String, UnaryMatcher<SyntaxToken>>();
+		
+		@Override
+		public void register(String valueString, String basicForm) {
+			
+			ArrayList<String> orderedCases = new ArrayList<String>(Arrays.asList(valueString.split(" ")));
+			StringBuilder bld = new StringBuilder();
+			bld.append(orderedCases.get(0));
+			for(int i = 1 ; i < orderedCases.size(); i++){
+				bld.append(" ").append(orderedCases.get(i));
+			}
+			String canonicString = bld.toString();
+			List<Case> list = caseListCache.get(canonicString);
+			UnaryMatcher<SyntaxToken> matcher = caseMatchersCache.get(basicForm);
+			if(list==null||matcher==null){
+				list = new ArrayList<Grammem.Case>();
+				caseListCache.put(canonicString, list);
+				for(String caseName : orderedCases){
+					Grammem grammem = Grammem.get(caseName.toLowerCase());
+					list.add((Case) grammem);
+				}
+				matcher = AbstractSyntaxParser.createCaseMatcher(list);
+				caseMatchersCache.put(canonicString, matcher);
+			}
+			prepCaseMap.put(basicForm, list);
+			prepCaseMatchersMap.put(basicForm, matcher);			
+			
+		}
+		
+	}
+	
+	public class ConjugationRegistrator extends Registrator{		
+
+		@Override
+		public void register(String valueString, String basicForm) {
+			
+			if(valueString==null){
+				return;
+			}
+			if(valueString.equals(CONJUNCTION_TYPE_COORDINATE)||valueString.equals(CONJUNCTION_TYPE_SUBORDINATE)){
+				conjKindMap.put(basicForm, valueString);
+			}
+		}
+		
+	}
+	
 }
