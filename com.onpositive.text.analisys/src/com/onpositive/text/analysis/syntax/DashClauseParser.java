@@ -1,5 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +66,11 @@ public class DashClauseParser extends AbstractSyntaxParser {
 		SyntaxToken predicateToken = createPredicate(verbToken,token2);
 		ClauseToken ct = new ClauseToken((SyntaxToken) token0, predicateToken, token0.getStartPosition(), predicateToken.getEndPosition());
 		if(checkParents(ct)){
+			ArrayList<IToken> children = new ArrayList<IToken>(Arrays.asList(token0,predicateToken)); 
+			ct.addChildren(children);
+			for(IToken ch : children){
+				ch.addParent(ct);
+			}
 			processingData.addReliableToken(ct);
 		}
 		else{
@@ -157,8 +163,6 @@ l1:				for(MeaningElement me : concepts){
 		}
 		WordFormToken result = new WordFormToken(estElement, token1.getStartPosition(), token1.getEndPosition());
 		result.setId(getTokenIdProvider().getVacantId());
-		result.addChild(token1);
-		token1.addParent(result);		
 		return result;
 	}
 

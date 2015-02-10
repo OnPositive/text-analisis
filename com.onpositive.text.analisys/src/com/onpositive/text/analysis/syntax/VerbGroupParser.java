@@ -71,6 +71,9 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			for(IToken t : sample){
 				children.add(t==clauseToken?predToken:t);
 			}
+			if(!checkParents(newToken, children)){
+				return;
+			}
 //			if(!isContinuous){				
 //				if (checkParents(newToken, children)) {
 //					newToken.addChildren(children);
@@ -84,8 +87,14 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 //				doSet=true;
 //			}
 //			if(doSet){
+				predToken.removeParent(clauseToken);
+				for(IToken ch : children){
+					ch.addParent(newToken);
+				}
+				newToken.setId(getTokenIdProvider().getVacantId());
 				newToken.addChildren(children);
 				clauseToken.setPredicate(newToken);
+				clauseToken.replaceChild(predToken, newToken);
 //			}
 		}
 		else if (checkParents(newToken, sample)) {
