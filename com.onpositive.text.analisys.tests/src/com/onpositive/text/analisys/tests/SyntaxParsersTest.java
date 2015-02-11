@@ -50,7 +50,7 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "WORD_FORM потом([Н])"
 			        + "<main>VERB_NOUN("
 				        + "NOUN_ADJECTIVE("
-					        + "WORD_FORM красный([кач, ПРИЛ])"
+					        + "WORD_FORM *([красный([ПРИЛ]), красный([кач, ПРИЛ])])"
 					        + "<main>WORD_FORM ручка([жр, СУЩ, неод])  )"
 				        + "<main>VERB_NOUN_PREP("
 					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])"
@@ -90,7 +90,7 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "NOUN_ADJECTIVE("
 		            + "WORD_FORM красивый([кач, ПРИЛ])"
 		            + "<main>NOUN_ADJECTIVE("
-		              + "WORD_FORM красный([кач, ПРИЛ])"
+		              + "WORD_FORM *([красный([ПРИЛ]), красный([кач, ПРИЛ])])"
 		              + "<main>WORD_FORM шапка([жр, СУЩ, неод])  )  )  )"
 		        + "<predicate>VERB_NOUN_PREP("
 		          + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
@@ -674,7 +674,7 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "<main>WORD_FORM наблюдаю([ГЛ, перех, несов])"					
 					+ "NOUN_PARTICIPLE("
 						+ "<main>NOUN_ADJECTIVE("
-							+ "WORD_FORM рыжий([кач, ПРИЛ])"
+							+ "WORD_FORM  *([рыжий([ПРИЛ]), рыжий([кач, ПРИЛ])])"
 							+ "<main>WORD_FORM кот([мр, од, СУЩ])  )"
 						+ "VERB_NOUN_PREP("
 							+ "<main>WORD_FORM играющий([действ, ПРИЧ, перех, наст, несов])"
@@ -725,11 +725,11 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "BRACKETS("
 		                + "REGION_BOUND("
 		                  + "SYMBOL (  )"
-		                + "CLAUSE("
+		              /*  + "CLAUSE("
 		                  + "<subject>NOUN_ADJECTIVE("
 		                    + "SCALAR 26.0"
 		                    + "<main>WORD_FORM мая([sg, жр, СУЩ, гео, неод])  )"
-		                  + "<predicate>no predicate  )"
+		                  + "<predicate>no predicate  )"*/
 		                + "DATE 26.0 май([sg, мр, СУЩ, неод]) "
 		                + "SCALAR 26.0"
 		                + "SYMBOL ["
@@ -805,7 +805,7 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "<predicate>VERB_NOUN_PREP("
 		            + "<main>WORD_FORM лежу([ГЛ, неперех, несов])"
 		            + "WORD_FORM на([ПР])"
-		            + "WORD_FORM пол([жр, СУЩ, 0, аббр, неод])  )  )  )");
+		            + "WORD_FORM *([пол([жр, СУЩ, 0, аббр, неод]), пол([имя, мр, од, СУЩ])])  )  )  )");
 		assertEquals(processed.size(), 1);		
 	}
 	

@@ -117,6 +117,7 @@ public interface IToken {
 	void setId(int id);
 	
 	String getStringValue();
+	String getStableStringValue();
 	
 	int getType();
 	

@@ -16,6 +16,10 @@ public abstract class AbstractToken implements IToken {
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
 	}
+	@Override
+	public String getStableStringValue() {
+		return getStringValue();
+	}
 	
 	protected AbstractToken(int tokenType, int startPosition, int endPosition, boolean isDoubtful)
 	{

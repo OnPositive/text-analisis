@@ -143,6 +143,9 @@ public class SyntaxToken extends AbstractToken{
 		return false;
 	}
 	
+	public String getStableStringValue(){
+		return getStringValue();
+	}
 	@Override
 	public String getStringValue() {
 		

@@ -3,6 +3,8 @@ package com.onpositive.text.analysis.lexic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -20,7 +22,9 @@ import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.disambig.DisambiguatorProvider;
 import com.onpositive.text.analysis.lexic.disambig.ILexicLevelDisambiguator;
+import com.onpositive.text.analysis.lexic.disambig.NamedStuffDisambiguator;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
@@ -38,7 +42,7 @@ public class WordFormParser extends AbstractParser {
 	
 	private GrammarRelation[] firstWordForms;
 	
-	ILexicLevelDisambiguator disambiguator;
+	ILexicLevelDisambiguator disambiguator=DisambiguatorProvider.getInstance();
 	
 	public ILexicLevelDisambiguator getDisambiguator() {
 		return disambiguator;
@@ -48,6 +52,7 @@ public class WordFormParser extends AbstractParser {
 		this.disambiguator = disambiguator;
 	}
 
+	
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData){
 		
@@ -137,6 +142,9 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			}
 		}
 		WordFormToken[] array = tokens.values().toArray(WordFormToken.class);
+		if (array.length>1){
+			array=mergeMeanings(array);
+		}
 		if (disambiguator!=null&&array.length>1){
 			array=disambiguator.disambiguate(array,firstToken);
 		}
@@ -485,5 +493,81 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		}
 		return prepConjRegistry;
 	}
+	static class Key{
+		public final Grammem gr;
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((el == null) ? 0 : el.hashCode());
+			result = prime * result + ((gr == null) ? 0 : gr.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Key other = (Key) obj;
+			if (el == null) {
+				if (other.el != null)
+					return false;
+			} else if (!el.equals(other.el))
+				return false;
+			if (gr == null) {
+				if (other.gr != null)
+					return false;
+			} else if (!gr.equals(other.gr))
+				return false;
+			return true;
+		}
+		public Key(Grammem gr, TextElement el) {
+			super();
+			this.gr = gr;
+			this.el = el;
+		}
+		public final TextElement el;
+	}
 
+	WordFormToken[] mergeMeanings(WordFormToken[] wordFormTokens) {
+		HashMap<Key, LinkedHashSet<WordFormToken>>map=new HashMap<Key, LinkedHashSet<WordFormToken>>();
+		for (WordFormToken t:wordFormTokens){
+			TextElement parentTextElement = t.getParentTextElement();
+			MeaningElement[] meaningElements = t.getMeaningElements();
+			for (MeaningElement z:meaningElements){
+				Set<Grammem> grammems = z.getGrammems();
+				for (Grammem g:grammems){
+					if (g instanceof Grammem.PartOfSpeech){
+						Key c=new Key(g,parentTextElement);
+						LinkedHashSet<WordFormToken> arrayList = map.get(c);
+						if (arrayList==null){
+							arrayList=new LinkedHashSet<WordFormToken>();
+							map.put(c, arrayList);
+						}
+						arrayList.add(t);
+					}
+				}
+			}
+		}
+		LinkedHashSet<WordFormToken>tks=new LinkedHashSet<WordFormToken>(Arrays.asList(wordFormTokens));
+		for (LinkedHashSet<WordFormToken>t:map.values()){
+			if (t.size()>1){
+				WordFormToken[] a = new WordFormToken[t.size()];
+				t.toArray(a);
+				a[0].merge(a);
+				for (WordFormToken tc:a){
+					if (tc!=a[0]){
+						tks.remove(tc);
+					}
+				}
+			}
+		}
+		if (tks.size()!=wordFormTokens.length){
+		wordFormTokens=tks.toArray(new WordFormToken[tks.size()]);
+		}
+		return wordFormTokens;
+	}
 }

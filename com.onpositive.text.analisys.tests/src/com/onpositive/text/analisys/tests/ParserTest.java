@@ -218,7 +218,7 @@ public class ParserTest extends TestCase {
 			bld.append("  )");
 		}
 		else{
-			bld.append(" ").append(token.getStringValue());
+			bld.append(" ").append(token.getStableStringValue());
 		}
 		String result = bld.toString();
 		return result;
@@ -236,6 +236,7 @@ l0:		for(String s : print){
 				}
 			}
 		}
+		
 		TestCase.assertTrue(gotPrint);
 	}
 	
