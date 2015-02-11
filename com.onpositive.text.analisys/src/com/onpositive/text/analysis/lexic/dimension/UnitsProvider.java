@@ -207,6 +207,19 @@ public class UnitsProvider {
 		}
 		return new ArrayList<Unit>(set);
 	}
+	public List<Unit> getUnits(MeaningElement[] me){
+		ArrayList<Unit> arrayList =null;
+		for(MeaningElement q:me){
+			List<Unit> units = getUnits(q);
+			if (units!=null){
+				if (arrayList==null){
+					arrayList = new ArrayList<Unit>();
+				}
+			arrayList.addAll(units);
+			}
+		}
+		return arrayList;
+	}
 
 	private void init() {
 		if(ultimateUnit!=null)

@@ -161,7 +161,9 @@ l1:				for(MeaningElement me : concepts){
 				}
 			}
 		}
-		WordFormToken result = new WordFormToken(estElement, token1.getStartPosition(), token1.getEndPosition());
+		WordFormToken result = new WordFormToken(
+				estElement.getParentTextElement(),
+				new MeaningElement[]{estElement}, token1.getStartPosition(), token1.getEndPosition());
 		result.setId(getTokenIdProvider().getVacantId());
 		return result;
 	}

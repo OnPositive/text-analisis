@@ -417,6 +417,7 @@ public abstract class AbstractParser implements IParser {
 		Set<IToken> reliableTokens = data.getReliableTokens();
 		Set<IToken> doubtfulTokens = data.getDoubtfulTokens();
 		boolean isUnitLength = true;
+		
 		for(IToken t : reliableTokens){
 			if(t.getChildren().size()>1){
 				isUnitLength=false;

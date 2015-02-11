@@ -72,9 +72,9 @@ public class NumericsParser extends AbstractParser {
 			if (q instanceof WordFormToken) {				
 				WordFormToken tk = (WordFormToken) q;
 				lastWordFormToken = tk;
-				MeaningElement meaningElement = tk.getMeaningElement();
+				MeaningElement[] meaningElement = tk.getMeaningElements();
 				if (true) {
-					Double value2 = (Double) layer.getValue(meaningElement);
+					Double value2 = (Double) layer.getFirstValue(meaningElement);
 					if (value2 == null) {
 						if (end > 0) {
 							processingData.addReliableToken(new ScalarToken(value,lastWordFormToken, null, start,
@@ -86,7 +86,7 @@ public class NumericsParser extends AbstractParser {
 						lastScalar = false;
 						continue;
 					}
-					Object scale = scaleLayer.getValue(meaningElement);
+					Object scale = scaleLayer.getFirstValue(meaningElement);
 					if (scale != null && scale.equals(true)) {
 						value *= value2;
 						lastScalar=false;
@@ -146,7 +146,7 @@ public class NumericsParser extends AbstractParser {
 	public ProcessingResult isNumeral(IToken newToken) {
 		if (newToken instanceof WordFormToken) {
 			WordFormToken tk = (WordFormToken) newToken;
-			if (layer!=null&&layer.getValue(tk.getMeaningElement())!=null) {
+			if (layer!=null&&layer.hasValue(tk.getMeaningElements())) {
 				return CONTINUE_PUSH;
 			}
 		}

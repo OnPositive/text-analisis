@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis.lexic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,22 +9,65 @@ import java.util.Set;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.MeaningElement;
+import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class WordFormToken extends SyntaxToken {
 
-	public WordFormToken(MeaningElement meaningElement, int startPosition, int endPosition) {
+	public WordFormToken(TextElement el,MeaningElement[] meaningElement, int startPosition, int endPosition) {
 		super(TOKEN_TYPE_WORD_FORM, null, null, startPosition, endPosition);
-		this.meaningElement = meaningElement;
+		this.meaningElements = meaningElement;
 		this.mainGroup = this;
+		this.element=el;
 	}
+	public WordFormToken(MeaningElement me, int startPosition, int endPosition1) {
+		super(TOKEN_TYPE_WORD_FORM, null, null, startPosition, endPosition1);
+		this.meaningElements =new MeaningElement[]{me};
+		this.mainGroup = this;
+		this.element=me.getParentTextElement();
+	}
+	protected TextElement element;
+	private final MeaningElement[] meaningElements;
 	
-	private final MeaningElement meaningElement;
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((element == null) ? 0 : element.hashCode());
+		result = prime
+				* result
+				+ ((grammarRelations == null) ? 0 : grammarRelations.hashCode());
+		result = prime * result + Arrays.hashCode(meaningElements);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WordFormToken other = (WordFormToken) obj;
+		if (element == null) {
+			if (other.element != null)
+				return false;
+		} else if (!element.equals(other.element))
+			return false;
+		if (grammarRelations == null) {
+			if (other.grammarRelations != null)
+				return false;
+		} else if (!grammarRelations.equals(other.grammarRelations))
+			return false;
+		if (!Arrays.equals(meaningElements, other.meaningElements))
+			return false;
+		return true;
+	}
 	private ArrayList<GrammarRelation> grammarRelations = new ArrayList<GrammarRelation>();
 
-	public MeaningElement getMeaningElement() {
-		return meaningElement;
+	public MeaningElement[] getMeaningElements() {
+		return meaningElements;
 	}
 
 	public void addGrammarRelation(GrammarRelation gr) {
@@ -45,8 +89,7 @@ public class WordFormToken extends SyntaxToken {
 	protected void initGrammemSets()
 	{
 		this.grammemSets = new ArrayList<SyntaxToken.GrammemSet>();
-		MeaningElement meaningElement = getMeaningElement();
-		Set<Grammem> grammems = meaningElement.getGrammems();
+		Set<Grammem> grammems = calcGram(meaningElements);
 		List<GrammarRelation> grammarRelations = getGrammarRelations();
 		if(grammarRelations!=null){
 			for(GrammarRelation rel : grammarRelations){
@@ -61,48 +104,31 @@ public class WordFormToken extends SyntaxToken {
 			grammemSets.add(new GrammemSet(grammems));
 		}
 	}
+
+	protected Set<Grammem> calcGram(MeaningElement[] meaningElement) {
+		HashSet<Grammem>gr=new HashSet<Grammem>();
+		for (MeaningElement q:meaningElement){
+			gr.addAll(q.getGrammems());
+		}
+		return gr;
+	}
 	
 	public String getBasicForm() {
-		return meaningElement.getParentTextElement().getBasicForm();
+		return element.getBasicForm();
 	}
 
 	@Override
 	public String getStringValue() {
-		return meaningElement == null ? "null" : meaningElement.toString();
+		if (meaningElements.length==1){
+			return meaningElements[0].toString();
+		}
+		return "*("+Arrays.toString(meaningElements)+")";
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime
-				* result
-				+ ((grammarRelations == null) ? 0 : grammarRelations.hashCode());
-		result = prime * result
-				+ ((meaningElement == null) ? 0 : meaningElement.hashCode());
-		return result;
+	public TextElement getParentTextElement() {
+		return element;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WordFormToken other = (WordFormToken) obj;
-		if (grammarRelations == null) {
-			if (other.grammarRelations != null)
-				return false;
-		} else if (!grammarRelations.equals(other.grammarRelations))
-			return false;
-		if (meaningElement == null) {
-			if (other.meaningElement != null)
-				return false;
-		} else if (!meaningElement.equals(other.meaningElement))
-			return false;
-		return true;
-	}
+	
 
 }

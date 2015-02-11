@@ -20,6 +20,9 @@ public class ScalarToken extends SyntaxToken {
 	
 	public ScalarToken(double value, SyntaxToken mainGroup, Collection<GrammemSet> grammemSets, int startPosition, int endPosition) {
 		super(TOKEN_TYPE_SCALAR, mainGroup,  grammemSets, startPosition, endPosition);
+		if (mainGroup!=null&&mainGroup.getBasicForm().equals("иду")){
+			System.out.println("a");
+		}
 		this.value1 = value;
 		this.value2 = Integer.MIN_VALUE;
 		this.isFracture = false;
