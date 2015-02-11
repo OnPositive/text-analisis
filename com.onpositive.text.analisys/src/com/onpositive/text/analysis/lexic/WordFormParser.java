@@ -20,6 +20,7 @@ import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.disambig.ILexicLevelDisambiguator;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
@@ -37,10 +38,20 @@ public class WordFormParser extends AbstractParser {
 	
 	private GrammarRelation[] firstWordForms;
 	
+	ILexicLevelDisambiguator disambiguator;
+	
+	public ILexicLevelDisambiguator getDisambiguator() {
+		return disambiguator;
+	}
+
+	public void setDisambiguator(ILexicLevelDisambiguator disambiguator) {
+		this.disambiguator = disambiguator;
+	}
+
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData){
 		
-		IntObjectOpenHashMap<IToken> tokens = new IntObjectOpenHashMap<IToken>();
+		IntObjectOpenHashMap<WordFormToken> tokens = new IntObjectOpenHashMap<WordFormToken>();
 		IToken firstToken = sample.get(0);
 		int startPosition = firstToken.getStartPosition();
 		int endPosition = firstToken.getEndPosition();
@@ -71,7 +82,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					}
 					
 					int id = me.id();
-					IToken token = tokens.get(id);
+					WordFormToken token = tokens.get(id);
 					int endPosition1 = considerAbbrEndPosition(sample,endPosition, me, gr);
 					if(token == null){						
 						token = new WordFormToken(me, startPosition, endPosition1);
@@ -108,7 +119,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					}
 					
 					int id = me.id();
-					IToken token = tokens.get(id);
+					WordFormToken token = tokens.get(id);
 					int endIndex = data.getSequenceLength()-1;
 					int endPosition1 = sample.get(endIndex).getEndPosition();
 					if(token == null){
@@ -125,7 +136,10 @@ l0:			for(GrammarRelation gr : firstWordForms){
 				}
 			}
 		}
-		IToken[] array = tokens.values().toArray(IToken.class);
+		WordFormToken[] array = tokens.values().toArray(WordFormToken.class);
+		if (disambiguator!=null&&array.length>1){
+			array=disambiguator.disambiguate(array,firstToken);
+		}
 		if(array.length==1){			
 			processingData.addReliableToken(array[0]);
 		}
