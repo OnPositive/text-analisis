@@ -233,7 +233,9 @@ public class LongNameParser extends AbstractParser {
 				if (canBePatr(tk) && !hasPatr) {
 					result.add(tk);
 					hasPatr = true;
-					break;
+					if (hasSurName&&hasName){
+						break;
+					}
 				}
 				if (hasName && hasPatr && hasSurName) {
 					return result;
@@ -318,6 +320,10 @@ public class LongNameParser extends AbstractParser {
 
 	private boolean isCommonWord(IToken tk) {
 		if (tk instanceof WordFormToken){
+			String stringValue = tk.getChildren().get(0).getStringValue();
+			if (Character.isUpperCase(stringValue.charAt(0))){
+				return false;
+			}
 			return true;
 		}
 		return false;
