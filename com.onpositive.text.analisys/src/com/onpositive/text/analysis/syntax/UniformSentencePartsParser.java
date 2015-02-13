@@ -161,13 +161,20 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 			if(commaMatcher.match(newToken)){
 				return CONTINUE_PUSH;
 			}
-			else{
+			else if(noComma()&&partOfSpeechMatcher.match(newToken)){
+				return ACCEPT_AND_BREAK;
+			}
+			else{	
 				return DO_NOT_ACCEPT_AND_BREAK;
 			}
 		}		
 		else{
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
+	}
+
+	protected boolean noComma() {
+		return true;
 	}
 
 	@Override

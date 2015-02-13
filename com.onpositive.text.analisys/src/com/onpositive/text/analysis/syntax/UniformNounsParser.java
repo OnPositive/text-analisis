@@ -51,5 +51,10 @@ public class UniformNounsParser extends UniformSentencePartsParser {
 		}
 		return true;
 	}
+	
+	@Override
+	protected boolean noComma() {
+		return false;
+	}
 
 }
