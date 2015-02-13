@@ -38,6 +38,9 @@ public class SyntaxParsersTest extends ParserTest{
 				     + "NOUN_ADJECTIVE("
 					    + "WORD_FORM большой([кач, ПРИЛ])"
 					    + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test001(){
@@ -56,6 +59,9 @@ public class SyntaxParsersTest extends ParserTest{
 					        + "<main>WORD_FORM расписался([сов, ГЛ, неперех])"
 					        + "WORD_FORM в([ПР])"
 						    + "WORD_FORM дневник([мр, СУЩ, неод])  )  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test002(){
@@ -114,6 +120,9 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM свой([мест-п, Анаф, ПРИЛ])"
 		            + "<main>WORD_FORM улица([жр, СУЩ, неод])  )  )"
 		        + "<predicate>no predicate  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	/**
@@ -122,6 +131,8 @@ public class SyntaxParsersTest extends ParserTest{
 	public void test005(){
 		String str = "Но я люблю смотреть кино.";		
 		List<IToken> processed = process(str);
+		
+		assertTestTokenPrint( processed, "WORD_FORM но([СОЮЗ])");
 		assertTestTokenPrint( processed,
 			"CLAUSE("
 				+ "<subject>WORD_FORM я([МС, 1л])"
@@ -130,6 +141,9 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "<main>WORD_FORM люблю([ГЛ, перех, несов])"
 						+ "WORD_FORM смотреть([перех, несов, ИНФ])  )"
 					+ "WORD_FORM кино([СУЩ, ср, 0, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 3);
 	}
 	/**
 	 *  INVALID TEST !!!
@@ -147,6 +161,9 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "NOUN_ADJECTIVE("
 		            + "WORD_FORM каждый([мест-п, ПРИЛ])"
 		            + "<main>WORD_FORM неделя([жр, СУЩ, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test007(){
@@ -160,7 +177,7 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "WORD_FORM петь([перех, несов, ИНФ])  )  )");
 	}
 	
-	public void test008(){
+	public void test008(){//FIXME need merge очень!
 		String str = "Мы очень быстро едем.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -171,6 +188,9 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "WORD_FORM очень([Н])"
 						+ "<main>WORD_FORM быстро([Н])  )"
 					+ "<main>WORD_FORM еду([ГЛ, неперех, несов])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test009(){
@@ -190,7 +210,7 @@ public class SyntaxParsersTest extends ParserTest{
 				   + "WORD_FORM автобус([мр, СУЩ, неод])  )  )");
 	}
 	
-	public void test010(){
+	public void test010(){//FIXME need merge очень, и!
 		String str = "Мы очень быстро и комфортно едем на автобусе.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -207,9 +227,12 @@ public class SyntaxParsersTest extends ParserTest{
 			         + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
 			       + "WORD_FORM на([ПР])"
 				   + "WORD_FORM автобус([мр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
-	public void test011(){
+	public void test011(){//FIXME
 		String str = "В лесу стоит очень красивое дерево.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -223,6 +246,7 @@ public class SyntaxParsersTest extends ParserTest{
 			       + "WORD_FORM в([ПР])"
 				   + "WORD_FORM лес([мр, СУЩ, неод])"
 			       + "<main>WORD_FORM стою([ГЛ, неперех, несов])  )  )");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test012(){
@@ -245,6 +269,9 @@ public class SyntaxParsersTest extends ParserTest{
 							+ "<main>NOUN_ADJECTIVE("
 								+ "WORD_FORM весёлый([кач, ПРИЛ])"
 								+ "<main>WORD_FORM вася([имя, мр, од, СУЩ])  )  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test013(){
@@ -262,6 +289,8 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM вчера([Н])"
 		            + "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
 		          + "WORD_FORM водопровод([мр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);
 	}
 	
@@ -278,6 +307,9 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "WORD_FORM вчера([Н])"
 						+ "<main>WORD_FORM смотрю([ГЛ, перех, несов]) )"
 					+ "WORD_FORM фильм([мр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	
@@ -289,6 +321,9 @@ public class SyntaxParsersTest extends ParserTest{
 			+ "<predicate>DIRECT_OBJECT_NAME("
 				+ "<main>WORD_FORM занял([сов, ГЛ, перех])"
 				+ "WORD_FORM деньга([жр, СУЩ, неод])))");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	
@@ -341,8 +376,12 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "NOUN_ADJECTIVE("
 						+ "SCALAR 5.0"
 						+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
-	
+
+	//FIXME ACHTUNG !!!!
 	public void test020(){
 		String str = "Взвесьте 5 кг апельсинов.";		
 		List<IToken> processed = process(str);
@@ -356,6 +395,7 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "<main>WORD_FORM апельсин([мр, СУЩ, неод])  )  )  )");
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test021(){
 		String str = "Взвесьте 5 кг зелёных яблок.";		
 		List<IToken> processed = process(str);
@@ -383,6 +423,9 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "<main>WORD_FORM читаю([ГЛ, перех, несов])"
 					+ "WORD_FORM книга([жр, СУЩ, неод])  )"
 				+ "WORD_FORM быстро([Н])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test023(){
@@ -396,9 +439,12 @@ public class SyntaxParsersTest extends ParserTest{
 		        	+ "<main>WORD_FORM читаю([ГЛ, перех, несов])"
 		        	+ "WORD_FORM быстро([Н])  )"
 		        + "WORD_FORM книга([жр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
-	public void test024(){
+	public void test024(){//FIXME
 		String str = "Быстро читаем мы книгу.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -409,9 +455,12 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "WORD_FORM быстро([Н])"
 			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])  )"
 		        + "WORD_FORM книга([жр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
-	public void test025(){
+	public void test025(){//FIXME
 		String str = "Быстро мы читаем книгу.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -422,6 +471,9 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "<main>DIRECT_OBJECT_NAME("
 			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
 			        + "WORD_FORM книга([жр, СУЩ, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test026(){
@@ -435,6 +487,9 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "<main>VERB_ADVERB("
 			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
 			        + "WORD_FORM быстро([Н])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test027(){
@@ -449,7 +504,7 @@ public class SyntaxParsersTest extends ParserTest{
 				        + "WORD_FORM глеб([имя, мр, од, СУЩ])  )"
 			        + "WORD_FORM деньга([жр, СУЩ, неод])  )  )");
 	}
-	//TODO The test is invalid
+
 	public void test028(){
 		String str = "Ученые узнали о влиянии пальцев владельцев смартфонов на мозг.";		
 		List<IToken> processed = process(str);
@@ -538,6 +593,9 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "NOUN_ADJECTIVE("
 		            + "SCALAR 10.0"
 		            + "<main>WORD_FORM процент([мр, СУЩ, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test034(){
@@ -553,6 +611,9 @@ public class SyntaxParsersTest extends ParserTest{
 			            + "WORD_FORM напевая([ДЕЕПР, перех, несов])"
 			            + "SYMBOL ,"
 			            + "<main>WORD_FORM гулять([неперех, несов, ИНФ])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test035(){
@@ -565,6 +626,9 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "<main>WORD_FORM иду([ГЛ, неперех, несов])"
 			        + "WORD_FORM с([ПР])"
 			        + "WORD_FORM маша([имя, жр, од, СУЩ])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test036(){
@@ -579,6 +643,7 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "WORD_FORM маша([имя, жр, од, СУЩ])  )  )");
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test037(){
 		String str = "Время полёта составило 254 с.";		
 		List<IToken> processed = process(str);
@@ -594,7 +659,7 @@ public class SyntaxParsersTest extends ParserTest{
 		                + "<main>WORD_FORM с([СУЩ, ср, 0, аббр, неод])  )  )  )");
 	}
 	
-	public void test038(){
+	public void test038(){//FIXME
 		String str = "В 1960 году сформировалась новая граница Москвы";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -608,6 +673,9 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "WORD_FORM в([ПР])"
 				    + "DATE 1960.0 год([мр, СУЩ, неод])" 
 			        + "<main>WORD_FORM сформировался([сов, ГЛ, неперех])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	
@@ -712,6 +780,9 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "GENITIVE_CHAIN("
 		            + "<main>WORD_FORM столица([жр, СУЩ, неод])"
 		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	
@@ -795,6 +866,7 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "<predicate>DIRECT_OBJECT_NAME("
 			        + "<main>WORD_FORM купил([сов, ГЛ, перех])"
 			        + "WORD_FORM хлеб([мр, СУЩ, неод])  )  )");
+		
 		assertEquals(processed.size(), 1);		
 	}
 	
@@ -826,7 +898,6 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "<main>WORD_FORM лежу([ГЛ, неперех, несов])"
 		            + "WORD_FORM на([ПР])"
 		            + "WORD_FORM *([пол([жр, СУЩ, 0, аббр, неод]), пол([имя, мр, од, СУЩ])])  )  )  )");
-		assertEquals(processed.size(), 1);		
 	}
 	
 	public void test047(){
@@ -842,6 +913,8 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "<main>WORD_FORM закрыть([сов, перех, ИНФ])"
 		              + "WORD_FORM рот([мр, СУЩ, неод])  )"
 		            + "WORD_FORM весь([мест-п, ПРИЛ])  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);
 	}
 	
