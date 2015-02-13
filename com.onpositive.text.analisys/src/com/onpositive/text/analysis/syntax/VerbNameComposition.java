@@ -13,10 +13,11 @@ public class VerbNameComposition extends ParserComposition2 {
 	private static UnaryMatcher<SyntaxToken> verbMatch = AbstractSyntaxParser.hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
 	private static IParser[] createParsers(AbstractWordNet wordNet){
-		return new IParser[]{				
+		return new IParser[]{
 				new VerbNamePrepositionParser(wordNet),
-				new NounNamePrepositionParser(wordNet),
-				new VerbNameParser(wordNet)
+				new VerbNameParser(wordNet),
+				new DirectObjectParser(wordNet),
+				new NounNamePrepositionParser(wordNet)
 		};
 	};
 	
@@ -48,11 +49,24 @@ public class VerbNameComposition extends ParserComposition2 {
 				}
 				for(TokenModificationData data : dataList)
 				{
-					if(data.getParserId() != validParserId){
+					int parserId = data.getParserId();
+					if(!matchParserId(validParserId, parserId)){
 						data.setCanceled(true,validParserId);
 					}
 				}
 								
+			}
+
+			protected boolean matchParserId(int validParserId, int parserId) {
+				if(parserId != validParserId){
+					if((parserId == 1 && validParserId == 2) || (parserId == 2 && validParserId == 1)){
+						return true;
+					}
+					else{
+						return false;
+					}
+				}
+				return true;
 			}
 		};
 	}

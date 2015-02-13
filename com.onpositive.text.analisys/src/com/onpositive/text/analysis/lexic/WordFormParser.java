@@ -323,6 +323,14 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			if(isAbbr&&sample.size()==1&&newToken.getStringValue()=="."){
 				return ACCEPT_AND_BREAK;
 			}
+			else if(newToken.getStringValue()=="-"){
+				for(WordSequenceData data : dataList){
+					if(data.checkHyphen()){
+						return CONTINUE_PUSH;
+					}
+				}
+				return DO_NOT_ACCEPT_AND_BREAK;
+			}
 		}
 		
 		ProcessingResult result = CONTINUE_PUSH;
@@ -334,7 +342,13 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		}
 		else{
 			for(WordSequenceData data : dataList){
-				data.setPosition(sample.size());
+				int pos = 0 ;
+				for(IToken t : sample){
+					if(t.getType() == IToken.TOKEN_TYPE_LETTER){
+						pos++;
+					}
+				}
+				data.setPosition(pos);
 			}
 			if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
 				
@@ -483,6 +497,25 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		public int getSequenceLength(){
 			return sequence.length;
 		}
+		
+		public boolean checkHyphen() {
+			String completeForm = textElement.getBasicForm();
+			int count = 0;
+			int i = 0;
+			for( ; i < completeForm.length() ; i++){
+				if(!Character.isLetter(completeForm.charAt(i))){
+					count++;
+				}
+				if(count>currentPosition){
+					break;
+				}
+			}
+			if(completeForm.charAt(i)=='-'){
+				return true;
+			}
+			return false;
+		}
+
 	}
 	
 	private static PrepConjRegistry prepConjRegistry;	

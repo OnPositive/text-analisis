@@ -118,10 +118,12 @@ public abstract class TokenAttacher {
 			}
 			else{
 				List<IToken> nbs = t.getNeighbours(dir);
-				for(IToken n : nbs){
-					if(neighboursToRemove.contains(n.id())){
-						nbsToRemove.add(n);
-					}					
+				if(nbs != null){
+					for(IToken n : nbs){
+						if(neighboursToRemove.contains(n.id())){
+							nbsToRemove.add(n);
+						}					
+					}
 				}
 			}
 			for(IToken n : nbsToRemove){

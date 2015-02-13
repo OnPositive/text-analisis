@@ -491,19 +491,19 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>no subject"
-				+ "<predicate>VERB_NOUN_PREP("
-					+ "WORD_FORM в([ПР])"
-					+ "WORD_FORM якутия([sg, жр, СУЩ, гео, неод])"
-					+ "<main>DIRECT_OBJECT_NAME("
-			            + "<main>WORD_FORM составил([сов, ГЛ, перех])"
-			            + "GENITIVE_CHAIN("
-				            + "<main>NOUN_ADJECTIVE("
-					            + "WORD_FORM электронный([ПРИЛ])"
-					            + "<main>WORD_FORM родословная([жр, СУЩ, неод])  )"
-				            + "NOUN_ADJECTIVE("
-					            + "WORD_FORM весь([мест-п, ПРИЛ])"
-					            + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )  )");
+		        + "<subject>no subject"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+		          + "<main>VERB_NOUN_PREP("
+		            + "WORD_FORM в([ПР])"
+		            + "WORD_FORM якутия([sg, жр, СУЩ, гео, неод])"
+		            + "<main>WORD_FORM составил([сов, ГЛ, перех])  )"
+		          + "GENITIVE_CHAIN("
+		            + "<main>NOUN_ADJECTIVE("
+		              + "WORD_FORM электронный([ПРИЛ])"
+		              + "<main>WORD_FORM родословная([жр, СУЩ, неод])  )"
+		            + "NOUN_ADJECTIVE("
+		              + "WORD_FORM весь([мест-п, ПРИЛ])"
+		              + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )");
 	}
 	
 	public void test032(){
@@ -528,15 +528,15 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-			   + "<subject>WORD_FORM инфляция([жр, СУЩ, неод])"
-			   + "<predicate>VERB_NOUN_PREP("
-			   		+ "WORD_FORM в([ПР])"
-			   		+ "WORD_FORM россия([sg, жр, СУЩ, гео, неод])"
-					+ "<main>DIRECT_OBJECT_NAME("
-						+ "<main>WORD_FORM достиг([сов, ГЛ, перех])"
-						+ "NOUN_ADJECTIVE("
-							+ "SCALAR 10.0"
-							+ "<main>WORD_FORM процент([мр, СУЩ, неод])  )  )  )  )");
+		        + "<subject>WORD_FORM инфляция([жр, СУЩ, неод])"
+		        + "<predicate>DIRECT_OBJECT_NAME("
+		          + "<main>VERB_NOUN_PREP("
+		            + "WORD_FORM в([ПР])"
+		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])"
+		            + "<main>WORD_FORM достиг([сов, ГЛ, перех])  )"
+		          + "NOUN_ADJECTIVE("
+		            + "SCALAR 10.0"
+		            + "<main>WORD_FORM процент([мр, СУЩ, неод])  )  )  )");
 	}
 	
 	public void test034(){
@@ -809,5 +809,20 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 1);		
 	}
 	
+	public void test046(){
+		String str = "Власть пытается закрыть рот всем";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM власть([жр, СУЩ, неод])"
+		        + "<predicate>DIRECT_OBJECT_INF("
+		          + "<main>WORD_FORM пытаюсь([ГЛ, неперех, несов])"
+		          + "VERB_ADJECTIVE("
+		            + "<main>DIRECT_OBJECT_NAME("
+		              + "<main>WORD_FORM закрыть([сов, перех, ИНФ])"
+		              + "WORD_FORM рот([мр, СУЩ, неод])  )"
+		            + "WORD_FORM весь([мест-п, ПРИЛ])  )  )  )");
+		assertEquals(processed.size(), 1);		
+	}
 
 }
