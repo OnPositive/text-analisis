@@ -64,7 +64,10 @@ public class DashClauseParser extends AbstractSyntaxParser {
 		}
 		
 		SyntaxToken predicateToken = createPredicate(verbToken,token2);
-		ClauseToken ct = new ClauseToken((SyntaxToken) token0, predicateToken, token0.getStartPosition(), predicateToken.getEndPosition());
+		int startPosition = token0.getStartPosition();
+		int endPosition = token2.getEndPosition();//computeEndPosition(token2);
+		
+		ClauseToken ct = new ClauseToken((SyntaxToken) token0, predicateToken, startPosition, endPosition);
 		if(checkParents(ct)){
 			ArrayList<IToken> children = new ArrayList<IToken>(Arrays.asList(token0,predicateToken)); 
 			ct.addChildren(children);
@@ -76,6 +79,29 @@ public class DashClauseParser extends AbstractSyntaxParser {
 		else{
 			discardPredicate(predicateToken);
 		}
+	}
+
+	protected int computeEndPosition(IToken token) {
+		
+		int endPosition = token.getEndPosition();
+		IToken next = token.getNext();
+		if(next!=null){
+			if(next.getType()==IToken.TOKEN_TYPE_SYMBOL&&next.getStringValue().equals(".")){
+				endPosition = next.getEndPosition();
+			}
+		}
+		else{
+			List<IToken> nextTokens = token.getNextTokens();
+			if(nextTokens!=null){
+				for(IToken n : nextTokens){
+					if(n.getType()==IToken.TOKEN_TYPE_SYMBOL&&n.getStringValue().equals(".")){
+						endPosition = n.getEndPosition();
+						break;
+					}					
+				}
+			}
+		}
+		return endPosition;
 	}
 	
 	private static void discardPredicate(SyntaxToken predicateToken) {
@@ -130,7 +156,7 @@ public class DashClauseParser extends AbstractSyntaxParser {
 	private SyntaxToken createPredicate(SyntaxToken verbToken, IToken objectToken) {
 		
 		int startPosition = Math.min(verbToken.getStartPosition(), objectToken.getStartPosition());
-		int endPosition = Math.max(verbToken.getEndPosition(), objectToken.getEndPosition());
+		int endPosition = Math.max(computeEndPosition(verbToken), objectToken.getEndPosition());
 		
 		SyntaxToken predicateToken = new SyntaxToken(IToken.TOKEN_TYPE_VERB_NOUN, verbToken, null, startPosition, endPosition);
 		predicateToken.setId(getTokenIdProvider().getVacantId());

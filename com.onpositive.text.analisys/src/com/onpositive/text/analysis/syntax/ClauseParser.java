@@ -56,7 +56,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 			return;
 		}
 		int startPosition = token0.getStartPosition();
-		int endPosition = computeEndPoosition(token1);		
+		int endPosition = token1.getEndPosition();//computeEndPosition(token1);		
 		
 		IToken newToken = new ClauseToken(nounToken, verbToken, startPosition, endPosition);
 		if(checkParents(newToken, sample)){
@@ -64,7 +64,7 @@ public class ClauseParser extends AbstractSyntaxParser{
 		}
 	}
 
-	protected int computeEndPoosition(SyntaxToken token) {
+	protected int computeEndPosition(SyntaxToken token) {
 		
 		int endPosition = token.getEndPosition();
 		IToken next = token.getNext();

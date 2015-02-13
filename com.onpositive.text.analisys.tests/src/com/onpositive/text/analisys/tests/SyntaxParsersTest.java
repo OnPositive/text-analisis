@@ -262,6 +262,7 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM вчера([Н])"
 		            + "<main>WORD_FORM чиню([ГЛ, перех, несов])  )"
 		          + "WORD_FORM водопровод([мр, СУЩ, неод])  )  )");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test014(){
@@ -713,7 +714,26 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM россия([sg, жр, СУЩ, гео, неод])  )  )  )");
 	}
 	
+	
 	public void test043(){
+		String str = "Александр Сергеевич Пушкин  — русский поэт, драматург и прозаик.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>NAME александр([имя, мр, од, СУЩ]) сергеевич([мр, од, СУЩ, отч]) пушкин([sg, мр, од, СУЩ, фам])"
+		        + "<predicate>VERB_NOUN("
+		          + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
+		          + "UNIFORM_NOUN("
+		            + "NOUN_ADJECTIVE("
+		              + "WORD_FORM русский([субст?, ПРИЛ])"
+		              + "<main>WORD_FORM поэт([мр, од, СУЩ])  )"
+		            + "SYMBOL ,"
+		            + "WORD_FORM драматург([мр, од, СУЩ])"
+		            + "WORD_FORM и([СОЮЗ])"
+		            + "<main>WORD_FORM прозаик([мр, од, СУЩ])  )  )  )");
+	}
+	
+	public void test044(){
 		String str = "Александр Сергеевич Пушкин (26 мая [6 июня] 1799, Москва — 29 января [10 февраля] 1837, Санкт-Петербург) — русский поэт, драматург и прозаик.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -766,7 +786,7 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "<main>WORD_FORM прозаик([мр, од, СУЩ])  )  )  )");
 	}
 	
-	public void test044(){
+	public void test045(){
 		String str = "Купил хлеба";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -779,7 +799,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	
-	public void test045(){
+	public void test046(){
 		String str = "Мы смотрим на кота, который лежит на ковре, который лежит на полу.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -809,8 +829,8 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 1);		
 	}
 	
-	public void test046(){
-		String str = "Власть пытается закрыть рот всем";
+	public void test047(){
+		String str = "Власть пытается закрыть рот всем.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
@@ -822,7 +842,7 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "<main>WORD_FORM закрыть([сов, перех, ИНФ])"
 		              + "WORD_FORM рот([мр, СУЩ, неод])  )"
 		            + "WORD_FORM весь([мест-п, ПРИЛ])  )  )  )");
-		assertEquals(processed.size(), 1);		
+		assertEquals(processed.size(), 2);
 	}
-
+	
 }

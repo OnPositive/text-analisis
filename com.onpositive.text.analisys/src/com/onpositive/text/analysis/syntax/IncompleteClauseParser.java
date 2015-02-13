@@ -46,7 +46,7 @@ public class IncompleteClauseParser extends AbstractSyntaxParser{
 			nounToken = token;
 		}
 		int startPosition = token.getStartPosition();
-		int endPosition = computeEndPoosition(token);		
+		int endPosition = token.getEndPosition();//computeEndPosition(token);		
 		
 		IToken newToken = new ClauseToken(nounToken, verbToken, startPosition, endPosition);
 		if(checkParents(newToken, sample)){
@@ -54,7 +54,7 @@ public class IncompleteClauseParser extends AbstractSyntaxParser{
 		}
 	}
 
-	protected int computeEndPoosition(SyntaxToken token) {
+	protected int computeEndPosition(SyntaxToken token) {
 		
 		int endPosition = token.getEndPosition();
 		
