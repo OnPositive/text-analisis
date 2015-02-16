@@ -338,7 +338,7 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 					toRemove.add(t);
 				}
 			}
-			commonParents.retainAll(toRemove);
+			commonParents.removeAll(toRemove);
 			if(commonParents.isEmpty()){
 				break;
 			}
