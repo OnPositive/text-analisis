@@ -135,5 +135,11 @@ public class ParserComposition implements IParser {
 		return null;
 	}
 
+	public void clean() {
+		for(IParser p : this.parsers){
+			p.clean();
+		}
+	}
+
 
 }

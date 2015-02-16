@@ -82,8 +82,11 @@ public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {
 //				doSet=true;
 //			}
 //			if(doSet){
-				newToken.addChildren(children);
-				clauseToken.setPredicate(newToken);
+			newToken.addChildren(children);
+			if(!checkParents(newToken, children)){
+				return;
+			}				
+			clauseToken.setPredicate(newToken);
 //			}
 		}
 		else if (checkParents(newToken, sample)) {

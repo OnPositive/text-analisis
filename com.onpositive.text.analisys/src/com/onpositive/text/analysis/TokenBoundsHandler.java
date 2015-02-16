@@ -25,10 +25,12 @@ public class TokenBoundsHandler {
 		List<IToken> nextTokens = addBounds(tokens);
 		
 		for(IToken t : tokens){
-			processToken(t, newTokens.containsKey(t.id()));
+			boolean isNew = newTokens.containsKey(t.id());
+			processToken(t, isNew);
 		}
 		for(IToken t : nextTokens){
-			processToken(t, newTokens.containsKey(t.id()));
+			boolean isNew = newTokens.containsKey(t.id());
+			processToken(t, isNew);
 		}
 	}
 
@@ -85,9 +87,9 @@ public class TokenBoundsHandler {
 		return result;
 	}
 	
-	private void processToken(IToken token, boolean newLevel) {
+	private void processToken(IToken token, boolean isNew) {
 		
-		if(newLevel){
+		if(isNew){
 			List<IToken> children = token.getChildren();
 			for(IToken ch : children){
 				ch.addParent(token);
@@ -95,7 +97,7 @@ public class TokenBoundsHandler {
 		}
 		
 		IToken boundToken = null;
-		if(newLevel){
+		if(isNew){
 			boundToken = token.getFirstChild(Direction.START);
 		}
 		else{

@@ -231,7 +231,7 @@ public abstract class AbstractParser implements IParser {
 		ArrayList<IToken> toDiscard = new ArrayList<IToken>();
 		for( int i = 0 ; i < tokens.size() ; i++ ){
 			IToken token = tokens.get(i);			
-			if(inspectBranch(token)){
+			if(inspectBranch(token, toDiscard)){
 				continue;
 			}
 			data.clear();
@@ -349,7 +349,7 @@ public abstract class AbstractParser implements IParser {
 		return parents;
 	}
 
-	private boolean inspectBranch(IToken token) {
+	private boolean inspectBranch(IToken token, ArrayList<IToken> toDiscard) {
 //		List<IToken> parents = token.getParents();
 //		if(parents==null||parents.isEmpty()){
 //			return false;
@@ -365,6 +365,7 @@ public abstract class AbstractParser implements IParser {
 			if(parents!=null&&!parents.isEmpty()){
 				for(IToken parent: parents){
 					if(resultTokens.containsKey(parent.id())){
+						toDiscard.add(token);
 						return true;
 					}
 				}
@@ -568,11 +569,16 @@ public abstract class AbstractParser implements IParser {
 	
 	private void prepareParser(List<IToken> tokens) {
 		
+		clean();
+		tokenIdProvider.prepare(tokens);
+	}
+
+	@Override
+	public void clean() {
 		resultTokens.clear();
 		newTokens.clear();
 		parentsMap.clear();
 		branchRegistry.clear();
-		tokenIdProvider.prepare(tokens);
 	}
 
 	public boolean isRecursive() {

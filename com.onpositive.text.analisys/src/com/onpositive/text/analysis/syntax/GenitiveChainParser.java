@@ -64,7 +64,7 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			processingData.addDoubtfulToken(newToken);
 		}
 		else{
-			int startPosition = Integer.MAX_VALUE;
+			int startPosition = mainGroup.getStartPosition();
 			int endPosition = clauseToken.getStartPosition();
 			int count = 0;
 			for(IToken t : sample){
@@ -82,11 +82,15 @@ public class GenitiveChainParser extends AbstractSyntaxParser {
 			if(count<1){
 				return;
 			}
-			SyntaxToken newToken = new SyntaxToken(type, mainGroup, null, startPosition, endPosition);
 			ArrayList<IToken> children = new ArrayList<IToken>();
 			for(IToken t : sample){
 				children.add(t==clauseToken?mainGroup:t);
 			}
+			SyntaxToken newToken = new SyntaxToken(type, mainGroup, null, startPosition, endPosition);
+			if(!checkParents(newToken, children)){		
+				return;
+			}
+			
 			newToken.setChildren(children);
 			clauseToken.setSubject(newToken);
 		}

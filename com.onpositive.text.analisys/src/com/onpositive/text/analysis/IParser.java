@@ -28,6 +28,8 @@ public interface IParser {
 	
 	void setBaseTokens(List<IToken> baseTokens);
 
+	void clean();
+
 	public class TokenIdProvider{
 		
 		private int currentTokenId;

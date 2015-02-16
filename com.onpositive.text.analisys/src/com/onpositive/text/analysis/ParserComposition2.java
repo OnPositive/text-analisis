@@ -146,6 +146,10 @@ public class ParserComposition2 extends ParserComposition {
 			}
 			return bld.toString();
 		}
+
+		public void clean() {
+			this.parser.clean();
+		}
 	}
 	
 	
@@ -265,8 +269,11 @@ public class ParserComposition2 extends ParserComposition {
 			this.currentTokensArray = this.original;
 			
 			while(true){
+				
+				this.clean();
 
 				for( ParserData pd : parserDataList){
+					
 					if(pd.isFinished()){
 						continue;
 					}
@@ -402,6 +409,9 @@ public class ParserComposition2 extends ParserComposition {
 			this.map.clear();
 			this.cancelledProducedTokens.clear();
 			this.modifiedTokens.clear();
+			for( ParserData pd : this.parserDataList){
+				pd.clean();
+			}
 		}
 
 		protected void resolveConflicts() {
