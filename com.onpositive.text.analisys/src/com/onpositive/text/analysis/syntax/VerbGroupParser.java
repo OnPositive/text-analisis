@@ -47,9 +47,6 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			return;
 		}
 		
-		int startPosition = sample.get(0).getStartPosition();
-		int endPosition = sample.peek().getEndPosition();
-		
 		ClauseToken clauseToken = null;
 		SyntaxToken predToken = null;
 		if(orderedTokens[0].getType()==IToken.TOKEN_TYPE_CLAUSE){
@@ -62,6 +59,16 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		int objType = getType(orderedTokens[1]);
 		
 		boolean isDoubtful = isDoubtful(orderedTokens);
+		
+		int startPosition = Integer.MAX_VALUE;
+		int endPosition = Integer.MIN_VALUE;
+		for(IToken t : sample) {
+			if(t==clauseToken) {
+				t = predToken;
+			}
+			startPosition = Math.min(startPosition, t.getStartPosition());
+			endPosition = Math.max(endPosition, t.getEndPosition());
+		}
 			
 		SyntaxToken newToken = new SyntaxToken(objType, predToken, null, startPosition, endPosition,isDoubtful);
 	
