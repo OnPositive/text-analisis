@@ -8,8 +8,12 @@ import java.util.List;
 import com.carrotsearch.hppc.IntIntOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
 
-public class BasicCleaner {
+public class BasicCleaner implements ITokenCleaner {
 	
+	/* (non-Javadoc)
+	 * @see com.onpositive.text.analysis.ITokenCleaner#clean(java.util.List)
+	 */
+	@Override
 	public List<IToken> clean(List<IToken> tokens){
 		
 		final IntIntOpenHashMap depthMap = new IntIntOpenHashMap();

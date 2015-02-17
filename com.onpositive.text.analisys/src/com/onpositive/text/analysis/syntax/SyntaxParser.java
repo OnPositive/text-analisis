@@ -9,7 +9,6 @@ import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
-import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
@@ -17,6 +16,7 @@ import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
+import com.onpositive.text.analysis.StructureInspectingCleaner;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -215,7 +215,7 @@ public class SyntaxParser extends ParserComposition {
 			List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
 			List<IToken> tokens1 = parseSyntax(tokens);
 			List<IToken> tokens2 = complexClauseParser.process(tokens1);
-			sentence.setChildren(new BasicCleaner().clean(tokens2));
+			sentence.setChildren(new StructureInspectingCleaner().clean(tokens2));
 		}
 		return sentences;
 	}

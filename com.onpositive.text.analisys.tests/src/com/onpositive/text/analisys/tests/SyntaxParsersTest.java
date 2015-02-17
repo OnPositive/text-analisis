@@ -470,7 +470,14 @@ public class SyntaxParsersTest extends ParserTest{
 		        + "WORD_FORM быстро([Н])"
 		        + "<main>DIRECT_OBJECT_NAME("
 			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])"
-			        + "WORD_FORM книга([жр, СУЩ, неод])  )  )  )");
+			        + "WORD_FORM книга([жр, СУЩ, неод])  )  )  )",
+			"CLAUSE("
+	        + "<subject>WORD_FORM мы([МС, 1л])"
+	        + "<predicate>DIRECT_OBJECT_NAME("
+			    + "<main>VERB_ADVERB("
+			        + "WORD_FORM быстро([Н])"
+			        + "<main>WORD_FORM читаю([ГЛ, перех, несов])  )"
+			    + "WORD_FORM книга([жр, СУЩ, неод])  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);

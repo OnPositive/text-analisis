@@ -93,12 +93,14 @@ public interface IToken {
 	static final int TOKEN_TYPE_UNIFORM_ADJECTIVE = 11053;
 
 	static final int TOKEN_TYPE_UNIFORM_NOUN = 11054;
+	
+	static final int TOKEN_TYPE_UNIFORM_VERB = 11055;
 
-	static final int TOKEN_TYPE_MEASURED_NOUN = 11055;
+	static final int TOKEN_TYPE_MEASURED_NOUN = 11056;
 	
-	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11056;
+	static final int TOKEN_TYPE_GENITIVE_CHAIN = 11057;
 	
-	static final int TOKEN_TYPE_PREPOSITION_GROUP = 11057;
+	static final int TOKEN_TYPE_PREPOSITION_GROUP = 11058;
 	
 	static final int TOKEN_TYPE_BRACKETS = 12001;
 	
