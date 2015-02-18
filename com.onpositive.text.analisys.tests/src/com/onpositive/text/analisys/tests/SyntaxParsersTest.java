@@ -64,7 +64,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test002(){
+	public void test002(){//TODO assert output size
 		String str = "Петя в красивой вязаной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,""
@@ -85,7 +85,7 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "<main>WORD_FORM магазин([мр, СУЩ, неод])  )  )  )");
 	}
 	
-	public void test003(){
+	public void test003(){//TODO assert output size
 		String str = "Петя в красивой красной шапке идёт в большой магазин.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -166,7 +166,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test007(){
+	public void test007(){//TODO assert output size
 		String str = "Петя любит петь.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -193,7 +193,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test009(){
+	public void test009(){//TODO assert output size
 		String str = "Мы быстро и комфортно едем на автобусе.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -327,7 +327,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	
-	public void test016(){
+	public void test016(){//TODO assert output size
 		String str = "Он быстро бежал за красивой девушкой.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -343,6 +343,7 @@ public class SyntaxParsersTest extends ParserTest{
 			     + "<main>WORD_FORM девушка([жр, од, СУЩ])  )  )  )");
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test017(){
 		String str = "Длина составляет 200 километров.";		
 		List<IToken> processed = process(str);
@@ -354,6 +355,7 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "DIMENSION 200.0 километр(SIZE)  )  )");
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test018(){
 		String str = "Длина составляет 200 км.";		
 		List<IToken> processed = process(str);
@@ -365,6 +367,7 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "DIMENSION 200.0 километр(SIZE)  )  )");
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test019(){
 		String str = "Дайте 5 апельсинов.";		
 		List<IToken> processed = process(str);
@@ -499,7 +502,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test027(){
+	public void test027(){//TODO assert output size
 		String str = "Я занял глебу денег.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -512,7 +515,7 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "WORD_FORM деньга([жр, СУЩ, неод])  )  )");
 	}
 
-	public void test028(){
+	public void test028(){//TODO assert output size
 		String str = "Ученые узнали о влиянии пальцев владельцев смартфонов на мозг.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -531,7 +534,7 @@ public class SyntaxParsersTest extends ParserTest{
 				        + "WORD_FORM мозг([мр, СУЩ, неод])  )  )  )");
 	}
 	
-	public void test030(){
+	public void test030(){//TODO assert output size
 		String str = "Российские следователи ответили на упреки украинских силовиков.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -549,7 +552,7 @@ public class SyntaxParsersTest extends ParserTest{
 					       + "<main>WORD_FORM силовик([мр, од, СУЩ])  )  )  )  )");
 	}
 	
-	public void test031(){
+	public void test031(){//TODO assert output size
 		String str = "В Якутии составят электронную родословную всего населения.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -569,7 +572,7 @@ public class SyntaxParsersTest extends ParserTest{
 		              + "<main>WORD_FORM население([СУЩ, ср, неод])  )  )  )  )");
 	}
 	
-	public void test032(){
+	public void test032(){//TODO assert output size
 		String str = "Президент Гамбии опроверг попытку государственного переворота.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -638,6 +641,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
+	//FIXME ACHTUNG !!!!
 	public void test036(){
 		String str = "Полёт длился 254 с и завершился удачно.";		
 		List<IToken> processed = process(str);
@@ -664,7 +668,7 @@ public class SyntaxParsersTest extends ParserTest{
 		          + "DIMENSION 254.0 секунда(TIME)  )  )");
 	}
 	
-	public void test038(){//TODO
+	public void test038(){//TODO kill invalid choice
 		String str = "В 1960 году сформировалась новая граница Москвы.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -684,7 +688,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	
-	public void test039(){
+	public void test039(){//TODO assert output size
 		String str = "С победой большевиков в 1920 году в войне началась новая, советская эпоха в развитии города";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -738,7 +742,7 @@ public class SyntaxParsersTest extends ParserTest{
 						+ "<main>WORD_FORM начался([сов, ГЛ, неперех])  )  )");
 	}
 	
-	public void test040(){
+	public void test040(){//TODO assert output size
 		String str = "Мы наблюдаем рыжего кота, играющего в углу.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -756,7 +760,7 @@ public class SyntaxParsersTest extends ParserTest{
 							+ "WORD_FORM угол([мр, СУЩ, неод])  )  )  )  )");
 	}
 	
-	public void test041(){
+	public void test041(){//TODO assert output size
 		String str = "Мы наблюдаем рыжего играющего в углу кота.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -873,7 +877,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	
-	public void test046(){
+	public void test046(){//TODO assert output size
 		String str = "Мы смотрим на кота, который лежит на ковре, который лежит на полу.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
