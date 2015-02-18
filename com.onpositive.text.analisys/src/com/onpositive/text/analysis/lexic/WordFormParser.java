@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,9 +16,11 @@ import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
+import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.AbstractParser;
@@ -30,6 +33,13 @@ import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class WordFormParser extends AbstractParser {
+	
+	private static final HashSet<Grammem> uniformGrammems = new HashSet<Grammem>(Arrays.asList(
+			PartOfSpeech.NOUN,
+			Case.NOMN, Case.GENT, Case.ACCS, Case.ABLT, Case.DATV, Case.LOCT,
+			Gender.UNKNOWN,
+			SingularPlural.SINGULAR
+		));  
 
 	public WordFormParser(AbstractWordNet wordNet) {
 		super();
@@ -55,6 +65,16 @@ public class WordFormParser extends AbstractParser {
 	
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData){
+		
+		if(this.firstWordForms == null){
+			for(IToken t : sample){
+				ArrayList<GrammemSet> list = new ArrayList<GrammemSet>();
+				list.add(new GrammemSet(uniformGrammems));
+				WordFormToken wft = new WordFormToken(list, t.getStartPosition(), t.getEndPosition());
+				processingData.addReliableToken(wft);
+			}
+			return;
+		}
 		
 		IntObjectOpenHashMap<WordFormToken> tokens = new IntObjectOpenHashMap<WordFormToken>();
 		IToken firstToken = sample.get(0);
@@ -377,7 +397,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		String value = token.getStringValue();
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
 		if(possibleGrammarForms==null||possibleGrammarForms.length==0){
-			return DO_NOT_ACCEPT_AND_BREAK;
+			firstWordForms = null;
+			return ACCEPT_AND_BREAK;
 		}
 		
 		firstWordForms = possibleGrammarForms;

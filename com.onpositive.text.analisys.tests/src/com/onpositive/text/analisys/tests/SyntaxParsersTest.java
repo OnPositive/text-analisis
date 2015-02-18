@@ -924,4 +924,18 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
+	public void test048(){
+		String str = "Идёт большой БКТД.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>NOUN_ADJECTIVE("
+		          + "WORD_FORM большой([кач, ПРИЛ])"
+		          + "<main>WORD_FORM Unknown(БКТД)  )"
+		        + "<predicate>WORD_FORM иду([ГЛ, неперех, несов])  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
+	}
+	
 }

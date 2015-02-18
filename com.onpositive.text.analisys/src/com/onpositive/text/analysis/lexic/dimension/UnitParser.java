@@ -89,7 +89,10 @@ public class UnitParser extends AbstractParser {
 	private String getUnitName(IToken token) {
 		
 		if(token instanceof WordFormToken){
-			TextElement te = ((WordFormToken)token).getParentTextElement();			
+			TextElement te = ((WordFormToken)token).getParentTextElement();
+			if(te==null){
+				return null;
+			}
 			return te.getBasicForm();
 		}
 		else if( token instanceof StringToken){

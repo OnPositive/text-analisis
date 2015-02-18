@@ -30,6 +30,13 @@ public class WordFormToken extends SyntaxToken {
 		this.mainGroup = this;
 		this.element = me.getParentTextElement();
 	}
+	
+	public WordFormToken(List<GrammemSet> grammemSets, int startPosition, int endPosition1) {
+		super(TOKEN_TYPE_WORD_FORM, null, grammemSets, startPosition, endPosition1);
+		this.meaningElements = new MeaningElement[]{};
+		this.mainGroup = this;
+		this.element = null;
+	}
 
 	protected TextElement element;
 	private MeaningElement[] meaningElements;
@@ -119,12 +126,20 @@ public class WordFormToken extends SyntaxToken {
 	}
 
 	public String getBasicForm() {
-		return element.getBasicForm();
+		if(element != null){
+			return element.getBasicForm();
+		}
+		else{
+			return children.get(0).getStringValue();
+		}
 	}
 
 	@Override
 	public String getStableStringValue() {
-		if (meaningElements.length == 1) {
+		if(meaningElements.length==0){
+			return "Unknown(" + children.get(0).getStringValue() + ")";
+		}
+		else if (meaningElements.length == 1) {
 			return meaningElements[0].toString();
 		}
 		Arrays.sort(meaningElements, new Comparator<MeaningElement>() {
@@ -140,7 +155,10 @@ public class WordFormToken extends SyntaxToken {
 
 	@Override
 	public String getStringValue() {
-		if (meaningElements.length == 1) {
+		if(meaningElements.length==0){
+			return "Unknown(" + children.get(0).getStringValue() + ")";
+		}
+		else if (meaningElements.length == 1) {
 			return meaningElements[0].toString();
 		}
 		return "*(" + Arrays.toString(meaningElements) + ")";
