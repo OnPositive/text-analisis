@@ -177,17 +177,17 @@ public class SyntaxParsersTest extends ParserTest{
 					+ "WORD_FORM петь([перех, несов, ИНФ])  )  )");
 	}
 	
-	public void test008(){//FIXME need merge очень!
+	public void test008(){
 		String str = "Мы очень быстро едем.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>WORD_FORM мы([МС, 1л])"
-				+ "<predicate>VERB_ADVERB("
-					+ "ADVERB_WITH_MODIFICATOR("
-						+ "WORD_FORM очень([Н])"
-						+ "<main>WORD_FORM быстро([Н])  )"
-					+ "<main>WORD_FORM еду([ГЛ, неперех, несов])  )  )");
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_ADVERB("
+		          + "ADVERB_WITH_MODIFICATOR("
+		            + "WORD_FORM *([очень([]), очень([Н])])"
+		            + "<main>WORD_FORM быстро([Н])  )"
+		          + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);
@@ -210,43 +210,43 @@ public class SyntaxParsersTest extends ParserTest{
 				   + "WORD_FORM автобус([мр, СУЩ, неод])  )  )");
 	}
 	
-	public void test010(){//FIXME need merge очень, и!
+	public void test010(){
 		String str = "Мы очень быстро и комфортно едем на автобусе.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-			     + "<subject>WORD_FORM мы([МС, 1л])"
-			     + "<predicate>VERB_NOUN_PREP("
-			       + "<main>VERB_ADVERB("
-			         + "UNIFORM_ADVERB("
-			           + "ADVERB_WITH_MODIFICATOR("
-			             + "WORD_FORM очень([Н])"
-			             + "<main>WORD_FORM быстро([Н])  )"
-			           + "WORD_FORM и([СОЮЗ])"
-			           + "<main>WORD_FORM комфортно([Н])  )"
-			         + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
-			       + "WORD_FORM на([ПР])"
-				   + "WORD_FORM автобус([мр, СУЩ, неод])  )  )");
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_NOUN_PREP("
+		          + "<main>VERB_ADVERB("
+		            + "UNIFORM_ADVERB("
+		              + "ADVERB_WITH_MODIFICATOR("
+		                + "WORD_FORM *([очень([]), очень([Н])])"
+		                + "<main>WORD_FORM быстро([Н])  )"
+		              + "WORD_FORM и([СОЮЗ])"
+		              + "<main>WORD_FORM комфортно([Н])  )"
+		            + "<main>WORD_FORM еду([ГЛ, неперех, несов])  )"
+		          + "WORD_FORM на([ПР])"
+		          + "WORD_FORM автобус([мр, СУЩ, неод])  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test011(){//FIXME
+	public void test011(){//TODO стоять - стоить, лес - лёса
 		String str = "В лесу стоит очень красивое дерево.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			" CLAUSE("
 			     + "<subject>NOUN_ADJECTIVE("
 			       + "ADJECTIVE_ADVERB("
-			         + "WORD_FORM очень([Н])"
+			         + "WORD_FORM *([очень([]), очень([Н])])"
 			         + "<main>WORD_FORM красивый([кач, ПРИЛ])  )"
 			       + "<main>WORD_FORM дерево([СУЩ, ср, неод])  )"
 			     + "<predicate>VERB_NOUN_PREP("
 			       + "WORD_FORM в([ПР])"
 				   + "WORD_FORM лес([мр, СУЩ, неод])"
 			       + "<main>WORD_FORM стою([ГЛ, неперех, несов])  )  )");
-		assertEquals(processed.size(), 2);
+		assertEquals(processed.size(), 5);
 	}
 	
 	public void test012(){
@@ -444,7 +444,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test024(){//FIXME
+	public void test024(){
 		String str = "Быстро читаем мы книгу.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -460,7 +460,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
-	public void test025(){//FIXME
+	public void test025(){
 		String str = "Быстро мы читаем книгу.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -656,18 +656,16 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>GENITIVE_CHAIN("
-					+ "<main>WORD_FORM время([СУЩ, ср, неод])"
-					+ "WORD_FORM полёт([мр, СУЩ, неод]) )"
-		        + "<predicate>DIRECT_OBJECT_NAME("
-			        + "<main>WORD_FORM составил([сов, ГЛ, перех])"
-		            + "NOUN_ADJECTIVE("
-		                + "SCALAR 254.0"
-		                + "<main>WORD_FORM с([СУЩ, ср, 0, аббр, неод])  )  )  )");
+		        + "<subject>GENITIVE_CHAIN("
+		          + "<main>WORD_FORM время([СУЩ, ср, неод])"
+		          + "WORD_FORM полёт([мр, СУЩ, неод])  )"
+		        + "<predicate>VERB_NOUN("
+		          + "<main>WORD_FORM составил([сов, ГЛ, перех])"
+		          + "DIMENSION 254.0 секунда(TIME)  )  )");
 	}
 	
-	public void test038(){//FIXME
-		String str = "В 1960 году сформировалась новая граница Москвы";		
+	public void test038(){//TODO
+		String str = "В 1960 году сформировалась новая граница Москвы.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
@@ -682,7 +680,7 @@ public class SyntaxParsersTest extends ParserTest{
 			        + "<main>WORD_FORM сформировался([сов, ГЛ, неперех])  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
-		assertEquals(processed.size(), 2);
+		assertEquals(processed.size(), 3);
 	}
 	
 	
@@ -798,7 +796,7 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-		        + "<subject>NAME александр([имя, мр, од, СУЩ]) сергеевич([мр, од, СУЩ, отч]) пушкин([sg, мр, од, СУЩ, фам])"
+		        + "<subject>NAME александр([имя, мр, од, СУЩ]) сергеевич([мр, од, СУЩ, отч]) *([пушкин([sg, мр, од, СУЩ, фам]), пушкин([гео])])"
 		        + "<predicate>VERB_NOUN("
 		          + "<main>WORD_FORM есть([ГЛ, неперех, несов])"
 		          + "UNIFORM_NOUN("

@@ -567,13 +567,16 @@ l0:			for(GrammarRelation gr : firstWordForms){
 
 	WordFormToken[] mergeMeanings(WordFormToken[] wordFormTokens) {
 		HashMap<Key, LinkedHashSet<WordFormToken>>map=new HashMap<Key, LinkedHashSet<WordFormToken>>();
+		ArrayList<WordFormToken> noPartOfSpeech = new ArrayList<WordFormToken>();
 		for (WordFormToken t:wordFormTokens){
 			TextElement parentTextElement = t.getParentTextElement();
 			MeaningElement[] meaningElements = t.getMeaningElements();
 			for (MeaningElement z:meaningElements){
 				Set<Grammem> grammems = z.getGrammems();
+				boolean gotPartOfSpeech = false;
 				for (Grammem g:grammems){
 					if (g instanceof Grammem.PartOfSpeech){
+						gotPartOfSpeech = true;
 						Key c=new Key(g,parentTextElement);
 						LinkedHashSet<WordFormToken> arrayList = map.get(c);
 						if (arrayList==null){
@@ -583,7 +586,13 @@ l0:			for(GrammarRelation gr : firstWordForms){
 						arrayList.add(t);
 					}
 				}
+				if(!gotPartOfSpeech){
+					noPartOfSpeech.add(t);
+				}
 			}
+		}
+		for(LinkedHashSet<WordFormToken> set :map.values()){
+			set.addAll(noPartOfSpeech);
 		}
 		LinkedHashSet<WordFormToken>tks=new LinkedHashSet<WordFormToken>(Arrays.asList(wordFormTokens));
 		for (LinkedHashSet<WordFormToken>t:map.values()){
