@@ -112,7 +112,7 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_LINK = 20001;
 
-	static final int TOKEN_TYPE_NAME = 20002;
+	static final int TOKEN_TYPE_LONG_NAME = 20002;
 	
 	int id();
 	

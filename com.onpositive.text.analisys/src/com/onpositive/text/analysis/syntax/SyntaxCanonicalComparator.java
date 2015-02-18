@@ -20,7 +20,7 @@ public class SyntaxCanonicalComparator extends CanonicalComparator {
 			IToken.TOKEN_TYPE_UNIFORM_NOUN,
 			IToken.TOKEN_TYPE_UNIFORM_PREDICATIVE,
 			IToken.TOKEN_TYPE_UNIFORM_VERB,
-			IToken.TOKEN_TYPE_NAME ));
+			IToken.TOKEN_TYPE_LONG_NAME ));
 
 	@Override
 	protected TokenCanonicCode buildTokenCode(IToken token) {

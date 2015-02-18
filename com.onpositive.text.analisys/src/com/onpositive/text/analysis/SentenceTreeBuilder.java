@@ -612,6 +612,12 @@ l0:		for(int i = 0 ; i < size ; i++){
 		tbh.setResultTokens(resultTokens);
 		tbh.handleBounds(tokens);
 	}
+	
+	private static final HashSet<Integer> parentTokenTypes = new HashSet<Integer>(Arrays.asList(
+			IToken.TOKEN_TYPE_LETTER,
+			IToken.TOKEN_TYPE_WORD_FORM,
+			IToken.TOKEN_TYPE_LONG_NAME
+		));
 
 	private IntIntMap findParents(SentenceNode node, DecisionRule rule, TokenArrayBuffer buffer) {
 		
@@ -624,7 +630,7 @@ l0:		for(int i = 0 ; i < size ; i++){
 				int ind = i-1;
 				IToken token = tokens.get(ind);
 				int type = token.getType();
-				if(type==IToken.TOKEN_TYPE_LETTER || type == IToken.TOKEN_TYPE_WORD_FORM){
+				if(parentTokenTypes.contains(type)){
 					sp = token.getStartPosition();
 					ep = token.getEndPosition();
 					break;
@@ -636,7 +642,7 @@ l0:		for(int i = 0 ; i < size ; i++){
 			for(int i = node.getEndTokenIndex(); i < length ; i++){
 				IToken token = tokens.get(i);
 				int type = token.getType();
-				if(type==IToken.TOKEN_TYPE_LETTER || type == IToken.TOKEN_TYPE_WORD_FORM){
+				if(parentTokenTypes.contains(type)){
 					sp = token.getStartPosition();
 					ep = token.getEndPosition();
 					break;

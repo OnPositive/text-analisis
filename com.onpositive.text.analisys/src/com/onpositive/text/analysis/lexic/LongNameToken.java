@@ -7,7 +7,7 @@ public class LongNameToken extends SyntaxToken {
 
 	public LongNameToken(SyntaxToken unitToken,
 			int startPosition, int endPosition) {
-		super(IToken.TOKEN_TYPE_NAME, unitToken, unitToken.getGrammemSets(),
+		super(IToken.TOKEN_TYPE_LONG_NAME, unitToken, unitToken.getGrammemSets(),
 				startPosition, endPosition);
 	}
 	
