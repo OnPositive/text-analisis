@@ -938,4 +938,51 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
+	public void test049(){
+		String str = "Мы воспользовались автоматическим определителем номера.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_NOUN("
+			          + "<main>WORD_FORM воспользовался([сов, ГЛ, неперех])"
+			          + "WORD_FORM автоматический определитель номера([])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
+	}
+	
+	public void test050(){
+		String str = "Мы полетим на ковре-самолёте.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_NOUN("
+		          + "<main>VERB_NOUN_PREP("
+		            + "<main>WORD_FORM полетел([сов, ГЛ, неперех])"
+		            + "WORD_FORM на([ПР])"
+		            + "WORD_FORM ковёр-самолёт([])  )"
+		          + "WORD_FORM самолёт([мр, СУЩ, неод])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
+	}
+	
+	
+	public void test051(){
+		String str = "Мы полетим на ковре самолёте.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_NOUN_PREP("
+		          + "<main>WORD_FORM полетел([сов, ГЛ, неперех])"
+		          + "WORD_FORM на([ПР])"
+		          + "WORD_FORM ковёр-самолёт([])  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
+	}
+	
 }

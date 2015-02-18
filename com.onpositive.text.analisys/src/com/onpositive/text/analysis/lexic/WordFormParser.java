@@ -113,9 +113,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 						token = new WordFormToken(me, startPosition, endPosition1);
 						tokens.put(id, token);
 					}
-					WordFormToken wft = (WordFormToken) token;
-					wft.setLink(firstToken.getLink());
-					registerGrammarRelation(gr, wft);
+					token.setLink(firstToken.getLink());
+					registerGrammarRelation(gr, token);
 					
 					if(matchPrep){
 						break l0;
@@ -129,7 +128,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 				if(!data.gotMatch()){
 					continue;
 				}
-				TextElement te = data.textElement();
+				TextElement te = data.textElement();				
+				ArrayList<GrammarRelation> grammarRelations = computeGrammarRelations(te,sample);				
 				MeaningElement[] concepts = te.getConcepts();
 				for(MeaningElement me : concepts){
 					
@@ -152,7 +152,11 @@ l0:			for(GrammarRelation gr : firstWordForms){
 						tokens.put(id, token);
 					}
 					WordFormToken wft = (WordFormToken) token;
-					registerGrammarRelation(null, wft);
+					for(GrammarRelation gr : grammarRelations){
+						if(corresponds(me, gr)){
+							registerGrammarRelation(gr, wft);
+						}
+					}
 					tokens.put(id,token);
 					
 					if(matchPrep){
@@ -174,6 +178,79 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		else if(array.length>0){
 			processingData.addDoubtfulTokens(array);
 		}
+	}
+
+	protected ArrayList<GrammarRelation> computeGrammarRelations(TextElement te, Stack<IToken> sample) {
+		
+		String bf0 = te.getBasicForm();
+		List<IToken> tokenz = new PrimitiveTokenizer().tokenize(bf0);
+		TextElement[] parts = te.getParts();
+		
+		boolean isNoun = false;
+		boolean isSingular = false;
+		boolean isNomn = false;
+		
+		int ind = -1;
+		int mainInd = 0;
+		TextElement mainElement = null;
+		for(int i = 0; i < parts.length ; i++){
+			
+			IToken token = null;
+			do{
+				token = tokenz.get(++ind);
+			}
+			while(token.getType()!=IToken.TOKEN_TYPE_LETTER);
+			
+			String basicForm = token.getStringValue();
+			GrammarRelation[] forms = wordNet.getPossibleGrammarForms(basicForm);
+			for(GrammarRelation gr: forms){
+				boolean isNounLoc = gr.hasGrammem(PartOfSpeech.NOUN);
+				if(isNoun && !isNounLoc){					
+					continue;
+				}
+				if(isNounLoc){
+					if(!isNoun){
+						isNomn = false;
+						isSingular = false;
+					}
+					isNoun = true;
+				}
+				isNoun |= isNounLoc;
+				boolean isNomnLoc = gr.hasGrammem(Case.NOMN);				
+				if(isNomn&&!isNomnLoc){
+					continue;
+				}
+				if(isNomnLoc){
+					if(!isNomn){
+						isSingular = false;
+					}
+					isNomn = true;
+				}
+				
+				boolean isSingularLoc = gr.hasGrammem(SingularPlural.SINGULAR);
+				if(isSingular&&!isSingularLoc){
+					continue;
+				}
+				isSingular |= isSingularLoc;
+				mainInd = i;
+				mainElement = parts[i];
+			}
+		}
+
+		IToken mainToken = null;
+		int ind0 = 0;
+		for(int i = 0 ; i <= mainInd ; i++){
+			while(sample.get(ind0++).getType()!=IToken.TOKEN_TYPE_LETTER);
+			mainToken = sample.get(ind0-1);
+		}
+		ArrayList<GrammarRelation> list = new ArrayList<GrammarRelation>();
+		GrammarRelation[] forms = wordNet.getPossibleGrammarForms(mainToken.getStringValue());
+		for(GrammarRelation gr : forms){
+			if(gr.getWord() == mainElement){
+				list.add(gr);
+			}
+		}
+		return list;
 	}
 
 	private boolean matchPreposition(IToken token) {
