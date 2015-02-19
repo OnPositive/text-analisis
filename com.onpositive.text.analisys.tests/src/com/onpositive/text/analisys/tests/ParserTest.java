@@ -44,7 +44,7 @@ public class ParserTest extends TestCase {
 	
 	protected List<IToken> process(String str){
 		List<IToken> processed = composition.parse(str);
-		ArrayList<IToken> list = new ArrayList<>();
+		ArrayList<IToken> list = new ArrayList<IToken>();
 		for(IToken t : processed){
 			if(t instanceof SentenceToken){
 				list.addAll(new BasicCleaner().clean(t.getChildren()));
