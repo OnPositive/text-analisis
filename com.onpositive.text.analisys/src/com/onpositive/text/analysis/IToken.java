@@ -82,6 +82,8 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_NOUN_PARTICIPLE = 11023;
 	
+	static final int TOKEN_TYPE_COMPOSITE_VERB = 11024;
+	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
 	static final int TOKEN_TYPE_COMPLEX_CLAUSE = 11031;

@@ -274,9 +274,9 @@ public class ParserComposition2 extends ParserComposition {
 
 				for( ParserData pd : parserDataList){
 					
-					if(pd.isFinished()){
-						continue;
-					}
+//					if(pd.isFinished()){
+//						continue;
+//					}
 					pd.process(this.currentTokensArray);
 					pd.setFinished(true);
 				}

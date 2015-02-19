@@ -1,5 +1,7 @@
 package com.onpositive.text.analysis.syntax;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -15,6 +17,7 @@ public class VerbNameComposition extends ParserComposition2 {
 	private static IParser[] createParsers(AbstractWordNet wordNet){
 		return new IParser[]{
 				new VerbNamePrepositionParser(wordNet),
+				new CompositeVerbParser(wordNet),
 				new VerbNameParser(wordNet),
 				new DirectObjectParser(wordNet),
 				new NounNamePrepositionParser(wordNet)
@@ -56,10 +59,12 @@ public class VerbNameComposition extends ParserComposition2 {
 				}
 								
 			}
+			
+			private HashSet<Integer> verbNoPrepAttachingParsers = new HashSet<Integer>(Arrays.asList(1,2,3)); 
 
 			protected boolean matchParserId(int validParserId, int parserId) {
 				if(parserId != validParserId){
-					if((parserId == 1 && validParserId == 2) || (parserId == 2 && validParserId == 1)){
+					if(verbNoPrepAttachingParsers.contains(parserId)&&verbNoPrepAttachingParsers.contains(validParserId)){
 						return true;
 					}
 					else{

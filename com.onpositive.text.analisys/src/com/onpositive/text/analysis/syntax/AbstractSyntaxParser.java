@@ -55,6 +55,8 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 
 	protected static final UnaryMatcher<SyntaxToken> verbMatch = hasAny( PartOfSpeech.VERB, PartOfSpeech.INFN );
 	
+	protected static final UnaryMatcher<SyntaxToken> infnMatch = hasAny( PartOfSpeech.INFN );
+	
 	protected static final UnaryMatcher<SyntaxToken> nproMatch = hasAny( PartOfSpeech.NPRO );
 
 	protected static final UnaryMatcher<SyntaxToken> verbLikeMatch = hasAny(

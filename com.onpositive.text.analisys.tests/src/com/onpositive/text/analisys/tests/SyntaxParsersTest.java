@@ -135,12 +135,12 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint( processed, "WORD_FORM но([СОЮЗ])");
 		assertTestTokenPrint( processed,
 			"CLAUSE("
-				+ "<subject>WORD_FORM я([МС, 1л])"
-				+ "<predicate>DIRECT_OBJECT_NAME("
-					+ "<main>DIRECT_OBJECT_INF("
-						+ "<main>WORD_FORM люблю([ГЛ, перех, несов])"
-						+ "WORD_FORM смотреть([перех, несов, ИНФ])  )"
-					+ "WORD_FORM кино([СУЩ, ср, 0, неод])  )  )");
+		        + "<subject>WORD_FORM я([МС, 1л])"
+		        + "<predicate>COMPOSITE_VERB("
+			          + "<main>WORD_FORM люблю([ГЛ, перех, несов])"
+			          + "DIRECT_OBJECT_NAME("
+				            + "<main>WORD_FORM смотреть([перех, несов, ИНФ])"
+				            + "WORD_FORM кино([СУЩ, ср, 0, неод])  )  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 3);
@@ -172,7 +172,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint( processed,
 			"CLAUSE("
 				+ "<subject>WORD_FORM петя([имя, мр, од, СУЩ])"
-				+ "<predicate>DIRECT_OBJECT_INF("
+				+ "<predicate>COMPOSITE_VERB("
 					+ "<main>WORD_FORM люблю([ГЛ, перех, несов])"
 					+ "WORD_FORM петь([перех, несов, ИНФ])  )  )");
 	}
@@ -617,7 +617,7 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint( processed,
 			"CLAUSE("
 				+ "<subject>WORD_FORM я([МС, 1л])"
-		        + "<predicate>DIRECT_OBJECT_INF("
+		        + "<predicate>COMPOSITE_VERB("
 			        + "<main>WORD_FORM люблю([ГЛ, перех, несов])"
 			        + "VERB_GERUND("
 			            + "SYMBOL ,"
@@ -909,13 +909,13 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM *([пол([жр, СУЩ, 0, аббр, неод]), пол([имя, мр, од, СУЩ])])  )  )  )");
 	}
 	
-	public void test047(){
+	public void test047(){//TODO need semanics here
 		String str = "Власть пытается закрыть рот всем.";
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
 			"CLAUSE("
 		        + "<subject>WORD_FORM власть([жр, СУЩ, неод])"
-		        + "<predicate>DIRECT_OBJECT_INF("
+		        + "<predicate>COMPOSITE_VERB("
 		          + "<main>WORD_FORM пытаюсь([ГЛ, неперех, несов])"
 		          + "VERB_ADJECTIVE("
 		            + "<main>DIRECT_OBJECT_NAME("
@@ -924,7 +924,7 @@ public class SyntaxParsersTest extends ParserTest{
 		            + "WORD_FORM весь([мест-п, ПРИЛ])  )  )  )");
 		
 		assertTestTokenPrint( processed, "SYMBOL .");
-		assertEquals(processed.size(), 2);
+		assertEquals(processed.size(), 3);
 	}
 	
 	public void test048(){
