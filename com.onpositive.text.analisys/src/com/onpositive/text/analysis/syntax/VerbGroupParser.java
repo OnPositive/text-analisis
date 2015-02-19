@@ -180,7 +180,9 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 			return CONTINUE_PUSH;
 		}
 		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
-			return CONTINUE_PUSH;
+			if(checkVerb(((ClauseToken)newToken).getPredicate())){
+				return CONTINUE_PUSH;
+			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}

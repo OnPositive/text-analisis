@@ -534,7 +534,7 @@ public class SyntaxParsersTest extends ParserTest{
 				        + "WORD_FORM мозг([мр, СУЩ, неод])  )  )  )");
 	}
 	
-	public void test030(){//TODO assert output size
+	public void test030(){
 		String str = "Российские следователи ответили на упреки украинских силовиков.";		
 		List<IToken> processed = process(str);
 		assertTestTokenPrint( processed,
@@ -550,6 +550,9 @@ public class SyntaxParsersTest extends ParserTest{
 					    + "NOUN_ADJECTIVE("
 					       + "WORD_FORM украинский([ПРИЛ, гео])"
 					       + "<main>WORD_FORM силовик([мр, од, СУЩ])  )  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
 	}
 	
 	public void test031(){//TODO assert output size
