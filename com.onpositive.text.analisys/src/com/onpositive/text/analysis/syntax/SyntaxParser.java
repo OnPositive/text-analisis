@@ -17,6 +17,7 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
+import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -139,7 +140,8 @@ public class SyntaxParser extends ParserComposition {
 		NumericsParser.class,
 		DateParser.class,
 		DateCombineParser.class,
-		LongNameParser.class
+		LongNameParser.class,
+		IndexAttachingPasrser.class
 	};
 	
 	private static final Class<?>[] nameSyntaxParsersArray = new Class<?>[]{

@@ -52,7 +52,9 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_WORD_FORM = 11000;
 	
-	static final int TOKEN_TYPE_SENTENCE = 11001;
+	static final int TOKEN_TYPE_WORD_WITH_INDEX = 11001;
+	
+	static final int TOKEN_TYPE_SENTENCE = 11002;
 	
 	static final int TOKEN_TYPE_NOUN_ADJECTIVE = 11011;
 	

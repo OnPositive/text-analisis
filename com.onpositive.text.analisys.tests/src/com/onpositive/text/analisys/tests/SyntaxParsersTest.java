@@ -985,4 +985,23 @@ public class SyntaxParsersTest extends ParserTest{
 		assertEquals(processed.size(), 2);
 	}
 	
+	
+	public void test052(){
+		String str = "Мы полетим на СУ-27.";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+			"CLAUSE("
+		        + "<subject>WORD_FORM мы([МС, 1л])"
+		        + "<predicate>VERB_NOUN_PREP("
+		          + "<main>WORD_FORM полетел([сов, ГЛ, неперех])"
+		          + "WORD_FORM на([ПР])"
+		          + "WORD_WITH_INDEX("
+		            + "<main>WORD_FORM су([СУЩ, ср, 0, неод])"
+		            + "SYMBOL -"
+		            + "SCALAR 27.0  )  )  )");
+		
+		assertTestTokenPrint( processed, "SYMBOL .");
+		assertEquals(processed.size(), 2);
+	}
+	
 }
