@@ -75,7 +75,8 @@ class ScalarProcessingData{
 	}
 
 	public ArrayList<IToken> getTokens() {
-		if (pattern.getValueDelimeter()!=null&&pattern.getValueDelimeter().equals(" ")){
+		
+		if (pattern!=null&&pattern.getValueDelimeter()!=null&&pattern.getValueDelimeter().equals(" ")){
 			return this.tokens;
 		}
 		ArrayList<IToken> result = new ArrayList<IToken>();
@@ -89,6 +90,12 @@ class ScalarProcessingData{
 			result.add(new SymbolToken( ',', prev.getEndPosition(),t.getStartPosition()));
 			result.add(t);
 			prev=t;
+		}
+		for(int i = 1 ; i < result.size() ; i++){
+			IToken t0 = result.get(i-1);
+			IToken t1 = result.get( i );
+			t0.addNextToken(t1);
+			t1.addPreviousToken(t0);
 		}
 		return result;
 	}

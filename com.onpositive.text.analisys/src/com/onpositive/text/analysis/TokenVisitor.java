@@ -18,6 +18,11 @@ public abstract class TokenVisitor {
 	
 	protected static final int STOP_PARENT_BRANCH = 0;
 	
+	
+	public void visit(IToken token){		
+		visitRecursively(token,null, Direction.START);
+	}
+	
 	public void visit(IToken token, IToken parent, Direction dir){
 		
 		visitRecursively(token,parent,dir);

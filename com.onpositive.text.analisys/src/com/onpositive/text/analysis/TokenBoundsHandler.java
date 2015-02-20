@@ -91,8 +91,10 @@ public class TokenBoundsHandler {
 		
 		if(isNew){
 			List<IToken> children = token.getChildren();
-			for(IToken ch : children){
-				ch.addParent(token);
+			if(children!=null){
+				for(IToken ch : children){
+					ch.addParent(token);
+				}
 			}
 		}
 		
@@ -102,6 +104,10 @@ public class TokenBoundsHandler {
 		}
 		else{
 			boundToken = token;
+		}
+		
+		if(boundToken==null){
+			return;
 		}
 
 		IToken neighbour = boundToken.getNeighbour(Direction.START);

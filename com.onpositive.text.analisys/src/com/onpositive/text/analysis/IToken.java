@@ -78,11 +78,11 @@ public interface IToken {
 	
 	static final int TOKEN_TYPE_VERB_GERUND = 11021;
 	
-	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11022;
+	static final int TOKEN_TYPE_COMPOSITE_VERB = 11022;
 	
-	static final int TOKEN_TYPE_NOUN_PARTICIPLE = 11023;
+	static final int TOKEN_TYPE_NOUN_NAME_PREP = 11023;
 	
-	static final int TOKEN_TYPE_COMPOSITE_VERB = 11024;
+	static final int TOKEN_TYPE_NOUN_PARTICIPLE = 11024;
 	
 	static final int TOKEN_TYPE_CLAUSE = 11030;
 	
