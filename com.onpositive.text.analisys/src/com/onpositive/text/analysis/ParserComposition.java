@@ -71,20 +71,29 @@ public class ParserComposition implements IParser {
 		boolean globalTriggered = true;
 		boolean localTriggered;
 		
+		int count0 = 0;
 		while(globalTriggered){
-			
+			if(count0>100){
+				throw new RuntimeException("Infinite external cycle in Composite Parser.");
+			}
 			globalTriggered = false;
 			for (IParser parser : parsers){
+				int count1 = 0;
 				do{
+					if(count1>100){
+						throw new RuntimeException("Infinite external cycle in Composite Parser.");
+					}
 					tokens = applyParser(tokens, parser);
 					localTriggered = parser.hasTriggered();
 					globalTriggered |= localTriggered;
+					count1++;
 				}
 				while(localTriggered&&parser.isRecursive());
 			}
 			if(!isGloballyRecursive){
 				break;
 			}
+			count0++;
 		}
 		return tokens;
 	}

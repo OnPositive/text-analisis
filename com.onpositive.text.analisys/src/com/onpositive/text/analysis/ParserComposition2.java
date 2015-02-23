@@ -144,6 +144,10 @@ public class ParserComposition2 extends ParserComposition {
 			if(isFinished){
 				bld.append(", finished");
 			}
+			bld.append(", new tokens:\n");
+			for(IToken t : parser.getNewTokens()){
+				bld.append(t.toString()).append("\n");
+			}
 			return bld.toString();
 		}
 
@@ -268,8 +272,11 @@ public class ParserComposition2 extends ParserComposition {
 			this.original = tokens;
 			this.currentTokensArray = this.original;
 			
+			int count = 0;
 			while(true){
-				
+				if(count>100){
+					throw new RuntimeException("Infinite cycle in Verb Composite Parser.");
+				}
 				this.clean();
 
 				for( ParserData pd : parserDataList){
@@ -289,6 +296,7 @@ public class ParserComposition2 extends ParserComposition {
 					break;
 				}
 				clean();
+				count++;
 			}
 			return this.currentTokensArray;
 		}
@@ -335,7 +343,7 @@ public class ParserComposition2 extends ParserComposition {
 			TokenBoundsHandler tbh = new TokenBoundsHandler();
 			tbh.setNewTokens(newTokensMap);
 			tbh.setResultTokens(resultTokensMap);
-			tbh.handleBounds(result);
+			tbh.handleBounds(result,true);
 			
 			TokenBoundsHandler.discardTokens(new ArrayList<IToken>(modifiedTokens));			
 			return result;

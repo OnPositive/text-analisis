@@ -259,7 +259,7 @@ public abstract class AbstractParser implements IParser {
 			TokenBoundsHandler tbh = new TokenBoundsHandler();
 			tbh.setNewTokens(newTokens);
 			tbh.setResultTokens(resultTokens);
-			tbh.handleBounds(result);
+			tbh.handleBounds(result,true);
 			TokenBoundsHandler.discardTokens(toDiscard);
 		}
 	}

@@ -69,14 +69,16 @@ public class SyntaxCanonicalComparator extends CanonicalComparator {
 			
 			int type = t.getType();
 			List<IToken> children = t.getChildren();
-			SyntaxToken mainGroup = t.getMainGroup();			
-			for(IToken ch : children){
-				if(ch==mainGroup){
-					continue;
+			SyntaxToken mainGroup = t.getMainGroup();
+			if(children!=null){
+				for(IToken ch : children){
+					if(ch==mainGroup){
+						continue;
+					}
+					TokenCanonicCode chCode = getTokenCode(ch);
+					AttachmentCanonicCode att = new AttachmentCanonicCode(type, chCode);
+					code.addAttachment(att);
 				}
-				TokenCanonicCode chCode = getTokenCode(ch);
-				AttachmentCanonicCode att = new AttachmentCanonicCode(type, chCode);
-				code.addAttachment(att);
 			}
 		}
 		return code;

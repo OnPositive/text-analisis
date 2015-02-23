@@ -211,6 +211,9 @@ l1:				for(MeaningElement me : concepts){
 			else if(newToken instanceof SyntaxToken){
 				SyntaxToken sToken = (SyntaxToken) newToken;
 				WordFormToken mainWord = sToken.getMainWord();
+				if(mainWord==null){
+					return DO_NOT_ACCEPT_AND_BREAK;
+				}
 				String val = mainWord.getStringValue();
 				if(val.equals("есть")&&checkEst.match(newToken)){
 					return CONTINUE_PUSH;

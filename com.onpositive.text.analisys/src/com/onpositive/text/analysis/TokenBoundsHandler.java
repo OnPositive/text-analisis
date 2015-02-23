@@ -21,8 +21,8 @@ public class TokenBoundsHandler {
 		this.newTokens = newTokens;
 	}
 
-	public void handleBounds(List<IToken> tokens){
-		List<IToken> nextTokens = addBounds(tokens);
+	public void handleBounds(List<IToken> tokens, boolean append){
+		List<IToken> nextTokens = append ? addBounds(tokens) : new ArrayList<IToken>();
 		
 		for(IToken t : tokens){
 			boolean isNew = newTokens.containsKey(t.id());
@@ -187,7 +187,7 @@ public class TokenBoundsHandler {
 
 		setResultTokens(resultMap);
 		setNewTokens(newMap);
-		handleBounds(list);
+		handleBounds(list,true);
 	}
 
 

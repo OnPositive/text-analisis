@@ -192,8 +192,13 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		
 		int ind = -1;
 		int mainInd = 0;
+		int stepBack = 0;
 		TextElement mainElement = null;
 		for(int i = 0; i < parts.length ; i++){
+			if(parts[i]==null){
+				stepBack++;
+				continue;
+			}
 			
 			IToken token = null;
 			do{
@@ -232,7 +237,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					continue;
 				}
 				isSingular |= isSingularLoc;
-				mainInd = i;
+				mainInd = i-stepBack;
 				mainElement = parts[i];
 			}
 		}
@@ -600,7 +605,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			String completeForm = textElement.getBasicForm();
 			int count = 0;
 			int i = 0;
-			for( ; i < completeForm.length() ; i++){
+			int length = completeForm.length();
+			for( ; i < length ; i++){
 				if(!Character.isLetter(completeForm.charAt(i))){
 					count++;
 				}
@@ -608,7 +614,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					break;
 				}
 			}
-			if(completeForm.charAt(i)=='-'){
+			if(i<length && completeForm.charAt(i)=='-'){
 				return true;
 			}
 			return false;

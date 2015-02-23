@@ -559,11 +559,11 @@ l0:		for(int i = 0 ; i < size ; i++){
 		toHandle.addAll(startBound);
 		toHandle.addAll(endBound);
 		
-		handleBounds(list,toHandle);
+		handleBounds(list,toHandle,false);
 		
 		List<IToken> regionTokens = produceRegionToken(processed, startBound, endBound, rule);
 		handleParents(regionTokens);
-		handleBounds(regionTokens,regionTokens);
+		handleBounds(regionTokens,regionTokens,false);
 		
 		IntObjectOpenHashMap<List<IToken>> resultTokens = produceResultToken(node, parents, rule, regionTokens, buffer);
 		ArrayList<IToken> producedTokens = new ArrayList<IToken>(); 
@@ -573,7 +573,7 @@ l0:		for(int i = 0 ; i < size ; i++){
 		}
 		
 		handleParents(producedTokens);
-		handleBounds(producedTokens,producedTokens);
+		handleBounds(producedTokens,producedTokens,true);
 
 		return resultTokens;
 	}
@@ -596,7 +596,7 @@ l0:		for(int i = 0 ; i < size ; i++){
 		
 	}
 
-	private void handleBounds(List<IToken> tokens, List<IToken> newTokensList)
+	private void handleBounds(List<IToken> tokens, List<IToken> newTokensList,boolean append)
 	{
 		IntObjectOpenHashMap<IToken> resultTokens = new IntObjectOpenHashMap<IToken>();
 		IntObjectOpenHashMap<IToken> newTokens = new IntObjectOpenHashMap<IToken>();
@@ -610,7 +610,7 @@ l0:		for(int i = 0 ; i < size ; i++){
 		TokenBoundsHandler tbh = new TokenBoundsHandler();
 		tbh.setNewTokens(newTokens);
 		tbh.setResultTokens(resultTokens);
-		tbh.handleBounds(tokens);
+		tbh.handleBounds(tokens,append);
 	}
 	
 	private static final HashSet<Integer> parentTokenTypes = new HashSet<Integer>(Arrays.asList(
