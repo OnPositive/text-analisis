@@ -337,6 +337,9 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		if(te.isMultiWord()){
 			StringBuilder bld = new StringBuilder();			
 			for(TextElement t : te.getParts()){
+				if(t==null){
+					continue;
+				}
 				bld.append(" ").append(t.getBasicForm());
 			}
 			str = bld.toString();

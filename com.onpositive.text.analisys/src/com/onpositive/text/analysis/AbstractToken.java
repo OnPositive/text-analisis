@@ -395,6 +395,9 @@ public abstract class AbstractToken implements IToken {
 	public void replaceChild(IToken oldChild, IToken newChild) {
 		
 		int ind = children.indexOf(oldChild);
+		if(ind<0){
+			return;
+		}
 		children.set(ind, newChild);
 		
 		int sp = newChild.getStartPosition();

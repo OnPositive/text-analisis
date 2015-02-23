@@ -432,7 +432,9 @@ public abstract class SentenceTreeBuilder {
 		int lastNodeId = 0;
 		SentenceNode result = new SentenceNode(lastNodeId++,false);
 		result.setStartTokenIndex(0);
+		result.setContentStartIndex(0);
 		result.setEndTokenIndex(tokens.size());
+		result.setContentEndIndex(tokens.size());
 		
 		Stack<SentenceNode> nodes = new Stack<SentenceNode>();
 		nodes.push(result);
@@ -467,6 +469,8 @@ l0:		for(int i = 0 ; i < size ; i++){
 					nodes.push(node);
 					i += rule.getStartBound().getLength();
 					node.setContentStartIndex(i);
+					node.setEndTokenIndex(tokens.size());
+					node.setContentEndIndex(tokens.size());
 					continue l0;
 				}
 			}
