@@ -20,6 +20,7 @@ import com.onpositive.text.analysis.StructureInspectingCleaner;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
+import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.dates.DateCombineParser;
 import com.onpositive.text.analysis.lexic.dates.DateParser;
@@ -137,7 +138,7 @@ public class SyntaxParser extends ParserComposition {
 		UnitParser.class,
 		UnitGroupParser.class,
 		DimensionParser.class,
-		NumericsParser.class,
+		//NumericsParser.class,
 		DateParser.class,
 		DateCombineParser.class,
 		LongNameParser.class,

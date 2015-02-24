@@ -346,4 +346,58 @@ public class FragmentExtractorTest extends ParserTest{
 		List<IToken> processed = process(str);
 		
 	}
+	
+	
+	public void test_complex_direct_speech001(){
+		String str = "\"Ничего подобного!\" - возразил он. \"Я-то здесь на что?\" - спросил он немного погодя.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+				"CLAUSE("
+				        + "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
+				        + "<predicate>WORD_FORM("
+				          + "DIRECT_SPEACH("
+				            + "REGION_BOUND("
+				              + "SYMBOL \"  )"
+				            + "ADJECTIVE_ADVERB("
+				              + "WORD_FORM ничего([Н])"
+				              + "<main>WORD_FORM подобный([субст?, кач, ПРИЛ])  )"
+				            + "WORD_FORM ничто([ср, МС])"
+				            + "WORD_FORM ничего([ЧАСТ])"
+				            + "WORD_FORM подобный([субст?, кач, ПРИЛ])"
+				            + "SYMBOL !"
+				            + "REGION_BOUND("
+				              + "SYMBOL \""
+				              + "SYMBOL -  )  )"
+				          + "<main>WORD_FORM возразил([сов, ГЛ, неперех])  )  )",
+				"CLAUSE("
+			        + "<subject>WORD_FORM он([мр, Анаф, МС, 3л])"
+			        + "<predicate>VERB_ADVERB("
+			          + "<main>WORD_FORM("
+			            + "DIRECT_SPEACH("
+			              + "REGION_BOUND("
+			                + "SYMBOL \"  )"
+			              + "CLAUSE("
+			                + "<subject>WORD_WITH_INDEX("
+			                  + "<main>WORD_FORM я([МС, 1л])"
+			                  + "SYMBOL -  )"
+			                + "<predicate>no predicate  )"
+			              + "ADJECTIVE_ADVERB("
+			                + "<main>WORD_FORM тот([мест-п, Анаф, субст?, ПРИЛ])"
+			                + "WORD_FORM здесь([Н, предк?])  )"
+			              + "WORD_FORM то([СОЮЗ])"
+			              + "WORD_FORM здесь([Н, предк?])"
+			              + "WORD_FORM на([ПР])"
+			              + "CLAUSE("
+			                + "<subject>WORD_FORM что([СОЮЗ])"
+			                + "<predicate>no predicate  )"
+			              + "SYMBOL ?"
+			              + "REGION_BOUND("
+			                + "SYMBOL \""
+			                + "SYMBOL -  )  )"
+			            + "<main>WORD_FORM спросил([сов, ГЛ, перех])  )"
+			          + "UNIFORM_ADVERB("
+			            + "WORD_FORM немного([Н])"
+			            + "<main>WORD_FORM погодя([Н])  )  )  )");
+		
+	}
 }
