@@ -501,14 +501,19 @@ l0:		for(int i = 0 ; i < size ; i++){
 			}
 			IntIntMap parents = findParents(node,rule,buffer);
 			IntObjectOpenHashMap<List<IToken>> newTokens = createNewToken(node, rule, parents, buffer);
-			replaceTokens(node,parents,newTokens,buffer);
+			replaceTokens(node,rule,parents,newTokens,buffer);
 			node.setCollapse(false);
 			break;
 		}
 	}
 
-	private void replaceTokens(SentenceNode node, IntIntMap parents, IntObjectOpenHashMap<List<IToken>> newTokens,TokenArrayBuffer buffer)
+	private void replaceTokens(SentenceNode node, DecisionRule rule, IntIntMap parents, IntObjectOpenHashMap<List<IToken>> newTokens,TokenArrayBuffer buffer)
 	{
+		int start = node.getStartTokenIndex() + rule.getStartBound().getBoundOffset();
+		start = Math.max(0, start);
+		int contentEnd = node.getContentEndIndex() + rule.getEndBound().getBoundOffset();
+		int end = contentEnd + rule.getEndBound().getLength();
+		end = Math.min(buffer.length(), end);
 		
 		IntObjectOpenHashMap<BufferIndex> map = new IntObjectOpenHashMap<SentenceTreeBuilder.BufferIndex>();
 		for(IntCursor cr : parents.keys()){
@@ -519,8 +524,6 @@ l0:		for(int i = 0 ; i < size ; i++){
 			buffer.addListener(bi);
 		}
 		
-		int start = node.getStartTokenIndex();
-		int end = node.getEndTokenIndex();
 		buffer.replace(new ArrayList<IToken>(), start, end);
 		
 		for(IntCursor cr : map.keys()){
