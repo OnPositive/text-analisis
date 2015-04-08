@@ -37,7 +37,7 @@ public class ScalarParserTest extends ParserTest{
 		String str = "1 223";		
 		List<IToken> processed = process(str);
 		printTokens(processed);
-		assertTestScalar(1223232.0, processed);
+		assertTestScalar(1223.0, processed);
 	}
 	
 	public void testS003(){
@@ -62,4 +62,11 @@ public class ScalarParserTest extends ParserTest{
 		assertTestScalar(18, processed);
 	}
 	
+	public void testS006(){
+		String str = "Каждый день мы продаём 5-7 новых машин.";
+		List<IToken> processed = process(str);
+		printTokens(processed);
+		assertTestScalar(5, processed);
+		assertTestScalar(7, processed);
+	}
 }
