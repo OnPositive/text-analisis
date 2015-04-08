@@ -48,4 +48,8 @@ public class SymbolToken extends AbstractToken {
 			return false;
 		return true;
 	}
+	
+	public boolean isUnaryOperator() {
+		return value.equals("-") || value.equals("+");
+	}	
 }
