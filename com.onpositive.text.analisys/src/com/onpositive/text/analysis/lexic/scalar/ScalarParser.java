@@ -15,11 +15,7 @@ import com.onpositive.text.analysis.utils.VulgarFraction;
 
 public class ScalarParser extends AbstractParser {
 	
-	
-	public ScalarParser() {
-
-		
-	}
+	public ScalarParser() {	}
 	
 	private static final String[] acceptedSymbols = new String[]{",".intern(),".".intern(),";".intern()};
 	
