@@ -1019,4 +1019,28 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTrue(true);
 	}
+	
+	// FIXME test doesn't finish now. When it will, check for correctness required.
+	public void test055() {
+		String str = "Я что-то как-то не понимаю.";
+		List<IToken> processed = process(str);
+
+		if (processed == null) assertTrue(false);
+		
+		assertTrue(true);
+	}
+	
+	public void test056() {
+		String str = "Сегодня на улице -5.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(true);
+	}
+	
+	public void test057() {
+		String str = "Я не знаю.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(true);
+	}
 }
