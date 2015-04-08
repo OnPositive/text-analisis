@@ -43,10 +43,11 @@ public class UnaryScalarCompositionParser extends AbstractParser {
 		IToken prev = unit.getPrevious();
 		if (prev == null) {
 			List<IToken> prevs = unit.getPreviousTokens();
-			if (prevs != null) prev = prevs.get(0);		
-		}
-		
-		if (prev != null && prev.getType() == IToken.TOKEN_TYPE_SCALAR) return DO_NOT_ACCEPT_AND_BREAK;
+			for (IToken p : prevs)
+				if (p.getType() == IToken.TOKEN_TYPE_SCALAR) 
+					return DO_NOT_ACCEPT_AND_BREAK;			
+		} else if (prev.getType() == IToken.TOKEN_TYPE_SCALAR) 
+			return DO_NOT_ACCEPT_AND_BREAK;
 		
 		if (unit.getType() == IToken.TOKEN_TYPE_SYMBOL && ((SymbolToken) unit).isUnaryOperator() == true)
 			return CONTINUE_PUSH;
