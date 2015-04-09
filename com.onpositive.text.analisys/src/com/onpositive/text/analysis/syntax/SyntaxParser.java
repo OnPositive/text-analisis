@@ -29,6 +29,7 @@ import com.onpositive.text.analysis.lexic.dimension.DimensionParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
+import com.onpositive.text.analysis.lexic.scalar.UnaryScalarCompositionParser;
 
 public class SyntaxParser extends ParserComposition {
 	
@@ -135,6 +136,7 @@ public class SyntaxParser extends ParserComposition {
 	private static final Class<?>[] lexicParsersArray = new Class<?>[]{
 		WordFormParser.class,
 		ScalarParser.class,
+		UnaryScalarCompositionParser.class,
 		UnitParser.class,
 		UnitGroupParser.class,
 		DimensionParser.class,
