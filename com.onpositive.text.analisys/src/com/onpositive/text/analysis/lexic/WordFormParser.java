@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
@@ -82,26 +81,26 @@ public class WordFormParser extends AbstractParser {
 		int endPosition = firstToken.getEndPosition();
 		
 		boolean gotSequence = false;
-		for(WordSequenceData data : dataList){
+		for (WordSequenceData data : dataList) {
 			gotSequence |= data.gotMatch();
 		}
-		
-		if(!gotSequence){
-l0:			for(GrammarRelation gr : firstWordForms){
+
+		if (!gotSequence) {
+			l0: for (GrammarRelation gr : firstWordForms) {
 				gr.getGrammems();
 				TextElement word = gr.getWord();
 				MeaningElement[] concepts = word.getConcepts();
-				for(MeaningElement me : concepts){
-					if(!corresponds(me,gr)){
+				for (MeaningElement me : concepts) {
+					if (!corresponds(me, gr)) {
 						continue;
 					}
-					
+
 					boolean matchPrep = false;
 					MeaningElement prep = refinePrepositionOrConjunction(me,startPosition,endPosition);
 					if(prep!=null){
 						me = prep;
 						matchPrep = matchPreposition(firstToken);
-						if(matchPrep){
+						if (matchPrep) {
 							tokens.clear();
 						}
 					}
@@ -116,66 +115,63 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					token.setLink(firstToken.getLink());
 					registerGrammarRelation(gr, token);
 					
-					if(matchPrep){
+					if (matchPrep) {
 						break l0;
 					}
 				}
 			}
-		}
-		else{
-			for(WordSequenceData data : dataList)
-			{
-				if(!data.gotMatch()){
+		} else {
+			for (WordSequenceData data : dataList) {
+				if (!data.gotMatch()) {
 					continue;
 				}
 				TextElement te = data.textElement();				
 				ArrayList<GrammarRelation> grammarRelations = computeGrammarRelations(te,sample);				
 				MeaningElement[] concepts = te.getConcepts();
-				for(MeaningElement me : concepts){
+				for (MeaningElement me : concepts) {
 					
 					boolean matchPrep = false;
 					MeaningElement prep = refinePrepositionOrConjunction(me,startPosition,endPosition);
 					if(prep!=null){
 						me = prep;
 						matchPrep = matchPreposition(firstToken);
-						if(matchPrep){
+						if (matchPrep) {
 							tokens.clear();
 						}
 					}
 					
 					int id = me.id();
 					WordFormToken token = tokens.get(id);
-					int endIndex = data.getSequenceLength()-1;
+					int endIndex = data.getSequenceLength() - 1;
 					int endPosition1 = sample.get(endIndex).getEndPosition();
 					if(token == null){
 						token = new WordFormToken(me, startPosition, endPosition1);
 						tokens.put(id, token);
 					}
 					WordFormToken wft = (WordFormToken) token;
-					for(GrammarRelation gr : grammarRelations){
-						if(corresponds(me, gr)){
+					for (GrammarRelation gr : grammarRelations) {
+						if (corresponds(me, gr)) {
 							registerGrammarRelation(gr, wft);
 						}
 					}
-					tokens.put(id,token);
+					tokens.put(id, token);
 					
-					if(matchPrep){
+					if (matchPrep) {
 						break;
 					}
 				}
 			}
 		}
 		WordFormToken[] array = tokens.values().toArray(WordFormToken.class);
-		if (array.length>1){
-			array=mergeMeanings(array);
+		if (array.length > 1) {
+			array = mergeMeanings(array);
 		}
-		if (disambiguator!=null&&array.length>1){
-			array=disambiguator.disambiguate(array,firstToken);
+		if (disambiguator != null && array.length > 1) {
+			array = disambiguator.disambiguate(array, firstToken);
 		}
-		if(array.length==1){			
+		if (array.length == 1) {
 			processingData.addReliableToken(array[0]);
-		}
-		else if(array.length>0){
+		} else if (array.length > 0) {
 			processingData.addDoubtfulTokens(array);
 		}
 	}
@@ -194,59 +190,58 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		int mainInd = 0;
 		int stepBack = 0;
 		TextElement mainElement = null;
-		for(int i = 0; i < parts.length ; i++){
-			if(parts[i]==null){
+		for (int i = 0; i < parts.length; i++) {
+			if (parts[i] == null) {
 				stepBack++;
 				continue;
 			}
 			
 			IToken token = null;
-			do{
+			do {
 				token = tokenz.get(++ind);
-			}
-			while(token.getType()!=IToken.TOKEN_TYPE_LETTER);
-			
+			} while (token.getType() != IToken.TOKEN_TYPE_LETTER);
+
 			String basicForm = token.getStringValue();
 			GrammarRelation[] forms = wordNet.getPossibleGrammarForms(basicForm);
 			for(GrammarRelation gr: forms){
 				boolean isNounLoc = gr.hasGrammem(PartOfSpeech.NOUN);
-				if(isNoun && !isNounLoc){					
+				if (isNoun && !isNounLoc) {
 					continue;
 				}
-				if(isNounLoc){
-					if(!isNoun){
+				if (isNounLoc) {
+					if (!isNoun) {
 						isNomn = false;
 						isSingular = false;
 					}
 					isNoun = true;
 				}
 				isNoun |= isNounLoc;
-				boolean isNomnLoc = gr.hasGrammem(Case.NOMN);				
-				if(isNomn&&!isNomnLoc){
+				boolean isNomnLoc = gr.hasGrammem(Case.NOMN);
+				if (isNomn && !isNomnLoc) {
 					continue;
 				}
-				if(isNomnLoc){
-					if(!isNomn){
+				if (isNomnLoc) {
+					if (!isNomn) {
 						isSingular = false;
 					}
 					isNomn = true;
 				}
 				
 				boolean isSingularLoc = gr.hasGrammem(SingularPlural.SINGULAR);
-				if(isSingular&&!isSingularLoc){
+				if (isSingular && !isSingularLoc) {
 					continue;
 				}
 				isSingular |= isSingularLoc;
-				mainInd = i-stepBack;
+				mainInd = i - stepBack;
 				mainElement = parts[i];
 			}
 		}
 
 		IToken mainToken = null;
 		int ind0 = 0;
-		for(int i = 0 ; i <= mainInd ; i++){
-			while(sample.get(ind0++).getType()!=IToken.TOKEN_TYPE_LETTER);
-			mainToken = sample.get(ind0-1);
+		for (int i = 0; i <= mainInd; i++) {
+			while (sample.get(ind0++).getType() != IToken.TOKEN_TYPE_LETTER);
+			mainToken = sample.get(ind0 - 1);
 		}
 		ArrayList<GrammarRelation> list = new ArrayList<GrammarRelation>();
 		GrammarRelation[] forms = wordNet.getPossibleGrammarForms(mainToken.getStringValue());
@@ -268,7 +263,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 
 		IToken next = token.getNext();
 		ArrayList<WordFormToken> nextWFTs = new ArrayList<WordFormToken>();
-		if (next != null) {			
+		if (next != null) {
 			nextWFTs.addAll(createDrafts(next));
 		} else {
 			List<IToken> nextTokens = token.getNextTokens();
@@ -278,8 +273,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 				}
 			}
 		}
-		for(WordFormToken t : nextWFTs){
-			if(matcher.match(t)){
+		for (WordFormToken t : nextWFTs) {
+			if (matcher.match(t)) {
 				return true;
 			}
 		}
@@ -289,7 +284,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	private Collection<? extends WordFormToken> createDrafts(IToken next) {
 		
 		ArrayList<WordFormToken> list = new ArrayList<WordFormToken>();
-		if(next.getType() != IToken.TOKEN_TYPE_LETTER){
+		if (next.getType() != IToken.TOKEN_TYPE_LETTER) {
 			return list;
 		}
 		
@@ -303,22 +298,22 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		for(GrammarRelation gr : possibleGrammarForms){
 			TextElement word = gr.getWord();
 			String bf = word.getBasicForm();
-			if(getPrepConjRegistry().getPreposition(bf)!=null){
+			if (getPrepConjRegistry().getPreposition(bf) != null) {
 				continue;
 			}
-			if(getPrepConjRegistry().getConjunction(bf)!=null){
+			if (getPrepConjRegistry().getConjunction(bf) != null) {
 				continue;
 			}
 			MeaningElement[] concepts = word.getConcepts();
-			for(MeaningElement me : concepts){
+			for (MeaningElement me : concepts) {
 				
-				if(!corresponds(me,gr)){
+				if (!corresponds(me, gr)) {
 					continue;
 				}
 				
 				int id = me.id();
 				WordFormToken t = map.get(id);
-				if(t==null){
+				if (t == null) {
 					t = new WordFormToken(me, startPosition, endPosition);
 					map.put(id, t);
 				}
@@ -334,10 +329,10 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		
 		TextElement te = me.getParentTextElement();
 		String str = te.getBasicForm();
-		if(te.isMultiWord()){
-			StringBuilder bld = new StringBuilder();			
-			for(TextElement t : te.getParts()){
-				if(t==null){
+		if (te.isMultiWord()) {
+			StringBuilder bld = new StringBuilder();
+			for (TextElement t : te.getParts()) {
+				if (t == null) {
 					continue;
 				}
 				bld.append(" ").append(t.getBasicForm());
@@ -350,11 +345,11 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		}
 		
 		MeaningElement preposition = getPrepConjRegistry().getPreposition(str);
-		if(preposition!=null){
+		if (preposition != null) {
 			return preposition;
 		}
 		MeaningElement conjunction = getPrepConjRegistry().getConjunction(str);
-		if(conjunction!=null){
+		if (conjunction != null) {
 			return conjunction;
 		}
 		return null;
@@ -364,8 +359,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		if(me.getGrammems().contains(SemanGramem.ABBR)||gr.hasGrammem(SemanGramem.ABBR)){
 			if (sample.size()>1){
 				IToken secondToken = sample.get(1);
-				if(secondToken.getStringValue().equals(".")){
-					if(endPosition==secondToken.getStartPosition()){
+				if (secondToken.getStringValue().equals(".")) {
+					if (endPosition == secondToken.getStartPosition()) {
 						endPosition = secondToken.getEndPosition();
 					}
 				}
@@ -378,10 +373,10 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		
 		Set<Grammem> grammems0 = me.getGrammems();
 		Set<Grammem> grammems1 = gr.getGrammems();
-		if(!matchGrammems(grammems0, grammems1,PartOfSpeech.class)){
+		if (!matchGrammems(grammems0, grammems1, PartOfSpeech.class)) {
 			return false;
 		}
-		if(!matchGrammems(grammems0, grammems1,Gender.class)){
+		if (!matchGrammems(grammems0, grammems1, Gender.class)) {
 			return false;
 		}
 		return true;
@@ -400,18 +395,17 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		return true;
 	}
 
-	private void registerGrammarRelation(GrammarRelation gr, WordFormToken wft)
-	{
-		if(gr!=null){
+	private void registerGrammarRelation(GrammarRelation gr, WordFormToken wft) {
+		if (gr != null) {
 			List<GrammarRelation> grammarRelations = wft.getGrammarRelations();
 			boolean exists = false;
-			for(GrammarRelation rel : grammarRelations){
-				if(rel.equals(gr)){
+			for (GrammarRelation rel : grammarRelations) {
+				if (rel.equals(gr)) {
 					exists = true;
 					break;
 				}
 			}
-			if(!exists){
+			if (!exists) {
 				wft.addGrammarRelation(gr);
 			}
 		}
@@ -420,17 +414,16 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample, IToken newToken) {
 		int type = newToken.getType();
-		if (type==IToken.TOKEN_TYPE_DIGIT){
-			return DO_NOT_ACCEPT_AND_BREAK; 
+		if (type == IToken.TOKEN_TYPE_DIGIT) {
+			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		
 		if(type==IToken.TOKEN_TYPE_SYMBOL){
 			if(isAbbr&&sample.size()==1&&newToken.getStringValue()=="."){
 				return ACCEPT_AND_BREAK;
-			}
-			else if(newToken.getStringValue()=="-"){
-				for(WordSequenceData data : dataList){
-					if(data.checkHyphen()){
+			} else if (newToken.getStringValue() == "-") {
+				for (WordSequenceData data : dataList) {
+					if (data.checkHyphen()) {
 						return CONTINUE_PUSH;
 					}
 				}
@@ -444,12 +437,11 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		
 		if(dataList.isEmpty()){
 			return DO_NOT_ACCEPT_AND_BREAK;
-		}
-		else{
-			for(WordSequenceData data : dataList){
-				int pos = 0 ;
-				for(IToken t : sample){
-					if(t.getType() == IToken.TOKEN_TYPE_LETTER){
+		} else {
+			for (WordSequenceData data : dataList) {
+				int pos = 0;
+				for (IToken t : sample) {
+					if (t.getType() == IToken.TOKEN_TYPE_LETTER || t.getStringValue().equals("-")) {
 						pos++;
 					}
 				}
@@ -458,26 +450,25 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			if(possibleGrammarForms!=null&&possibleGrammarForms.length!=0){
 				
 				boolean needContinue = false;
-				for(WordSequenceData data : dataList){
-					for(GrammarRelation gr : possibleGrammarForms){
+				for (WordSequenceData data : dataList) {
+					for (GrammarRelation gr : possibleGrammarForms) {
 						int wordId = gr.getWord().id();
 						needContinue |= data.check(wordId);
 					}
 				}
-				if(!needContinue){
+				if (!needContinue) {
 					result = DO_NOT_ACCEPT_AND_BREAK;
 				}
-			}
-			else{
+			} else {
 				result = DO_NOT_ACCEPT_AND_BREAK;
 			}
 		}
 		return result;
 	}
-	
-	protected ProcessingResult checkPossibleStart(IToken token){
-		if (token.getType()!=IToken.TOKEN_TYPE_LETTER){
-			return DO_NOT_ACCEPT_AND_BREAK; 
+
+	protected ProcessingResult checkPossibleStart(IToken token) {
+		if (token.getType() != IToken.TOKEN_TYPE_LETTER) {
+			return DO_NOT_ACCEPT_AND_BREAK;
 		}
 		String value = token.getStringValue();
 		GrammarRelation[] possibleGrammarForms = wordNet.getPossibleGrammarForms(value.toLowerCase());
@@ -489,7 +480,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		firstWordForms = possibleGrammarForms;
 		checkAbbr();
 		IntOpenHashSet set = new IntOpenHashSet();
-		for(GrammarRelation gr : possibleGrammarForms){
+		for (GrammarRelation gr : possibleGrammarForms) {
 			TextElement word = gr.getWord();
 			TextElement[] possibleContinuations = wordNet.getPossibleContinuations(word);
 			if(possibleContinuations!=null){
@@ -497,17 +488,11 @@ l0:			for(GrammarRelation gr : firstWordForms){
 					if(set.contains(te.id())){
 						continue;
 					}
-					TextElement[] parts = te.getParts();
-					IntArrayList arr = new IntArrayList();
-					for(TextElement part : parts){
-						if(part!=null){
-							arr.add(part.id());
-						}
-					}
-					if(arr.size()<2){
+
+					if (te.getParts().length < 2)
 						continue;
-					}
-					WordSequenceData data = new WordSequenceData(te,arr.toArray());
+
+					WordSequenceData data = new WordSequenceData(te);
 					dataList.add(data);
 					set.add(te.id());
 				}
@@ -521,8 +506,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	
 	protected void checkAbbr() {
 		isAbbr = false;
-		for(GrammarRelation gr : firstWordForms){
-			if(gr.getWord().hasGrammem(SemanGramem.ABBR)){
+		for (GrammarRelation gr : firstWordForms) {
+			if (gr.getWord().hasGrammem(SemanGramem.ABBR)) {
 				isAbbr = true;
 				return;
 			}
@@ -533,56 +518,121 @@ l0:			for(GrammarRelation gr : firstWordForms){
 		throw new UnsupportedOperationException("Check Token not supported for Word Form Parser");
 	}
 	
-	protected void prepare(){
+	protected void prepare() {
 		dataList.clear();
 		firstWordForms = null;
 	}
-	
-	
-	protected void cleanUp(){
+
+	protected void cleanUp() {
 		dataList.clear();
 		firstWordForms = null;
 	}
 	
 	protected void rollBackState(int stepCount) {
-		for(WordSequenceData data : dataList){
+		for (WordSequenceData data : dataList) {
 			data.rollBack(stepCount);
 		}
 	}
 	
-	protected boolean keepInputToken(){
+	protected boolean keepInputToken() {
 		return false;
 	}
-	
-	private static class WordSequenceData{
-		
-		public WordSequenceData(TextElement textElement,int[] sequence) {
-			this.textElement = textElement;
-			this.sequence = sequence;
+
+	public static class WordSequenceNode {
+		private int value;
+
+		public int getValue() {
+			return value;
 		}
 
-		private final int[] sequence;
-		
+		public void setValue(int value) throws Exception {
+			if (isRegular())
+				this.value = value;
+			else
+				throw new Exception("Cannot set value to a hypen Node");
+		}
+
+		public boolean isHyphen() {
+			return this == WordSequenceNode.HYPHEN;
+		}
+
+		public boolean isRegular() {
+			return this != WordSequenceNode.HYPHEN;
+		}
+
+		public static WordSequenceNode HYPHEN = new WordSequenceNode();
+
+		private WordSequenceNode() {
+			value = Integer.MIN_VALUE;
+		}
+
+		public WordSequenceNode(int value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return isHyphen() ? "-" : Integer.toString(value);
+		}
+	}
+
+	private static class WordSequenceData {
+
+		@Override
+		public String toString() {
+			return "@" + this.textElement.toString();
+		}
+
+		public WordSequenceData(TextElement textElement) {
+
+			String basicForm = textElement.getBasicForm();
+			int pos = 0;
+			TextElement[] parts = textElement.getParts();
+
+			for (TextElement part : parts) {
+				if (part != null) {
+					while (pos < basicForm.length()) {
+						if (basicForm.charAt(pos) == ' ') {
+							pos += 1;
+							continue;
+						} else if (basicForm.charAt(pos) == '-') {
+							pos += 1;
+							sequence.add(WordSequenceNode.HYPHEN);
+						} else {
+							// TODO maybe check if word we skip has the same
+							// basic form.
+							while (pos < basicForm.length()	&& Character.isLetter(basicForm.charAt(pos)))
+								pos += 1;
+
+							sequence.add(new WordSequenceNode(part.id()));
+							break;
+						}
+					}
+				}
+			}
+			this.textElement = textElement;
+		}
+
+		private final List<WordSequenceNode> sequence = new ArrayList<WordSequenceNode>();
+
 		private final TextElement textElement;
 		
 		private int matchPosition = 0;
 		
 		private int currentPosition = 0;
 		
-		private boolean gotMatch(){
-			boolean result = matchPosition == sequence.length-1;
+		private boolean gotMatch() {
+			boolean result = matchPosition == sequence.size() - 1;
 			return result;
 		}
 		
-		private boolean check(int wordId){
-			
-			if(currentPosition<sequence.length && currentPosition == matchPosition+1){
-				if(sequence[currentPosition]==wordId){
-					matchPosition = currentPosition;
-				}
+		private boolean check(int wordId) {
+			if (currentPosition < sequence.size() && sequence.get(currentPosition).getValue() == wordId) {				
+				if (currentPosition == matchPosition + (sequence.get(currentPosition - 1).isHyphen() ? 2 : 1))				
+					 matchPosition = currentPosition;
 			}
-			boolean result = matchPosition == currentPosition;
-			return result;
+			
+			return matchPosition == currentPosition;
 		}
 		
 
@@ -591,7 +641,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			
 		}
 		
-		private void rollBack(int stepCount){
+		private void rollBack(int stepCount) {
 			currentPosition -= stepCount;
 			matchPosition = Math.min(currentPosition, matchPosition);
 		}
@@ -600,8 +650,8 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			return textElement;
 		}
 		
-		public int getSequenceLength(){
-			return sequence.length;
+		public int getSequenceLength() {
+			return sequence.size();
 		}
 		
 		public boolean checkHyphen() {
@@ -609,15 +659,15 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			int count = 0;
 			int i = 0;
 			int length = completeForm.length();
-			for( ; i < length ; i++){
-				if(!Character.isLetter(completeForm.charAt(i))){
+			for ( ; i < length ; i++){
+				if (!Character.isLetter(completeForm.charAt(i))){
 					count++;
 				}
-				if(count>currentPosition){
+				if (count > currentPosition) {
 					break;
 				}
 			}
-			if(i<length && completeForm.charAt(i)=='-'){
+			if (i < length && completeForm.charAt(i) == '-') {
 				return true;
 			}
 			return false;
@@ -625,16 +675,18 @@ l0:			for(GrammarRelation gr : firstWordForms){
 
 	}
 	
-	private static PrepConjRegistry prepConjRegistry;	
+	private static PrepConjRegistry prepConjRegistry;
 
 	protected PrepConjRegistry getPrepConjRegistry() {
-		if(prepConjRegistry==null){
+		if (prepConjRegistry == null) {
 			prepConjRegistry = new PrepConjRegistry(wordNet);
 		}
 		return prepConjRegistry;
 	}
-	static class Key{
+
+	static class Key {
 		public final Grammem gr;
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -643,6 +695,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 			result = prime * result + ((gr == null) ? 0 : gr.hashCode());
 			return result;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -664,6 +717,7 @@ l0:			for(GrammarRelation gr : firstWordForms){
 				return false;
 			return true;
 		}
+
 		public Key(Grammem gr, TextElement el) {
 			super();
 			this.gr = gr;
@@ -673,32 +727,32 @@ l0:			for(GrammarRelation gr : firstWordForms){
 	}
 
 	WordFormToken[] mergeMeanings(WordFormToken[] wordFormTokens) {
-		HashMap<Key, LinkedHashSet<WordFormToken>>map=new HashMap<Key, LinkedHashSet<WordFormToken>>();
+		HashMap<Key, LinkedHashSet<WordFormToken>> map = new HashMap<Key, LinkedHashSet<WordFormToken>>();
 		ArrayList<WordFormToken> noPartOfSpeech = new ArrayList<WordFormToken>();
-		for (WordFormToken t:wordFormTokens){
+		for (WordFormToken t : wordFormTokens) {
 			TextElement parentTextElement = t.getParentTextElement();
 			MeaningElement[] meaningElements = t.getMeaningElements();
-			for (MeaningElement z:meaningElements){
+			for (MeaningElement z : meaningElements) {
 				Set<Grammem> grammems = z.getGrammems();
 				boolean gotPartOfSpeech = false;
-				for (Grammem g:grammems){
-					if (g instanceof Grammem.PartOfSpeech){
+				for (Grammem g : grammems) {
+					if (g instanceof Grammem.PartOfSpeech) {
 						gotPartOfSpeech = true;
-						Key c=new Key(g,parentTextElement);
+						Key c = new Key(g, parentTextElement);
 						LinkedHashSet<WordFormToken> arrayList = map.get(c);
-						if (arrayList==null){
-							arrayList=new LinkedHashSet<WordFormToken>();
+						if (arrayList == null) {
+							arrayList = new LinkedHashSet<WordFormToken>();
 							map.put(c, arrayList);
 						}
 						arrayList.add(t);
 					}
 				}
-				if(!gotPartOfSpeech){
+				if (!gotPartOfSpeech) {
 					noPartOfSpeech.add(t);
 				}
 			}
 		}
-		for(LinkedHashSet<WordFormToken> set :map.values()){
+		for (LinkedHashSet<WordFormToken> set : map.values()) {
 			set.addAll(noPartOfSpeech);
 		}
 		LinkedHashSet<WordFormToken>tks=new LinkedHashSet<WordFormToken>(Arrays.asList(wordFormTokens));
@@ -707,15 +761,15 @@ l0:			for(GrammarRelation gr : firstWordForms){
 				WordFormToken[] a = new WordFormToken[t.size()];
 				t.toArray(a);
 				a[0].merge(a);
-				for (WordFormToken tc:a){
-					if (tc!=a[0]){
+				for (WordFormToken tc : a) {
+					if (tc != a[0]) {
 						tks.remove(tc);
 					}
 				}
 			}
 		}
-		if (tks.size()!=wordFormTokens.length){
-		wordFormTokens=tks.toArray(new WordFormToken[tks.size()]);
+		if (tks.size() != wordFormTokens.length) {
+			wordFormTokens = tks.toArray(new WordFormToken[tks.size()]);
 		}
 		return wordFormTokens;
 	}
