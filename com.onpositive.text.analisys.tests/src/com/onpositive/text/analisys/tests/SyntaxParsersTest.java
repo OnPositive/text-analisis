@@ -4,13 +4,11 @@ import java.util.List;
 
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.dimension.Unit;
-import com.onpositive.text.analysis.lexic.dimension.UnitKind;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 public class SyntaxParsersTest extends ParserTest{
 
-	private Unit kilometerPerHourUnit = new Unit("километр в час",UnitKind.SPEED,1);
+//	private Unit kilometerPerHourUnit = new Unit("километр в час",UnitKind.SPEED,1);
 	
 	public SyntaxParsersTest() {
 		super();
@@ -1011,37 +1009,35 @@ public class SyntaxParsersTest extends ParserTest{
 		String str = "Кампания против повременной оплаты телефона закончена  Кампания против повременной оплаты телефона закончена     Date: 13 марта 1998    МК   сообщил,   что  под  давлением  пенсионеров  планы  ввести  повременку за телефон в Москве в 1998 отложены, как минимум  на  год. Популизм восторжествовал.     Date: 06 Dec 1997   From: (ilia_fantasy@hotmail.com)   To:   Maksim Moshkow    Макс, тут разворачивается кампания против  введения повременной оплаты телефона:    http://www.relis.ru/MEDIA/death.html        Нельзя сдаваться, Макс !  Бороться с МГТС до победного конца !    Вот еще один URL по повремянке:  http://dial.ortv.ru/rgw/TALK/Editor1.htm    А вот мой баннер \"Черная ленточка\"      В  ответ  на  повременную  оплату  телефона...         Проблема  гораздо  шире!  За  наш с Вами счет на нас будет  собираться полная информация когда, кому вы звонили, как  долго  говорили.  Все  будет  храниться  в  компьютере и в любое время  будет доступно. И я думаю не только правоохран. органам.         Это  сбор  сведений  о  личной  жизни  абонентов ни кем не  санкционированное  -  это  противоречит   Конституции.   Но   в  конституционный  Суд  возможно обратиться только после того как  права будут нарушены - заранее это сделать не возможно.";
 		//String str = "мой баннер \"Черная ленточка\" В  ответ на повременную";
 		List<IToken> processed = process(str);
-		assertTrue(true);
+		assertTrue(processed != null);
 	}
 	
 	public void test054(){
 		String str = "Для  этого  понадобилась  бы  Тора!  Под   силу   ли   человеку воздвигнуть   такой   грандиозный   труд?  Не  подобно  ли  это воздвижению Вавилонской  башни? И тем не менее тысячелетия исполины   человеческой  мысли  снова  и  снова  комментировалиПисание, раскрывая все более  глубокие  его  слои.";
 		List<IToken> processed = process(str);
-		assertTrue(true);
+		assertTrue(processed != null);
 	}
-	
+		
 	// FIXME test doesn't finish now. When it will, check for correctness required.
 	public void test055() {
 		String str = "Я что-то как-то не понимаю.";
 		List<IToken> processed = process(str);
 
-		if (processed == null) assertTrue(false);
-		
-		assertTrue(true);
+		assertTrue(processed != null);
 	}
-	
+
 	public void test056() {
 		String str = "Сегодня на улице -5.";
 		List<IToken> processed = process(str);
 		
-		assertTrue(true);
+		assertTrue(processed != null);
 	}
 	
 	public void test057() {
 		String str = "Я не знаю.";
 		List<IToken> processed = process(str);
 		
-		assertTrue(true);
+		assertTrue(processed != null);
 	}
 	
 	public void test058() {
