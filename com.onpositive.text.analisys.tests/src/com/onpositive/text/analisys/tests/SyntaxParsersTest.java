@@ -1043,4 +1043,11 @@ public class SyntaxParsersTest extends ParserTest{
 		
 		assertTrue(true);
 	}
+	
+	public void test058() {
+		String str = "что-то как-то";
+		List<IToken> processed = process(str);
+
+		assertTrue(processed != null);
+	}
 }
