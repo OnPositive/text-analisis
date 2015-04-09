@@ -43,9 +43,10 @@ public class UnaryScalarCompositionParser extends AbstractParser {
 		IToken prev = unit.getPrevious();
 		if (prev == null) {
 			List<IToken> prevs = unit.getPreviousTokens();
-			for (IToken p : prevs)
-				if (p.getType() == IToken.TOKEN_TYPE_SCALAR) 
-					return DO_NOT_ACCEPT_AND_BREAK;			
+			if (prevs != null)
+				for (IToken p : prevs)
+					if (p.getType() == IToken.TOKEN_TYPE_SCALAR) 
+						return DO_NOT_ACCEPT_AND_BREAK;			
 		} else if (prev.getType() == IToken.TOKEN_TYPE_SCALAR) 
 			return DO_NOT_ACCEPT_AND_BREAK;
 		
