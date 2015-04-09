@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 
+/**
+ * Represents a composition of IParsers.
+ * This parser processes the list of Tokens with each IParser specified in constructor. 
+ */
 public class ParserComposition implements IParser {
 
 	public ParserComposition(IParser... parsers) {
