@@ -30,11 +30,14 @@ public abstract class AbstractParser implements IParser {
 		
 		private Set<IToken> doubtfulTokens = new LinkedHashSet<IToken>();		
 		
+		private Set<IToken> changedTokens = new LinkedHashSet<IToken>();
+		
 		private boolean stop;
 		
 		public void clear(){
 			reliableTokens.clear();
 			doubtfulTokens.clear();
+			changedTokens.clear();
 			stop = false;
 		}
 
@@ -69,12 +72,20 @@ public abstract class AbstractParser implements IParser {
 			return doubtfulTokens;
 		}
 		
+		public final Set<IToken> getChangedTokens() {
+			return changedTokens;
+		}
+		
 		public final void addDoubtfulToken(IToken token){
 			this.doubtfulTokens.add(token);
 		}
 		
 		public final void addReliableToken(IToken token){
 			this.reliableTokens.add(token);
+		}
+		
+		public final void addChangedToken(IToken token){
+			this.changedTokens.add(token);
 		}
 		
 		public final void addDoubtfulTokens(Collection<? extends IToken> tokens){
@@ -84,6 +95,11 @@ public abstract class AbstractParser implements IParser {
 		public final void addReliableTokens(Collection<? extends IToken> tokens){
 			this.reliableTokens.addAll(tokens);
 		}
+		
+		public final void addChangedTokens(Collection<? extends IToken> tokens){
+			this.changedTokens.addAll(tokens);
+		}
+		
 		
 		public final <T extends IToken>void addDoubtfulTokens(T[] tokens){
 			for(T token: tokens){
@@ -97,12 +113,22 @@ public abstract class AbstractParser implements IParser {
 			}
 		}
 		
+		public final <T extends IToken>void addChangedTokens(T[] tokens){
+			for(T token: tokens){
+				this.changedTokens.add(token);
+			}
+		}
+		
 		public final boolean hasDoubtfulTokens(){
 			return !doubtfulTokens.isEmpty();
 		}
 		
 		public final boolean hasReliableTokens(){
 			return !reliableTokens.isEmpty();
+		}
+		
+		public final boolean hasChangedTokens(){
+			return !changedTokens.isEmpty();
 		}
 		
 	}
@@ -491,6 +517,9 @@ public abstract class AbstractParser implements IParser {
 			}
 			if(pd.hasDoubtfulTokens()){
 				handleChildrenAndParents(sample, pd.getDoubtfulTokens());
+			}
+			if (pd.hasChangedTokens()){
+				handleChildrenAndParents(sample, pd.getChangedTokens());
 			}
 			pd.dump(data);
 		}
