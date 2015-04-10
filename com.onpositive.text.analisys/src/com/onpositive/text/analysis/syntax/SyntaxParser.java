@@ -164,6 +164,7 @@ public class SyntaxParser extends ParserComposition {
 	};
 	
 	private static final Class<?>[] verbGroupSyntaxParsersArray = new Class<?>[]{
+		VerbParticleParser.class,
 		VerbAdverbParser.class,
 		//DirectObjectParser.class,
 		VerbNameComposition.class,		
