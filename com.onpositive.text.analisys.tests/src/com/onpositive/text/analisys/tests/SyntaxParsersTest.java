@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.scalar.UnaryScalarCompositionParser;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 public class SyntaxParsersTest extends ParserTest{
@@ -643,6 +644,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	//FIXME ACHTUNG !!!!
+	//TODO UNIFORM VERBS
 	public void test036(){
 		String str = "Полёт длился 254 с и завершился удачно.";		
 		List<IToken> processed = process(str);
@@ -1004,6 +1006,12 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTestTokenPrint( processed, "SYMBOL .");
 		assertEquals(processed.size(), 2);
 	}
+
+	public void test053A() {
+		String str = "А вот мой баннер";
+		List <IToken> processed = process(str);
+		assertTrue(processed != null);
+	}
 	
 	public void test053(){
 		String str = "Кампания против повременной оплаты телефона закончена  Кампания против повременной оплаты телефона закончена     Date: 13 марта 1998    МК   сообщил,   что  под  давлением  пенсионеров  планы  ввести  повременку за телефон в Москве в 1998 отложены, как минимум  на  год. Популизм восторжествовал.     Date: 06 Dec 1997   From: (ilia_fantasy@hotmail.com)   To:   Maksim Moshkow    Макс, тут разворачивается кампания против  введения повременной оплаты телефона:    http://www.relis.ru/MEDIA/death.html        Нельзя сдаваться, Макс !  Бороться с МГТС до победного конца !    Вот еще один URL по повремянке:  http://dial.ortv.ru/rgw/TALK/Editor1.htm    А вот мой баннер \"Черная ленточка\"      В  ответ  на  повременную  оплату  телефона...         Проблема  гораздо  шире!  За  наш с Вами счет на нас будет  собираться полная информация когда, кому вы звонили, как  долго  говорили.  Все  будет  храниться  в  компьютере и в любое время  будет доступно. И я думаю не только правоохран. органам.         Это  сбор  сведений  о  личной  жизни  абонентов ни кем не  санкционированное  -  это  противоречит   Конституции.   Но   в  конституционный  Суд  возможно обратиться только после того как  права будут нарушены - заранее это сделать не возможно.";
@@ -1017,33 +1025,56 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTrue(processed != null);
 	}
-		
-	// FIXME test doesn't finish now. When it will, check for correctness required.
+	
 	public void test055() {
+		String str = "что-то как-то";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+				"UNIFORM_ADVERB("
+			        + "WORD_FORM что-то([Н])"
+			        + "<main>WORD_FORM *([как-то([]), как-то([Н])])  )"
+			        );			
+	}
+	
+	// FIXME test doesn't finish now. When it will, check for correctness required.
+	public void test056() {
 		String str = "Я что-то как-то не понимаю.";
 		List<IToken> processed = process(str);
 
 		assertTrue(processed != null);
 	}
 
-	public void test056() {
+	
+	
+	
+	// FIXME this test only checks UnaryScalarCompositionParser correctness.  
+	public void test057() {
 		String str = "Сегодня на улице -5.";
+		List<IToken> processed = process(str);
+		
+		assertTestScalar(-5.0, processed);		
+	}
+	
+	public void test058() {
+		String str = "Ты зайди-ка ко мне.";
 		List<IToken> processed = process(str);
 		
 		assertTrue(processed != null);
 	}
 	
-	public void test057() {
+	
+	public void test059() {
 		String str = "Я не знаю.";
 		List<IToken> processed = process(str);
 		
 		assertTrue(processed != null);
 	}
 	
-	public void test058() {
-		String str = "что-то как-то";
+	public void test060() {
+		String str = "я знал бы, если бы не случилась моя красивая жизнь.";
 		List<IToken> processed = process(str);
-
+		
 		assertTrue(processed != null);
 	}
+	
 }
