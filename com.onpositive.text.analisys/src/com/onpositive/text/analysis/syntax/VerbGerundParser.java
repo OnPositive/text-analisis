@@ -59,8 +59,9 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 			return;
 		}
 		
-		SyntaxToken newToken = appendGerund( orderedTokens, sample);
+		SyntaxToken newToken = appendGerund( orderedTokens, sample, processingData);
 		if(newToken==null){
+			
 			return;
 		}
 		else if (checkParents(newToken, sample)) {
@@ -71,7 +72,7 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		}
 	}
 
-	private SyntaxToken appendGerund(SyntaxToken[] orderedTokens,Stack<IToken> sample) {
+	private SyntaxToken appendGerund(SyntaxToken[] orderedTokens,Stack<IToken> sample, ProcessingData pd) {
 
 		VisitorDump lDump = prepareStructure(orderedTokens[0], Direction.END);
 		VisitorDump rDump = prepareStructure(orderedTokens[2], Direction.START);
@@ -97,15 +98,15 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		
 		SyntaxToken result = null;		
 		if(selectLeftVerb(lDump,rDump)){
-			result = doAppendGerund(gerundToken,lDump, gStartPos, gEndPos);
+			result = doAppendGerund(gerundToken,lDump, gStartPos, gEndPos, pd);
 		}
 		else{
-			result = doAppendGerund(gerundToken,rDump, gStartPos, gEndPos);
+			result = doAppendGerund(gerundToken,rDump, gStartPos, gEndPos, pd);
 		}
 		return result;
 	}
 
-	private SyntaxToken doAppendGerund(SyntaxToken gerundToken, VisitorDump dump, int sp, int ep) {
+	private SyntaxToken doAppendGerund(SyntaxToken gerundToken, VisitorDump dump, int sp, int ep, ProcessingData pd) {
 		
 		VerbSet vs = dump.getNonModalVerb();
 		if(vs==null){
@@ -122,6 +123,8 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		
 		if(parent!=null){
 			parent.replaceChild(verbToken,newToken);
+			pd.addChangedToken(newToken);
+			
 			return null;
 		}
 		else if(clause != null){
