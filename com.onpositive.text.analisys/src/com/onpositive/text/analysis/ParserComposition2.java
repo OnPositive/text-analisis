@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
@@ -225,6 +227,19 @@ public class ParserComposition2 extends ParserComposition {
 		public String toString() {
 			return token.toString() + " -> " + producedToken.toString();
 		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof TokenModificationData)) return false;
+			TokenModificationData tmd = (TokenModificationData) obj;
+			
+			if (parserId != tmd.getParserId()) return false;
+			
+			if (producedToken.getType() != tmd.getProducedToken().getType()) return false;
+			if (!producedToken.getChildren().equals(tmd.getProducedToken().getChildren())) return false;
+			
+			return true;
+		}
 	}
 	
 	protected static class TokenModificationRegistry{
@@ -233,6 +248,8 @@ public class ParserComposition2 extends ParserComposition {
 		
 		private IntObjectOpenHashMap<List<TokenModificationData>> map
 			= new IntObjectOpenHashMap<List<TokenModificationData>>();
+		private IntObjectOpenHashMap<List<TokenModificationData>> bmap
+		= new IntObjectOpenHashMap<List<TokenModificationData>>();
 		
 		private List<IToken> original;
 		
@@ -278,24 +295,19 @@ public class ParserComposition2 extends ParserComposition {
 					throw new RuntimeException("Infinite cycle in Verb Composite Parser.");
 				}
 				this.clean();
-
-				for( ParserData pd : parserDataList){
-					
-//					if(pd.isFinished()){
-//						continue;
-//					}
+				
+				for(ParserData pd : parserDataList){
 					pd.process(this.currentTokensArray);
 					pd.setFinished(true);
 				}
-				
-				resolveConflicts();
+								
+				resolveConflicts(map.equals(bmap));					
 				
 				this.currentTokensArray = collectTokens();				
 				boolean finished = finished();
 				if(finished){
 					break;
 				}
-				clean();
 				count++;
 			}
 			return this.currentTokensArray;
@@ -414,15 +426,21 @@ public class ParserComposition2 extends ParserComposition {
 		}
 
 		protected void clean() {
-			this.map.clear();
+			this.bmap.clear();
+			
+			IntObjectOpenHashMap<List<TokenModificationData>> temp = this.bmap;
+			this.bmap = this.map;
+			this.map = temp;
+			
 			this.cancelledProducedTokens.clear();
 			this.modifiedTokens.clear();
 			for( ParserData pd : this.parserDataList){
 				pd.clean();
 			}
 		}
-
-		protected void resolveConflicts() {
+		
+		protected void resolveConflicts(boolean force) {
+			processedTokens.clear();
 			
 			for(IToken t : currentTokensArray){
 				
@@ -430,15 +448,24 @@ public class ParserComposition2 extends ParserComposition {
 				if(dataList==null||dataList.size()<2){
 					continue;
 				}
-				resolveConflict(dataList);
+				resolveConflict(dataList, force);
 			}
-			
 		}
 
-		protected void resolveConflict(List<TokenModificationData> dataList) {
+		private Set<Integer> processedTokens = new HashSet<Integer>();
+		
+		protected void resolveConflict(List<TokenModificationData> dataList, boolean force) {
+			
+			
 			
 			List<TokenModificationData> enriched = new ArrayList<TokenModificationData>();
-			for(TokenModificationData tmd : dataList){
+			for(TokenModificationData tmd : dataList) {
+				int pId = tmd.getProducedToken().id();
+			
+				if (force && processedTokens.contains(pId)) return;
+				else processedTokens.add(pId);
+				
+				
 				if(tmd.isEnriched()){
 					enriched.add(tmd);
 				}
