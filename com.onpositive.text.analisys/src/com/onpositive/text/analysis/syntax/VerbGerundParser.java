@@ -1,17 +1,12 @@
 package com.onpositive.text.analysis.syntax;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.TokenVisitor;
 import com.onpositive.text.analysis.lexic.WordFormToken;
@@ -117,15 +112,15 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		int startPosition = Math.min(verbToken.getStartPosition(), sp);
 		int endPosition = Math.max(verbToken.getEndPosition(), ep);
 		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_VERB_GERUND, verbToken, null, startPosition, endPosition);
-		
 		if(parent!=null){
 			parent.replaceChild(verbToken,newToken);
 			pd.addChangedToken(newToken);
-			
+			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
 		else if(clause != null){
 			clause.setPredicate(newToken);
+			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
 		else{

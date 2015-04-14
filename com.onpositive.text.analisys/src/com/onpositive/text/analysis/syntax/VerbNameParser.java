@@ -2,6 +2,7 @@ package com.onpositive.text.analysis.syntax;
 
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
@@ -16,6 +17,12 @@ public class VerbNameParser extends VerbGroupParser {
 	
 	private static final UnaryMatcher<SyntaxToken> casesByReflexiveVerbMatch
 		= hasAny(Case.DATV, Case.ABLT);
+	
+	private static final IntOpenHashSet producedTokenTypes = new IntOpenHashSet();
+	{
+		producedTokenTypes.add(IToken.TOKEN_TYPE_VERB_NOUN);
+		producedTokenTypes.add(IToken.TOKEN_TYPE_VERB_ADJECTIVE);
+	}
 
 	public VerbNameParser(AbstractWordNet wordNet) {
 		super(wordNet);
@@ -67,5 +74,14 @@ public class VerbNameParser extends VerbGroupParser {
 		}
 		boolean result = casesByReflexiveVerbMatch.match(nounToken);
 		return result;
+	}
+	
+	protected boolean allowsMultiple(){
+		return false;
+	}
+	
+	@Override
+	protected IntOpenHashSet getProducedTokenTypes() {
+		return producedTokenTypes;
 	}
 }

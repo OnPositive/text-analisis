@@ -2,6 +2,8 @@ package com.onpositive.text.analysis;
 
 import java.util.List;
 
+import com.onpositive.text.analysis.utils.ILogger;
+
 /**
  * Represents Generic Parser base structure
  */
@@ -99,6 +101,10 @@ public interface IParser {
 	 * Clean - empty different structures, arrays and lists used by parsing process.  
 	 */
 	void clean();
+	
+	void setLogger(ILogger logger);
+	
+	void setErrorLogger(ILogger logger);
 
 	/**
 	 * Token Id Provider

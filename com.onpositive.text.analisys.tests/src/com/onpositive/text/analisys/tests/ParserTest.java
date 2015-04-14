@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import junit.framework.TestCase;
 
 import com.onpositive.text.analysis.BasicCleaner;
@@ -22,6 +23,7 @@ import com.onpositive.text.analysis.syntax.ClauseToken;
 import com.onpositive.text.analysis.syntax.PrepositionGroupToken;
 import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
+import com.onpositive.text.analysis.utils.TokenLogger;
 
 public class ParserTest extends TestCase {
 	
@@ -251,5 +253,15 @@ l0:		for(String s : print){
 			}
 		}
 		TestCase.assertTrue(gotPrint);
+	}
+	
+	public void setLogger(IParser parser){
+		String loggerPath = System.getProperty("loggerPath");
+		if(loggerPath == null){
+			return;
+		}
+		TokenLogger logger = new TokenLogger(loggerPath);
+		logger.clean();
+		parser.setLogger(logger);
 	}
 }

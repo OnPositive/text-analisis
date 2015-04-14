@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Stack;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
@@ -28,6 +29,8 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 	protected static final UnaryMatcher<SyntaxToken> transitiveVerbMatch = and(verbLikeMatch,hasAny(TransKind.tran));
 
 	protected static final UnaryMatcher<SyntaxToken> infnMatch = has(PartOfSpeech.INFN);
+	
+	abstract protected IntOpenHashSet getProducedTokenTypes();
 
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
@@ -156,8 +159,26 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		}
 		
 		IToken last = sample.peek();
-		if((checkVerb(newToken)||(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE))&&checkAdditionalToken(last)){
-			return ACCEPT_AND_BREAK;
+		if(checkAdditionalToken(last)){
+			if(checkVerb(newToken)){
+				if(!allowsMultiple()){
+					if(checkIfProducedByThisParser((SyntaxToken) newToken)){
+						return DO_NOT_ACCEPT_AND_BREAK;
+					}
+				}
+				return ACCEPT_AND_BREAK;
+			}
+			if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
+				SyntaxToken predicate = ((ClauseToken)newToken).getPredicate();
+				if(checkVerb(predicate)){
+					if(!allowsMultiple()){
+						if(checkIfProducedByThisParser(predicate)){
+							return DO_NOT_ACCEPT_AND_BREAK;
+						}
+					}
+					return CONTINUE_PUSH;
+				}
+			}
 		}
 		if(checkAdditionalToken(newToken)&&(checkVerb(last)||last.getType()==IToken.TOKEN_TYPE_CLAUSE)){
 
@@ -176,15 +197,45 @@ public abstract class VerbGroupParser extends AbstractSyntaxParser {
 		if(prepMatch.match(newToken)){			
 			return DO_NOT_ACCEPT_AND_BREAK;
 		}
-		if (checkVerb(newToken)||checkAdditionalToken(newToken)) {
+		if (checkVerb(newToken)) {
+			if(!allowsMultiple()){
+				if(checkIfProducedByThisParser((SyntaxToken) newToken)){
+					return DO_NOT_ACCEPT_AND_BREAK;
+				}
+			}
+			return CONTINUE_PUSH;
+		}
+		if(checkAdditionalToken(newToken)){
 			return CONTINUE_PUSH;
 		}
 		if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
-			if(checkVerb(((ClauseToken)newToken).getPredicate())){
+			SyntaxToken predicate = ((ClauseToken)newToken).getPredicate();
+			if(checkVerb(predicate)){
+				if(!allowsMultiple()){
+					if(checkIfProducedByThisParser(predicate)){
+						return DO_NOT_ACCEPT_AND_BREAK;
+					}
+				}
 				return CONTINUE_PUSH;
 			}
 		}
 		return DO_NOT_ACCEPT_AND_BREAK;
+	}
+	
+	private boolean checkIfProducedByThisParser(SyntaxToken token) {
+
+		if(getProducedTokenTypes().contains(token.getType())){
+			return true;
+		}
+		SyntaxToken mainGroup = token.getMainGroup();
+		if(mainGroup==null||mainGroup==token){
+			return false;
+		}
+		return checkIfProducedByThisParser(mainGroup);		
+	}
+
+	protected boolean allowsMultiple(){
+		return true;
 	}
 
 }
