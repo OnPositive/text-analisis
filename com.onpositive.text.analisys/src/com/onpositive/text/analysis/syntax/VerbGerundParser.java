@@ -21,14 +21,11 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 
 	public VerbGerundParser(AbstractWordNet wordNet) {
 		super(wordNet);
-		modalLikeVerbsRegistry = new ModalLikeVerbsRegistry(wordNet);
 	}
 
 	
 	protected static final UnaryMatcher<SyntaxToken> gerundMatch = hasAny(PartOfSpeech.GRND);
 	
-	private ModalLikeVerbsRegistry modalLikeVerbsRegistry;
-
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		
@@ -166,11 +163,6 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		VisitorDump dump = visitor.getDump();
 		dump.setClause(clauseToken); 
 		return dump;
-	}
-
-	private boolean isModalLikeVerb(SyntaxToken verb) {
-		String basicForm = verb.getBasicForm();
-		return modalLikeVerbsRegistry.isModalLike(basicForm);
 	}
 
 	@Override
