@@ -1,5 +1,6 @@
 package com.onpositive.text.analysis.syntax;
 
+import com.carrotsearch.hppc.IntOpenHashSet;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.Case;
@@ -10,6 +11,12 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 public class DirectObjectParser extends VerbGroupParser {
 
 	private static final UnaryMatcher<SyntaxToken> nomnCaseMatcher = hasAny(Case.NOMN);
+	
+	private static final IntOpenHashSet producedTokenTypes = new IntOpenHashSet();
+	{
+		producedTokenTypes.add(IToken.TOKEN_TYPE_DIRECT_OBJECT_INF);
+		producedTokenTypes.add(IToken.TOKEN_TYPE_DIRECT_OBJECT_NAME);
+	}
 
 
 	public DirectObjectParser(AbstractWordNet wordNet) {
@@ -56,5 +63,10 @@ public class DirectObjectParser extends VerbGroupParser {
 		SyntaxToken objToken = orderedTokens[1];
 		boolean result = nomnCaseMatcher.match(objToken);
 		return result;
+	}
+
+	@Override
+	protected IntOpenHashSet getProducedTokenTypes() {
+		return producedTokenTypes;
 	}
 }

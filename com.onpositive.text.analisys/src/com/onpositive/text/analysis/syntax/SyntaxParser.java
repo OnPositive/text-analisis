@@ -29,6 +29,7 @@ import com.onpositive.text.analysis.lexic.dimension.DimensionParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
+import com.onpositive.text.analysis.utils.ILogger;
 
 public class SyntaxParser extends ParserComposition {
 	
@@ -214,11 +215,19 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		
 		for(IToken sentence : sentences){
-			List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
-			List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
-			List<IToken> tokens1 = parseSyntax(tokens);
-			List<IToken> tokens2 = complexClauseParser.process(tokens1);
-			sentence.setChildren(new StructureInspectingCleaner().clean(tokens2));
+			try{
+				List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
+				List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
+				List<IToken> tokens1 = parseSyntax(tokens);
+				List<IToken> tokens2 = complexClauseParser.process(tokens1);
+				sentence.setChildren(new StructureInspectingCleaner().clean(tokens2));
+			}
+			catch(Exception e){
+				
+				this.errorLogger.writeString(e.getMessage()).writelnString(
+						getText().substring(sentence.getStartPosition(), sentence.getEndPosition())
+					);
+			}
 		}
 		return sentences;
 	}

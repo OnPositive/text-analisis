@@ -23,6 +23,7 @@ public class FragmentExtractorTest extends ParserTest{
 		wn.addUrl("/modalLikeVerbs.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
+		setLogget(syntaxParser);
 		this.composition = syntaxParser;
 	}
 	
@@ -400,4 +401,24 @@ public class FragmentExtractorTest extends ParserTest{
 			            + "<main>WORD_FORM погодя([Н])  )  )  )");
 		
 	}
+	
+	public void test_complex_direct_speech002(){
+		String str = "Секретарь  отдела Нина  Ивановна  возникла  на  пороге его  кабинета и, блеснув толстыми стеклами очков, скрипуче пропела- прокукарекала: -\"Лейтенант Кольцов! К начальнику!\" И потом добавила -\"Саша ! И захвати на доклад проверку на \"Дайкона\" После  малозначительного  разговора  по  линии  работы  и  выслушивания доклада  о  результатах  реализации  материалов  об  изготовлении  оружия  и стрельбе на государственной границе начальник задумался .";		
+		//String str = "После выслушивания доклада о результатах реализации и стрельбе на государственной границы начальник задумался .";
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+				"");
+		
+	}
+	
+	
+	public void test_complex_direct_speech003(){		
+		//String str = "Каждый  век	открывал   человечеству   все   новые  пласты  знаний,  как  бы	приоткрывая еще один покров тайны с более глубокого слоя смысла	записанного в Торе.";
+		String str = "Каждый Век открывал человечеству новые пласты знаний.";		
+		List<IToken> processed = process(str);
+		assertTestTokenPrint( processed,
+				"");
+		
+	}
+	
 }

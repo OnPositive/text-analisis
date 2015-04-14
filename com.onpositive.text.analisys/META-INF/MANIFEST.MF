@@ -12,5 +12,6 @@ Export-Package: com.onpositive.text.analysis,
  com.onpositive.text.analysis.lexic.scalar,
  com.onpositive.text.analysis.rules,
  com.onpositive.text.analysis.rules.matchers,
- com.onpositive.text.analysis.syntax
+ com.onpositive.text.analysis.syntax,
+ com.onpositive.text.analysis.utils
 Require-Bundle: com.onpositive.wordnet;bundle-version="1.0.1"

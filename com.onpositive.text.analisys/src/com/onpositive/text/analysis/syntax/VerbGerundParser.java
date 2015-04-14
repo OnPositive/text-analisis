@@ -119,13 +119,14 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		int startPosition = Math.min(verbToken.getStartPosition(), sp);
 		int endPosition = Math.max(verbToken.getEndPosition(), ep);
 		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_VERB_GERUND, verbToken, null, startPosition, endPosition);
-		
 		if(parent!=null){
 			parent.replaceChild(verbToken,newToken);
+			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
 		else if(clause != null){
 			clause.setPredicate(newToken);
+			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
 		else{

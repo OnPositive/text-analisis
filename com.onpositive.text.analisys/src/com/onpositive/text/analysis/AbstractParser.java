@@ -11,6 +11,8 @@ import java.util.Stack;
 
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
+import com.onpositive.text.analysis.utils.DummyLogger;
+import com.onpositive.text.analysis.utils.ILogger;
 
 public abstract class AbstractParser implements IParser {
 	
@@ -150,6 +152,10 @@ public abstract class AbstractParser implements IParser {
 	protected static final ProcessingResult DO_NOT_ACCEPT_AND_BREAK = new ProcessingResult(0,false,true);
 	
 	private List<IToken> baseTokens;
+	
+	protected ILogger logger = new DummyLogger();
+	
+	protected ILogger errorLogger = new DummyLogger();
 	
 	private IntOpenHashSet baseTokenIDs;
 
@@ -605,6 +611,16 @@ public abstract class AbstractParser implements IParser {
 	@Override
 	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
 		this.tokenIdProvider = tokenIdProvider;
+	}
+	
+	@Override
+	public void setLogger(ILogger logger) {
+		this.logger = logger;
+	}
+	
+	@Override
+	public void setErrorLogger(ILogger logger) {
+		this.errorLogger = logger;
 	}
 	
 }

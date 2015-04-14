@@ -3,6 +3,8 @@ package com.onpositive.text.analysis;
 import java.util.List;
 
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
+import com.onpositive.text.analysis.utils.DummyLogger;
+import com.onpositive.text.analysis.utils.ILogger;
 
 public class ParserComposition implements IParser {
 
@@ -24,6 +26,10 @@ public class ParserComposition implements IParser {
 	private boolean isGloballyRecursive = false;
 	
 	private String text;
+	
+	protected ILogger logger = new DummyLogger();
+	
+	protected ILogger errorLogger = new DummyLogger();
 	
 	public List<IToken> getBaseTokens() {
 		if(parsers==null||parsers.length==0){
@@ -73,11 +79,12 @@ public class ParserComposition implements IParser {
 		
 		int count0 = 0;
 		while(globalTriggered){
-			if(count0>100){
+			if(count0>15){
 				throw new RuntimeException("Infinite external cycle in Composite Parser.");
 			}
 			globalTriggered = false;
 			for (IParser parser : parsers){
+				logger.writelnString("Launching " + parser.getClass().getSimpleName());
 				int count1 = 0;
 				do{
 					if(count1>100){
@@ -147,6 +154,22 @@ public class ParserComposition implements IParser {
 	public void clean() {
 		for(IParser p : this.parsers){
 			p.clean();
+		}
+	}
+	
+	@Override
+	public void setLogger(ILogger logger) {
+		this.logger = logger;
+		for(IParser p : parsers){
+			p.setLogger(logger);
+		}
+	}
+	
+	@Override
+	public void setErrorLogger(ILogger logger) {
+		this.errorLogger = logger;
+		for(IParser p : parsers){
+			p.setErrorLogger(logger);
 		}
 	}
 

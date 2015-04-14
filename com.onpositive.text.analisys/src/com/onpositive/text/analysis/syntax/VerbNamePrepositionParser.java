@@ -17,7 +17,7 @@ public class VerbNamePrepositionParser extends VerbPrepositionGroupParser {
 	@Override
 	protected int getType(SyntaxToken token) {
 		
-		if(nounMatch.match(token)){
+		if(nounMatch.match(token)||nproMatch.match(token)){
 			return IToken.TOKEN_TYPE_VERB_NOUN_PREP;
 		}
 		else if(adjectiveMatch.match(token)){

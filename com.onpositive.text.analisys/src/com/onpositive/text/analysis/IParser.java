@@ -2,6 +2,8 @@ package com.onpositive.text.analysis;
 
 import java.util.List;
 
+import com.onpositive.text.analysis.utils.ILogger;
+
 public interface IParser {
 
 	List<IToken> process(List<IToken> tokens);
@@ -29,6 +31,10 @@ public interface IParser {
 	void setBaseTokens(List<IToken> baseTokens);
 
 	void clean();
+	
+	void setLogger(ILogger logger);
+	
+	void setErrorLogger(ILogger logger);
 
 	public class TokenIdProvider{
 		
