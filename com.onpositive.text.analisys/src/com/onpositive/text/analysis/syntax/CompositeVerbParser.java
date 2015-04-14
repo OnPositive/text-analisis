@@ -39,9 +39,9 @@ public class CompositeVerbParser extends AbstractSyntaxParser {
 	@Override
 	protected ProcessingResult checkToken(IToken newToken) {
 		
-		if(verbLikeMatch.match(newToken)){
+		if(verbLikeMatch.match(newToken) && isModalLikeVerb((SyntaxToken) newToken))
 			return CONTINUE_PUSH;
-		}
+		
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
 
