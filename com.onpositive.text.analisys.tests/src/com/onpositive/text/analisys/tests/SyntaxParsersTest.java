@@ -1082,8 +1082,22 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		
 		assertTrue(processed != null);
-		
-		
 	}	
+	
+	public void test062() {
+		String str = "ты хотел идти бухать";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);		
+	}
+	
+	public void test063() {
+		String str = "я бухаю, плевать я хотел на ваши желания.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);		
+	}
+	
+	
 	
 }
