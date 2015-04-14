@@ -68,6 +68,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	protected AbstractWordNet wordNet;
+	protected ModalLikeVerbsRegistry modalLikeVerbsRegistry;
 	
 	public boolean isIterative(){
 		return false;
@@ -459,6 +460,13 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return newToken.getType()==IToken.TOKEN_TYPE_SYMBOL&&newToken.getStringValue().equals(",");
 	}
 	
+	protected boolean isModalLikeVerb(SyntaxToken verb) {
+		if (modalLikeVerbsRegistry == null)
+			modalLikeVerbsRegistry = new ModalLikeVerbsRegistry(wordNet);
+		
+		String basicForm = verb.getBasicForm();
+		return modalLikeVerbsRegistry.isModalLike(basicForm);
+	}
 	public static boolean matchParticiple(IToken token){
 		return participleMatch.match(token);
 	}
