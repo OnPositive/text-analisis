@@ -209,4 +209,6 @@ public interface IToken {
 
 	void adjustEndPosition(int endPosition);
 
+	String getParserName();
+	
 }

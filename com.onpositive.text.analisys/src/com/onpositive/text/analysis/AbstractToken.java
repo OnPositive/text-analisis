@@ -15,10 +15,17 @@ public abstract class AbstractToken implements IToken {
 		this.tokenType = tokenType;
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
+		
+		setParserName();
+				
 	}
 	@Override
 	public String getStableStringValue() {
 		return getStringValue();
+	}
+	
+	private void setParserName() {
+		parserName = CreatedByParserRegistry.getParserName();
 	}
 	
 	protected AbstractToken(int tokenType, int startPosition, int endPosition, boolean isDoubtful)
@@ -27,7 +34,13 @@ public abstract class AbstractToken implements IToken {
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
 		this.isDoubtful = isDoubtful;
+		
+		setParserName();
 	}
+	
+	private String parserName;
+	
+	public String getParserName() { return parserName; }
 	
 	private int id;
 	
