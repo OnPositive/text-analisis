@@ -2,11 +2,7 @@ package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
-import com.onpositive.text.analysis.syntax.SyntaxToken;
-
 
 public abstract class AbstractToken implements IToken {
 	
@@ -88,6 +84,7 @@ public abstract class AbstractToken implements IToken {
 
 	public void setId(int id) {
 		this.id = id;
+		TokenRegistry.put((IToken) this);
 	}
 
 	public int getType() {
