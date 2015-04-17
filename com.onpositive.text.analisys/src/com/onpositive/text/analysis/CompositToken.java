@@ -17,6 +17,19 @@ public class CompositToken extends AbstractToken {
 	public String getStringValue() {
 		return tokens.toString();
 	}
+	@Override
+	public String getShortStringValue() {
+		StringBuilder bld = new StringBuilder("["); 
+		
+		for (IToken token: tokens) {
+			bld.append(token.getShortStringValue());
+			if (token != tokens.get(tokens.size()-1)) bld.append(", "); 
+		}
+		
+		bld.append("]");
+		
+		return bld.toString();
+	}
 
 	public List<IToken> getTokens() {
 		return tokens;

@@ -23,6 +23,11 @@ public class SymbolToken extends AbstractToken {
 	public String getStringValue() {
 		return value;
 	}
+	
+	@Override
+	public String getShortStringValue() {
+		return value;
+	}
 
 	@Override
 	public int hashCode() {

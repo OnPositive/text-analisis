@@ -126,6 +126,7 @@ public interface IToken {
 	
 	String getStringValue();
 	String getStableStringValue();
+	String getShortStringValue();
 	
 	int getType();
 	

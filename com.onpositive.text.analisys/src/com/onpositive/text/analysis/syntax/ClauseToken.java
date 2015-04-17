@@ -55,5 +55,24 @@ public class ClauseToken extends SyntaxToken {
 		}
 		return bld.toString().trim();
 	}
+	@Override
+	public String getShortStringValue() {
+		StringBuilder bld = new StringBuilder();
+		if(subject!=null){
+			bld.append(subject.getShortStringValue());
+		}
+		else{
+			bld.append("no subject");
+		}
+		bld.append(" ");
+		if(predicate!=null){
+			bld.append(predicate.getShortStringValue());
+		}
+		else{
+			bld.append("no predicate");
+		}
+		return bld.toString().trim();
+	}
+	
 
 }

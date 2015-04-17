@@ -30,4 +30,25 @@ public class SentenceToken extends AbstractToken{
 		return result;
 	}
 	
+	@Override
+	public String getShortStringValue() {
+		if(children==null||children.isEmpty()){
+			return "";
+		}
+		StringBuilder bld = new StringBuilder();
+		IToken prev = children.get(0);
+		bld.append(prev.getShortStringValue());
+		int size = children.size();
+		for(int i = 1 ; i < size ; i++){
+			IToken token = children.get(i);
+			if(prev.getEndPosition() != token.getStartPosition()){
+				bld.append(" ");
+			}
+			bld.append(token.getShortStringValue());
+			prev = token;
+		}
+		String result = bld.toString();
+		return result;
+	}
+	
 }

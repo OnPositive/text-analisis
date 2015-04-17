@@ -18,6 +18,10 @@ public class StringToken extends AbstractToken{
 	public String getStringValue() {		
 		return value;
 	}
+	@Override
+	public String getShortStringValue() {		
+		return value;
+	}
 
 
 	@Override

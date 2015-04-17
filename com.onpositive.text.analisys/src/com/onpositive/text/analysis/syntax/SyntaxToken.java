@@ -157,6 +157,17 @@ public class SyntaxToken extends AbstractToken{
 		return bld.toString();
 	}
 
+	@Override
+	public String getShortStringValue() {
+		
+		StringBuilder bld = new StringBuilder();
+		List<IToken> children = getChildren();
+		for(IToken t : children){
+			bld.append(t.getShortStringValue()).append(" ");
+		}
+		return bld.toString();
+	}
+	
 	public WordFormToken getMainWord() {		
 		SyntaxToken token = this;
 		SyntaxToken mainGroup = this.getMainGroup();
