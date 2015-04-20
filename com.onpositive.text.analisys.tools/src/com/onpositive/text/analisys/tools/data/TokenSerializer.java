@@ -74,8 +74,8 @@ public class TokenSerializer {
 			public JSONObject toJSON() throws JSONException {
 				JSONObject obj = new JSONObject();
 				obj.put("id", data.id());
-				obj.put("class", data.getClass().getSimpleName());
-				obj.put("type", data.getType());
+				obj.put("type", data.getClass().getSimpleName());
+				obj.put("subtype", data.getType());
 				obj.put("parser", data.getParserName());
 				obj.put("value", data.getShortStringValue().trim());
 				
