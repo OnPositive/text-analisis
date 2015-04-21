@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Graph Visualizer &ndash; Text Analysis &ndash; OnPositive</title>
+
+<link rel="stylesheet" href="css/pure.min.css">
+<link rel="stylesheet" href="css/grids-responsive.min.css">
+<link rel="stylesheet" href="css/main.css">
+
+<script src="js/jquery.min.js"></script>
+<script src="js/arbor.js"></script>
+<script src="js/arbor-graphics.js"></script>
+
+<script src="js/visualizer.js"></script>
+<script src="js/levelizer.js"></script>
+</head>
+
+<body>
+
+<div class="splash-container">
+	<div class="splash">
+        <canvas id="viewport" width="1200" height="800" style="background: white; border: 1px solid #ddd"></canvas>
+	</div>
+</div>
+
+<div class="content-wrapper">
+	<div class="content">
+		<h2 class="content-head is-center">Scroll down to change text</h2>
+		<br />
+		<div style="width: 66%; margin-left: auto; margin-right: auto;">
+		<form class="pure-form">
+			<input id="query" type="text" placeholder="Text to parse">
+			<button id="go" type="submit" class="pure-button">Go</button>
+		</form>
+		</div>
+	</div>
+</div>
+
+<script>
+$(function() {
+
+    $("#go").on('click', function() {
+        var query = $("#query").val()
+
+        $.getJSON("/parse", { query: query }, function(graph) {
+            if (window.model == null) window.model = { vertices: [], edges: [] }
+
+            model.vertices.forEach(function(v) { system.pruneNode(v.id) })
+            
+            window.model = graph
+            
+            levelize(model);
+
+            system.eachEdge(function(e) {
+                e.data.length = 1 + 5 * Math.abs(varr[e.from].level - varr[e.to].level)
+            })
+        })
+        return false
+    })
+})
+</script>
+
+</body>
+</html>
