@@ -42,4 +42,8 @@ public class TokenRegistry {
 	public static Collection<IToken> list() {
 		return TokenRegistry.getInstance().registry.values();
 	}
+
+	public static void clean() {
+		TokenRegistry.getInstance().registry.clear();		
+	}
 }
