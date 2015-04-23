@@ -36,7 +36,7 @@
 						"WordFormToken": "WFT",
 						"SyntaxToken": "ST",
 						"LongNameToken": "LNT",
-						"ClauseToken": "C"
+						"ClauseToken": "Clause"
 					},
 				w = node.data.width = Math.max(12, 12 + gfx.textWidth(text[node.data.type]))
 
@@ -121,85 +121,87 @@
 
 			tooltip: function(node) {
 				var typedict = {
-						00001 : "undefined",
-						10001 : "digit",		
-						10002 : "letter",		
-						10003 : "symbol",		
-						10004 : "vulgar fraction",
-						10005 : "exponent",		
-						100101 : "linebreak",		
-						100102 : "non breaking space",	
-						100103 : "other whitespace",
-						10201 : "scalar",
-						10202 : "date",					
-						10203 : "dimension",			
-						10213 : "unit",					
-						10301 : "region bound",			
-						11000 : "word form",
-						11001 : "word with index",		
-						11002 : "sentence",					
-						11011 : "noun adjective",		
-						11012 : "adjective adverb",	
-						11013 : "verb adverb",
-						11014 : "direct object name",	
-						11015 : "direct object inf",	
-						11016 : "verb noun",				
-						11017 : "verb adjective",		
-						11018 : "verb noun prep",
-						11019 : "verb adjective prep",		
-						11020 : "verb adverb prep",		
-						11021 : "verb gerund",			
-						11022 : "composite verb",		
-						11023 : "noun name prep",
-						11024 : "noun participle",		
-						11025 : "verb particle",		
-						11030 : "clause",				
-						11031 : "complex clause",		
-						11041 : "adverb with modificator",
-						11051 : "uniform predicative",	
-						11052 : "uniform adverb",		
-						11053 : "uniform adjective",	
-						11054 : "uniform noun",			
-						11055 : "uniform verb",
-						11056 : "measured noun",			
-						11057 : "genitive chain",		
-						11058 : "preposition group",		
-						12001 : "brackets",				
-						12002 : "enumeration",
-						12003 : "direct speach",			
-						12004 : "title",				
-						20001 : "link",						
-						20002 : "long name"
-					}
-
-					var	d = node.data,
- 				  texts = [d.value, d.id,	typedict[d.subtype], d.type, d.parser, d.level],
-				 labels = ["Value", "Id:", "Type:", "Class:", "Parser:", "Level:"],
-				  width = 0,
-				  	 pt = node.pt
-
-
-					for (i = 0; i < texts.length; i++) if (gfx.textWidth(texts[i]) > width) width = gfx.textWidth(texts[i])
-
-					width += 100 //
-					height = 10 + texts.length * 16
-
-					var x = pt.x + width + 20 > gfx.size().width ? pt.x - width - 50 : pt.x + 50
-							y = pt.y + height+ 20 > gfx.size().height ? pt.y - height - 50 : pt.y + 50
-
-					gfx.rect(x, y, width, height, 4, { stroke: "#dadada", fill: "white" })
-					gfx.line(x, y + 20, x + width, y + 20, { stroke: "#dadada" })
-
-					gfx.text(d.value, x + 40, y + 18, { fill: "white", stroke: "#dadada" })
-					gfx.text(d.value, x + 40, y + 18, { fill: "white", stroke: "#dadada" })
-
-					for (i = 1; i < labels.length; i++) {
-						gfx.text(labels[i], x + 80 - gfx.textWidth(labels[i]), y + 24 + i * 16, { fill: "white"})
-						gfx.text(labels[i], x + 80 - gfx.textWidth(labels[i]), y + 24 + i * 16, { fill: "white"})
-						gfx.text(texts[i], x + 85, y + 24 + i * 16)
-					}
-
+					00001 : "undefined",
+					10001 : "digit",		
+					10002 : "letter",		
+					10003 : "symbol",		
+					10004 : "vulgar fraction",
+					10005 : "exponent",		
+					100101 : "linebreak",		
+					100102 : "non breaking space",	
+					100103 : "other whitespace",
+					10201 : "scalar",
+					10202 : "date",					
+					10203 : "dimension",			
+					10213 : "unit",					
+					10301 : "region bound",			
+					11000 : "word form",
+					11001 : "word with index",		
+					11002 : "sentence",					
+					11011 : "noun adjective",		
+					11012 : "adjective adverb",	
+					11013 : "verb adverb",
+					11014 : "direct object name",	
+					11015 : "direct object inf",	
+					11016 : "verb noun",				
+					11017 : "verb adjective",		
+					11018 : "verb noun prep",
+					11019 : "verb adjective prep",		
+					11020 : "verb adverb prep",		
+					11021 : "verb gerund",			
+					11022 : "composite verb",		
+					11023 : "noun name prep",
+					11024 : "noun participle",		
+					11025 : "verb particle",		
+					11030 : "clause",				
+					11031 : "complex clause",		
+					11041 : "adverb with modificator",
+					11051 : "uniform predicative",	
+					11052 : "uniform adverb",		
+					11053 : "uniform adjective",	
+					11054 : "uniform noun",			
+					11055 : "uniform verb",
+					11056 : "measured noun",			
+					11057 : "genitive chain",		
+					11058 : "preposition group",		
+					12001 : "brackets",				
+					12002 : "enumeration",
+					12003 : "direct speach",			
+					12004 : "title",				
+					20001 : "link",						
+					20002 : "long name"
 				}
+				var d = node.data,
+					value = d.value
+				
+				if (d.grammems) value += " [" + d.grammems.join(", ") + "]";
+				
+				var texts = [value, d.id,	typedict[d.subtype], d.type, d.parser, d.level],
+ 					labels = ["Value", "Id:", "Type:", "Class:", "Parser:", "Level:"],
+ 				  	width = 0,
+ 				  	pt = node.pt
+
+				for (i = 0; i < texts.length; i++) if (gfx.textWidth(texts[i]) > width) width = gfx.textWidth(texts[i])
+
+				width += 100 //
+				height = 10 + texts.length * 16
+
+				var x = pt.x + width + 20 > gfx.size().width ? pt.x - width - 50 : pt.x + 50
+						y = pt.y + height+ 20 > gfx.size().height ? pt.y - height - 50 : pt.y + 50
+
+				gfx.rect(x, y, width, height, 4, { stroke: "#dadada", fill: "white" })
+				gfx.line(x, y + 20, x + width, y + 20, { stroke: "#dadada" })
+
+				gfx.text(value, x + 40, y + 18, { fill: "white", stroke: "#dadada" })
+				gfx.text(value, x + 40, y + 18, { fill: "white", stroke: "#dadada" })
+
+				for (i = 1; i < labels.length; i++) {
+					gfx.text(labels[i], x + 80 - gfx.textWidth(labels[i]), y + 24 + i * 16, { fill: "white"})
+					gfx.text(labels[i], x + 80 - gfx.textWidth(labels[i]), y + 24 + i * 16, { fill: "white"})
+					gfx.text(texts[i], x + 85, y + 24 + i * 16)
+				}
+
+			}
 		}
 
 		var that = {
@@ -308,7 +310,7 @@
 	}
 
 
-	var sys = arbor.ParticleSystem(0, 0 , 0)
+	var sys = arbor.ParticleSystem(0, 0, 0)
 	sys.parameters({ gravity: false })
 	sys.renderer = Renderer("#viewport")
 
