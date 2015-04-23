@@ -9,6 +9,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.IToken;
@@ -92,7 +93,13 @@ public class TokenSerializer {
 					for (Grammem gs : stdata.getMeaningElements()[0].getGrammems())
 						gset.put(gs.toString());					
 					
-					obj.put("grammems", gset);
+					if (gset.length() == 0) {
+						for (GrammarRelation gr : stdata.getGrammarRelations()) {
+							gset.put(gr.toString());
+						}
+					}
+					
+					obj.put("grammems", gset );
 				}				
 				
 				JSONObject pos = new JSONObject();
