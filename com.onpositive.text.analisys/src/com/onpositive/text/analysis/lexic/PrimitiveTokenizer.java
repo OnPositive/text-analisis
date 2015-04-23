@@ -27,7 +27,13 @@ public class PrimitiveTokenizer {
 		return extensions.remove(o);
 	}
 
-	public List<IToken> tokenize(String str){
+	private boolean isSettingId;
+	
+	public List<IToken> tokenize(String str) { return tokenize(str, true); }
+	
+	public List<IToken> tokenize(String str, boolean setIds) {
+		
+		isSettingId = setIds;
 		
 		if( Utils.isEmptyString(str) ){
 			return new ArrayList<IToken>();
@@ -97,7 +103,7 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				SymbolToken pt = new SymbolToken( ch, start+i, start+i+1 );
-				pt.setId(list.size());
+				if (isSettingId) pt.setId(list.size());
 				list.add(pt);
 			}
 		}
@@ -105,13 +111,13 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
-				pt.setId(list.size());
+				if (isSettingId) pt.setId(list.size());
 				list.add(pt);
 			}
 		}
 		else{
 			StringToken pt = new StringToken(segment, type, start, start + sl );
-			pt.setId(list.size());
+			if (isSettingId) pt.setId(list.size());
 			list.add(pt);
 		}		
 	}

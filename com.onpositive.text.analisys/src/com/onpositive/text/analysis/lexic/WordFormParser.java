@@ -178,7 +178,7 @@ public class WordFormParser extends AbstractParser {
 	protected ArrayList<GrammarRelation> computeGrammarRelations(TextElement te, Stack<IToken> sample) {
 		
 		String bf0 = te.getBasicForm();
-		List<IToken> tokenz = new PrimitiveTokenizer().tokenize(bf0);
+		List<IToken> tokenz = new PrimitiveTokenizer().tokenize(bf0, false);
 		TextElement[] parts = te.getParts();
 		
 		boolean isNoun = false;
@@ -243,7 +243,7 @@ public class WordFormParser extends AbstractParser {
 			mainToken = sample.get(ind0 - 1);
 		}
 		ArrayList<GrammarRelation> list = new ArrayList<GrammarRelation>();
-		GrammarRelation[] forms = wordNet.getPossibleGrammarForms(mainToken.getStringValue());
+		GrammarRelation[] forms = wordNet.getPossibleGrammarForms(mainToken.getStringValue().toLowerCase());
 		for(GrammarRelation gr : forms){
 			if(gr.getWord() == mainElement){
 				list.add(gr);
