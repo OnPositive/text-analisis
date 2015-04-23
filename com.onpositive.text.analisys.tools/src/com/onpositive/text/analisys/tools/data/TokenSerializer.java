@@ -9,8 +9,14 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
+import com.onpositive.text.analysis.lexic.WordFormParser;
+import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 
 public class TokenSerializer {
@@ -78,6 +84,22 @@ public class TokenSerializer {
 				obj.put("subtype", data.getType());
 				obj.put("parser", data.getParserName());
 				obj.put("value", data.getShortStringValue().trim());
+								
+				if (data instanceof WordFormToken) {					
+					WordFormToken stdata = (WordFormToken) data;
+					
+					JSONArray gset = new JSONArray();
+					for (Grammem gs : stdata.getMeaningElements()[0].getGrammems())
+						gset.put(gs.toString());					
+					
+					obj.put("grammems", gset);
+				}				
+				
+				JSONObject pos = new JSONObject();
+				pos.put("begin", data.getStartPosition());
+				pos.put("end", data.getEndPosition());
+				
+				obj.put("position", pos);
 				
 				return obj;
 			}
