@@ -15,7 +15,7 @@
 <script src="js/arbor-graphics.js"></script>
 
 <script src="js/visualizer.js"></script>
-<script src="js/levelizer.js"></script>
+<script src="js/prepare.js"></script>
 </head>
 
 <body>
@@ -44,19 +44,44 @@ $(function() {
 
     $("#go").on('click', function() {
         var query = $("#query").val()
-
+		$("canvas").hide();
         $.getJSON("/parse", { query: query }, function(graph) {
             if (window.model == null) window.model = { vertices: [], edges: [] }
 
             model.vertices.forEach(function(v) { system.pruneNode(v.id) })
             
             window.model = graph
-            
-            levelize(model);
 
-            system.eachEdge(function(e) {
+            
+            prepare(model);           
+
+            graph.vertices.forEach(function(v) {
+            	if (v.level == null) {
+            		v.level = -1;
+            		var children = v.edges.filter(function(e) { return e.type=="child" }).map(function(e) { return system.getNode(e.to).data.level })
+            		children.forEach(function(c) { if (v.level < c + 1) v.level = c + 1; })
+            	}
+            })
+            
+            system.eachEdge(function(e) {            	
                 e.data.length = 1 + 5 * Math.abs(varr[e.from].level - varr[e.to].level)
             })
+            
+            setTimeout(function() {
+	            system.eachNode(function(n) {
+	            	var pos = n.data.position
+	            	n.p = arbor.Point((pos.begin + pos.end) / 6 - 2, -n.data.level / 1.5)	            	
+	            })
+	            
+	            setTimeout(function() { 
+	            	sys.parameters({ repulsion: 150, friction: 0.95 })
+	            	setTimeout(function() { sys.parameters({ repulsion: 0, friction: 0 }) }, 250)
+	            }, 250)
+	            $("canvas").show()
+	            $("body").scrollTop(0)
+            }, 250)
+            
+            
         })
         return false
     })
