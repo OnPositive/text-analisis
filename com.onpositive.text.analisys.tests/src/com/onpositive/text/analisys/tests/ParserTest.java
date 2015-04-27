@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import junit.framework.TestCase;
 
 import com.onpositive.text.analysis.BasicCleaner;
