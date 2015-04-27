@@ -109,7 +109,7 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		SyntaxToken parent = vs.getParent();
 		ClauseToken clause = dump.getClause();
 		
-		if ((verbToken.childrenCount() > 0 && verbToken.getChildren().contains(gerundToken)) || (parent.childrenCount() > 0 && parent.getChildren().contains(gerundToken))) 
+		if ((verbToken.childrenCount() > 0 && verbToken.getChildren().contains(gerundToken)) || (parent != null && parent.childrenCount() > 0 && parent.getChildren().contains(gerundToken))) 
 			return null;
 		
 		int startPosition = Math.min(verbToken.getStartPosition(), sp);
