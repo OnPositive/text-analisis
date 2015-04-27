@@ -10,6 +10,7 @@ import java.util.Stack;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.syntax.SentenceToken;
 
 public class SentenceSplitter {
@@ -97,12 +98,14 @@ public class SentenceSplitter {
 				}
 			}
 			SentenceToken sent = new SentenceToken(tokens.get(start).getStartPosition(), token.getEndPosition());
+			sent.setId(TokenRegistry.getVacantId());
 			sent.setChildren(tokens.subList(start, i+1));
 			sentences.add(sent);
 			start = i + 1;
 		}
 		if(start<size){
 			SentenceToken sent = new SentenceToken(tokens.get(start).getStartPosition(), tokens.get(size-1).getEndPosition());
+			sent.setId(TokenRegistry.getVacantId());
 			sent.setChildren(tokens.subList(start, size));
 			sentences.add(sent);
 		}
