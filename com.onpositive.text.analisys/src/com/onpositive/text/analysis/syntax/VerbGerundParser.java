@@ -114,7 +114,12 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_VERB_GERUND, verbToken, null, startPosition, endPosition);
 		if(parent!=null){
 			parent.replaceChild(verbToken,newToken);
-			pd.addChangedToken(newToken);
+			newToken.addChild(verbToken);
+			newToken.addChild(gerundToken);
+			verbToken.replaceParent(parent, newToken);
+			gerundToken.addParent(newToken);
+			
+//			pd.addChangedToken(newToken);
 			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
