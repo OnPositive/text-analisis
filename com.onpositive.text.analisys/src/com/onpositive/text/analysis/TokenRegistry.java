@@ -10,7 +10,7 @@ public class TokenRegistry {
 	private int lastId;
 	
 	private TokenRegistry() {
-		registry = new HashMap<Integer, IToken>();		
+		registry = new HashMap<Integer, IToken>();
 		lastId = 0;
 	}
 	
