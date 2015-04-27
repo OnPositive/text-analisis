@@ -151,10 +151,15 @@ public class SyntaxToken extends AbstractToken{
 		
 		StringBuilder bld = new StringBuilder();
 		List<IToken> children = getChildren();
+		
+		if (children == null) return id() + "SyntaxToken";
+		
 		for(IToken t : children){
 			bld.append(t.getStringValue()).append(" ");
 		}
-		return bld.toString();
+		if (children.size() == 1) 
+			return id() + "@" + bld.toString();
+		else return id() + "@[" + bld.toString() + "]";
 	}
 
 	@Override

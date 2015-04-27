@@ -156,12 +156,12 @@ public class WordFormToken extends SyntaxToken {
 	@Override
 	public String getStringValue() {
 		if(meaningElements.length==0){
-			return "Unknown(" + children.get(0).getStringValue() + ")";
+			return id() + "@Unknown(" + children.get(0).getStringValue() + ")";
 		}
 		else if (meaningElements.length == 1) {
-			return meaningElements[0].toString();
+			return id() + "@" + meaningElements[0].toString();
 		}
-		return "*(" + Arrays.toString(meaningElements) + ")";
+		return id() + "@*(" + Arrays.toString(meaningElements) + ")";
 	}
 
 	public TextElement getParentTextElement() {
