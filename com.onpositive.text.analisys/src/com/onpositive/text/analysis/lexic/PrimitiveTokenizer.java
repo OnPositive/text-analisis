@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.utils.Exponent;
 import com.onpositive.text.analysis.utils.Utils;
 import com.onpositive.text.analysis.utils.VulgarFraction;
@@ -103,7 +104,7 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				SymbolToken pt = new SymbolToken( ch, start+i, start+i+1 );
-				if (isSettingId) pt.setId(list.size());
+				if (isSettingId) pt.setId(TokenRegistry.getVacantId());
 				list.add(pt);
 			}
 		}
@@ -111,13 +112,13 @@ public class PrimitiveTokenizer {
 			for(int i = 0 ; i < sl ; i++){
 				char ch = segment.charAt(i); 
 				StringToken pt = new StringToken( ""+ch, type, start+i, start+i+1 );
-				if (isSettingId) pt.setId(list.size());
+				if (isSettingId) pt.setId(TokenRegistry.getVacantId());
 				list.add(pt);
 			}
 		}
 		else{
 			StringToken pt = new StringToken(segment, type, start, start + sl );
-			if (isSettingId) pt.setId(list.size());
+			if (isSettingId) pt.setId(TokenRegistry.getVacantId());
 			list.add(pt);
 		}		
 	}
