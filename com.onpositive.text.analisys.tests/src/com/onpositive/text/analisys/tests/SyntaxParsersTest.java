@@ -1021,7 +1021,7 @@ public class SyntaxParsersTest extends ParserTest{
 	}
 	
 	public void test054(){
-		String str = "Для  этого  понадобилась  бы  Тора!  Под   силу   ли   человеку воздвигнуть   такой   грандиозный   труд?  Не  подобно  ли  это воздвижению Вавилонской  башни? И тем не менее тысячелетия исполины   человеческой  мысли  снова  и  снова  комментировалиПисание, раскрывая все более  глубокие  его  слои.";
+		String str = "Для  этого  понадобилась  бы  Тора!  Под   силу   ли   человеку воздвигнуть   такой   грандиозный   труд?  Не  подобно  ли  это воздвижению Вавилонской  башни? И тем не менее тысячелетия исполины   человеческой  мысли  снова  и  снова  комментировали Писание, раскрывая все более  глубокие  его  слои.";
 		List<IToken> processed = process(str);
 		assertTrue(processed != null);
 	}
@@ -1098,6 +1098,19 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTrue(processed != null);		
 	}
 	
-	
+	public void test064() { 
+		String str = "я стою на входе, прямо возле дубовой двери, рассматривая твои волосы цвета льна.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);
+	}
+
+	public void test065() {
+		String str = "рьяно комментировали Писание, раскрывая слои.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);
+		
+	}
 	
 }
