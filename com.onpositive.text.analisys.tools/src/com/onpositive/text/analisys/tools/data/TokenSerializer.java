@@ -1,6 +1,7 @@
 package com.onpositive.text.analisys.tools.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,8 +76,9 @@ public class TokenSerializer {
 		
 		private class Vertex extends JSONModel {
 			private IToken data;		
+			private boolean isMain;
 			
-			public Vertex(final IToken data) { this.data = data; }
+			public Vertex(final IToken data, final boolean isMain) { this.data = data; this.isMain = isMain; }
 						
 			public JSONObject toJSON() throws JSONException {
 				JSONObject obj = new JSONObject();
@@ -85,7 +87,9 @@ public class TokenSerializer {
 				obj.put("subtype", data.getType());
 				obj.put("parser", data.getParserName());
 				obj.put("value", data.getShortStringValue().trim());
-								
+				
+				obj.put("main", isMain);
+				
 				if (data instanceof WordFormToken) {					
 					WordFormToken stdata = (WordFormToken) data;
 					
@@ -115,8 +119,8 @@ public class TokenSerializer {
 		private HashMap<Integer, Vertex> vertices = new HashMap<Integer, Vertex>();
 		private List<Edge> edges = new ArrayList<Edge>();
 		
-		public Vertex addVertex(IToken token) {
-			Vertex v = new Vertex(token);
+		public Vertex addVertex(IToken token, boolean isMain) {
+			Vertex v = new Vertex(token, isMain);
 			vertices.put(token.id(), v);
 			
 			return v;
@@ -148,10 +152,14 @@ public class TokenSerializer {
 	}
 	
 	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token) {
+		go(graph, visited, token, false);
+	}
+	
+	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token, boolean isMain) {
 		int id = token.id();
 		if (visited.contains(id)) return;
 		
-		graph.addVertex(token);
+		graph.addVertex(token, isMain);
 		visited.add(id);
 		
 		List<IToken> children = token.getChildren();
@@ -161,35 +169,46 @@ public class TokenSerializer {
 		
 		if (children != null) for (IToken ch : children) {
 			graph.addEdge(token, ch, TokenGraph.Edge.CHILD);
-			go(graph, visited, ch);
+			go(graph, visited, ch, isMain);
 		}
 		
 		if (parents != null) for (IToken prnt : parents) {
 			graph.addEdge(token, prnt, TokenGraph.Edge.PARENT);
-			go(graph, visited, prnt);
+			go(graph, visited, prnt, isMain);
 		}
 		
 		if (nexts != null) for (IToken next: nexts) {
 			graph.addEdge(token, next, TokenGraph.Edge.NEXT);
-			go(graph, visited, next);
+			go(graph, visited, next, isMain);
 		}
 		
 		if (prevs != null) for (IToken prev: prevs) {
 			graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
-			go(graph, visited, prev);
+			go(graph, visited, prev, isMain);
 		}
 		
 		IToken next = token.getNext();
 		if (next != null) {
 			graph.addEdge(token, next, TokenGraph.Edge.NEXT);
-			go(graph, visited, next);
+			go(graph, visited, next, isMain);
 		}
 		
 		IToken prev = token.getPrevious();
 		if (prev != null) {
 			graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
-			go(graph, visited, prev);
+			go(graph, visited, prev, isMain);
 		}	
+	}
+		
+	public String serialize(Collection<IToken> tokens) {
+		TokenGraph graph = new TokenGraph();
+		
+		HashSet<Integer> visited = new HashSet<Integer>();
+		
+		for (IToken token : tokens) go (graph, visited, token, true);
+		for (IToken token :  TokenRegistry.list()) go (graph, visited, token);		
+		
+		return graph.toString();	
 	}
 	
 	public String serialize() {
