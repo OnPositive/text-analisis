@@ -88,11 +88,15 @@ function showDebug() {
 
 
 $(function() {
-
+	
     $("#go").on('click', function() {
         var query = $("#query").val()
 		$("canvas").hide();
-        $.getJSON("/parse", { query: query }, callback)
+        
+        var param = { query : query }
+        if (window.ignoreST) param.nosentence = true;
+        
+        $.getJSON("/parse", param, callback)
         return false
     })
 })

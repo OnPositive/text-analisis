@@ -15,6 +15,7 @@ import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analisys.tools.data.TokenSerializer;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
+import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 /**
@@ -62,6 +63,11 @@ public class ParseSyntax extends HttpServlet {
 		}
 		
 		List<IToken> processed = parser.parse(request.getParameter("query"));
+
+		if (request.getParameter("nosentence") != null) {
+			serializer.toggleIgnore(true);
+		}
+		
 		writer.println(serializer.serialize(processed));
 	}
 

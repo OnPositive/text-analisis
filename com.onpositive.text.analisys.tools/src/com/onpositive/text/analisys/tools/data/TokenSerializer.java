@@ -17,6 +17,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
@@ -157,9 +158,12 @@ public class TokenSerializer {
 	
 	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token, boolean isMain) {
 		int id = token.id();
+		boolean addEdges = true;
 		if (visited.contains(id)) return;
-		
-		graph.addVertex(token, isMain);
+		if (!(token instanceof SentenceToken) || !ignoreST)		
+			graph.addVertex(token, isMain);
+		else 
+			addEdges = false;
 		visited.add(id);
 		
 		List<IToken> children = token.getChildren();
@@ -168,38 +172,42 @@ public class TokenSerializer {
 		List<IToken> prevs = token.getPreviousTokens();
 		
 		if (children != null) for (IToken ch : children) {
-			graph.addEdge(token, ch, TokenGraph.Edge.CHILD);
+			if (addEdges) graph.addEdge(token, ch, TokenGraph.Edge.CHILD);
 			go(graph, visited, ch, isMain);
 		}
 		
 		if (parents != null) for (IToken prnt : parents) {
-			graph.addEdge(token, prnt, TokenGraph.Edge.PARENT);
+			if (addEdges) graph.addEdge(token, prnt, TokenGraph.Edge.PARENT);
 			go(graph, visited, prnt, isMain);
 		}
 		
 		if (nexts != null) for (IToken next: nexts) {
-			graph.addEdge(token, next, TokenGraph.Edge.NEXT);
+			if (addEdges) graph.addEdge(token, next, TokenGraph.Edge.NEXT);
 			go(graph, visited, next, isMain);
 		}
 		
 		if (prevs != null) for (IToken prev: prevs) {
-			graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
+			if (addEdges) graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
 			go(graph, visited, prev, isMain);
 		}
 		
 		IToken next = token.getNext();
 		if (next != null) {
-			graph.addEdge(token, next, TokenGraph.Edge.NEXT);
+			if (addEdges) graph.addEdge(token, next, TokenGraph.Edge.NEXT);
 			go(graph, visited, next, isMain);
 		}
 		
 		IToken prev = token.getPrevious();
 		if (prev != null) {
-			graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
+			if (addEdges) graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
 			go(graph, visited, prev, isMain);
 		}	
 	}
 		
+	private boolean ignoreST = false;
+	
+	public void toggleIgnore(boolean iST) { ignoreST = iST; } 	
+	
 	public String serialize(Collection<IToken> tokens) {
 		TokenGraph graph = new TokenGraph();
 		
@@ -217,9 +225,9 @@ public class TokenSerializer {
 	
 		HashSet<Integer> visited = new HashSet<Integer>();
 		
-		for (IToken token :  TokenRegistry.list()) {
+		for (IToken token :  TokenRegistry.list())			
 			go (graph, visited, token);
-		}		
+		
 		
 		return graph.toString();
 	}
