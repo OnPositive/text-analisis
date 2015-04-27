@@ -42,6 +42,13 @@ public class TokenRegistry {
 		in.registry.put(token.id(), token);
 	}	
 	
+	public static void remove(int id) {
+		TokenRegistry in = TokenRegistry.getInstance();
+		
+		if (in.registry.containsKey(id))
+			in.registry.remove(id);
+	}
+	
 	public static int length() { 
 		return TokenRegistry.getInstance().registry.size();
 	}
