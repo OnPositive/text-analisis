@@ -7,9 +7,16 @@ public class TokenRegistry {
 	private static TokenRegistry instance;
 	
 	private HashMap<Integer, IToken> registry;
+	private int lastId;
 	
 	private TokenRegistry() {
 		registry = new HashMap<Integer, IToken>();		
+		lastId = 0;
+	}
+	
+	public static int getVacantId() {
+		TokenRegistry in = TokenRegistry.getInstance();
+		return in.lastId++;
 	}
 	
 	private static TokenRegistry getInstance() {
