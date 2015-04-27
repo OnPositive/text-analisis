@@ -421,6 +421,15 @@ public abstract class AbstractToken implements IToken {
 		}
 	}
 	
+	public void replaceParent(IToken oldParent, IToken newParent) {
+		
+		int ind = parents.indexOf(oldParent);
+		if (ind < 0)
+			parents.add(newParent);			
+		else
+			parents.set(ind, newParent);		
+	}
+	
 	@Override
 	public void adjustStartPosition(int startPosition) {
 		this.startPosition = Math.min(startPosition, this.startPosition);
