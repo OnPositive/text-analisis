@@ -51,6 +51,8 @@ public class TokenRegistry {
 	}
 
 	public static void clean() {
-		TokenRegistry.getInstance().registry.clear();		
+		TokenRegistry in = TokenRegistry.getInstance();
+		in.registry.clear();
+		in.lastId = 0;
 	}
 }
