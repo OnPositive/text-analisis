@@ -8,10 +8,10 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Users/yhaskell/Downloads/jetty-distribution-9.2.10.v20150310/lib/servlet-api-3.1.jar"/>
 	<classpathentry kind="src" path="/com.onpositive.wordnet"/>
 	<classpathentry kind="src" path="/com.onpositive.text.analisys"/>
 	<classpathentry kind="src" path="/com.onpositive.text.analisys.tools"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.onpositive.wordnet.extensions"/>
+	<classpathentry kind="lib" path="lib/servlet-api-3.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
