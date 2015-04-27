@@ -109,17 +109,20 @@ public class VerbGerundParser extends AbstractSyntaxParser {
 		SyntaxToken parent = vs.getParent();
 		ClauseToken clause = dump.getClause();
 		
+		if ((verbToken.childrenCount() > 0 && verbToken.getChildren().contains(gerundToken)) || (parent.childrenCount() > 0 && parent.getChildren().contains(gerundToken))) 
+			return null;
+		
 		int startPosition = Math.min(verbToken.getStartPosition(), sp);
 		int endPosition = Math.max(verbToken.getEndPosition(), ep);
 		SyntaxToken newToken = new SyntaxToken(IToken.TOKEN_TYPE_VERB_GERUND, verbToken, null, startPosition, endPosition);
 		if(parent!=null){
-			parent.replaceChild(verbToken,newToken);
-			newToken.addChild(verbToken);
-			newToken.addChild(gerundToken);
-			verbToken.replaceParent(parent, newToken);
-			gerundToken.addParent(newToken);
+//			parent.replaceChild(verbToken,newToken);
+//			newToken.addChild(verbToken);
+//			newToken.addChild(gerundToken);
+//			verbToken.replaceParent(parent, newToken);
+//			gerundToken.addParent(newToken);
 			
-//			pd.addChangedToken(newToken);
+			pd.addChangedToken(newToken);
 			newToken.setId(getTokenIdProvider().getVacantId());
 			return null;
 		}
