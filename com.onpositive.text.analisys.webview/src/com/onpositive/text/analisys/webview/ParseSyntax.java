@@ -51,11 +51,18 @@ public class ParseSyntax extends HttpServlet {
 		
 		TokenRegistry.clean();
 		
-		List<IToken> processed = parser.parse(request.getParameter("query"));
 		response.setContentType("text/json;charset=UTF-8");
-		
 		PrintWriter writer = response.getWriter();
-		writer.println(serializer.serialize(processed));		
+		
+		
+		
+		if (request.getParameter("debug") != null) {
+			writer.println(serializer.serialize());
+			return;
+		}
+		
+		List<IToken> processed = parser.parse(request.getParameter("query"));
+		writer.println(serializer.serialize(processed));
 	}
 
 }
