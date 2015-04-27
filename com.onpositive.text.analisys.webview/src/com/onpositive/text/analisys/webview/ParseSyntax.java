@@ -3,6 +3,7 @@ package com.onpositive.text.analisys.webview;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analisys.tools.data.TokenSerializer;
+import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
@@ -49,11 +51,11 @@ public class ParseSyntax extends HttpServlet {
 		
 		TokenRegistry.clean();
 		
-		parser.parse(request.getParameter("query"));
+		List<IToken> processed = parser.parse(request.getParameter("query"));
 		response.setContentType("text/json;charset=UTF-8");
 		
 		PrintWriter writer = response.getWriter();
-		writer.println(serializer.serialize());		
+		writer.println(serializer.serialize(processed));		
 	}
 
 }
