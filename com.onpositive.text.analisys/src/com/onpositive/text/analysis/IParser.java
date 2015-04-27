@@ -135,7 +135,8 @@ public interface IParser {
 		 * @return the vacant id
 		 */
 		public int getVacantId() {
-			return ++currentTokenId;
+			return TokenRegistry.getVacantId();
+			// return ++currentTokenId;
 		}
 
 		/**
