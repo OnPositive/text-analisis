@@ -42,6 +42,7 @@
 
 				var alpha = (!highlighted || node == highlighted || sys.getEdges(node, highlighted).length + sys.getEdges(highlighted, node).length != 0) ? 1 : .1				
 
+				if (!node.data.main) alpha /= 3;						
 				gfx.oval(pt.x - w/2, pt.y - w/2, w, w, { fill: clr[node.data.type], alpha: alpha })				
 				gfx.text(text[node.data.type], pt.x, pt.y + 7, opt)
 
