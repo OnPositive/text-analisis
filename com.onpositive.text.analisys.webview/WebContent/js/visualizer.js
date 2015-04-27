@@ -28,7 +28,7 @@
 
 		var draw = {
 			node: function(node, pt) {
-				var clr = { "SymbolToken": "#b2b19d", "StringToken": "#b2b19d", "WordFormToken": "#922e00", "SyntaxToken": "#2e0092", "LongNameToken": "#2e0092", "ClauseToken": "#00922e" },
+				var clr = { "SymbolToken": "#b2b19d", "StringToken": "#b2b19d", "WordFormToken": "#922e00", "SyntaxToken": "#2e0092", "LongNameToken": "#2e0092", "ClauseToken": "#00922e", "SentenceToken": "#65a2fe" },
 					opt = { color: "white", align: "center", size: 12 },
 				    text = {
 						"SymbolToken": node.data.value,
@@ -36,7 +36,8 @@
 						"WordFormToken": "WFT",
 						"SyntaxToken": "ST",
 						"LongNameToken": "LNT",
-						"ClauseToken": "Clause"
+						"ClauseToken": "Clause",
+						"SentenceToken": "Sentence"
 					},
 				w = node.data.width = Math.max(12, 12 + gfx.textWidth(text[node.data.type]))
 
