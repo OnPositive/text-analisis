@@ -13,6 +13,7 @@ import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.ParserComposition;
+import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.lexic.ComplexClause;
 import com.onpositive.text.analysis.lexic.DateToken;
 import com.onpositive.text.analysis.lexic.DimensionToken;
@@ -44,6 +45,7 @@ public class ParserTest extends TestCase {
 	
 	
 	protected List<IToken> process(String str){
+		TokenRegistry.clean();
 		List<IToken> processed = composition.parse(str);
 		ArrayList<IToken> list = new ArrayList<IToken>();
 		for(IToken t : processed){
