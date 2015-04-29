@@ -50,18 +50,16 @@ public class ParseSyntax extends HttpServlet {
 		
 		TokenSerializer serializer = new TokenSerializer();
 		
-		TokenRegistry.clean();
-		
+
 		response.setContentType("text/json;charset=UTF-8");
 		PrintWriter writer = response.getWriter();
-		
-		
-		
+				
 		if (request.getParameter("debug") != null) {
 			writer.println(serializer.serialize());
 			return;
 		}
 		
+		TokenRegistry.clean();		
 		List<IToken> processed = parser.parse(request.getParameter("query"));
 
 		if (request.getParameter("nosentence") != null) {
