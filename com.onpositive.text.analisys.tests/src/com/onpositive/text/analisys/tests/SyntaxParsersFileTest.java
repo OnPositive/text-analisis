@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.List;
 
+import com.onpositive.text.analisys.tools.data.HtmlRemover;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
@@ -23,45 +24,38 @@ public class SyntaxParsersFileTest extends ParserTest {
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
 		this.composition = syntaxParser;
+		
+		this.togglePrint(false);
+		
 	}
 	
 	private String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
-
 	
-	public void test002() {
-		String str = "Можно было без труда следить за движениями";
-		List<IToken> processed = process(str);
-		
-		assertTrue(processed != null);
+	private List<IToken> processFile(String path) {
+		try {
+			String str = readFile(path, Charset.defaultCharset());			
+			String contents = HtmlRemover.removeHTML(str);
+			List<IToken> processed = process(contents);			
+			return processed;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
-	public void test003() {
-		String str = "Странно будет без очков смотреть на его рукоплескания.";
-		List<IToken> processed = process(str);
-		
-		assertTrue(processed != null);
-	}
-	
-	public void test004() {
-		String str = "Акула, чувствуя, что ее вытаскивают, забилась.";
-		List<IToken> processed = process(str);
-		
-		assertTrue(processed != null);
-	}
 	
 	public void test001() {
-		try {
-			String str = readFile("c:\\users\\yhaskell\\desktop\\dkg.txt", Charset.defaultCharset());			
-			List<IToken> processed = process(str);
-			
-			assertTrue(processed != null);						
-		} catch (IOException e) {
-			assertTrue(false);
-		}
+		List<IToken> processed = processFile("c:\\users\\yhaskell\\desktop\\dkg.txt");
 		
+		assertTrue(processed != null);
+	}
+	
+	public void test002() {
+		List<IToken> processed = processFile("c:/lib/book/ADAMS/hitch3.txt.html");
+		
+		assertTrue(processed != null);
 	}
 
 	

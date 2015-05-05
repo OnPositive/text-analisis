@@ -33,7 +33,10 @@ public class ParserTest extends TestCase {
 	private static final String childOffStr = "  ";
 	protected ParserComposition composition;
 	
-
+	private boolean printFlag = true;
+	
+	protected void togglePrint(boolean print) { printFlag = print; }
+	
 	protected void setParsers(IParser... parsers){
 		if(parsers==null||parsers.length==0){
 			return;
@@ -43,8 +46,11 @@ public class ParserTest extends TestCase {
 		}
 	}
 	
+	protected List<IToken> process(String str) {
+		return process(str, printFlag);
+	}
 	
-	protected List<IToken> process(String str){
+	protected List<IToken> process(String str, boolean print) {	
 		TokenRegistry.clean();
 		List<IToken> processed = composition.parse(str);
 		ArrayList<IToken> list = new ArrayList<IToken>();
@@ -56,7 +62,8 @@ public class ParserTest extends TestCase {
 				list.add(t);
 			}
 		}
-		printTokens(list);
+		if (print)
+			printTokens(list);
 		return list;
 	}	
 	

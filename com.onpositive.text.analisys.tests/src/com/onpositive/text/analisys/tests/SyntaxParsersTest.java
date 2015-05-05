@@ -1119,4 +1119,26 @@ public class SyntaxParsersTest extends ParserTest{
 		assertTrue(processed != null);
 	}
 
+	public void test067() {
+		String str = "Можно было без труда следить за движениями";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);
+	}
+	
+	public void test068() {
+		String str = "Странно будет без очков смотреть на его рукоплескания.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);
+	}
+	
+	public void test069() {
+		String str = "Акула, чувствуя, что ее вытаскивают, забилась.";
+		List<IToken> processed = process(str);
+		
+		assertTrue(processed != null);
+	}
+
+	
 }
