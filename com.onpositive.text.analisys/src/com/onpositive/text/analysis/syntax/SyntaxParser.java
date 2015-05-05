@@ -3,6 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.*;
 
 import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
@@ -30,7 +31,6 @@ import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 import com.onpositive.text.analysis.lexic.scalar.UnaryScalarCompositionParser;
-
 import com.onpositive.text.analysis.utils.ILogger;
 
 public class SyntaxParser extends ParserComposition {
@@ -131,6 +131,10 @@ public class SyntaxParser extends ParserComposition {
 		
 	}
 	
+	IntFunction<Integer> onProcess;
+	
+	public void setOnProcess(IntFunction<Integer> onProcess) { this.onProcess = onProcess; }
+	
 	private TokenIdProvider tip;
 	
 	private TreeBuilder treeBuilder = new TreeBuilder(tip);
@@ -214,17 +218,24 @@ public class SyntaxParser extends ParserComposition {
 	public List<IToken> parse(String str){
 		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
+		if (this.onProcess != null) onProcess.apply(3);
 		resetTokenIdProvider(primitiveTokens);
 		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
+		if (this.onProcess != null) onProcess.apply(15);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
+		if (this.onProcess != null) onProcess.apply(20);
 		
+		int processed = 0;
+		int sentlen = sentences.size();
 		for(IToken sentence : sentences){
-			try{
+			try {
 				List<IToken> initialTokens = new ArrayList<IToken>(sentence.getChildren());			
 				List<IToken> tokens = treeBuilder.gatherTree(initialTokens);
 				List<IToken> tokens1 = parseSyntax(tokens);
 				List<IToken> tokens2 = complexClauseParser.process(tokens1);
 				sentence.setChildren(new StructureInspectingCleaner().clean(tokens2));
+				processed += 1;
+				if (this.onProcess != null) onProcess.apply(20 + (80 * processed / sentlen));
 			}
 			catch(Exception e){
 				

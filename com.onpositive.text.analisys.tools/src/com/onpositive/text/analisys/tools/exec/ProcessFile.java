@@ -5,12 +5,13 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader;
-
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analisys.tools.data.HtmlRemover;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
 
 public class ProcessFile {
 
@@ -18,6 +19,12 @@ public class ProcessFile {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
+	
+	 public interface CLibrary extends Library {
+	        CLibrary INSTANCE = (CLibrary) Native.loadLibrary((Platform.isWindows() ? "kernel32" : "c"), CLibrary.class);
+
+	        boolean SetConsoleTitleA(String title);
+	    }
 	
 	public static void main(String[] args) {
 		
@@ -48,6 +55,9 @@ public class ProcessFile {
 			System.err.println("IO error on " + filename + ": " + e.getMessage());
 			return;
 		}
+		
+		
+		parser.setOnProcess(x->{ CLibrary.INSTANCE.SetConsoleTitleA(x + "%"); return x; });
 		
 		try {
 			List<IToken> processed = parser.parse(contents);
