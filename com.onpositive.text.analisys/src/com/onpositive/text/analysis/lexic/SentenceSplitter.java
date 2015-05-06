@@ -71,8 +71,8 @@ public class SentenceSplitter {
 			boolean isInsideQuotes = handleQuotes(charValue, quoteSymbols);						
 			if(isInsideQuotes){
 				char pair = regionBoundPairMap.get(quoteSymbols.peek());
-				for (int q = 0; q < 250	; q++)
-					if (pair == tokens.get(i + q).getStringValue().charAt(0))
+				for (int q = 0; q < 250; q++)
+					if (i + q < tokens.size() && pair == tokens.get(i + q).getStringValue().charAt(0))
 						continue;					
 				
 				// If we're here, no closed bound found and that means that this is not region but just a symbol
