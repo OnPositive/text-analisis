@@ -36,7 +36,7 @@ public class SyntaxParsersFileTest extends ParserTest {
 	
 	private List<IToken> processFile(String path) {
 		try {
-			String str = readFile(path, Charset.defaultCharset());			
+			String str = readFile(path, Charset.availableCharsets().get("windows-1251"));
 			String contents = HtmlRemover.removeHTML(str);
 			List<IToken> processed = process(contents);			
 			return processed;
