@@ -68,9 +68,15 @@ public class SentenceSplitter {
 			String stringValue = token.getStringValue();
 			char charValue = stringValue.charAt(0);
 			
-			boolean isInsideQuotes = handleQuotes(charValue, quoteSymbols);
+			boolean isInsideQuotes = handleQuotes(charValue, quoteSymbols);						
 			if(isInsideQuotes){
-				continue;
+				char pair = regionBoundPairMap.get(quoteSymbols.peek());
+				for (int q = 0; q < 250	; q++)
+					if (pair == tokens.get(i + q).getStringValue().charAt(0))
+						continue;					
+				
+				// If we're here, no closed bound found and that means that this is not region but just a symbol
+				quoteSymbols.pop();
 			}
 			
 			if(!sentenceTerminalSymbols.contains(charValue)){
