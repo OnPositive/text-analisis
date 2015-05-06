@@ -1162,4 +1162,25 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTrue(processed != null && processed.size() > 1);
 	}
+	
+	public void test072() {
+		String str = "Фаррелл резко поворотил на Пейдж-стрит";
+		
+		List<IToken> processed = process(str);
+		assertTrue(processed != null && processed.size() > 1);
+	}
+	
+	public void test073() {
+		String str = "Второй - Юрка Огарев,  студент-переросток.";
+		
+		List<IToken> processed = process(str);
+		assertTrue(processed != null && processed.size() > 1);
+	}
+	
+	public void test074() {
+		String str = "в зале прошумел жидкий аплодисмент";
+
+		List<IToken> processed = process(str);
+		assertTrue(processed != null && processed.size() > 1);
+	}
 }
