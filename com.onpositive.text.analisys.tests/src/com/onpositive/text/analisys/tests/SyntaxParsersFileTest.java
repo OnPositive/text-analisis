@@ -34,29 +34,24 @@ public class SyntaxParsersFileTest extends ParserTest {
 		return new String(encoded, encoding);
 	}
 	
-	private List<IToken> processFile(String path) {
+	private List<IToken> tryProcessFile(String path) {
 		try {
-			String str = readFile(path, Charset.availableCharsets().get("windows-1251"));
-			String contents = HtmlRemover.removeHTML(str);
-			List<IToken> processed = process(contents);			
-			return processed;
+			return processFile(path);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
+	private List<IToken> processFile(String path) throws Exception {
+		String str = readFile(path, Charset.availableCharsets().get("windows-1251"));
+		String contents = HtmlRemover.removeHTML(str);
+		List<IToken> processed = process(contents);			
+		return processed;		
+	}
 	
-	public void test001() {
-		List<IToken> processed = processFile("c:\\users\\yhaskell\\desktop\\dkg.txt");
+	public void test001() throws Exception {
+		List<IToken> processed = processFile("c:/lib/book/BULGAKOW/molier.txt.html");
 		
 		assertTrue(processed != null);
 	}
-	
-	public void test002() {
-		List<IToken> processed = processFile("c:/lib/book/ADAMS/hitch3.txt.html");
-		
-		assertTrue(processed != null);
-	}
-
-	
 }
