@@ -2,7 +2,8 @@ package com.onpositive.text.analisys.tools.exec;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
@@ -48,8 +49,8 @@ public class ProcessFile {
 		
 		String contents = "";
 		
-		try {
-			contents = readFile(filename, Charset.defaultCharset());
+		try {			
+			contents = readFile(filename, Charset.availableCharsets().get("windows-1251"));
 			contents = HtmlRemover.removeHTML(contents);
 		} catch (IOException e) {
 			System.err.println("IO error on " + filename + ": " + e.getMessage());
