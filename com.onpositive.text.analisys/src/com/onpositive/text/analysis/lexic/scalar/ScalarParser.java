@@ -87,10 +87,9 @@ public class ScalarParser extends AbstractParser {
 		int iVal = 0;
 		if(!Utils.isEmptyString(evenPart)){
 			try{
-			iVal = Integer.parseInt(evenPart);
-			}catch
-			(NumberFormatException e){
-				System.out.println("a");
+				iVal = Integer.parseInt(evenPart);
+			}catch (NumberFormatException e){
+				// System.out.println("a");
 			}
 		}
 		
