@@ -3,7 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.*;
+import java.util.function.IntFunction;
 
 import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
@@ -19,7 +19,6 @@ import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
-import com.onpositive.text.analysis.lexic.NumericsParser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -31,7 +30,6 @@ import com.onpositive.text.analysis.lexic.dimension.UnitGroupParser;
 import com.onpositive.text.analysis.lexic.dimension.UnitParser;
 import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 import com.onpositive.text.analysis.lexic.scalar.UnaryScalarCompositionParser;
-import com.onpositive.text.analysis.utils.ILogger;
 
 public class SyntaxParser extends ParserComposition {
 	
@@ -224,6 +222,16 @@ public class SyntaxParser extends ParserComposition {
 		if (this.onProcess != null) onProcess.apply(15);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.apply(20);
+
+//		int sml = sentences.get(0).childrenCount(), smli = 0;
+//		for (int i = 0; i < sentences.size(); i++) {
+//			IToken s = sentences.get(i);
+//			if (sml < s.childrenCount()) { 
+//				sml = s.childrenCount();
+//				smli = i;
+//			}
+//		}
+//		
 		
 		int processed = 0;
 		int sentlen = sentences.size();
