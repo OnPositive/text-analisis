@@ -188,7 +188,7 @@ public class SyntaxParser extends ParserComposition {
 
 	private AbstractWordNet wordNet;
 	
-	private ParserComposition lexicParsers;
+	protected ParserComposition lexicParsers;
 	
 	private ParserComposition nameSyntaxParsers;
 	
@@ -206,9 +206,9 @@ public class SyntaxParser extends ParserComposition {
 	
 	private ComplexClauseParser complexClauseParser;
 
-	private PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
+	protected PrimitiveTokenizer primitiveTokenizer = new PrimitiveTokenizer();
 	
-	private SentenceSplitter sentenceSplitter = new SentenceSplitter();
+	protected SentenceSplitter sentenceSplitter = new SentenceSplitter();
 	
 	private ArrayList<IParser> syntaxParsers;
 	
