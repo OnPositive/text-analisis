@@ -15,6 +15,7 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
+import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
@@ -30,11 +31,14 @@ import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 public abstract class AbstractSyntaxParser extends AbstractParser {
 
 	protected static Map<Case, Set<Case>> caseMatchMap = new HashMap<Case, Set<Case>>();
+	
+	protected static Map<Time, Set<Time>> timeMatchMap = new HashMap<Time, Set<Time>>();
 
 	protected static Map<SingularPlural, Set<SingularPlural>> spMatchMap
 			= new HashMap<SingularPlural, Set<SingularPlural>>();
 
 	static {
+		fillGrammemMap(Time.all, timeMatchMap);
 		fillGrammemMap(Case.all, caseMatchMap);
 		fillGrammemMap(SingularPlural.all, spMatchMap);
 	}
@@ -321,6 +325,15 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return matchGrammem(set0, set1, caseMatchMap);
 	}
 
+	protected static Map<Time, Time> matchTime(Set<Time> set0, Set<Time> set1) {
+		return matchGrammem(set0, set1, timeMatchMap);
+	}
+	
+	public static Map<Time, Time> matchTime(GrammemSet gs0, GrammemSet gs1) {
+		return matchTime(gs0.extractGrammems(Time.class), gs1.extractGrammems(Time.class));
+	}
+	
+	
 	protected boolean checkIfAlreadyProcessed(SyntaxToken... tokens) {
 		
 		if(tokens==null||tokens.length<2){

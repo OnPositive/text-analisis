@@ -173,7 +173,8 @@ public class SyntaxParser extends ParserComposition {
 		//DirectObjectParser.class,
 		VerbNameComposition.class,		
 		VerbGerundParser.class,
-		VerbNameComposition.class
+		VerbNameComposition.class,
+		UniformVerbsParser.class
 	};
 	
 	private static final Class<?>[] participleParserArray = new Class<?>[]{
