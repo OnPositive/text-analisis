@@ -35,6 +35,7 @@
 						"SyntaxToken": "#2e0092", 
 						"LongNameToken": "#2e0092",
 						"UnitToken": "#fa0cdd",
+						"DateToken": "#b2b19d",
 						"ScalarToken": "#b2b19d",
 						"DimensionToken": "#dd0cfa",
 						"ClauseToken": "#00922e", 
@@ -50,6 +51,7 @@
 						"UnitToken": "UT",
 						"DimensionToken": "DT",
 						"ClauseToken": "Clause",
+						"DateToken": "Date",
 						"ScalarToken": "Scalar",
 						"SentenceToken": "Sentence"
 					},
