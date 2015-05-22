@@ -23,7 +23,7 @@ public class VerbAdverbParser extends VerbGroupParser{
 
 	@Override
 	protected boolean checkAdditionalToken(IToken token) {		
-		return hasAll(PartOfSpeech.ADVB).match(token);
+		return and(hasAll(PartOfSpeech.ADVB), not(hasAny(PartOfSpeech.PREP, PartOfSpeech.CONJ))).match(token);
 	}
 	
 	@Override
