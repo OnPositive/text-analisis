@@ -65,7 +65,7 @@ public class ComplexClauseParser extends AbstractSyntaxParser{
 				if(token0 instanceof SyntaxToken){
 					SyntaxToken st0 = (SyntaxToken) token0;
 					String bf0 = st0.getBasicForm();
-					if(getPrepConjRegistry().isSubordinateConjunction(bf0)){
+					if(pcr.isSubordinateConjunction(bf0) || pcr.isCoordinateConjunction(bf0)){
 						return CONTINUE_PUSH;
 					}
 					else{
