@@ -6,6 +6,7 @@ import java.util.Stack;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.ComplexClause;
+import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 
 public class ComplexClauseParser extends AbstractSyntaxParser{
 
@@ -59,6 +60,7 @@ public class ComplexClauseParser extends AbstractSyntaxParser{
 		if(newToken instanceof SyntaxToken){
 			SyntaxToken st = (SyntaxToken) newToken;
 			String basicForm = st.getBasicForm();
+			PrepConjRegistry pcr = getPrepConjRegistry();
 			if(newToken.getType()==IToken.TOKEN_TYPE_CLAUSE){
 				if(token0 instanceof SyntaxToken){
 					SyntaxToken st0 = (SyntaxToken) token0;
@@ -71,7 +73,7 @@ public class ComplexClauseParser extends AbstractSyntaxParser{
 					}
 				}
 			}
-			else if(getPrepConjRegistry().isSubordinateConjunction(basicForm)){
+			else if(pcr.isSubordinateConjunction(basicForm) || pcr.isCoordinateConjunction(basicForm)){
 				if(isComma(token0)||token0.getType()==IToken.TOKEN_TYPE_CLAUSE){
 					return CONTINUE_PUSH;
 				}
