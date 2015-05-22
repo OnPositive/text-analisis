@@ -18,7 +18,7 @@ public class IncompleteClauseParser extends AbstractSyntaxParser{
 			= hasAny(caseMatchMap.get(Case.NOMN));
 
 	@SuppressWarnings("unchecked")
-	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn, not(hasAny(PartOfSpeech.PREP)));
+	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn, not(hasAny(PartOfSpeech.PREP, PartOfSpeech.CONJ)));
 	
 	private static final UnaryMatcher<SyntaxToken> verbMatchGrammems
 			= hasAll(PartOfSpeech.VERB);
