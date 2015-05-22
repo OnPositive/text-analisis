@@ -37,8 +37,9 @@
 						"UnitToken": "#fa0cdd",
 						"DateToken": "#b2b19d",
 						"ScalarToken": "#b2b19d",
-						"DimensionToken": "#dd0cfa",
-						"ClauseToken": "#00922e", 
+						"DimensionToken": "#dd0cfa",						
+						"ClauseToken": "#00922e",
+						"ComplexClause": "#00922e", 
 						"SentenceToken": "#65a2fe" 
 					},
 					opt = { color: "white", align: "center", size: 12 },
@@ -51,6 +52,7 @@
 						"UnitToken": "UT",
 						"DimensionToken": "DT",
 						"ClauseToken": "Clause",
+						"ComplexClause": "CCT",
 						"DateToken": "Date",
 						"ScalarToken": "Scalar",
 						"SentenceToken": "Sentence"
