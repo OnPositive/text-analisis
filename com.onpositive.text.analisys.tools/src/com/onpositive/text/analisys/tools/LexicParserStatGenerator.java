@@ -102,9 +102,6 @@ public class LexicParserStatGenerator extends SyntaxParser {
 	public List<Statistic> stats(List<IToken> sentences) {
 		List<Statistic> result = new ArrayList<Statistic>();		
 		for (IToken snt : sentences) {
-			
-			snt.getChildren().stream().filter(x->(x instanceof WordFormToken)).sorted((x,y)-> x.getStartPosition() - y.getStartPosition());			
-			
 			WordFormToken wft = getFirst(snt);
 			if (wft == null) continue; 
 			List<String> res = new ArrayList<String>();
