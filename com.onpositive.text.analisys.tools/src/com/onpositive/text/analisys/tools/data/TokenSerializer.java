@@ -157,6 +157,7 @@ public class TokenSerializer {
 	}
 	
 	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token, boolean isMain) {
+		if (token == null) return;
 		int id = token.id();
 		boolean addEdges = true;
 		if (visited.contains(id)) return;
