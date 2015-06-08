@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
@@ -167,7 +168,12 @@ public class WordFormToken extends SyntaxToken {
 	public TextElement getParentTextElement() {
 		return element;
 	}
-
+	
+	public PartOfSpeech getPartOfSpeech() {
+		if (meaningElements.length == 0) return null;
+		else return meaningElements[0].getPartOfSpeech();
+	}
+	
 	void merge(WordFormToken[] a) {
 		LinkedHashSet<MeaningElement> z = new LinkedHashSet<MeaningElement>();
 		for (WordFormToken t : a) {
