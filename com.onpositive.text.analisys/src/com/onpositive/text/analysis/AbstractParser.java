@@ -157,6 +157,12 @@ public abstract class AbstractParser implements IParser {
 		protected final boolean stopped(){
 			return stop;
 		}
+		
+		@Override		
+		public String toString() {
+			return (stepBack > 0 ? "<-:" + stepBack + "; " : "") + (acceptToken ? "accept" : "reject") + "; " + (stop ? "stop" : "continue");
+		}
+		
 	}
 	
 	protected String text;
