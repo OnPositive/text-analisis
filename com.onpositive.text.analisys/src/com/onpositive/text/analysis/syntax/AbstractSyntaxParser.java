@@ -175,16 +175,11 @@ l0:			for(IToken parent: parents){
 	}
 
 	protected List<IToken> collectParents(IToken ch) {
-		List<IToken> parents = ch.getParents();
+		
+		List<IToken> parents = ch.getParents() == null ? new ArrayList<IToken>() : new ArrayList<IToken>(ch.getParents());
 		Set<IToken> newParents = parentsMap.get(ch.id());
-		if(parents!=null || newParents!=null){
-			if(parents==null){
-				parents = new ArrayList<IToken>();
-			}
-			if(newParents!=null){
+		if(newParents!=null)
 				parents.addAll(newParents);
-			}
-		}
 		return parents;
 	}
 	
