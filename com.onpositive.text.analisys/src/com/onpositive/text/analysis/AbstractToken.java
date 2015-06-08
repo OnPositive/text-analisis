@@ -322,6 +322,7 @@ public abstract class AbstractToken implements IToken {
 	}
 	
 	public void addParent(IToken parent){
+		if (parent == null) return;
 		if(this.parents==null){
 			this.parents = new ArrayList<IToken>();
 		}
