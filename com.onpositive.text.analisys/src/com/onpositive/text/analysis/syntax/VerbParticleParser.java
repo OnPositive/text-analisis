@@ -1,16 +1,11 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.AbstractParser.ProcessingResult;
 
 public class VerbParticleParser extends AbstractSyntaxParser {
 
@@ -23,10 +18,11 @@ public class VerbParticleParser extends AbstractSyntaxParser {
 		if(sample.size()<2){
 			return;
 		}
+		
 		SyntaxToken token0 = (SyntaxToken) sample.get(0);
 		SyntaxToken token1 = (SyntaxToken) sample.get(1);
 		
-		if(checkIfAlreadyProcessed(token0, token1)){
+		if(checkIfAlreadyProcessed(token0, token1)) {
 			return;
 		}
 		
