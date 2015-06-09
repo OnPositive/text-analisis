@@ -12,14 +12,9 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
-import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
-import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
-import com.onpositive.text.analysis.syntax.SentenceToken;
-import com.onpositive.text.analysis.syntax.SyntaxToken;
-import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 
 public class TokenSerializer {
@@ -70,17 +65,19 @@ public class TokenSerializer {
 				obj.put("from", from.id());
 				obj.put("to", to.id());
 				obj.put("type", this.getType());
-				
 				return obj;
 			}
 		}
 		
 		private class Vertex extends JSONModel {
 			private IToken data;		
-			private boolean isMain;
+			private boolean main;
 			
-			public Vertex(final IToken data, final boolean isMain) { this.data = data; this.isMain = isMain; }
-						
+			public Vertex(final IToken data) { this.data = data; }
+			
+			void setMain() { setMain(true); }
+			void setMain(boolean main) { this.main = main; }
+			
 			public JSONObject toJSON() throws JSONException {
 				JSONObject obj = new JSONObject();
 				obj.put("id", data.id());
@@ -89,7 +86,7 @@ public class TokenSerializer {
 				obj.put("parser", data.getParserName());
 				obj.put("value", data.getShortStringValue().trim());
 				
-				obj.put("main", isMain);
+				obj.put("main", main);
 				
 				if (data instanceof WordFormToken) {					
 					WordFormToken stdata = (WordFormToken) data;
@@ -120,8 +117,8 @@ public class TokenSerializer {
 		private HashMap<Integer, Vertex> vertices = new HashMap<Integer, Vertex>();
 		private List<Edge> edges = new ArrayList<Edge>();
 		
-		public Vertex addVertex(IToken token, boolean isMain) {
-			Vertex v = new Vertex(token, isMain);
+		public Vertex addVertex(IToken token) {
+			Vertex v = new Vertex(token);
 			vertices.put(token.id(), v);
 			
 			return v;
@@ -151,20 +148,14 @@ public class TokenSerializer {
 		}
 		
 	}
-	
+		
 	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token) {
-		go(graph, visited, token, false);
-	}
-	
-	private void go(TokenGraph graph, HashSet<Integer> visited, IToken token, boolean isMain) {
 		if (token == null) return;
 		int id = token.id();
-		boolean addEdges = true;
+		boolean addEdges = true;		
 		if (visited.contains(id)) return;
-		if (!(token instanceof SentenceToken) || !ignoreST)		
-			graph.addVertex(token, isMain);
-		else 
-			addEdges = false;
+		
+		graph.addVertex(token);
 		visited.add(id);
 		
 		List<IToken> children = token.getChildren();
@@ -174,49 +165,54 @@ public class TokenSerializer {
 		
 		if (children != null) for (IToken ch : children) {
 			if (addEdges) graph.addEdge(token, ch, TokenGraph.Edge.CHILD);
-			go(graph, visited, ch, isMain);
+			go(graph, visited, ch);
 		}
 		
 		if (parents != null) for (IToken prnt : parents) {
 			if (addEdges) graph.addEdge(token, prnt, TokenGraph.Edge.PARENT);
-			go(graph, visited, prnt, isMain);
+			go(graph, visited, prnt);
 		}
 		
 		if (nexts != null) for (IToken next: nexts) {
 			if (addEdges) graph.addEdge(token, next, TokenGraph.Edge.NEXT);
-			go(graph, visited, next, isMain);
+			go(graph, visited, next);
 		}
 		
 		if (prevs != null) for (IToken prev: prevs) {
 			if (addEdges) graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
-			go(graph, visited, prev, isMain);
+			go(graph, visited, prev);
 		}
 		
 		IToken next = token.getNext();
 		if (next != null) {
 			if (addEdges) graph.addEdge(token, next, TokenGraph.Edge.NEXT);
-			go(graph, visited, next, isMain);
+			go(graph, visited, next);
 		}
 		
 		IToken prev = token.getPrevious();
 		if (prev != null) {
 			if (addEdges) graph.addEdge(token, prev, TokenGraph.Edge.PREVIOUS);
-			go(graph, visited, prev, isMain);
+			go(graph, visited, prev);
 		}	
 	}
 		
-	private boolean ignoreST = false;
-	
-	public void toggleIgnore(boolean iST) { ignoreST = iST; } 	
+	private void go2(TokenGraph graph, IToken token) {
+		if (token == null) return;
+		int id = token.id();
+		List<IToken> children = token.getChildren();
+		if (graph.vertices.containsKey(id))
+			graph.vertices.get(token.id()).setMain();
+		if (children != null)
+			token.getChildren().forEach(x->go2(graph, x));
+	}	
 	
 	public String serialize(Collection<IToken> tokens) {
 		TokenGraph graph = new TokenGraph();
 		
 		HashSet<Integer> visited = new HashSet<Integer>();
-		
-		for (IToken token : tokens) go (graph, visited, token, true);
-		for (IToken token :  TokenRegistry.list()) go (graph, visited, token);		
-		
+				
+		for (IToken token : TokenRegistry.list()) go (graph, visited, token);		
+		for (IToken token : tokens) go2(graph, token);
 		return graph.toString();	
 	}
 	
@@ -231,5 +227,5 @@ public class TokenSerializer {
 		
 		
 		return graph.toString();
-	}
+	}	
 }
