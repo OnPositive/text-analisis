@@ -92,7 +92,8 @@ public class VerbParticleParser extends AbstractSyntaxParser {
 		
 		if (isPrepOrConj(token)) return DO_NOT_ACCEPT_AND_BREAK;
 			
-		if (token.hasGrammem(PartOfSpeech.VERB) || token.hasGrammem(PartOfSpeech.PRCL)) return CONTINUE_PUSH;
+		if (token.hasGrammem(PartOfSpeech.VERB)) return CONTINUE_PUSH;
+		if (token.hasGrammem(PartOfSpeech.PRCL) && isVerbParticiple(newToken)) return CONTINUE_PUSH;
 	
 		return DO_NOT_ACCEPT_AND_BREAK;
 	}
