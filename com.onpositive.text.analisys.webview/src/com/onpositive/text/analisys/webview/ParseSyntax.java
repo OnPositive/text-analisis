@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analisys.tools.data.TokenSerializer;
+import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.syntax.SentenceToken;
@@ -62,12 +63,7 @@ public class ParseSyntax extends HttpServlet {
 		
 		TokenRegistry.clean();		
 		List<IToken> processed = parser.parse(request.getParameter("query"));
-
-		if (request.getParameter("nosentence") != null) {
-			serializer.toggleIgnore(true);
-		}
-		
-		writer.println(serializer.serialize(processed));
+		writer.println(serializer.serialize(new BasicCleaner().clean(processed)));
 	}
 
 }
