@@ -679,6 +679,8 @@ public class WordFormParser extends AbstractParser {
 	
 	private static PrepConjRegistry prepConjRegistry;
 
+	private static ParticiplesRegistry partRegistry;
+	
 	protected PrepConjRegistry getPrepConjRegistry() {
 		if (prepConjRegistry == null) {
 			prepConjRegistry = new PrepConjRegistry(wordNet);
@@ -686,6 +688,13 @@ public class WordFormParser extends AbstractParser {
 		return prepConjRegistry;
 	}
 
+	protected ParticiplesRegistry getParticiplesRegistry() {
+		if (partRegistry == null) {
+			partRegistry = new ParticiplesRegistry(wordNet);
+		}
+		return partRegistry;
+	}
+	
 	static class Key {
 		public final Grammem gr;
 

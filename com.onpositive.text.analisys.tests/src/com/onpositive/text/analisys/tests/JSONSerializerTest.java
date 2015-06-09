@@ -21,6 +21,7 @@ public class JSONSerializerTest extends ParserTest {
 		wn.addUrl("/prepositions.xml");
 		wn.addUrl("/conjunctions.xml");
 		wn.addUrl("/modalLikeVerbs.xml");
+		wn.addUrl("/participles.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
 		this.composition = syntaxParser;

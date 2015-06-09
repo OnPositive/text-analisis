@@ -42,6 +42,8 @@ public class ProcessFile {
 		wn.addUrl("/prepositions.xml");
 		wn.addUrl("/conjunctions.xml");
 		wn.addUrl("/modalLikeVerbs.xml");
+		wn.addUrl("/participles.xml");
+		
 		wn.prepare();
 		SyntaxParser parser = new SyntaxParser(wn);
 

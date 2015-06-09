@@ -26,6 +26,7 @@ public class LongNameParserTest extends ParserTest {
 		wn.addUrl("/prepositions.xml");
 		wn.addUrl("/conjunctions.xml");
 		wn.addUrl("/modalLikeVerbs.xml");
+		wn.addUrl("/participles.xml");
 		wn.prepare();
 		ScalarParser scalarParser = new ScalarParser();
 		setParsers(new WordFormParser(WordNetProvider.getInstance()),scalarParser,new DateParser(),new DateCombineParser(),new LongNameParser());		

@@ -77,6 +77,7 @@ public class VerbsCaseExtractor extends FileSystemVisitor {
 		wordNet.addUrl("/prepositions.xml");
 		wordNet.addUrl("/conjunctions.xml");
 		wordNet.addUrl("/modalLikeVerbs.xml");
+		wordNet.addUrl("/participles.xml");
 		wordNet.prepare();
 				
 		for(String ext : extensions){
