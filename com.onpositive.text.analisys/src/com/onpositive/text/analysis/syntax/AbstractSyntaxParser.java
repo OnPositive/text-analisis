@@ -19,6 +19,7 @@ import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.ParticiplesRegistry;
 import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 import com.onpositive.text.analysis.rules.matchers.AndMatcher;
 import com.onpositive.text.analysis.rules.matchers.HasAllGrammems;
@@ -44,6 +45,7 @@ public abstract class AbstractSyntaxParser extends AbstractParser {
 	}
 	
 	private static PrepConjRegistry prepConjRegistry;
+	private static ParticiplesRegistry participlesRegistry;
 	
 	protected static final UnaryMatcher<SyntaxToken> prepMatch = hasAny(PartOfSpeech.PREP);
 
@@ -429,6 +431,19 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return conj!=null || prep != null;
 	}
 	
+	protected boolean isVerbParticiple(IToken newToken) {
+		if (!(newToken instanceof SyntaxToken))
+			return false;
+		
+		String basicForm = ((SyntaxToken) newToken).getBasicForm();
+		if(basicForm==null){
+			return false;
+		}
+		
+		return getParticiplesRegistry().isVerbParticiple(basicForm);		
+	}
+	
+	
 	protected MeaningElement getPreposition(IToken newToken){
 		if(!(newToken instanceof SyntaxToken)){
 			return null;
@@ -459,6 +474,14 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		}
 		return prepConjRegistry;
 	}
+	
+	protected ParticiplesRegistry getParticiplesRegistry() {
+		if(participlesRegistry == null){
+			participlesRegistry = new ParticiplesRegistry(wordNet);
+		}
+		return participlesRegistry;
+	}
+	
 	
 	public boolean isRecursive() {
 		return true;
