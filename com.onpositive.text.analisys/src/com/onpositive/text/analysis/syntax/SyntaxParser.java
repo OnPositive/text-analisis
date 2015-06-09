@@ -3,6 +3,7 @@ package com.onpositive.text.analysis.syntax;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
 import com.carrotsearch.hppc.IntIntMap;
@@ -129,9 +130,9 @@ public class SyntaxParser extends ParserComposition {
 		
 	}
 	
-	IntFunction<Integer> onProcess;
+	protected BiConsumer<Integer,Integer> onProcess;
 	
-	public void setOnProcess(IntFunction<Integer> onProcess) { this.onProcess = onProcess; }
+	public void setOnProcess(BiConsumer<Integer, Integer> onProcess) { this.onProcess = onProcess; }
 	
 	private TokenIdProvider tip;
 	
@@ -217,12 +218,12 @@ public class SyntaxParser extends ParserComposition {
 	public List<IToken> parse(String str){
 		setText(str);
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
-		if (this.onProcess != null) onProcess.apply(3);
+		if (this.onProcess != null) onProcess.accept(1, 3);
 		resetTokenIdProvider(primitiveTokens);
 		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
-		if (this.onProcess != null) onProcess.apply(15);
+		if (this.onProcess != null) onProcess.accept(2, 3);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
-		if (this.onProcess != null) onProcess.apply(20);
+		if (this.onProcess != null) onProcess.accept(3, 3);
 
 //		int sml = sentences.get(0).childrenCount(), smli = 0;
 //		for (int i = 0; i < sentences.size(); i++) {
@@ -244,7 +245,7 @@ public class SyntaxParser extends ParserComposition {
 				List<IToken> tokens2 = complexClauseParser.process(tokens1);
 				sentence.setChildren(new StructureInspectingCleaner().clean(tokens2));
 				processed += 1;
-				if (this.onProcess != null) onProcess.apply(20 + (80 * processed / sentlen));
+				if (this.onProcess != null) onProcess.accept(processed, sentlen);
 			}
 			catch(Exception e){
 				

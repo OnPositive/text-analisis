@@ -71,9 +71,15 @@ public class WFTConflictStat extends SyntaxParser {
 		return result;
 	}
 	
-	public Stream<List<ConflictInfo[]>> getStatistic(List<IToken> tokens) {
-		return tokens.stream().map(x->getConflicts(x));
-	}
+	public List<List<ConflictInfo[]>> getStatistic(List<IToken> tokens) {
+		int completed = 0, count = tokens.size();
+		List<List<ConflictInfo[]>> result = new ArrayList<List<ConflictInfo[]>>();
+		for (IToken token: tokens) {
+			onProcess.accept(++completed, count);
+			result.add(getConflicts(token));
+		}
+		return result;
 	
+	}
 	
 }

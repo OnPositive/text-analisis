@@ -60,7 +60,7 @@ public class ProcessFile {
 		}
 		
 		
-		parser.setOnProcess(x->{ CLibrary.INSTANCE.SetConsoleTitleA(x + "%"); return x; });
+		parser.setOnProcess((x,y)->CLibrary.INSTANCE.SetConsoleTitleA(100 * x / y + "%"));
 		
 		try {
 			List<IToken> processed = parser.parse(contents);

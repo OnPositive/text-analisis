@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -18,6 +19,8 @@ import com.onpositive.text.analysis.IToken;
 
 public class StatGen {
 	
+	private static Object[] array;
+
 	private static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
@@ -57,13 +60,18 @@ public class StatGen {
 			return;
 		}
 		try {
+			
+			sg.setOnProcess((x,y)->System.err.print("\r[" + x + "/" + y + "]"));
 			List<IToken> processed = sg.parse(contents);
 			
 			if (processed == null || processed.size() == 0)
 				System.out.println("FAIL " + filename + ": No tokens produced.");
-			else
-				sg.getStatistic(processed).forEach(stat->stat.forEach(x->System.out.println(PrintConflicts(x))));
-			
+			else {
+				List<List<ConflictInfo[]>> array = sg.getStatistic(processed);				 
+				for (List<ConflictInfo[]> curr : array)
+					curr.forEach(x->System.out.println(PrintConflicts(x)));
+				
+			}
 		} catch (Exception e) {
 			System.out.println("FAIL " + filename + ": " + e.getMessage());
 		}
