@@ -22,7 +22,13 @@
 
 <div class="splash-container">
 	<div class="splash">
+		
+		<input type="checkbox" id="sentence" class="cb" />Show sentence token
+        <input type="checkbox" id="main" class="cb" />Show auxiliary tokens
+        <br />
         <canvas id="viewport" width="1200" height="800" style="background: white; border: 1px solid #ddd"></canvas>
+        
+        
 	</div>
 </div>
 
@@ -47,15 +53,22 @@ function callback(graph) {
     model.vertices.forEach(function(v) { system.pruneNode(v.id) })
     
     window.model = graph
-
+	window.sentence = false
+    window.main = false
     
-    prepare(model);           
+    $(".cb").on("click", function() {
+    	window.sentence = $("#sentence")[0].checked
+    	window.main = $("#main")[0].checked
+    	sys.renderer.redraw()
+    })
+    
+    prepare(model)
 
     graph.vertices.forEach(function(v) {
     	if (v.level == null) {
-    		v.level = -1;
+    		v.level = -1
     		var children = v.edges.filter(function(e) { return e.type=="child" }).map(function(e) { return system.getNode(e.to).data.level })
-    		children.forEach(function(c) { if (v.level < c + 1) v.level = c + 1; })
+    		children.forEach(function(c) { if (v.level < c + 1) v.level = c + 1 })
     	}
     })
     
@@ -82,22 +95,17 @@ function callback(graph) {
 
 function showDebug() {
 	var query = $("#query").val()
-	$("canvas").hide();
+	$("canvas").hide()
     $.getJSON("/parse", { debug: true }, callback)
 }
 
 
 $(function() {
-	window.ignoreST = true
-	
     $("#go").on('click', function() {
         var query = $("#query").val()
-		$("canvas").hide();
+		$("canvas").hide()
         
-        var param = { query : query }
-        if (window.ignoreST) param.nosentence = true;
-        
-        $.getJSON("/parse", param, callback)
+        $.getJSON("/parse", { query : query }, callback)
         return false
     })
 })

@@ -25,9 +25,39 @@
 
 			return { x: x * r, y: y * r }
 		}
+		
+		var getAlpha = function(obj) {
+			var sentence = window.sentence
+			var main = window.main
+			
+			var alpha = 1.0
+			
+			if (highlighted) alpha *= (obj == highlighted || sys.getEdges(obj, highlighted).length + sys.getEdges(highlighted, obj).length != 0) ? 1.0 : 0.1
+			if (obj.data.type == "SentenceToken") alpha *= sentence ? 1.0 : 0.0
+						
+			alpha *= obj.data.main ? 1.0 : 0.8
+			
+			return alpha
+		}
+		
+		var visible = function(obj) {
+			var sentence = window.sentence
+			var main = window.main
+		
+			if (obj.source) // edge
+				return visible(obj.source) && visible(obj.target)
+					
+			if (obj.data.type == "SentenceToken" && !sentence) return false 
+			if (!obj.data.main && !main) return false
+			
+			
+			return true
+		}
+		
 
 		var draw = {
 			node: function(node, pt) {
+				if (!visible(node)) return 
 				var clr = { 
 						"SymbolToken": "#b2b19d", 
 						"StringToken": "#b2b19d", 
@@ -57,10 +87,10 @@
 						"ScalarToken": "Scalar",
 						"SentenceToken": "Sentence"
 					},
-				w = node.data.width = Math.max(12, 12 + gfx.textWidth(text[node.data.type]))
-
-				var alpha = (!highlighted || node == highlighted || sys.getEdges(node, highlighted).length + sys.getEdges(highlighted, node).length != 0) ? 1 : .1				
-
+				w = node.data.width = Math.max(12, 12 + gfx.textWidth(text[node.data.type]))				
+				
+				var alpha = getAlpha(node)
+				
 				if (!node.data.main) alpha /= 3;						
 				gfx.oval(pt.x - w/2, pt.y - w/2, w, w, { fill: clr[node.data.type], alpha: alpha })				
 				gfx.text(text[node.data.type], pt.x, pt.y + 7, opt)
@@ -69,6 +99,7 @@
 			},
 
 			edge: function(edge, pt1, pt2) {
+				if (!visible(edge)) return
 				var arrowhead = function(x, y, beta, symbol) {
 					var l = 7, w = 3
 
