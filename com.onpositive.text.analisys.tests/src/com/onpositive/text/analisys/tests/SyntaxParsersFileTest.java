@@ -50,8 +50,8 @@ public class SyntaxParsersFileTest extends ParserTest {
 		return processed;		
 	}
 	
-	public void test001() throws Exception {
-		List<IToken> processed = processFile("c:/lib/book/BULGAKOW/molier.txt.html");
+	public void test001() throws Exception {		
+		List<IToken> processed = processFile("c:/lib/book/ADAMS/hitch_1_sp.txt.html");
 		
 		assertTrue(processed != null);
 	}
