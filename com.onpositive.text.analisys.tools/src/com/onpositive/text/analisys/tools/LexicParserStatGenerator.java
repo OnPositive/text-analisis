@@ -1,36 +1,46 @@
 package com.onpositive.text.analisys.tools;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
-import javax.security.auth.x500.X500Principal;
-
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 public class LexicParserStatGenerator extends SyntaxParser {
 
-	public class Statistic {
-		public int start;
-		public int end;
-		public List<String> structure;
-		
-		public Statistic() { start = end = 0; structure = null; }
-		public Statistic(int start, int end, List<String> struct) { this.start = start; this.end = end; this.structure = struct; }
+	public LexicParserStatGenerator(AbstractWordNet wordnet) { 
+		super(wordnet);
+		parts = new HashMap<String, Integer>();
+		parts.put("DELIMITER", 0);
+		parts.put("СУЩ", 1);
+		parts.put("ПРИЛ", 2);
+		parts.put("КР_ПРИЛ", 4);
+		parts.put("КОМП", 8);
+		parts.put("ГЛ", 16);
+		parts.put("ИНФ", 32);
+		parts.put("ПРИЧ", 64);
+		parts.put("КР_ПРИЧ", 128);
+		parts.put("ДЕЕПР", 256);
+		parts.put("ЧИСЛ", 512);
+		parts.put("Н", 1024);
+		parts.put("МС", 2048);
+		parts.put("ПРЕДК", 4096);
+		parts.put("ПР", 8192);
+		parts.put("СОЮЗ", 16384);
+		parts.put("ЧАСТ", 32768);
+		parts.put("МЕЖД", 65536);
+		parts.put("	", 131072);
 	}
 	
-	
-	public LexicParserStatGenerator(AbstractWordNet wordnet) { super(wordnet);	}
+	private HashMap<String, Integer> parts = null;
 	
 	public List<IToken> parse(String str){
 		setText(str);
@@ -38,92 +48,54 @@ public class LexicParserStatGenerator extends SyntaxParser {
 		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
 		
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
+		
+		return sentences;
+	}
+	
+	public List<IToken> getFirsts(SentenceToken token) {
+		IToken curr = token.getChildren().get(0);
+		IToken next = curr.getNext();
+		if (next == null && curr.getNextTokens() != null) next = curr.getNextTokens().get(0);
+		if (next == null || (next.getPrevious() == curr && (next.getPreviousTokens() == null) || next.getPreviousTokens().size() == 0)) return Arrays.asList(curr);
+		return next.getPreviousTokens();
+	}
+	
+	public List<IToken> getNexts(List<IToken> curr) {
+		if (curr == null || curr.size() == 0) return null;
+		IToken token = curr.get(0);
+		if (token.getNext() == null && (token.getNextTokens() == null || token.getNextTokens().size() == 0)) return null;
+		if (token.getNext() != null) return Arrays.asList(token.getNext());
+		else return token.getNextTokens();
+	}
+	
+	public List<Integer[]> sentencestat(SentenceToken token) {
+		List<Integer[]> result = new ArrayList<Integer[]>();		
+		List<Integer> cresult = new ArrayList<Integer>();
 
-		List<IToken> result = new ArrayList<IToken>();
-		
-		for (IToken snt: sentences) {
-	nextsen:
-			for (IToken ch : snt.getChildren()) {
-				if (!(ch instanceof WordFormToken)) continue nextsen;
-				if (ch.getNext() == null && ch.getNextTokens() != null && ch.getNextTokens().size() > 1) {
-					List<IToken> nt = ch.getNextTokens();
-					boolean already = false;
-					for (IToken n : nt) {
-						if (n instanceof WordFormToken)
-							if (already) continue nextsen;
-							else already = true;
-					}
-				}
+		for (List<IToken> curr = getFirsts(token); curr != null; curr = getNexts(curr)) {			
+			int res = 0;
+			for (IToken t : curr) {
+				if (!(t instanceof WordFormToken)) continue;
+				WordFormToken to = (WordFormToken) t;
+				PartOfSpeech topos = to.getPartOfSpeech();
+				if (topos == null) continue;
+				else res += parts.get(topos.alias); 
 			}
-			result.add(snt);
-		}
-		return result;
-	}
-	
-	private WordFormToken getFirst(IToken snt) { 		
-		for (IToken ch : snt.getChildren()) {
-			if (ch instanceof WordFormToken)
-				if (ch.getPrevious() == null && ch.getPreviousTokens() == null) {
-				return (WordFormToken) ch;
-			} else if (ch.getPrevious() != null) {
-				IToken prev = ch.getPrevious();
-				if (prev.getEndPosition() < snt.getStartPosition())
-					return (WordFormToken) ch;
-			} else if (ch.getPreviousTokens() != null)
-				for (IToken prev : ch.getPreviousTokens()) 
-					if (prev.getEndPosition() < snt.getStartPosition())
-						return (WordFormToken) ch;
-		}
-		return null;
-	}
-	
-	String meaningValue(WordFormToken owft) {		
-		
-		MeaningElement[] mes = owft.getMeaningElements();
-		if ( mes == null || mes.length == 0) return "Unknown";		
-		else {
-			Set<String> parts = new HashSet<String>();
-			for (MeaningElement me : mes) {
-				PartOfSpeech pos = me.getPartOfSpeech(); 
-				if (pos != null)
-					parts.add(pos.toString());
+			if (res == 0) {
+				if (cresult.size() > 0)
+					result.add(cresult.toArray(new Integer[0]));
+				cresult.clear();
+			} else {
+				cresult.add(res);
 			}
-			Object[] parr = parts.toArray(); 
-			if (parr.length == 0) return "NONE";
-			StringBuilder sb = new StringBuilder(parr[0].toString());
-			for (int i = 1; i < parr.length; i++)
-				sb.append(" | " + parr[i].toString());
-			
-			return sb.toString();
-		}
-		
-	}
-	
-	public List<Statistic> stats(List<IToken> sentences) {
-		List<Statistic> result = new ArrayList<Statistic>();		
-		for (IToken snt : sentences) {
-			WordFormToken wft = getFirst(snt);
-			if (wft == null) continue; 
-			List<String> res = new ArrayList<String>();
-			while (wft != null) {
-				WordFormToken owft = wft;
-				wft = null;
-				
-				res.add(meaningValue(owft));
-				
-				if (owft.getNext() != null)
-					wft = (WordFormToken) owft.getNext();
-				else {
-					for (IToken t : owft.getNextTokens())
-						if (t instanceof WordFormToken) {
-							wft = (WordFormToken) t;
-							break;
-						}
-				}
-			}			
-			result.add(new Statistic(snt.getStartPosition(), snt.getEndPosition(), res));
 		}		
 		return result;
 	}
 	
+	public List<Integer[]> stats(List<IToken> sentences) { 
+		List<Integer[]> result = new ArrayList<Integer[]>();
+		for (IToken token : sentences) 
+			result.addAll(sentencestat((SentenceToken) token));
+		return result;
+	}
 }
