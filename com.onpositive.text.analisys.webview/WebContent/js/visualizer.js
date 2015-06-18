@@ -227,18 +227,22 @@
 				
 				if (d.grammems) value += " [" + d.grammems.join(", ") + "]";
 				
-				var texts = [value, d.id,	typedict[d.subtype], d.type, d.parser, d.level],
- 					labels = ["Value", "Id:", "Type:", "Class:", "Parser:", "Level:"],
+				var texts = [value, d.id,	typedict[d.subtype], d.type, d.parser, d.level, (100 * d.relation).toFixed(1) + "%"],
+ 					labels = ["Value", "Id:", "Type:", "Class:", "Parser:", "Level:", "Relation"],
  				  	width = 0,
  				  	pt = node.pt
+ 				  	
+ 				if (pt == null) return
 
 				for (i = 0; i < texts.length; i++) if (gfx.textWidth(texts[i]) > width) width = gfx.textWidth(texts[i])
 
 				width += 100 //
 				height = 10 + texts.length * 16
 
-				var x = pt.x + width + 20 > gfx.size().width ? pt.x - width - 50 : pt.x + 50
-						y = pt.y + height+ 20 > gfx.size().height ? pt.y - height - 50 : pt.y + 50
+				
+				
+				var x = pt.x + width + 20 > gfx.size().width ? pt.x - width - 50 : pt.x + 50,
+					y = pt.y + height + 100 > gfx.size().height ? pt.y - height - 50 : pt.y + 50
 
 				gfx.rect(x, y, width, height, 4, { stroke: "#dadada", fill: "white" })
 				gfx.line(x, y + 20, x + width, y + 20, { stroke: "#dadada" })
