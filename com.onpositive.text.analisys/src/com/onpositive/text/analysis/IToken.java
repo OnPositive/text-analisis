@@ -154,17 +154,23 @@ public interface IToken {
 	
 	List<IToken> getPreviousTokens();
 	
+	List<IToken> getConflicts();
+	
 	List<IToken> getNeighbours(Direction direction);
 	
 	void addNextToken(IToken token);
 	
 	void addPreviousToken(IToken token);
 	
+	void addConflict(IToken token);
+	
 	void addNeighbour(IToken token, Direction direction);
 	
 	void removeNextToken(IToken token);
 	
 	void removePreviousToken(IToken token);
+	
+	void removeConflict(IToken token);
 	
 	void removeNeighbour(Direction direction, IToken token);
 	
@@ -211,5 +217,8 @@ public interface IToken {
 	void adjustEndPosition(int endPosition);
 
 	String getParserName();
+
+	void setCorrelation(double corellation);
+	double getCorrelation();
 	
 }
