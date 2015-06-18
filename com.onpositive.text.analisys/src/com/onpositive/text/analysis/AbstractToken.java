@@ -46,11 +46,15 @@ public abstract class AbstractToken implements IToken {
 	
 	private ArrayList<IToken> nextTokens;
 	
-	private ArrayList<IToken> previousTokens;	
+	private ArrayList<IToken> previousTokens;
 	
+	private ArrayList<IToken> conflictTokens;
+		
 	private final int tokenType;
 	
 	private int startPosition;
+	
+	private double correlation = 0.0;
 	
 	public void setStartPosition(int startPosition) {
 		this.startPosition = startPosition;
@@ -135,6 +139,23 @@ public abstract class AbstractToken implements IToken {
 	public List<IToken> getNextTokens() {
 		return nextTokens;
 	}
+	
+	public void addConflict(IToken token) {
+		if (token.getStartPosition() > this.getEndPosition() || token.getEndPosition() < this.getStartPosition()) return;
+		if (conflictTokens == null) conflictTokens = new ArrayList<IToken>();
+		if (!conflictTokens.contains(token)) conflictTokens.add(token); 
+	}
+	
+	public void removeConflict(IToken token) {
+		if (conflictTokens == null || !conflictTokens.contains(token)) return;
+		conflictTokens.remove(token);		
+	}
+	
+	public List<IToken> getConflicts() {
+		if (conflictTokens == null) conflictTokens = new ArrayList<IToken>();
+		return conflictTokens;
+	}
+	
 
 	public void addNextToken(IToken token) {
 		if(this.next == null){
@@ -473,4 +494,14 @@ public abstract class AbstractToken implements IToken {
 			return false;
 		return true;
 	}
+
+	@Override
+	public double getCorrelation() {
+		return correlation;
+	}
+	@Override
+	public void setCorrelation(double corellation) {
+		this.correlation = (Double.isFinite(corellation))? corellation : 0.0;		
+	}
+	
 }
