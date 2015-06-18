@@ -1191,4 +1191,11 @@ public class SyntaxParsersTest extends ParserTest{
 		List<IToken> processed = process(str);
 		assertTrue(processed != null && processed.size() > 1);
 	}
+	public void test076() {
+		//            Ву-у ву-у гррбл ву-у гррббл ву-у ву-у ву-у гррббл ву-у ву-у ву-у гррббл гррббл ву-у гррббл гррббл гррббл ву-у бляппс хр-р-рр веселиться.
+		String str = "Ву-у ву-у гррбл ву-у гррббл ву-у ву-у ву-у гррббл ву-у ву-у ву-у гррббл";
+		
+		List<IToken> processed = process(str);
+		assertTrue(processed != null && processed.size() > 1);
+	}
 }
