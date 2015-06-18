@@ -2,7 +2,6 @@ package com.onpositive.text.analisys.webview;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,7 +15,6 @@ import com.onpositive.text.analisys.tools.data.TokenSerializer;
 import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
-import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 /**
