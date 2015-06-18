@@ -34,6 +34,10 @@ public class TokenBoundsHandler {
 		}
 	}
 
+	public void handleConflicts(List<IToken> tokens) {
+		for (IToken token : tokens) processConflict(token);
+	}
+	
 	protected List<IToken> addBounds(List<IToken> tokens) {
 		
 		int startPosition = Integer.MAX_VALUE;
@@ -87,12 +91,21 @@ public class TokenBoundsHandler {
 		return result;
 	}
 	
+	private void processConflict(IToken token) {
+		if (token.childrenCount() == 0) return;
+		for (IToken ch : token.getChildren()) {
+			if (ch.getParents() == null) continue;
+			for (IToken p : ch.getParents())
+				if (p != token) token.addConflict(p);
+		}
+	}
+	
 	private void processToken(IToken token, boolean isNew) {
 		
 		if(isNew){
 			List<IToken> children = token.getChildren();
 			if(children!=null){
-				for(IToken ch : children){
+				for(IToken ch : children) {
 					ch.addParent(token);
 				}
 			}
