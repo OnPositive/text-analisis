@@ -1,6 +1,6 @@
 var prepare = function (model) {
     var varr = {}
-
+    if (model == null) return
     model.vertices.forEach(function(v) { 
         varr[v.id] = v
         v.edges = []        
