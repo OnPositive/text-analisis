@@ -85,7 +85,7 @@ public class TokenSerializer {
 				obj.put("subtype", data.getType());
 				obj.put("parser", data.getParserName());
 				obj.put("value", data.getShortStringValue().trim());
-				
+				obj.put("relation", data.getCorrelation());
 				obj.put("main", main);
 				
 				if (data instanceof WordFormToken) {					
