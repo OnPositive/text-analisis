@@ -12,6 +12,7 @@ import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.CompositToken;
+import com.onpositive.text.analysis.ICorrelationEvaluator;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.IToken.Direction;
@@ -19,6 +20,8 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
+import com.onpositive.text.analysis.TokenRegistry;
+import com.onpositive.text.analysis.TripletCorrelationEvaluator;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
@@ -225,15 +228,9 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
-//		int sml = sentences.get(0).childrenCount(), smli = 0;
-//		for (int i = 0; i < sentences.size(); i++) {
-//			IToken s = sentences.get(i);
-//			if (sml < s.childrenCount()) { 
-//				sml = s.childrenCount();
-//				smli = i;
-//			}
-//		}
-//		
+		ICorrelationEvaluator evaluator = TripletCorrelationEvaluator.getInstance();
+		
+		sentences.forEach(x->evaluator.calculate(x));
 		
 		int processed = 0;
 		int sentlen = sentences.size();
@@ -254,6 +251,7 @@ public class SyntaxParser extends ParserComposition {
 					);
 			}
 		}
+		sentences.forEach(x->evaluator.propagate(x));
 		return sentences;
 	}
 
