@@ -263,6 +263,8 @@ public abstract class AbstractParser implements IParser {
 		prepareParser(tokens);		
 		beforeProcess(tokens);
 		
+		
+		
 		ProcessingData data = new ProcessingData();
 	
 		ArrayList<IToken> result = new ArrayList<IToken>();
@@ -287,17 +289,18 @@ public abstract class AbstractParser implements IParser {
 			data.dump(result);
 			setTriggered(data.triggered());			
 		}
-		handleBounds(result, toDiscard);		
+		handleBounds(result, toDiscard);
+		
 		return result;
 	}
 
 	public void handleBounds(ArrayList<IToken> result, ArrayList<IToken> toDiscard) {
-		
 		if(handleBounds){
 			TokenBoundsHandler tbh = new TokenBoundsHandler();
 			tbh.setNewTokens(newTokens);
 			tbh.setResultTokens(resultTokens);
 			tbh.handleBounds(result,true);
+			tbh.handleConflicts(result);
 			TokenBoundsHandler.discardTokens(toDiscard);
 		}
 	}
@@ -423,6 +426,7 @@ public abstract class AbstractParser implements IParser {
 		if(!pr.tokenAccepted()){
 			return;
 		}				
+	
 		
 		Stack<IToken> sample = new Stack<IToken>();
 		sample.add(token);		
@@ -478,8 +482,14 @@ public abstract class AbstractParser implements IParser {
 		return matchesAll;
 	}
 	
+	int recursionCount = 0;
+	
 	private boolean parseRecursively( Stack<IToken> sample, ProcessingResult pr, ProcessingData data)
 	{
+		if (recursionCount > 1024) return false;
+		else recursionCount += 1;
+		
+		
 		int inputSize = sample.size();
 		IToken last = sample.peek();
 		boolean gotRecursion = false;
@@ -609,7 +619,7 @@ public abstract class AbstractParser implements IParser {
 	}	
 	
 	private void prepareParser(List<IToken> tokens) {
-		
+		recursionCount = 0;
 		clean();
 		tokenIdProvider.prepare(tokens);
 	}
