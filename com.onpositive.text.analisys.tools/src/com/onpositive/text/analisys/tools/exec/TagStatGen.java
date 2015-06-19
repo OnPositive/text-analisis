@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,6 +14,7 @@ import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.cursors.ObjectCursor;
 import com.onpositive.semantic.wordnet.composite.CompositeWordnet;
 import com.onpositive.text.analisys.tools.TagStatGenerator;
+import com.onpositive.text.analisys.tools.TagStatGenerator.TypedWord;
 import com.onpositive.text.analisys.tools.data.HtmlRemover;
 import com.onpositive.text.analysis.IToken;
 
@@ -36,8 +38,8 @@ public class TagStatGen {
 	}
 	
 	public static void main(String[] args) {
-		if (args.length != 2) {
-			System.err.println("Usage: java -jar tagsg.jar FILENAME OUTPUT\n");
+		if (args.length != 3) {
+			System.err.println("Usage: java -jar tagsg.jar FILENAME TAGSTAT TYPEDWORDSTAT\n");
 			return;
 		}
 
@@ -45,13 +47,17 @@ public class TagStatGen {
 		
 		String contents = "";
 		
- 		DataOutputStream out = null; 		
+ 		DataOutputStream tagout = null;
+
+ 		PrintWriter twout = null;
+ 		
  		try {
  			contents = readFile(filename, Charset.availableCharsets().get("windows-1251"));
 			contents = HtmlRemover.removeHTML(contents);
-			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(args[1], false)));
+			tagout = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(args[1], false)));
+			twout = new PrintWriter(args[2]); 					
 		} catch (IOException e) {
-			System.err.println("IO error on " + filename + ": " + e.getMessage());
+			System.err.println("IO error: " + e.getMessage());
 			return;
 		}
  		TagStatGenerator sg = new TagStatGenerator(CreateWordnet());
@@ -60,14 +66,23 @@ public class TagStatGen {
 			sg.setOnProcess((x,y)->System.err.print("\r[" + x + "/" + y + "]"));
 			List<IToken> processed = sg.parse(contents);
 		
-			ObjectArrayList<short[]> stats = sg.stats(processed);
+			ObjectArrayList<short[]> grammemStats = new ObjectArrayList<short[]>();
+			ObjectArrayList<TagStatGenerator.TypedWord> twStats = new ObjectArrayList<TagStatGenerator.TypedWord>(); 
 			
-			for (ObjectCursor<short[]> vv : stats) {
-				for (short v : vv.value) out.writeShort(v);
-				out.writeShort(-1);
+			sg.computeStats(processed, grammemStats, twStats);
+			
+			for (ObjectCursor<short[]> vv : grammemStats) {
+				for (short v : vv.value) tagout.writeShort(v);
+				tagout.writeShort(-1);
 			}
-			out.flush();
-			out.close();			
+			
+			for (ObjectCursor<TypedWord> tws : twStats)
+				twout.println(tws.value.word1 + "\t" + tws.value.word2 + "\t" + tws.value.grammem1 + "\t" + tws.value.grammem2);
+						
+			tagout.flush();
+			tagout.close();
+			twout.flush();
+			twout.close();
 		} catch (Exception e) {
 			System.err.println("FAIL " + filename + ": " + e.getMessage());
 		}		
