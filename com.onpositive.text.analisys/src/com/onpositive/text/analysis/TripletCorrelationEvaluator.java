@@ -49,7 +49,7 @@ public class TripletCorrelationEvaluator implements ICorrelationEvaluator {
 		parts.put(PartOfSpeech.PRCL,65536);
 		parts.put(PartOfSpeech.INTJ,131072);
 	
-		String fname = System.getProperty("engineConfigDir") + "/" + "triplets.dat";
+		String fname = System.getProperty("engineConfigDir") + "triplets.dat";
 		try {
 			readTriplets(fname);
 		} catch (IOException e) {
