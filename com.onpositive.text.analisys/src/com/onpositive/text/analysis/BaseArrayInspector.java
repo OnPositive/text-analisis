@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.carrotsearch.hppc.IntOpenHashSet;
-import com.onpositive.text.analysis.AbstractParser.ProcessingResult;
 import com.onpositive.text.analysis.IToken.Direction;
 
 public abstract class BaseArrayInspector {

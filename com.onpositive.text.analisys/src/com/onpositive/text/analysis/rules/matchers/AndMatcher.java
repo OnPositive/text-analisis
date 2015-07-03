@@ -6,6 +6,7 @@ public class AndMatcher<T extends IToken> extends UnaryMatcher<T> {
 
 	protected UnaryMatcher<T>[]matchers;
 	
+	@SafeVarargs
 	public AndMatcher(Class<T> clazz,UnaryMatcher<T>... matchers) {
 		super(clazz);
 		this.matchers=matchers;

@@ -1,9 +1,5 @@
 package com.onpositive.text.analysis.rules.matchers;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 

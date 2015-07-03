@@ -78,8 +78,6 @@ public class PrepConjRegistry {
 			return;
 		}
 		int[] allIds = layer.getAllIds();
-		HashMap<String,List<Case>> caseListCache = new HashMap<String, List<Case>>();
-		HashMap<String,UnaryMatcher<SyntaxToken>> caseMatchersCache = new HashMap<String, UnaryMatcher<SyntaxToken>>();
 		for(int id : allIds){
 			MeaningElement me = wordNet.getConceptInfo(id);
 			TextElement te = me.getParentTextElement();

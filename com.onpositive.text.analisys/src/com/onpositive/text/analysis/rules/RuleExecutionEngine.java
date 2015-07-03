@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.conditions.BinaryCondition;
-import com.onpositive.text.analysis.conditions.TernaryCondition;
-import com.onpositive.text.analysis.conditions.UnaryCondition;
 
 public class RuleExecutionEngine {
 	

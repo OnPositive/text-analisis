@@ -555,7 +555,6 @@ l0:		for( Map.Entry<String, String[]> entry : unitEquivalents.entrySet() ){
 			return result ;
 		
 		boolean gotOnce = false ;
-		UnitKind k = null ;
 		for( Map.Entry<String,String[]> entry : unitEquivalents.entrySet()  )
 		{			 
 			String n = entry.getKey().toLowerCase() ;

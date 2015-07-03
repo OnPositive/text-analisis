@@ -11,7 +11,7 @@ public abstract class CanonicalComparator {
 	public static class TokenCanonicCode{
 		
 		public TokenCanonicCode(int id, int mainTokenId) {
-			this.id = id;
+			this.setId(id);
 			this.mainTokenId = mainTokenId;
 		}
 
@@ -65,6 +65,14 @@ public abstract class CanonicalComparator {
 			if (mainTokenId != other.mainTokenId)
 				return false;
 			return true;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
 		}
 		
 	}

@@ -2,19 +2,10 @@ package com.onpositive.text.analysis.lexic;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.MeaningElement;
-import com.onpositive.semantic.wordnet.TextElement;
-import com.onpositive.semantic.wordnet.Grammem.Case;
-import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.words3.MetaLayer;
-import com.onpositive.text.analysis.lexic.PrepConjRegistry.Registrator;
-import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
-import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class ParticiplesRegistry {
 

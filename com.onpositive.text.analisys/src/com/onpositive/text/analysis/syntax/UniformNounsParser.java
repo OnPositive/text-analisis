@@ -20,8 +20,7 @@ public class UniformNounsParser extends UniformSentencePartsParser {
 	private final static Set<Case> genCases = new HashSet<Case>(
 			Arrays.asList(Case.GENT,Case.GEN1,Case.GEN2));
 	
-	private final static Set<Case> nomCases = new HashSet<Case>(
-			Arrays.asList(Case.NOMN));
+	//private final static Set<Case> nomCases = new HashSet<Case>(Arrays.asList(Case.NOMN));
 	
 	public UniformNounsParser(AbstractWordNet wordNet) {
 		super(wordNet, IToken.TOKEN_TYPE_UNIFORM_NOUN, new PartOfSpeech[]{PartOfSpeech.NOUN});

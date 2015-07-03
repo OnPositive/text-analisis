@@ -28,10 +28,8 @@ public class DashClauseParser extends AbstractSyntaxParser {
 	
 	private static final UnaryMatcher<SyntaxToken> checkEst	= hasAny(checkEstGrammems);
 	
-	@SuppressWarnings("unchecked")
 	private static final UnaryMatcher<SyntaxToken> checkNoun = and(isNoun, acceptedNomn, not(prepConjMatch));
 	
-	@SuppressWarnings("unused")
 	private static final UnaryMatcher<SyntaxToken> infnMatch
 		= hasAll(PartOfSpeech.INFN);
 	

@@ -34,21 +34,19 @@ public class DirectObjectParser extends VerbGroupParser {
 	protected static final UnaryMatcher<SyntaxToken> directObjectCasesMatch
 		= or(acceptedAcc, and(acceptedGC, not(has(Grammem.SingularPlural.SINGULAR))));
 	
-	@SuppressWarnings("unchecked")
 	private final UnaryMatcher<SyntaxToken> checkName = and(
 			acceptedNames,
 			directObjectCasesMatch);
 	
 
 	@Override
-	protected boolean checkVerb(IToken token0) {
-		return transitiveVerbMatch.match(token0);
+	protected boolean checkVerb(IToken token) {
+		return transitiveVerbMatch.match(token);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	protected boolean checkAdditionalToken(IToken token1) {
-		return and(checkName,not(prepConjMatch)).match(token1);
+	protected boolean checkAdditionalToken(IToken token) {
+		return and(checkName,not(prepConjMatch)).match(token);
 	}
 
 	@Override

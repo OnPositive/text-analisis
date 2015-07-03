@@ -28,7 +28,7 @@ public class StructureInspectingCleaner implements ITokenCleaner {
 			set.add(code);
 			result.add(t);
 		}
-		CanonicalComparator.TokenCanonicCode[] arr = set.toArray(new CanonicalComparator.TokenCanonicCode[set.size()]);
+		//CanonicalComparator.TokenCanonicCode[] arr = set.toArray(new CanonicalComparator.TokenCanonicCode[set.size()]);
 		return result;
 	}
 

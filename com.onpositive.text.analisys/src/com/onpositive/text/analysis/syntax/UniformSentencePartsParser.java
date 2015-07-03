@@ -12,7 +12,6 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.matchers.HasGrammem;
@@ -177,8 +176,7 @@ public abstract class UniformSentencePartsParser extends AbstractSyntaxParser {
 		return true;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")	
+	@Override	
 	protected ProcessingResult checkToken(IToken newToken) {
 		
 		if(!(newToken instanceof SyntaxToken)){

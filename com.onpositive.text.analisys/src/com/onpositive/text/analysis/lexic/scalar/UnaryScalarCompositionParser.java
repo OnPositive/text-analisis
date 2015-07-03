@@ -1,14 +1,12 @@
 package com.onpositive.text.analysis.lexic.scalar;
 
+import java.util.List;
 import java.util.Stack;
 
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.AbstractParser.ProcessingResult;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.SymbolToken;
-import java.util.Collection;
-import java.util.List;
 
 public class UnaryScalarCompositionParser extends AbstractParser {
 

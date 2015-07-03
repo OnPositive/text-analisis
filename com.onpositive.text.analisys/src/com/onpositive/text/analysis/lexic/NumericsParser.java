@@ -25,7 +25,7 @@ public class NumericsParser extends AbstractParser {
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {
 		boolean allScalar=true;
 		for(IToken t : sample){
-			allScalar &= ( sample.peek().getType() == IToken.TOKEN_TYPE_SCALAR);
+			allScalar &= (t.getType() == IToken.TOKEN_TYPE_SCALAR);
 			if(!allScalar){
 				break;
 			}

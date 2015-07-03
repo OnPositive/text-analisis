@@ -374,6 +374,7 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 		return false;
 	}
 
+	@SafeVarargs
 	public static final <T extends Grammem>UnaryMatcher<SyntaxToken> hasAll(T... tran) {
 		return new HasAllGrammems(tran);
 	}
@@ -391,9 +392,11 @@ l0:		for(GrammemSet gs0 : mainGroup.getGrammemSets()){
 			}
 		};
 	}
+	@SafeVarargs
 	public static final UnaryMatcher<SyntaxToken>and(UnaryMatcher<SyntaxToken>...matchers){
 		return new AndMatcher<SyntaxToken>(SyntaxToken.class, matchers);
 	}
+	@SafeVarargs
 	public static final UnaryMatcher<SyntaxToken>or(UnaryMatcher<SyntaxToken>...matchers){
 		return new OrMatcher<SyntaxToken>(SyntaxToken.class, matchers);
 	}

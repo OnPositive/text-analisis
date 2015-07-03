@@ -14,24 +14,21 @@ public class TokenArrayMatcher implements ITokenArrayMatcher{
 	public TokenArrayMatcher(List<ITokenMatcher> tokenMatchers) {
 		super();
 		this.tokenMatchers = tokenMatchers;
-		this.targetLength = tokenMatchers.size();
+		tokenMatchers.size();
 	}
 	
 	public TokenArrayMatcher(ITokenMatcher... tokenMatchers) {
 		super();
 		this.tokenMatchers = Arrays.asList(tokenMatchers);
-		this.targetLength = this.tokenMatchers.size();
+		this.tokenMatchers.size();
 	}
 	
 	public TokenArrayMatcher(List<ITokenMatcher> startPattens, int targetLength) {
 		super();
 		this.tokenMatchers = startPattens;
-		this.targetLength = targetLength;
 	}
 	
 	private List<ITokenMatcher> tokenMatchers;
-	
-	private int targetLength;
 	
 	private boolean acceptStart;
 	

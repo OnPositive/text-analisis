@@ -1,7 +1,5 @@
 package com.onpositive.text.analysis.lexic;
 
-import java.util.Collection;
-
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 

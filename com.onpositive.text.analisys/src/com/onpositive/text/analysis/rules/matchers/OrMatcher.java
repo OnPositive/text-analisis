@@ -6,6 +6,7 @@ public class OrMatcher<T extends IToken> extends UnaryMatcher<T> {
 
 	protected UnaryMatcher<T>[]matchers;
 	
+	@SafeVarargs
 	public OrMatcher(Class<T> clazz,UnaryMatcher<T>... matchers) {
 		super(clazz);
 		this.matchers=matchers;

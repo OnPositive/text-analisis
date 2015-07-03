@@ -88,12 +88,8 @@ public class BasicCleaner implements ITokenCleaner {
 		TokenBoundsHandler.discardTokens(listToRemove);
 		return list2;
 	}
-	
-	private void discrdToken(IToken t) {
-		// TODO Auto-generated method stub
-		
-	}
 
+	@SuppressWarnings("unused")
 	private static int computeDepth(IToken t, IntIntOpenHashMap map){
 		int id = t.id();
 		if(map.containsKey(id)){

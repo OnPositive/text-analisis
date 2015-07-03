@@ -17,6 +17,7 @@ class ScalarProcessingData{
 	
 	private StringBuilder bld = new StringBuilder();
 	
+	@SuppressWarnings("unused")
 	private boolean invalidPattern = false;
 	
 	private boolean isFraction;

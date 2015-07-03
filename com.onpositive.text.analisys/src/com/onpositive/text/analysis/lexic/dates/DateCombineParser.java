@@ -1,6 +1,5 @@
 package com.onpositive.text.analysis.lexic.dates;
 
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.text.analysis.AbstractParser;

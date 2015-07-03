@@ -1,14 +1,12 @@
 package com.onpositive.text.analysis.syntax;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.TransKind;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.AbstractParser.ProcessingData;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 
 public abstract class VerbPrepositionGroupParser extends AbstractSyntaxParser {

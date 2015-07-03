@@ -6,20 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
-import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntIntOpenHashMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.IntOpenHashSet;
 import com.carrotsearch.hppc.cursors.IntCursor;
-import com.onpositive.semantic.words3.hds.IntIntArrayBasedMap;
 import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.basic.matchers.BasicRule;
 import com.onpositive.text.analysis.basic.matchers.ITokenArrayMatcher;
 import com.onpositive.text.analysis.basic.matchers.ITokenMatcher;
-import com.onpositive.text.analysis.basic.matchers.TokenArrayMatcher;
-import com.onpositive.text.analysis.basic.matchers.TokenMatcher;
-import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 
 public abstract class SentenceTreeBuilder {
 	
