@@ -4,15 +4,14 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.IntFunction;
 
 import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.AbstractRelationEvaluator;
 import com.onpositive.text.analysis.CompositToken;
-import com.onpositive.text.analysis.ICorrelationEvaluator;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.IToken.Direction;
@@ -20,7 +19,6 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
-import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.TripletCorrelationEvaluator;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
@@ -228,9 +226,9 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
-		ICorrelationEvaluator evaluator = TripletCorrelationEvaluator.getInstance();
+		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(TripletCorrelationEvaluator.class);
 		
-		sentences.forEach(x->evaluator.calculate(x));
+		sentences.forEach(x->evaluator.process(x, false));
 		
 		int processed = 0;
 		int sentlen = sentences.size();
@@ -251,7 +249,7 @@ public class SyntaxParser extends ParserComposition {
 					);
 			}
 		}
-		sentences.forEach(x->evaluator.propagate(x));
+		sentences.forEach(x->evaluator.process(x, true));
 		return sentences;
 	}
 

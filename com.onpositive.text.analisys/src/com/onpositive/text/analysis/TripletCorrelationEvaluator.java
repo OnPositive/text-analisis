@@ -7,23 +7,7 @@ import com.carrotsearch.hppc.*;
 import com.onpositive.text.analysis.lexic.*;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 
-public class TripletCorrelationEvaluator implements ICorrelationEvaluator {
-
-	private static TripletCorrelationEvaluator instance;
-	
-	public static TripletCorrelationEvaluator getInstance() {
-		TripletCorrelationEvaluator localInstance = instance;
-        if (localInstance == null) {
-            synchronized (TripletCorrelationEvaluator.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new TripletCorrelationEvaluator();
-                }
-            }
-        }
-        return instance;
-	}
-	
+public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
 	
 	ObjectIntOpenHashMap<PartOfSpeech> parts;
 	IntObjectOpenHashMap<IntObjectOpenHashMap<IntIntOpenHashMap>> tripletsv = new IntObjectOpenHashMap<IntObjectOpenHashMap<IntIntOpenHashMap>>();	
@@ -92,56 +76,37 @@ public class TripletCorrelationEvaluator implements ICorrelationEvaluator {
 			in.close();
 		}	
 	}
-	
-	private Set<IToken> used = new HashSet<IToken>(); 
-	
 	private IntIntOpenHashMap tvm = new IntIntOpenHashMap();
-	private void __calculate(IToken token, boolean doCalcLower) {
-		if (token.childrenCount() > 0)
-			for (IToken child : token.getChildren())
-				__calculate(child, doCalcLower);
-		
-		if (used.contains(token)) return;
-		if (!doCalcLower && token instanceof WordFormToken) {
-			used.add(token);
-			return;
-		}
-		if (triplets == null || (token instanceof StringToken || token instanceof SymbolToken) || (token instanceof WordFormToken && token.getConflicts().size() == 0)) {
-			token.setCorrelation(1.0);
-			used.add(token);
-			return;
-		}
+	
+	@Override
+	public double calculate(IToken token) {
+		if (triplets == null || (token instanceof StringToken || token instanceof SymbolToken) || (token instanceof WordFormToken && token.getConflicts().size() == 0))
+			return 1.0;
 		
 		if (token instanceof WordFormToken) {
 			tvm.clear();
 			int glc = 0;
+			
 			for (IToken c : token.getConflicts()) { 
 				int val = calcWithTriplets((WordFormToken) c);
 				tvm.put(c.id(), val);
 				glc += val;				
 			}
+			
 			int val = calcWithTriplets((WordFormToken) token);
 			tvm.put(token.id(), val);
 			glc += val;
 			
 			double div = 1.0 / glc;
-			if (div == Double.NaN || Double.isInfinite(div)) token.setCorrelation(1.0);
-			else token.setCorrelation(tvm.get(token.id()) * div);
-			used.add(token);
-			for (IToken c : token.getConflicts()) { c.setCorrelation(tvm.get(c.id()) * div); used.add(c); }			
+			if (div == Double.NaN || Double.isInfinite(div)) return 1.0;
+			for (IToken c : token.getConflicts()) save(c, tvm.get(c.id()) * div);
+			return tvm.get(token.id()) * div;
 		} else {
-			if (token.childrenCount() == 0) { token.setCorrelation(1.0); return; }
+			if (token.childrenCount() == 0) return 1.0;
 			double cor = 1.0;
 			for (IToken c : token.getChildren()) cor *= c.getCorrelation();
-			token.setCorrelation(cor);
-			used.add(token);
+			return cor;
 		}
-	}
-	
-	@Override
-	public void calculate(IToken token) {
-		used.clear();		
-		__calculate(token, true);
 	}
 	
 	public class Triplet<T> {
@@ -239,10 +204,7 @@ public class TripletCorrelationEvaluator implements ICorrelationEvaluator {
 		
 		return res.stream().map(x->this.triplets.get(x)).reduce(0, (x,y)->x+y);
 	}	
-	
+
 	@Override
-	public void propagate(IToken token) {
-		used.clear();
-		__calculate(token, false);
-	}
+	public void clear() {}
 }
