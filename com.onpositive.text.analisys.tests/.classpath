@@ -6,5 +6,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/com.onpositive.wordnet.extensions"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.onpositive.text.analisys.tools"/>
+	<classpathentry kind="src" path="/com.onpositive.text.analisys"/>
+	<classpathentry kind="src" path="/com.onpositive.wordnet"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
