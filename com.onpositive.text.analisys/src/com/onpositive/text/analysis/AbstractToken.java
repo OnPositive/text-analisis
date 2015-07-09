@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.carrotsearch.hppc.DoubleArrayList;
+
 public abstract class AbstractToken implements IToken {
 	
 	protected AbstractToken(int tokenType, int startPosition, int endPosition)
@@ -54,7 +56,8 @@ public abstract class AbstractToken implements IToken {
 	
 	private int startPosition;
 	
-	private double correlation = 0.0;
+	private DoubleArrayList corrValues = new DoubleArrayList();  
+	private DoubleArrayList corrWeights = new DoubleArrayList();
 	
 	public void setStartPosition(int startPosition) {
 		this.startPosition = startPosition;
@@ -497,11 +500,20 @@ public abstract class AbstractToken implements IToken {
 
 	@Override
 	public double getCorrelation() {
-		return correlation;
+		double cor = 0.0;
+		double weight = 0.0;
+		for (int i = 0; i < corrValues.size(); i++) {
+			cor += corrValues.get(i) * corrWeights.get(i);
+			weight += corrWeights.get(i);
+		}
+		
+		return weight == 0 ? 0.0 : cor / weight;
 	}
 	@Override
-	public void setCorrelation(double corellation) {
-		this.correlation = (Double.isFinite(corellation))? corellation : 0.0;		
+	public void setCorrelation(double corellation, double weight) {
+		if (Double.isFinite(corellation) == false) return;
+		corrValues.add(corellation);
+		corrWeights.add(weight);		
 	}
 	
 }

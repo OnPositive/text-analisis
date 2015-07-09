@@ -218,7 +218,7 @@ public interface IToken {
 
 	String getParserName();
 
-	void setCorrelation(double corellation);
+	void setCorrelation(double corellation, double weight);
 	double getCorrelation();
 	
 }
