@@ -1,16 +1,16 @@
 package com.onpositive.text.analysis;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import com.carrotsearch.hppc.ObjectDoubleOpenHashMap;
-import com.carrotsearch.hppc.ObjectObjectOpenHashMap;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public abstract class AbstractRelationEvaluator {
 	
-	private static ObjectObjectOpenHashMap<Class<? extends AbstractRelationEvaluator>, AbstractRelationEvaluator> instances;
+	private static HashMap<Class<? extends AbstractRelationEvaluator>, AbstractRelationEvaluator> instances = new HashMap<>();
 	
 	public static AbstractRelationEvaluator getInstance(Class<? extends AbstractRelationEvaluator> type) {
 		AbstractRelationEvaluator localInstance = instances.get(type);
@@ -30,13 +30,32 @@ public abstract class AbstractRelationEvaluator {
         return localInstance;
 	}
 	
+	private WordFormToken[] toArray(List<IToken> list) {
+		return list
+				.stream()
+				.filter(x->x instanceof WordFormToken)
+				.map(x->(WordFormToken)x)
+				.toArray(WordFormToken[]::new);
+	}
+	
+	protected WordFormToken[] nexts(IToken token) {
+		if (token.getNextTokens() == null) return new WordFormToken[0];
+		return toArray(token.getNextTokens());
+	}
+	
+	protected WordFormToken[] prevs(IToken token) {
+		if (token.getPreviousTokens() == null) return new WordFormToken[0];
+		return toArray(token.getPreviousTokens());
+	}
+	
+
 	
 	
-	private ObjectDoubleOpenHashMap<IToken> mem = new ObjectDoubleOpenHashMap<>();
+	private HashMap<IToken, WeightedProbability> mem = new HashMap<>();
 	
-	void save(IToken token, double value) { mem.put(token, value);	}
+	void save(IToken token, WeightedProbability value) { mem.put(token, value);	}
 	
-	double load(IToken token) {
+	WeightedProbability load(IToken token) {
 		if (!mem.containsKey(token)) 
 			mem.put(token, calculate(token));
 		return mem.get(token);
@@ -44,7 +63,7 @@ public abstract class AbstractRelationEvaluator {
 	
 	public abstract void clear();
 	
-	protected abstract double calculate(IToken token);
+	protected abstract WeightedProbability calculate(IToken token);
 
 	private Set<IToken> used = new HashSet<IToken>(); 
 
@@ -54,19 +73,20 @@ public abstract class AbstractRelationEvaluator {
 				go(child, propagate);
 		
 		if (used.contains(token)) return;
-		if (!propagate && (token instanceof WordFormToken || token instanceof SymbolToken)) {
+		if (propagate && (token instanceof WordFormToken || token instanceof SymbolToken)) {
 			used.add(token);
 			return;
 		}
 		
-		double rel = load(token);
-		token.setCorrelation(rel);
+		WeightedProbability rel = load(token);
+		token.setCorrelation(rel.probability, rel.weight);
 		used.add(token);
 	}
 	
 	
 	public void process(IToken token, boolean propagate) {
 		clear();
+		mem.clear();
 		used.clear();
 		
 		go(token, propagate);
