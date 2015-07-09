@@ -7,12 +7,12 @@ import com.carrotsearch.hppc.*;
 import com.onpositive.text.analysis.lexic.*;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 
-public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
+public class TripletRelationEvaluator extends AbstractRelationEvaluator {
 	
 	ObjectIntOpenHashMap<PartOfSpeech> parts;
 	IntObjectOpenHashMap<IntObjectOpenHashMap<IntIntOpenHashMap>> tripletsv = new IntObjectOpenHashMap<IntObjectOpenHashMap<IntIntOpenHashMap>>();	
 	
-	private TripletCorrelationEvaluator() {
+	public TripletRelationEvaluator() {
 		parts = new ObjectIntOpenHashMap<PartOfSpeech>();
 		
 		parts.put(PartOfSpeech.NOUN,1);
@@ -33,7 +33,7 @@ public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
 		parts.put(PartOfSpeech.PRCL,65536);
 		parts.put(PartOfSpeech.INTJ,131072);
 	
-		String fname = System.getProperty("engineConfigDir") + "triplets.dat";
+		String fname = System.getProperty("engineConfigDir") + "/triplets.dat";
 		try {
 			readTriplets(fname);
 		} catch (IOException e) {
@@ -79,9 +79,9 @@ public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
 	private IntIntOpenHashMap tvm = new IntIntOpenHashMap();
 	
 	@Override
-	public double calculate(IToken token) {
+	public WeightedProbability calculate(IToken token) {
 		if (triplets == null || (token instanceof StringToken || token instanceof SymbolToken) || (token instanceof WordFormToken && token.getConflicts().size() == 0))
-			return 1.0;
+			return WeightedProbability.True;
 		
 		if (token instanceof WordFormToken) {
 			tvm.clear();
@@ -98,14 +98,14 @@ public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
 			glc += val;
 			
 			double div = 1.0 / glc;
-			if (div == Double.NaN || Double.isInfinite(div)) return 1.0;
-			for (IToken c : token.getConflicts()) save(c, tvm.get(c.id()) * div);
-			return tvm.get(token.id()) * div;
+			if (div == Double.NaN || Double.isInfinite(div)) return WeightedProbability.True;
+			for (IToken c : token.getConflicts()) save(c, new WeightedProbability(tvm.get(c.id()) * div, 1.0));
+			return new WeightedProbability(tvm.get(token.id()) * div, 1.0);
 		} else {
-			if (token.childrenCount() == 0) return 1.0;
+			if (token.childrenCount() == 0) return WeightedProbability.True;
 			double cor = 1.0;
 			for (IToken c : token.getChildren()) cor *= c.getCorrelation();
-			return cor;
+			return new WeightedProbability(cor, 1.0);
 		}
 	}
 	
@@ -201,7 +201,7 @@ public class TripletCorrelationEvaluator extends AbstractRelationEvaluator {
 		res.addAll(getFirst(wft));
 		res.addAll(getSecond(wft));
 		res.addAll(getThird(wft));
-		
+			
 		return res.stream().map(x->this.triplets.get(x)).reduce(0, (x,y)->x+y);
 	}	
 
