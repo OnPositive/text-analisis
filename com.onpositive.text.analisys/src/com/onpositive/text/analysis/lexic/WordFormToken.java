@@ -84,6 +84,10 @@ public class WordFormToken extends SyntaxToken {
 		return meaningElements;
 	}
 
+	public short getGrammemCode() {
+		return meaningElements != null && meaningElements.length > 0 ? meaningElements[0].getGrammemCode() : -1;
+	}
+	
 	public void addGrammarRelation(GrammarRelation gr) {
 		grammarRelations.add(gr);
 	}
