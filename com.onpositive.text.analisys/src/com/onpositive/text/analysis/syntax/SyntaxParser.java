@@ -11,6 +11,7 @@ import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.AbstractRelationEvaluator;
+import com.onpositive.text.analysis.ChainRelationEvaluator;
 import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
@@ -19,7 +20,8 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
-import com.onpositive.text.analysis.TripletCorrelationEvaluator;
+import com.onpositive.text.analysis.TripletRelationEvaluator;
+import com.onpositive.text.analysis.WordRelationEvaluator;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
@@ -226,7 +228,7 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
-		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(TripletCorrelationEvaluator.class);
+		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
 		
 		sentences.forEach(x->evaluator.process(x, false));
 		
