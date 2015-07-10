@@ -11,6 +11,27 @@ import com.onpositive.text.analysis.lexic.WordFormToken;
 public abstract class AbstractRelationEvaluator {
 	
 	private static HashMap<Class<? extends AbstractRelationEvaluator>, AbstractRelationEvaluator> instances = new HashMap<>();
+
+	public static void register(Class<? extends AbstractRelationEvaluator> type) {
+		AbstractRelationEvaluator localInstance = instances.get(type);
+		if (localInstance != null) return;
+		
+		synchronized (AbstractRelationEvaluator.class) {
+			localInstance = instances.get(type);
+            if (localInstance == null) {
+                try {
+					localInstance = type.newInstance();
+					instances.put(type, localInstance);
+				} catch (Exception e) { e.printStackTrace(); }
+            }
+		}
+	}
+	
+	public static void bprocess(IToken token, boolean propagate) {
+		for (Class<?> ins : instances.keySet()) {
+			instances.get(ins).process(token, propagate);
+		}
+	}
 	
 	public static AbstractRelationEvaluator getInstance(Class<? extends AbstractRelationEvaluator> type) {
 		AbstractRelationEvaluator localInstance = instances.get(type);
@@ -82,6 +103,8 @@ public abstract class AbstractRelationEvaluator {
 		token.setCorrelation(rel.probability, rel.weight);
 		used.add(token);
 	}
+	
+	
 	
 	
 	public void process(IToken token, boolean propagate) {
