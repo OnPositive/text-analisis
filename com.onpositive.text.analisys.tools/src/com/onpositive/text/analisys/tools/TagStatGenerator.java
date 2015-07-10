@@ -1,7 +1,6 @@
 package com.onpositive.text.analisys.tools;
 
-import java.util.HashMap;
-import java.util.List;
+	import java.util.List;
 
 import com.carrotsearch.hppc.ObjectArrayList;
 import com.carrotsearch.hppc.ShortArrayList;
