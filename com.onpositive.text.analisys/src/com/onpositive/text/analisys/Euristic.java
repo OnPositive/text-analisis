@@ -29,7 +29,7 @@ public class Euristic {
 	}
 	
 	public static List<Euristic> match(Class<? extends AbstractParser> clazz) {  
-		if (registered.containsKey(clazz)) 
+		if (!registered.containsKey(clazz)) 
 			registered.put(clazz, new ArrayList<Euristic>());
 		
 		return registered.get(clazz);

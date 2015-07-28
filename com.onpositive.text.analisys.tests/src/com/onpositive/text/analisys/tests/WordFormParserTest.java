@@ -12,6 +12,8 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.text.analisys.Euristic;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -23,18 +25,165 @@ public class WordFormParserTest extends TestCase{
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();
 		AbstractWordNet instance = WordNetProvider.getInstance();
 		GrammarRelation[] possibleGrammarForms = instance.getPossibleGrammarForms("автоматический");
+		
 		TextElement[] possibleContinuations = instance.getPossibleContinuations(possibleGrammarForms[0].getWord());
 		//ww.prepareWordSeqs();
 		WordFormParser wfParser = new WordFormParser(instance);
 		
-		String str = "Сработал автоматический определитель номера. Чудовище село на ковёр-самолёт и полетело.";		
+//		String str = "Сработал автоматический определитель номера. Чудовище село на ковёр-самолёт и полетело.";		
+//		String str = "Сработал электрический детонатор. Чудовище село на ковёр-самолёт и полетело.";
+		String str = "ты дрожи";
 		List<IToken> tokens = pt.tokenize(str);		
 		List<IToken> processed = wfParser.process(tokens);
 		
 		for(IToken t : processed){
 			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
 		}
+		
+		List<List<IToken>> possibleChains = calcVariants(processed);
+		
+		
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.word("части", PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.or(Euristic.any(PartOfSpeech.ADJF), Euristic.any(PartOfSpeech.ADJS))
+		);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.any(PartOfSpeech.NOUN)
+		);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.any(PartOfSpeech.NOUN)
+		);
+		//Правило инфинитив + существительное
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.any(PartOfSpeech.NOUN)
+		);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.or(Euristic.any(PartOfSpeech.ADJF), Euristic.any(PartOfSpeech.PRTF)),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.NUMR),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.NPRO),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.PREP)
+				);
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.INFN)
+				);
+		
+		
+		
+		
+		System.out.println("----------------------------------------------------------------------------------------");
+		List<Euristic> euristics = Euristic.match(WordFormParser.class);
+		for (Euristic euristic : euristics) {
+			for (List<IToken> list : possibleChains) {
+				boolean match = euristic.match(list.toArray(new IToken[0]));
+				if (match) {
+					System.out.println(list);
+				}
+			}
+		}
+		
 		System.out.println();
+	}
+
+	private List<List<IToken>> calcVariants(List<IToken> processed) {
+		List<IToken> workingCopy = new ArrayList<IToken>(processed);
+		List<List<IToken>> result = new ArrayList<List<IToken>>();
+		result.add(new ArrayList<IToken>());
+		for (int i = 0; i < workingCopy.size(); i++) {
+			if (workingCopy.get(i).getConflicts() == null || workingCopy.get(i).getConflicts().isEmpty()) {
+				addItem(result, workingCopy.get(i));
+			} else {
+				List<IToken> conflicts = new ArrayList<IToken>(workingCopy.get(i).getConflicts());
+				conflicts.add(0, workingCopy.get(i));
+				while (i+1 < workingCopy.size() && conflicts.contains(workingCopy.get(i+1))) {
+					workingCopy.remove(i+1);
+				}
+				result = generateVariants(result,conflicts);
+			}
+		}
+		return result;
+	}
+
+	private List<List<IToken>> generateVariants(List<List<IToken>> prevResult, List<IToken> conflicts) {
+		List<List<IToken>> result = new ArrayList<List<IToken>>();
+		for (List<IToken> list : prevResult) {
+			for (IToken curToken : conflicts) {
+				List<IToken> newList = new ArrayList<IToken>(list);
+				newList.add(curToken);
+				result.add(newList);
+			}
+		}
+		return result;
+	}
+
+	private void addItem(List<List<IToken>> result, IToken token) {
+		for (List<IToken> list : result) {
+			list.add(token);
+		}
 	}
 	
 }

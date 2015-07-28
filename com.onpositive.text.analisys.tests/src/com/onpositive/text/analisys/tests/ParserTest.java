@@ -250,6 +250,21 @@ l0:		for(String s : print){
 		TestCase.assertTrue(gotPrint);
 	}
 	
+	protected static void testTokenPrint(List<IToken> tokens){
+		boolean gotPrint = false;
+//l0:		for(String s : print){
+			//String str = s.replaceAll("(\\s|\\,)", "");			
+			for(IToken token : tokens){
+				String s1 = printToken(token,0).replaceAll("(\\s|\\,)", "");
+//				if(str.equals(s1)){
+//					gotPrint = true;
+//					break l0;
+//				}
+			}
+	//	}
+		
+	}
+	
 	protected static void assertTestTokenPrintContains(String print, List<IToken> tokens){
 		String str = print.replaceAll("(\\s|\\,)", "");
 		boolean gotPrint = false;

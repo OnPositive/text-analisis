@@ -339,7 +339,7 @@ public class WordFormParser extends AbstractParser {
 			str = bld.toString();
 		}
 		String txt = getText();
-		if(ep<txt.length()&&!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
+		if(txt != null && ep<txt.length()&&!str.endsWith(" ")&&txt.charAt(ep)=='.'&&me.getGrammems().contains(SemanGramem.ABBR)){
 			return null;
 		}
 		
