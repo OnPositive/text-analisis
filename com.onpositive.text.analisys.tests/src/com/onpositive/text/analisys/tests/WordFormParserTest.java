@@ -1,9 +1,6 @@
 package com.onpositive.text.analisys.tests;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -42,7 +39,12 @@ public class WordFormParserTest extends TestCase{
 		
 		List<List<IToken>> possibleChains = calcVariants(processed);
 		
-		
+		Euristic.register(
+				WordFormParser.class,
+				
+				Euristic.any(PartOfSpeech.NOUN, PartOfSpeech.NPRO),
+				Euristic.any(PartOfSpeech.VERB)
+		);
 		Euristic.register(
 				WordFormParser.class,
 				
@@ -147,6 +149,74 @@ public class WordFormParserTest extends TestCase{
 		}
 		
 		System.out.println();
+	}
+	
+	public void test00() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.add(Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.VERB)
+				));
+		euristics.add(Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.INFN)
+				));
+		Euristic matched = matched(euristics, "грузовик поехал");
+		assertNotNull(matched);
+	}
+	
+	public void test01() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicNounVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		Euristic euristicVerbInfn = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.INFN)
+				);
+		
+		euristics.add(euristicNounVerb);
+		euristics.add(euristicVerbInfn);
+		Euristic matched = matched(euristics, "грузовик поехал");
+		assertEquals(matched, euristicNounVerb);
+	}
+	
+	public void test02() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.add(Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.INFN)
+				));
+		
+		Euristic matched = matched(euristics, "грузовик поехал");
+		assertNull(matched);
+	}
+	
+	private Euristic matched(List<Euristic> euristicsToTry, String testString) {
+		PrimitiveTokenizer pt = new PrimitiveTokenizer();
+		WordFormParser wordFormParser = new WordFormParser(WordNetProvider.getInstance());
+		List<IToken> tokens = pt.tokenize(testString);		
+		List<IToken> processed = wordFormParser.process(tokens);
+		
+//		for(IToken t : processed){
+//			System.out.println(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue());
+//		}
+		
+		List<List<IToken>> possibleChains = calcVariants(processed);
+		return matched(euristicsToTry, possibleChains);
+	}
+	
+	private Euristic matched(List<Euristic> euristicsToTry, List<List<IToken>> possibleChains) {
+		for (Euristic euristic : euristicsToTry) {
+			for (List<IToken> list : possibleChains) {
+				boolean match = euristic.match(list.toArray(new IToken[0]));
+				if (match) {
+					return euristic;
+				}
+			}
+		}
+		return null;
 	}
 
 	private List<List<IToken>> calcVariants(List<IToken> processed) {

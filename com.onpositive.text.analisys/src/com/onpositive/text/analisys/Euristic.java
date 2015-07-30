@@ -15,17 +15,32 @@ import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class Euristic {
 
-	private static HashMap<Class<? extends AbstractParser>, List<Euristic>> registered = new HashMap<>(); 
+	static final int EURISTIC_WORD = 40001;
+	static final int EURISTIC_GRAMMEM = 40002;
+	static final int EURISTIC_CONCAT = 40003;
+	static final int EURISTIC_OR = 40004;
+	static final int EURISTIC_ALL = 40005;
+	
+	private static HashMap<Class<? extends AbstractParser>, List<Euristic>> registered = new HashMap<>();
+	private String word = null;
+	private Grammem[] grammems = null;
+	private int type;
+	private Euristic[] euristics = null;
 	
 	public static void register(Class<? extends AbstractParser> clazz, Euristic ... euristics)
 	{
-		Euristic eur = new Euristic(euristics);
-		eur.type = EURISTIC_CONCAT;
+		Euristic eur = concat(euristics);
 		
 		if (!registered.containsKey(clazz)) registered.put(clazz, new ArrayList<Euristic>());
 		
 		List<Euristic> list = registered.get(clazz);
 		list.add(eur);
+	}
+
+	public static Euristic concat(Euristic... euristics) {
+		Euristic eur = new Euristic(euristics);
+		eur.type = EURISTIC_CONCAT;
+		return eur;
 	}
 	
 	public static List<Euristic> match(Class<? extends AbstractParser> clazz) {  
@@ -44,6 +59,20 @@ public class Euristic {
 	}
 	
 	private boolean matchAny(IToken token) {
+		if (!(token instanceof WordFormToken)) return false;
+		WordFormToken wft = (WordFormToken) token;
+		
+		if (this.grammems.length == 0) return true;
+		if (wft.getMeaningElements().length == 0) return false;
+		Set<Grammem> gs = wft.getMeaningElements()[0].getGrammems();
+		for (Grammem gr : this.grammems) {
+			if (gs.contains(gr)) 
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean matchAll(IToken token) {
 		if (!(token instanceof WordFormToken)) return false;
 		WordFormToken wft = (WordFormToken) token;
 		
@@ -82,6 +111,9 @@ public class Euristic {
 			case EURISTIC_GRAMMEM:
 				if (tokens.length != 1) return false;
 				else return matchAny(tokens[0]);
+			case EURISTIC_ALL:
+				if (tokens.length != 1) return false;
+				else return matchAll(tokens[0]);
 			case EURISTIC_OR:
 				if (tokens.length != 1) return false;
 				return matchOr(tokens[0]);
@@ -100,6 +132,12 @@ public class Euristic {
 		return new Euristic(gr);
 	}
 	
+	public static Euristic all(Grammem ... gr) {
+		Euristic euristic = new Euristic(gr);
+		euristic.type = EURISTIC_ALL;
+		return euristic;
+	}
+	
 	
 	public Euristic then(Euristic a) {
 		Euristic eur = new Euristic(Arrays.asList(this, a).toArray(new Euristic[0]));
@@ -112,18 +150,6 @@ public class Euristic {
 		return eur; 
 	}		
 		
-	static final int EURISTIC_WORD = 40001;
-	static final int EURISTIC_GRAMMEM = 40002;
-	static final int EURISTIC_CONCAT = 40003;
-	static final int EURISTIC_OR = 40004;
-	
-	String word = null;
-	Grammem[] grammems = null;
-	
-	int type;
-	
-	Euristic[] euristics = null;
-	
 	private Euristic(String word, Grammem[] grammems) {
 		this.type = EURISTIC_WORD;
 		this.word = word;
