@@ -87,8 +87,8 @@ public class Euristic {
 	private boolean matchOr(IToken token) {
 		if (euristics == null) return true;
 		for (Euristic eur : euristics)
-			if (eur.match(token) == false) return false;
-		return true;
+			if (eur.match(token)) return true;
+		return false;
 	}
 	
 	private boolean matchConcat(IToken[] tokens) {
