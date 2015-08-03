@@ -3,6 +3,7 @@ package com.onpositive.text.analisys;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import com.onpositive.text.analysis.AbstractParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class Euristic {
 
@@ -20,6 +22,7 @@ public class Euristic {
 	static final int EURISTIC_CONCAT = 40003;
 	static final int EURISTIC_OR = 40004;
 	static final int EURISTIC_ALL = 40005;
+	private static final int EURISTIC_CONFLICTING = 40006;
 	
 	private static HashMap<Class<? extends AbstractParser>, List<Euristic>> registered = new HashMap<>();
 	private String word = null;
@@ -64,9 +67,9 @@ public class Euristic {
 		
 		if (this.grammems.length == 0) return true;
 		if (wft.getMeaningElements().length == 0) return false;
-		Set<Grammem> gs = wft.getMeaningElements()[0].getGrammems();
+		GrammemSet gs = wft.getGrammemSets().get(0);
 		for (Grammem gr : this.grammems) {
-			if (gs.contains(gr)) 
+			if (gs.hasGrammem(gr)) 
 				return true;
 		}
 		return false;
@@ -78,9 +81,9 @@ public class Euristic {
 		
 		if (this.grammems.length == 0) return true;
 		if (wft.getMeaningElements().length == 0) return false;
-		Set<Grammem> gs = wft.getMeaningElements()[0].getGrammems();
+		GrammemSet gs = wft.getGrammemSets().get(0);
 		for (Grammem gr : this.grammems)
-			if (gs.contains(gr) == false) return false;
+			if (!gs.hasGrammem(gr)) return false;
 		return true;
 	}
 	
@@ -103,6 +106,33 @@ public class Euristic {
 		return true;
 	}
 	
+	private boolean matchConflicting(IToken token) {
+		if (!(token instanceof WordFormToken)) return false;
+		WordFormToken wft = (WordFormToken) token;
+		List<IToken> conflicts = wft.getConflicts();
+		if (conflicts == null || conflicts.isEmpty()) {
+			return false;
+		}
+		List<IToken> matchList = new ArrayList<IToken>(conflicts);
+		Set<Grammem> matchedGrammems = new HashSet<Grammem>();
+		matchList.add(0, token);
+		int matchedCount = 0;
+		for (IToken curToken : matchList) {
+			Set<Grammem> gs = ((WordFormToken) curToken).getMeaningElements()[0].getGrammems();
+			for (Grammem gr : this.grammems) {
+				if (gs.contains(gr) && !matchedGrammems.contains(gr)) {
+					matchedCount++;
+					matchedGrammems.add(gr);
+					if (matchedCount == 2) {
+						return true;
+					}
+					break;
+				}
+			}
+		}
+		return false;
+	}
+
 	public boolean match(IToken ... tokens) {
 		switch (type) {
 			case EURISTIC_WORD:
@@ -119,6 +149,9 @@ public class Euristic {
 				return matchOr(tokens[0]);
 			case EURISTIC_CONCAT:
 				return matchConcat(tokens);
+			case EURISTIC_CONFLICTING:
+				if (tokens.length != 1) return false;
+				else return matchConflicting(tokens[0]);
 			default:
 				return false; // TODO: add other classes
 		}
@@ -135,6 +168,12 @@ public class Euristic {
 	public static Euristic all(Grammem ... gr) {
 		Euristic euristic = new Euristic(gr);
 		euristic.type = EURISTIC_ALL;
+		return euristic;
+	}
+	
+	public static Euristic conflicting(Grammem... grammems) {
+		Euristic euristic = new Euristic(grammems);
+		euristic.type = EURISTIC_CONFLICTING;
 		return euristic;
 	}
 	
