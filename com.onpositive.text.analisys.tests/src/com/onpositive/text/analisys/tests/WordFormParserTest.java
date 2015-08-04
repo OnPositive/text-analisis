@@ -165,7 +165,7 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristic1 = Euristic.concat(
 				Euristic.any(PartOfSpeech.INFN),
-				Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.NOUN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.NOUN), Euristic.any(PartOfSpeech.NOUN))
 				);
 		euristics.add(euristic1);
 		Euristic matched = matched(euristics, "налить белил");

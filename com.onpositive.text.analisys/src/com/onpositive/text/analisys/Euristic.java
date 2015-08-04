@@ -23,6 +23,7 @@ public class Euristic {
 	static final int EURISTIC_OR = 40004;
 	static final int EURISTIC_ALL = 40005;
 	private static final int EURISTIC_CONFLICTING = 40006;
+	private static final int EURISTIC_AND = 40007;
 	
 	private static HashMap<Class<? extends AbstractParser>, List<Euristic>> registered = new HashMap<>();
 	private String word = null;
@@ -94,6 +95,13 @@ public class Euristic {
 		return false;
 	}
 	
+	private boolean matchAnd(IToken token) {
+		if (euristics == null) return false;
+		for (Euristic eur : euristics)
+			if (!eur.match(token)) return false;
+		return true;
+	}
+	
 	private boolean matchConcat(IToken[] tokens) {
 		if (euristics == null) return true;
 		if (tokens == null) return false;
@@ -147,6 +155,9 @@ public class Euristic {
 			case EURISTIC_OR:
 				if (tokens.length != 1) return false;
 				return matchOr(tokens[0]);
+			case EURISTIC_AND:
+				if (tokens.length != 1) return false;
+				return matchAnd(tokens[0]);
 			case EURISTIC_CONCAT:
 				return matchConcat(tokens);
 			case EURISTIC_CONFLICTING:
@@ -183,11 +194,18 @@ public class Euristic {
 		eur.type = EURISTIC_CONCAT;
 		return eur;
 	}
+	
 	public static Euristic or (Euristic ... euristics) { 
 		Euristic eur = new Euristic(euristics);
 		eur.type = EURISTIC_OR;
 		return eur; 
-	}		
+	}
+	
+	public static Euristic and (Euristic ... euristics) { 
+		Euristic eur = new Euristic(euristics);
+		eur.type = EURISTIC_AND;
+		return eur; 
+	}	
 		
 	private Euristic(String word, Grammem[] grammems) {
 		this.type = EURISTIC_WORD;
