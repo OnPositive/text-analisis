@@ -12,7 +12,9 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Extras;
 import com.onpositive.semantic.wordnet.Grammem.FeaturesGramem;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
+import com.onpositive.semantic.wordnet.Grammem.Personality;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
+import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
@@ -624,6 +626,135 @@ public class WordFormParserTest extends TestCase{
 				Euristic.any(PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicAdjAdjf);
+		return euristics;
+	}
+	
+	// глагол - прилагательное
+	public void test12() {
+		Euristic matched = matched(getRulesList12(), "на праздную");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList12() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicNproVerb = Euristic.concat(
+				Euristic.all(PartOfSpeech.NPRO, Personality.PERS1),
+				Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT)
+				);
+		euristics.add(euristicNproVerb);
+		Euristic euristicAdvbVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT)
+				);
+		euristics.add(euristicAdvbVerb);
+		Euristic euristicPrepAdjf = Euristic.concat(
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicPrepAdjf);
+		Euristic euristicNounAdjf = Euristic.concat(
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicNounAdjf);
+		Euristic euristicNproAdjf = Euristic.concat(
+				Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicNproAdjf);
+		Euristic euristicVerbAdjf = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicVerbAdjf);
+		Euristic euristicInfAdjf = Euristic.concat(
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicInfAdjf);
+		Euristic euristicAdjAdjf = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.any(PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicAdjAdjf);
+		Euristic euristicAdjfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+				);
+		euristics.add(euristicAdjfNoun);
+		return euristics;
+	}
+	
+	// глагол - краткое прилагательное
+	public void test13() {
+		Euristic matched = matched(getRulesList13(), "плавно росло");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList13() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicAdvbVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicAdvbVerb);
+		Euristic euristicVerbAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicVerbAdvb);
+		Euristic euristicVerbPrep = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.PREP)
+				);
+		euristics.add(euristicVerbPrep);
+		return euristics;
+	}
+	
+	// глагол - наречие
+	
+	public void test14() {
+		Euristic matched = matched(getRulesList14(), "показал издали");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList14() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicNounVerb = Euristic.concat(
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNounVerb);
+		Euristic euristicVerbNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+				);
+		euristics.add(euristicVerbNoun);
+		Euristic euristicVerbPrep = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.PREP)
+				);
+		euristics.add(euristicVerbPrep);
+		Euristic euristicVerbAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicVerbAdvb);
+		Euristic euristicGrndAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.GRND),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicGrndAdvb);
+		Euristic euristicAdvbVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicAdvbVerb);
+		Euristic euristicAdvbGrnd = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.GRND)
+				);
+		euristics.add(euristicAdvbGrnd);
 		return euristics;
 	}
 	
