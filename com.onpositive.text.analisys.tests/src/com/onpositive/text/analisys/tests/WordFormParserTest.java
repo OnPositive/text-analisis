@@ -926,7 +926,7 @@ public class WordFormParserTest extends TestCase{
 					);
 			euristics.add(euristicAdjfNoun);
 			Euristic euristicNumrNoun = Euristic.concat(
-					Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+					Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Anum)),
 					Euristic.all(PartOfSpeech.NOUN, Case.GENT)
 					);
 			euristics.add(euristicNumrNoun);
@@ -1023,7 +1023,7 @@ public class WordFormParserTest extends TestCase{
 				
 				// прилагательное - наречие
 				public void test23() {
-					Euristic matched = matched(getRulesList23(), "съесть чуток");
+					Euristic matched = matched(getRulesList23(), "съест чуток");
 					assertNotNull(matched);
 				}
 				
@@ -1031,7 +1031,7 @@ public class WordFormParserTest extends TestCase{
 					List<Euristic> euristics = new ArrayList<Euristic>();
 					Euristic euristicVerbAdvb = Euristic.concat(
 							Euristic.any(PartOfSpeech.VERB),
-							Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJF)
+							Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS)
 							);
 					euristics.add(euristicVerbAdvb);
 					Euristic euristicGrndAdvb = Euristic.concat(
