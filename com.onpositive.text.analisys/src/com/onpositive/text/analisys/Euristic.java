@@ -206,6 +206,10 @@ public class Euristic {
 		eur.type = EURISTIC_AND;
 		return eur; 
 	}	
+	
+	public static Euristic createConflictChecker(PartOfSpeech right, PartOfSpeech wrong) {
+		return Euristic.and(Euristic.conflicting(right, wrong), Euristic.any(right));
+	}
 		
 	private Euristic(String word, Grammem[] grammems) {
 		this.type = EURISTIC_WORD;
