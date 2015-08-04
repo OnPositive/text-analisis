@@ -49,101 +49,7 @@ public class WordFormParserTest extends TestCase{
 		
 		List<List<IToken>> possibleChains = calcVariants(processed);
 		
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.NOUN, PartOfSpeech.NPRO),
-				Euristic.any(PartOfSpeech.VERB)
-		);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.word("части", PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.ADJF),
-				Euristic.or(Euristic.any(PartOfSpeech.ADJF), Euristic.any(PartOfSpeech.ADJS))
-		);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.VERB),
-				Euristic.any(PartOfSpeech.ADJF),
-				Euristic.any(PartOfSpeech.NOUN)
-		);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.any(PartOfSpeech.NOUN)
-		);
-		//Правило инфинитив + существительное
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.INFN),
-				Euristic.any(PartOfSpeech.NOUN)
-		);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.any(PartOfSpeech.NOUN)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.or(Euristic.any(PartOfSpeech.ADJF), Euristic.any(PartOfSpeech.PRTF)),
-				Euristic.any(PartOfSpeech.NOUN)
-				);
-		
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.VERB),
-				Euristic.any(PartOfSpeech.NOUN)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.NUMR),
-				Euristic.any(PartOfSpeech.NOUN)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.VERB)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.NPRO),
-				Euristic.any(PartOfSpeech.VERB)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.ADVB),
-				Euristic.any(PartOfSpeech.VERB)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.NOUN)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.VERB),
-				Euristic.any(PartOfSpeech.PREP)
-				);
-		Euristic.register(
-				WordFormParser.class,
-				
-				Euristic.any(PartOfSpeech.VERB),
-				Euristic.any(PartOfSpeech.INFN)
-				);
-		
+
 		
 		
 		
@@ -226,7 +132,8 @@ public class WordFormParserTest extends TestCase{
 		assertNotNull(matched);
 	}
 	
-	public void test05() { // ...
+	// существительное - предлог
+	public void test05() {
 		
 		Euristic matched = matched(getRulesList5(), "меж двух");
 		assertNotNull(matched);
@@ -766,6 +673,181 @@ public class WordFormParserTest extends TestCase{
 				Euristic.any(PartOfSpeech.GRND)
 				);
 		euristics.add(euristicAdvbGrnd);
+		return euristics;
+	}
+	
+	// глагол - союз
+	
+	public void test15() {
+		Euristic matched = matched(getRulesList15(), "коли меня");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList15() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicNproVerb = Euristic.concat(
+				Euristic.all(PartOfSpeech.NPRO, Case.ACCS),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNproVerb);
+		Euristic euristicNounVerb = Euristic.concat(
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNounVerb);
+		Euristic euristicVerbNpro = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.all(PartOfSpeech.NPRO, Case.ACCS)
+				);
+		euristics.add(euristicVerbNpro);
+		Euristic euristicVerbNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+				);
+		euristics.add(euristicVerbNoun);
+		Euristic euristicConjWord = Euristic.concat(
+				Euristic.any(PartOfSpeech.CONJ),
+				Euristic.word("уж", PartOfSpeech.PRCL)
+				);
+		euristics.add(euristicConjWord);
+		Euristic euristicConjNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.CONJ),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicConjNoun);
+		Euristic euristicConjVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.CONJ),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicConjVerb);
+		return euristics;
+	}
+	
+	// существительное - наречие
+	public void test16() {
+		Euristic matched = matched(getRulesList16(), "забывая порой");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList16() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicAdjfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicAdjfNoun);
+		Euristic euristicPrepNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicPrepNoun);
+		Euristic euristicNounNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
+				);
+		euristics.add(euristicNounNoun);
+		Euristic euristicVerbAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicVerbAdvb);
+		Euristic euristicNounAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicNounAdvb);
+		Euristic euristicNproAdvb = Euristic.concat(
+				Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicNproAdvb);
+		Euristic euristicGrndAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.GRND),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicGrndAdvb);
+		Euristic euristicAdvbNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicAdvbNoun);
+		Euristic euristicAdvbAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicAdvbAdvb);
+		Euristic euristicAdvbPrep = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.PREP)
+				);
+		euristics.add(euristicAdvbPrep);
+		return euristics;
+	}
+	
+	// предикат - предлог
+	
+	public void test17() {
+		Euristic matched = matched(getRulesList17(), "забывая порой");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList17() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicInfnPred = Euristic.concat(
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.any(PartOfSpeech.PRED)
+				);
+		euristics.add(euristicInfnPred);
+		Euristic euristicWordPred = Euristic.concat(
+				Euristic.word("ещё", PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.PRED)
+				);
+		euristics.add(euristicWordPred);
+		Euristic euristicPredWord = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.word("бы", PartOfSpeech.PRCL)
+				);
+		euristics.add(euristicPredWord);
+		Euristic euristicPredAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicPredAdvb);
+		Euristic euristicPredInfn = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.any(PartOfSpeech.INFN)
+				);
+		euristics.add(euristicPredInfn);
+		Euristic euristicPredZhe = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.word("же", PartOfSpeech.PRCL)
+				);
+		euristics.add(euristicPredZhe);
+		Euristic euristicPredNpro = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.all(PartOfSpeech.NPRO, Case.DATV)
+				);
+		euristics.add(euristicPredNpro);
+		Euristic euristicPredNounD = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.all(PartOfSpeech.NOUN, Case.DATV)
+				);
+		euristics.add(euristicPredNounD);
+		Euristic euristicPredEshe = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.word("ещё", PartOfSpeech.PRCL)
+				);
+		euristics.add(euristicPredEshe);
+		Euristic euristicPredNounA = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+				);
+		euristics.add(euristicPredNounA);
+		Euristic euristicPrepNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRED),
+				Euristic.word("бы", PartOfSpeech.PRCL)
+				);
+		euristics.add(euristicPredWord);
 		return euristics;
 	}
 	
