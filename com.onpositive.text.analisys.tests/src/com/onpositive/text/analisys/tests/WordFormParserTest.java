@@ -12,6 +12,7 @@ import com.onpositive.semantic.wordnet.Grammem.Case;
 import com.onpositive.semantic.wordnet.Grammem.Extras;
 import com.onpositive.semantic.wordnet.Grammem.FeaturesGramem;
 import com.onpositive.semantic.wordnet.Grammem.Gender;
+import com.onpositive.semantic.wordnet.Grammem.Mood;
 import com.onpositive.semantic.wordnet.Grammem.Personality;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.Grammem.Time;
@@ -1105,6 +1106,153 @@ public class WordFormParserTest extends TestCase{
 				Euristic.any(PartOfSpeech.PREP)
 				);
 		euristics.add(euristicGrndPrep);
+		return euristics;
+	}
+				
+	// существительное - глагол
+	public void test25() {
+		Euristic matched = matched(getRulesList25(), "дам прочитать");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList25() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicPrepNoun);
+		Euristic euristicAdjfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicAdjfNoun);
+		Euristic euristicPrtfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRTF),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicPrtfNoun);
+		Euristic euristicInfnNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicInfnNoun);
+		Euristic euristicVerbNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicVerbNoun);
+		Euristic euristicNproNoun = Euristic.concat(
+				Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNproNoun);
+		Euristic euristicNumrNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.NUMR),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNumrNoun);
+		Euristic euristicImprNoun = Euristic.concat(
+				Euristic.all(PartOfSpeech.VERB, Mood.impr),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicImprNoun);
+		Euristic euristicNounNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNounNoun);
+		Euristic euristicNounVerb = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB),
+				Euristic.any(PartOfSpeech.VERB)
+				);
+		euristics.add(euristicNounVerb);
+		Euristic euristicNounNounG = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB),
+				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
+				);
+		euristics.add(euristicNounNounG);
+		Euristic euristicAdvbVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicAdvbVerb);
+		Euristic euristicNproVerb = Euristic.concat(
+				Euristic.any(PartOfSpeech.NPRO),
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicNproVerb);
+		Euristic euristicWordVerb = Euristic.concat(
+				Euristic.word("давай", PartOfSpeech.VERB),
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicWordVerb);
+		Euristic euristicVerbNounT = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NOUN, Case.ABLT)
+				);
+		euristics.add(euristicVerbNounT);
+		Euristic euristicVerbNounV = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+				);
+		euristics.add(euristicVerbNounV);
+		Euristic euristicVerbPrep = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.PREP)
+				);
+		euristics.add(euristicVerbPrep);
+		Euristic euristicVerbAdvb = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicVerbAdvb);
+		Euristic euristicVerbNounD = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NOUN, Case.DATV)
+				);
+		euristics.add(euristicVerbNounD);
+		Euristic euristicVerbNproD = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NPRO, Case.DATV)
+				);
+		euristics.add(euristicVerbNproD);
+		Euristic euristicVerbNproV = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.all(PartOfSpeech.NPRO, Case.ACCS)
+				);
+		euristics.add(euristicVerbNproV);
+		Euristic euristicVerbInfn = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NOUN),
+				Euristic.any(PartOfSpeech.INFN)
+				);
+		euristics.add(euristicVerbInfn);
+		return euristics;
+	}
+	
+	// существительное - местоимение "кому"
+	public void test26() {
+		Euristic matched = matched(getRulesList26(), "к кому");
+		assertNotNull(matched);
+	}
+	
+	private List<Euristic> getRulesList26() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NPRO)
+				);
+		euristics.add(euristicPrepNoun);
+		Euristic euristicPrepNpro = Euristic.concat(
+				Euristic.word("к", PartOfSpeech.PREP),
+				Euristic.createConflictChecker(PartOfSpeech.NPRO, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicPrepNpro);
+		Euristic euristicVerbNpro = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.createConflictChecker(PartOfSpeech.NPRO, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicVerbNpro);
 		return euristics;
 	}
 	
