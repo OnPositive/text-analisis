@@ -68,10 +68,12 @@ public class Euristic {
 		
 		if (this.grammems.length == 0) return true;
 		if (wft.getMeaningElements().length == 0) return false;
-		GrammemSet gs = wft.getGrammemSets().get(0);
-		for (Grammem gr : this.grammems) {
-			if (gs.hasGrammem(gr)) 
-				return true;
+		List<GrammemSet> grammemSets = wft.getGrammemSets();
+		for (GrammemSet grammemSet : grammemSets) {
+			for (Grammem gr : this.grammems) {
+				if (grammemSet.hasGrammem(gr)) 
+					return true;
+			}
 		}
 		return false;
 	}
@@ -82,9 +84,13 @@ public class Euristic {
 		
 		if (this.grammems.length == 0) return true;
 		if (wft.getMeaningElements().length == 0) return false;
-		GrammemSet gs = wft.getGrammemSets().get(0);
-		for (Grammem gr : this.grammems)
-			if (!gs.hasGrammem(gr)) return false;
+		List<GrammemSet> grammemSets = wft.getGrammemSets();
+		for (GrammemSet grammemSet : grammemSets) {
+			for (Grammem gr : this.grammems) {
+				if (!grammemSet.hasGrammem(gr)) 
+					break;
+			}
+		}
 		return true;
 	}
 	
