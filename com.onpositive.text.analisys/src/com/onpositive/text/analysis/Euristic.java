@@ -1,4 +1,4 @@
-package com.onpositive.text.analisys;
+package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,8 +9,6 @@ import java.util.Set;
 
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.text.analysis.AbstractParser;
-import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
