@@ -159,6 +159,10 @@ public abstract class AbstractToken implements IToken {
 		return conflictTokens;
 	}
 	
+	@Override
+	public boolean hasConflicts() {
+		return (conflictTokens != null && !conflictTokens.isEmpty());
+	}
 
 	public void addNextToken(IToken token) {
 		if(this.next == null){

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.DateToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class DateParser extends AbstractParser {
+public class DateParser extends BasicParser {
 
 	private static final String DECEMBER = "декабрь";
 	private static final String NOVEMBER = "ноябрь";

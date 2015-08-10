@@ -3,12 +3,12 @@ package com.onpositive.text.analysis.lexic.scalar;
 import java.util.List;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 
-public class UnaryScalarCompositionParser extends AbstractParser {
+public class UnaryScalarCompositionParser extends BasicParser {
 
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {

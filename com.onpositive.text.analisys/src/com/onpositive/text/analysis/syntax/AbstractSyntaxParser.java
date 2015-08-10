@@ -17,7 +17,7 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.MeaningElement;
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.ParticiplesRegistry;
 import com.onpositive.text.analysis.lexic.PrepConjRegistry;
@@ -29,7 +29,7 @@ import com.onpositive.text.analysis.rules.matchers.OrMatcher;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
-public abstract class AbstractSyntaxParser extends AbstractParser {
+public abstract class AbstractSyntaxParser extends BasicParser {
 
 	protected static Map<Case, Set<Case>> caseMatchMap = new HashMap<Case, Set<Case>>();
 	

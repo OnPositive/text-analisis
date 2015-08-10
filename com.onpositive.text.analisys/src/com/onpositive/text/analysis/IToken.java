@@ -156,6 +156,8 @@ public interface IToken {
 	
 	List<IToken> getConflicts();
 	
+	boolean hasConflicts();
+
 	List<IToken> getNeighbours(Direction direction);
 	
 	void addNextToken(IToken token);

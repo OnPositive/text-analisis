@@ -2,13 +2,13 @@ package com.onpositive.text.analysis.lexic.dimension;
 
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.DimensionToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
 
-public class DimensionParser extends AbstractParser {
+public class DimensionParser extends BasicParser {
 	
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData)

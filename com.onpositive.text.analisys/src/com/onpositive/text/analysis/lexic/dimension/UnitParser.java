@@ -7,7 +7,7 @@ import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.TextElement;
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrepConjRegistry;
 import com.onpositive.text.analysis.lexic.StringToken;
@@ -16,7 +16,7 @@ import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class UnitParser extends AbstractParser {
+public class UnitParser extends BasicParser {
 	
 	public UnitParser(AbstractWordNet wordNet) {
 		this.unitsProvider = new UnitsProvider(wordNet);

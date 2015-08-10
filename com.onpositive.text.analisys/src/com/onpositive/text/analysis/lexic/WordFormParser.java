@@ -22,7 +22,7 @@ import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.wordnet.TextElement;
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.disambig.DisambiguatorProvider;
 import com.onpositive.text.analysis.lexic.disambig.ILexicLevelDisambiguator;
@@ -30,7 +30,7 @@ import com.onpositive.text.analysis.rules.matchers.UnaryMatcher;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
-public class WordFormParser extends AbstractParser {
+public class WordFormParser extends BasicParser {
 	
 	private static final HashSet<Grammem> uniformGrammems = new HashSet<Grammem>(Arrays.asList(
 			PartOfSpeech.NOUN,

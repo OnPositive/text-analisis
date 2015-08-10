@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.conditions.BinaryCondition;
 import com.onpositive.text.analysis.lexic.ScalarToken;
@@ -13,7 +13,7 @@ import com.onpositive.text.analysis.rules.RuleExecutionEngine;
 import com.onpositive.text.analysis.utils.Utils;
 import com.onpositive.text.analysis.utils.VulgarFraction;
 
-public class ScalarParser extends AbstractParser {
+public class ScalarParser extends BasicParser {
 	
 	public ScalarParser() {	}
 	

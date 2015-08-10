@@ -9,7 +9,7 @@ import com.carrotsearch.hppc.IntIntMap;
 import com.carrotsearch.hppc.IntObjectOpenHashMap;
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.AbstractRelationEvaluator;
 import com.onpositive.text.analysis.ChainRelationEvaluator;
 import com.onpositive.text.analysis.CompositToken;
@@ -330,7 +330,7 @@ public class SyntaxParser extends ParserComposition {
 
 	private IParser createParser(Class<?> clazz) {
 		
-		boolean isParser = extendsClass(clazz,AbstractParser.class) || hasInterface(clazz, IParser.class);
+		boolean isParser = extendsClass(clazz,BasicParser.class) || hasInterface(clazz, IParser.class);
 		if(!isParser){
 			return null;
 		}

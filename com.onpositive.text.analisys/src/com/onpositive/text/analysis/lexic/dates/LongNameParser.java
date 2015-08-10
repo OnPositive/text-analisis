@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Stack;
 
 import com.onpositive.semantic.wordnet.Grammem;
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.IToken.Direction;
 import com.onpositive.text.analysis.lexic.LongNameToken;
@@ -14,7 +14,7 @@ import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class LongNameParser extends AbstractParser {
+public class LongNameParser extends BasicParser {
 
 	@Override
 	protected ProcessingResult continuePush(Stack<IToken> sample,

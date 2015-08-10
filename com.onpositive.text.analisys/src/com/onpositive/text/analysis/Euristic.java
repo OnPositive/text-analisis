@@ -23,13 +23,13 @@ public class Euristic {
 	private static final int EURISTIC_CONFLICTING = 40006;
 	private static final int EURISTIC_AND = 40007;
 	
-	private static HashMap<Class<? extends AbstractParser>, List<Euristic>> registered = new HashMap<>();
+	private static HashMap<Class<? extends BasicParser>, List<Euristic>> registered = new HashMap<>();
 	private String word = null;
 	private Grammem[] grammems = null;
 	private int type;
 	private Euristic[] euristics = null;
 	
-	public static void register(Class<? extends AbstractParser> clazz, Euristic ... euristics)
+	public static void register(Class<? extends BasicParser> clazz, Euristic ... euristics)
 	{
 		Euristic eur = concat(euristics);
 		
@@ -45,7 +45,7 @@ public class Euristic {
 		return eur;
 	}
 	
-	public static List<Euristic> match(Class<? extends AbstractParser> clazz) {  
+	public static List<Euristic> match(Class<? extends BasicParser> clazz) {  
 		if (!registered.containsKey(clazz)) 
 			registered.put(clazz, new ArrayList<Euristic>());
 		

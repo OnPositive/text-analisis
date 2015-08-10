@@ -21,6 +21,7 @@ import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.Grammem.VerbKind;
 import com.onpositive.text.analysis.Euristic;
+import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -29,19 +30,11 @@ public class WordFormParserTest extends TestCase{
 
 	public void testWordFormParser() {
 		
-		PrimitiveTokenizer pt = new PrimitiveTokenizer();
-		AbstractWordNet instance = WordNetProvider.getInstance();
-		GrammarRelation[] possibleGrammarForms = instance.getPossibleGrammarForms("автоматический");
-		
-		TextElement[] possibleContinuations = instance.getPossibleContinuations(possibleGrammarForms[0].getWord());
-		//ww.prepareWordSeqs();
-		WordFormParser wfParser = new WordFormParser(instance);
-		
 //		String str = "Сработал автоматический определитель номера. Чудовище село на ковёр-самолёт и полетело.";		
 //		String str = "Сработал электрический детонатор. Чудовище село на ковёр-самолёт и полетело.";
+//		GrammarRelation[] possibleGrammarForms = instance.getPossibleGrammarForms("автоматический");
 		String str = "меж тем";
-		List<IToken> tokens = pt.tokenize(str);		
-		List<IToken> processed = wfParser.process(tokens);
+		List<IToken> processed = getWordFormTokens(str);
 		
 		System.out.println("----------------------------------------------------------------------------------------");
 		for(IToken t : processed){
@@ -67,6 +60,15 @@ public class WordFormParserTest extends TestCase{
 		
 		System.out.println();
 	}
+
+	public List<IToken> getWordFormTokens(String str) {
+		PrimitiveTokenizer pt = new PrimitiveTokenizer();
+		AbstractWordNet instance = WordNetProvider.getInstance();
+		WordFormParser wfParser = new WordFormParser(instance);
+		List<IToken> tokens = pt.tokenize(str);		
+		List<IToken> processed = wfParser.process(tokens);
+		return processed;
+	}
 	
 	public void testConflicting() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
@@ -77,6 +79,60 @@ public class WordFormParserTest extends TestCase{
 		euristics.add(euristic1);
 		Euristic matched = matched(euristics, "налить белил");
 		assertNotNull(matched);
+	}
+	
+	public void testAnalyzer() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristic1 = Euristic.concat(
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				);
+		euristics.add(euristic1);
+		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("налить белил"));
+		assertNotNull(processed);
+		System.out.println("//========================================Результат разбора==================================================");
+		for(IToken t : processed){
+			System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
+		}
+		System.out.println();
+	}
+	
+	public void testAnalyzer1() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.addAll(getRulesList5());
+		euristics.addAll(getRulesList6());
+		euristics.addAll(getRulesList7());
+		euristics.addAll(getRulesList8());
+		euristics.addAll(getRulesList9());
+		euristics.addAll(getRulesList10());
+		euristics.addAll(getRulesList11());
+		euristics.addAll(getRulesList12());
+		euristics.addAll(getRulesList13());
+		euristics.addAll(getRulesList14());
+		euristics.addAll(getRulesList15());
+		euristics.addAll(getRulesList16());
+		euristics.addAll(getRulesList17());
+		euristics.addAll(getRulesList18());
+		euristics.addAll(getRulesList19());
+		euristics.addAll(getRulesList20());
+		euristics.addAll(getRulesList21());
+		euristics.addAll(getRulesList22());
+		euristics.addAll(getRulesList23());
+		euristics.addAll(getRulesList24());
+		euristics.addAll(getRulesList25());
+		euristics.addAll(getRulesList26());
+		euristics.addAll(getRulesList27());
+		euristics.addAll(getRulesList28());
+		euristics.addAll(getRulesList29());
+		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
+		assertNotNull(processed);
+		System.out.println("//========================================Результат разбора==================================================");
+		for(IToken t : processed){
+			System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
+		}
+		System.out.println();
 	}
 
 	public void test00() {
@@ -1322,7 +1378,7 @@ public class WordFormParserTest extends TestCase{
 			euristics.add(euristicPrepNpro);
 			Euristic euristicNproPodob = Euristic.concat(
 				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("подобное", PartOfSpeech.ADJF)
+				Euristic.word("подобный", PartOfSpeech.ADJF)
 			);
 			euristics.add(euristicNproPodob);
 			Euristic euristicNproNazad = Euristic.concat(

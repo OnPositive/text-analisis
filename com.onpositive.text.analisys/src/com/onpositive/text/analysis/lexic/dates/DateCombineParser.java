@@ -2,12 +2,12 @@ package com.onpositive.text.analysis.lexic.dates;
 
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.DateToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class DateCombineParser extends AbstractParser {
+public class DateCombineParser extends BasicParser {
 
 	@Override
 	protected void combineTokens(Stack<IToken> sample, ProcessingData processingData) {

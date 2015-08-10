@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Stack;
 
-import com.onpositive.text.analysis.AbstractParser;
+import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
-public class IndexAttachingPasrser extends AbstractParser {
+public class IndexAttachingPasrser extends BasicParser {
 
 	HashSet<Character> puncuationMarks = new HashSet<Character>(Arrays.asList(
 			'!', '(', ')', ',', '.', '?', ';', ':', '"', '[', ']', '{', '}', '—', '«', '»', '„', '“'
