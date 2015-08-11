@@ -16,10 +16,8 @@ import com.onpositive.semantic.wordnet.Grammem.Mood;
 import com.onpositive.semantic.wordnet.Grammem.Personality;
 import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.Grammem.Time;
-import com.onpositive.semantic.wordnet.TextElement;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.Grammem.VerbKind;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
@@ -126,7 +124,10 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList28());
 		euristics.addAll(getRulesList29());
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Что касается до белил и до сурьмы"));
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Влияет ли обилие белил на сохранность полотен"));
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Завтра я еду домой"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
 		for(IToken t : processed){
@@ -1166,7 +1167,7 @@ public class WordFormParserTest extends TestCase{
 				
 	// существительное - глагол
 	public void test25() {
-		Euristic matched = matched(getRulesList25(), "давай дам");
+		Euristic matched = matched(getRulesList25(), "обилие белил");
 		assertNotNull(matched);
 	}
 	
@@ -1312,82 +1313,92 @@ public class WordFormParserTest extends TestCase{
 	}
 	
 	// существительное - местоимение "тем"
-		public void test27() {
-			Euristic matched = matched(getRulesList27(), "тем самым");
-			assertNotNull(matched);
-		}
-				
-		private List<Euristic> getRulesList27() {
-			List<Euristic> euristics = new ArrayList<Euristic>();
-			Euristic euristicAdjfNpro = Euristic.concat(
-				Euristic.any(PartOfSpeech.ADJF),
-				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
-			);
-			euristics.add(euristicAdjfNpro);
-			Euristic euristicPrepNpro = Euristic.concat(
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
-			);
-			euristics.add(euristicPrepNpro);
-			Euristic euristicNproSam = Euristic.concat(
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("самым", PartOfSpeech.ADJF)
-			);
-			euristics.add(euristicNproSam);
-			Euristic euristicNproNeMen = Euristic.concat(
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("не менее", PartOfSpeech.ADVB)
-			);
-			euristics.add(euristicNproNeMen);
-			Euristic euristicNproBol = Euristic.concat(
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("более", PartOfSpeech.ADVB)
-			);
-			euristics.add(euristicNproBol);
-			return euristics;
-		}
+	public void test27() {
+		Euristic matched = matched(getRulesList27(), "тем самым");
+		assertNotNull(matched);
+	}
+			
+	private List<Euristic> getRulesList27() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicAdjfNpro = Euristic.concat(
+			Euristic.any(PartOfSpeech.ADJF),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+		);
+		euristics.add(euristicAdjfNpro);
+		Euristic euristicPrepNpro = Euristic.concat(
+			Euristic.any(PartOfSpeech.PREP),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+		);
+		euristics.add(euristicPrepNpro);
+		Euristic euristicNproSam = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.word("самым", PartOfSpeech.ADJF)
+		);
+		euristics.add(euristicNproSam);
+		Euristic euristicNproNeMen = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.word("не менее", PartOfSpeech.ADVB)
+		);
+		euristics.add(euristicNproNeMen);
+		Euristic euristicNproBol = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.word("более", PartOfSpeech.ADVB)
+		);
+		euristics.add(euristicNproBol);
+		return euristics;
+	}
+
+	// существительное - местоимение "том"
+	public void test28() {
+		Euristic matched = matched(getRulesList28(), "о том");
+		assertNotNull(matched);
+	}
+			
+	private List<Euristic> getRulesList28() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNpro = Euristic.concat(
+			Euristic.any(PartOfSpeech.PREP),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+		);
+		euristics.add(euristicPrepNpro);
+		return euristics;
+	}
 	
-		// существительное - местоимение "том"
-		public void test28() {
-			Euristic matched = matched(getRulesList28(), "о том");
-			assertNotNull(matched);
-		}
-				
-		private List<Euristic> getRulesList28() {
-			List<Euristic> euristics = new ArrayList<Euristic>();
-			Euristic euristicPrepNpro = Euristic.concat(
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
-			);
-			euristics.add(euristicPrepNpro);
-			return euristics;
-		}
-		
-		// существительное - местоимение "тому"
-		public void test29() {
-			Euristic matched = matched(getRulesList29(), "тому подобное");
-			assertNotNull(matched);
-		}
-				
-		private List<Euristic> getRulesList29() {
-			List<Euristic> euristics = new ArrayList<Euristic>();
-			Euristic euristicPrepNpro = Euristic.concat(
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
-			);
-			euristics.add(euristicPrepNpro);
-			Euristic euristicNproPodob = Euristic.concat(
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("подобный", PartOfSpeech.ADJF)
-			);
-			euristics.add(euristicNproPodob);
-			Euristic euristicNproNazad = Euristic.concat(
-				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
-				Euristic.word("назад", PartOfSpeech.ADVB)
-			);
-				euristics.add(euristicNproNazad);
-			return euristics;
-		}
+	// существительное - местоимение "тому"
+	public void test29() {
+		Euristic matched = matched(getRulesList29(), "тому подобное");
+		assertNotNull(matched);
+	}
+			
+	private List<Euristic> getRulesList29() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNpro = Euristic.concat(
+			Euristic.any(PartOfSpeech.PREP),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+		);
+		euristics.add(euristicPrepNpro);
+		Euristic euristicNproPodob = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.word("подобный", PartOfSpeech.ADJF)
+		);
+		euristics.add(euristicNproPodob);
+		Euristic euristicNproNazad = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.word("назад", PartOfSpeech.ADVB)
+		);
+			euristics.add(euristicNproNazad);
+		return euristics;
+	}
+	
+	public void test30() {
+		Euristic matched = matched(getRulesList25(), "обилие белил");
+		assertNotNull(matched);
+	}
+	
+	public void test31() {
+		Euristic matched = matched(getRulesList14(), "еду домой");
+		assertNotNull(matched);
+	}
 		
 	private Euristic matched(List<Euristic> euristicsToTry, String testString) {
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();

@@ -84,12 +84,18 @@ public class Euristic {
 		if (wft.getMeaningElements().length == 0) return false;
 		List<GrammemSet> grammemSets = wft.getGrammemSets();
 		for (GrammemSet grammemSet : grammemSets) {
+			boolean sucess = true;
 			for (Grammem gr : this.grammems) {
-				if (!grammemSet.hasGrammem(gr)) 
+				if (!grammemSet.hasGrammem(gr)) {
+					sucess = false;
 					break;
+				}
+			}
+			if (sucess) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean matchOr(IToken token) {
