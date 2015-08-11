@@ -87,7 +87,7 @@ public class WordFormParserTest extends TestCase{
 				);
 		euristics.add(euristic1);
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("налить белил"));
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
 		for(IToken t : processed){
@@ -127,13 +127,18 @@ public class WordFormParserTest extends TestCase{
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Что касается до белил и до сурьмы"));
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Влияет ли обилие белил на сохранность полотен"));
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Завтра я еду домой"));
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою душу"));
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("сливались в одну душу"));
 		assertNotNull(processed);
-		System.out.println("//========================================Результат разбора==================================================");
-		for(IToken t : processed){
-			System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
+		if (processed == null) {
+			System.out.println("Результатов не найдено");
+		} else {
+			System.out.println("//========================================Результат разбора==================================================");
+			for(IToken t : processed){
+				System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 	}
 
 	public void test00() {

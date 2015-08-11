@@ -51,6 +51,9 @@ public class EuristicAnalyzingParser extends AbstractParser{
 				possibleResults.add(curResult);
 			}
 		}
+		if (possibleResults.isEmpty()) {
+			return null;
+		}
 		return possibleResults.get(0);
 	}
 
