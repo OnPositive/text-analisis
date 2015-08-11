@@ -125,10 +125,19 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList29());
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
-//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Что касается до белил и до сурьмы"));
-//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Влияет ли обилие белил на сохранность полотен"));
-//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою душу"));
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("сливались в одну душу"));
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Что касается до белил и до сурьмы")); сет №25, правило №1
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Влияет ли обилие белил на сохранность полотен")); сет №25, правило №9
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою душу")); сет №6, правило №5
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("еду следовало подавать в определенном часу")); - не разбирается, сет №25, правило №10
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("закинул он блесну")); - "блесну" - глагол, сет №25, правило №6
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("важно удачно выбрать блесну")); - не разбирается, сет №25, правило №4
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("при головной боли")); - не разбирается, сет №25, правило №2
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("что-то до боли знакомое")); - не разбирается, сет №25, правило №1
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("на лице гримаса боли")); - не разбирается, сет №25, правило №9
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("они обследовали все заводи острова")); - не разбирается, сет №25, правило №6
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("необходимость вести борьбу")); "вести борьбу" воспринимает как одно целое, сет №7, правило №7
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("ребенок должен учиться вести себя прилично")); - не разбирается, сет №7, правило №6
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(""));
 		assertNotNull(processed);
 		if (processed == null) {
 			System.out.println("Результатов не найдено");
