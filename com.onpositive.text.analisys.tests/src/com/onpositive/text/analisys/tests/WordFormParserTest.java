@@ -137,7 +137,7 @@ public class WordFormParserTest extends TestCase{
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("они обследовали все заводи острова")); - не разбирается, сет №25, правило №6
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("необходимость вести борьбу")); "вести борьбу" воспринимает как одно целое, сет №7, правило №7
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("ребенок должен учиться вести себя прилично")); - не разбирается, сет №7, правило №6
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(""));
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою душу"));
 		assertNotNull(processed);
 		if (processed == null) {
 			System.out.println("Результатов не найдено");
@@ -235,31 +235,31 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicNounNpro = Euristic.concat(
 				Euristic.any(PartOfSpeech.NOUN),
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
 				);
 		euristics.add(euristicNounNpro);
 		Euristic euristicAdjNpro = Euristic.concat(
 				Euristic.any(PartOfSpeech.ADJF),
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
 				);
 		euristics.add(euristicAdjNpro);
 		Euristic euristicPrepNpro = Euristic.concat(
 				Euristic.any(PartOfSpeech.PREP),
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
 				);
 		euristics.add(euristicPrepNpro);
-		Euristic euristicNproVerb = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB),
-				Euristic.any(PartOfSpeech.VERB)
+		Euristic euristicVerbNpro = Euristic.concat(
+				Euristic.any(PartOfSpeech.VERB),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
 				);
-		euristics.add(euristicNproVerb);
+		euristics.add(euristicVerbNpro);
 		Euristic euristicNproNoun = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
 				Euristic.any(PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicNproNoun);
 		Euristic euristicNproAdj = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.VERB), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
 				Euristic.any(PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicNproAdj);
