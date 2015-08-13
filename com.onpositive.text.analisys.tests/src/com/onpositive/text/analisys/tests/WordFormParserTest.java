@@ -137,17 +137,10 @@ public class WordFormParserTest extends TestCase{
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("они обследовали все заводи острова")); - не разбирается, сет №25, правило №6
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("необходимость вести борьбу")); "вести борьбу" воспринимает как одно целое, сет №7, правило №7
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("ребенок должен учиться вести себя прилично")); - не разбирается, сет №7, правило №6
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою душу"));
-		assertNotNull(processed);
-		if (processed == null) {
-			System.out.println("Результатов не найдено");
-		} else {
-			System.out.println("//========================================Результат разбора==================================================");
-			for(IToken t : processed){
-				System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
-			}
-			System.out.println();
-		}
+		String str = "ребенок должен учиться вести себя прилично";
+		euristicAnalyzingParser.process(getWordFormTokens(str));
+		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
+		printProcessingResult(str, possibleChains);		
 	}
 
 	public void test00() {
@@ -1043,7 +1036,7 @@ public class WordFormParserTest extends TestCase{
 	
 	// глагол - числительное "три"
 	public void test22() {
-		Euristic matched = matched(getRulesList22(), "три года");
+		Euristic matched = matched(getRulesList22(), "три года"); //Ломается, проблема - падеж рд1 вместо просто рд
 		assertNotNull(matched);
 	}
 	
@@ -1413,7 +1406,26 @@ public class WordFormParserTest extends TestCase{
 		Euristic matched = matched(getRulesList14(), "еду домой");
 		assertNotNull(matched);
 	}
+	
+	public void test32() {
+		Euristic matched = matched(getRulesList14(), "в определённом");
+		assertNotNull(matched);
+	}
 		
+	private void printProcessingResult(String str, List<List<IToken>> possibleChains) {
+		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");
+		if (possibleChains == null || possibleChains.isEmpty()) {
+			System.out.println("Результатов не найдено");
+			return;
+		}
+		for(List<IToken> chain : possibleChains){
+			for (IToken token : chain) {
+				System.out.print(token.getStartPosition() + "-" + token.getEndPosition() + " " + TokenTypeResolver.getResolvedType(token) + " " + token.getStringValue()+ " ");
+			}
+			System.out.println();
+		}
+	}
+
 	private Euristic matched(List<Euristic> euristicsToTry, String testString) {
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();
 		WordFormParser wordFormParser = new WordFormParser(WordNetProvider.getInstance());

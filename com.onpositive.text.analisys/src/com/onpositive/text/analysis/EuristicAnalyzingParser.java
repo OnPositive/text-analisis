@@ -1,62 +1,62 @@
 package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.onpositive.semantic.wordnet.WordNetProvider;
-import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
-import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class EuristicAnalyzingParser extends AbstractParser{
 	
 	private static final int SEQUENCE_LENGTH = 2;
 	
-	List<Euristic> euristics;
+	private List<Euristic> euristics;
+	
+	private List<List<IToken>> possibleChains;
 	
 	public EuristicAnalyzingParser(List<Euristic> euristics) {
 		this.euristics = euristics;
 	}
 
-	@Override
 	public List<IToken> process(List<IToken> tokens) {
 		List<List<IToken>> possibleChains = calcVariants(tokens);
-		List<List<IToken>> possibleResults = new ArrayList<List<IToken>>();
-		for (List<IToken> curChain: possibleChains) {
-			List<IToken> curResult = new ArrayList<IToken>();
-			boolean allFound = true;
-			for (int i = 0; i < curChain.size(); i++) {
-				IToken token = curChain.get(i);
-				if (token instanceof WordFormToken && token.hasConflicts()) {
-					List<List<IToken>> sequences = getSequences(curChain, i);
-					int curItem = Math.max(0, i - SEQUENCE_LENGTH + 1);
+		if (possibleChains.isEmpty()) {
+			this.possibleChains = Collections.emptyList(); 
+			return Collections.emptyList();
+		}
+		List<IToken> curChain = possibleChains.get(0);
+		for (int i = 0; i < curChain.size(); i++) {
+			IToken token = curChain.get(i);
+			if (token instanceof WordFormToken && token.hasConflicts()) {
+				List<List<IToken>> invalidChains = new ArrayList<List<IToken>>();
+				for (int j = 0; j < possibleChains.size(); j++) {
+					List<List<IToken>> sequences = getSequences(possibleChains.get(j), i);
 					boolean found = false;
 					for (List<IToken> curSequence: sequences) {
 						if (matchedNonConflict(euristics, curSequence)) {
-							curResult.add(curSequence.get(i - curItem));
 							found = true;
 							break;
 						}
-						curItem++;
 					}
 					if (!found) {
-						allFound = false;
-						break;
+						invalidChains.add(possibleChains.get(j));
 					}
-				} else {
-					curResult.add(token);
 				}
-			}
-			if (allFound) {
-				possibleResults.add(curResult);
-			}
+				if (!invalidChains.isEmpty()) {
+					possibleChains.removeAll(invalidChains);
+					if (!possibleChains.isEmpty()) {
+						curChain = possibleChains.get(0);
+					} else {
+						this.possibleChains = Collections.emptyList(); 
+						return Collections.emptyList();
+					}
+				}
+			} 
 		}
-		if (possibleResults.isEmpty()) {
-			return null;
-		}
-		return possibleResults.get(0);
+		this.possibleChains = possibleChains;
+		return possibleChains.get(0);
 	}
-
+	
 	private List<List<IToken>> getSequences(List<IToken> tokens, int idx) {
 		List<List<IToken>> result = new ArrayList<List<IToken>>();
 		int start = Math.max(0, idx - SEQUENCE_LENGTH + 1);
@@ -68,21 +68,6 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			result.add(curList);
 		}
 		return result;
-	}
-	
-	private List<IToken> matched(List<Euristic> euristicsToTry, List<IToken> processed) {
-		List<List<IToken>> possibleChains = calcVariants(processed);
-//		System.out.println("-------------------------------------------------------------------------------------------------------");
-//		if (possibleChains.size() > 1) {
-//			System.out.println("Строка '" + testString + "' Варианты разбора:");
-//		}
-//		for (List<IToken> list : possibleChains) {
-//			for(IToken t : list){
-//				System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
-//			}
-//			System.out.println();
-//		}
-		return doGetMatched(euristicsToTry, possibleChains);
 	}
 		
 	private List<IToken> doGetMatched(List<Euristic> euristicsToTry, List<List<IToken>> possibleChains) {
@@ -178,6 +163,10 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	public void clean() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public List<List<IToken>> getPossibleChains() {
+		return possibleChains;
 	}
 
 
