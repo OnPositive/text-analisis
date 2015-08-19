@@ -142,6 +142,40 @@ public class WordFormParserTest extends TestCase{
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
 	}
+	
+	public void testAnalyzer2() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.addAll(getRulesList5());
+		euristics.addAll(getRulesList6());
+		euristics.addAll(getRulesList7());
+		euristics.addAll(getRulesList8());
+		euristics.addAll(getRulesList9());
+		euristics.addAll(getRulesList10());
+		euristics.addAll(getRulesList11());
+		euristics.addAll(getRulesList12());
+		euristics.addAll(getRulesList13());
+		euristics.addAll(getRulesList14());
+		euristics.addAll(getRulesList15());
+		euristics.addAll(getRulesList16());
+		euristics.addAll(getRulesList17());
+		euristics.addAll(getRulesList18());
+		euristics.addAll(getRulesList19());
+		euristics.addAll(getRulesList20());
+		euristics.addAll(getRulesList21());
+		euristics.addAll(getRulesList22());
+		euristics.addAll(getRulesList23());
+		euristics.addAll(getRulesList24());
+		euristics.addAll(getRulesList25());
+		euristics.addAll(getRulesList26());
+		euristics.addAll(getRulesList27());
+		euristics.addAll(getRulesList28());
+		euristics.addAll(getRulesList29());
+		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		String str = "наложить жгут";
+		euristicAnalyzingParser.process(getWordFormTokens(str));
+		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
+		printProcessingResult(str, possibleChains);		
+	}
 
 	public void test00() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
@@ -429,11 +463,11 @@ public class WordFormParserTest extends TestCase{
 	
 	private List<Euristic> getRulesList9() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicPrepNoun = Euristic.concat(
-				Euristic.any(PartOfSpeech.PREP),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
-				);
-		euristics.add(euristicPrepNoun);
+//		Euristic euristicPrepNoun = Euristic.concat(
+//				Euristic.any(PartOfSpeech.PREP),
+//				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
+//				);
+//		euristics.add(euristicPrepNoun);
 		Euristic euristicAdjNoun = Euristic.concat(
 				Euristic.any(PartOfSpeech.ADJF), 
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
@@ -484,6 +518,11 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicVerbAdj);
+		Euristic euristicAdjNoun1 = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NOUN), 
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicAdjNoun1);
 		return euristics;
 	}
 	
@@ -1123,6 +1162,31 @@ public class WordFormParserTest extends TestCase{
 				Euristic.any(PartOfSpeech.COMP)
 				);
 		euristics.add(euristicAdvbComp);
+		Euristic euristicAdvbGrnd = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
+				Euristic.any(PartOfSpeech.GRND)
+				);
+		euristics.add(euristicAdvbGrnd);
+		Euristic euristicAdvb1Advb = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
+				Euristic.any(PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicAdvb1Advb);
+		Euristic euristicAdvbAdvb2 = Euristic.concat(
+				Euristic.any(PartOfSpeech.ADVB),
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS)
+				);
+		euristics.add(euristicAdvbAdvb2);
+		Euristic euristicNounAdjs = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicNounAdjs);
+		Euristic euristicAdjsNoun = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB),
+				Euristic.any(PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicAdjsNoun);		
 		return euristics;
 	}
 	
