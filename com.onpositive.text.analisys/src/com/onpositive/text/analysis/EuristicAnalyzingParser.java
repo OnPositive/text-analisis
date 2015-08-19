@@ -42,7 +42,7 @@ public class EuristicAnalyzingParser extends AbstractParser{
 						invalidChains.add(possibleChains.get(j));
 					}
 				}
-				if (!invalidChains.isEmpty()) {
+				if (!invalidChains.isEmpty() && invalidChains.size() < possibleChains.size()) { //If nothing was matched - leave all possibilities for now 
 					possibleChains.removeAll(invalidChains);
 					if (!possibleChains.isEmpty()) {
 						curChain = possibleChains.get(0);
