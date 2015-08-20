@@ -171,7 +171,7 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList28());
 		euristics.addAll(getRulesList29());
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		String str = "наложить жгут";
+		String str = "снег падал медленно";
 		euristicAnalyzingParser.process(getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
