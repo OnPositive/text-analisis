@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ONPOSITIVE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: com.onpositive.text.analysis,
+ com.onpositive.text.analysis.filtering,
  com.onpositive.text.analysis.lexic,
  com.onpositive.text.analysis.lexic.dates,
  com.onpositive.text.analysis.lexic.dimension,

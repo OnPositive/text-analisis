@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.onpositive.text.analysis.filtering.IPossibleChainsFilter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class EuristicAnalyzingParser extends AbstractParser{
@@ -13,6 +14,8 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	private List<Euristic> euristics;
 	
 	private List<List<IToken>> possibleChains;
+	
+	private List<IPossibleChainsFilter> possibleChainsFilters = new ArrayList<IPossibleChainsFilter>();
 	
 	public EuristicAnalyzingParser(List<Euristic> euristics) {
 		this.euristics = euristics;
@@ -24,6 +27,7 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			this.possibleChains = Collections.emptyList(); 
 			return Collections.emptyList();
 		}
+		doPreFiltering(possibleChains);
 		List<IToken> curChain = possibleChains.get(0);
 		for (int i = 0; i < curChain.size(); i++) {
 			IToken token = curChain.get(i);
@@ -57,6 +61,32 @@ public class EuristicAnalyzingParser extends AbstractParser{
 		return possibleChains.get(0);
 	}
 	
+	public void addChainsFilter(IPossibleChainsFilter filter) {
+		possibleChainsFilters.add(filter);
+	}
+	
+	private void doPreFiltering(List<List<IToken>> chains) {
+		if (chains.size() > 1) {
+			List<IToken> curChain = chains.get(0);
+			for (int i = 0; i < curChain.size(); i++) {
+				IToken token = curChain.get(i);
+				if (token instanceof WordFormToken && token.hasConflicts() ) {
+					List<List<IToken>> toRemove = new ArrayList<List<IToken>>();
+					for (IPossibleChainsFilter filter : possibleChainsFilters) {
+						toRemove.addAll(filter.getFilteredOut(i, chains));
+					}
+					chains.removeAll(toRemove);
+					if (chains.size() > 1) {
+						curChain = chains.get(0);
+					} else {
+						return;
+					}
+				}
+			}
+		}
+		
+	}
+
 	private List<List<IToken>> getSequences(List<IToken> tokens, int idx) {
 		List<List<IToken>> result = new ArrayList<List<IToken>>();
 		int start = Math.max(0, idx - SEQUENCE_LENGTH + 1);
@@ -68,18 +98,6 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			result.add(curList);
 		}
 		return result;
-	}
-		
-	private List<IToken> doGetMatched(List<Euristic> euristicsToTry, List<List<IToken>> possibleChains) {
-		for (Euristic euristic : euristicsToTry) {
-			for (List<IToken> list : possibleChains) {
-				boolean match = euristic.match(list.toArray(new IToken[0]));
-				if (match) {
-					return list;
-				}
-			}
-		}
-		return null;
 	}
 	
 	private boolean matchedNonConflict(List<Euristic> euristicsToTry, List<IToken> tokens) {

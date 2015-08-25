@@ -21,6 +21,7 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 
@@ -86,7 +87,7 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
 				);
 		euristics.add(euristic1);
-		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
@@ -94,6 +95,12 @@ public class WordFormParserTest extends TestCase{
 			System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
 		}
 		System.out.println();
+	}
+
+	public EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
+		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		euristicAnalyzingParser.addChainsFilter(new AbbreviationsFilter());
+		return euristicAnalyzingParser;
 	}
 	
 	public void testAnalyzer1() {
@@ -123,7 +130,7 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList27());
 		euristics.addAll(getRulesList28());
 		euristics.addAll(getRulesList29());
-		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Он был монтером Ваней, но в духе парижан себе присвоил звание электротехник Жан"));
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Что касается до белил и до сурьмы")); сет №25, правило №1
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Влияет ли обилие белил на сохранность полотен")); сет №25, правило №9
@@ -145,33 +152,33 @@ public class WordFormParserTest extends TestCase{
 	
 	public void testAnalyzer2() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		euristics.addAll(getRulesList5());
-		euristics.addAll(getRulesList6());
-		euristics.addAll(getRulesList7());
-		euristics.addAll(getRulesList8());
-		euristics.addAll(getRulesList9());
-		euristics.addAll(getRulesList10());
-		euristics.addAll(getRulesList11());
-		euristics.addAll(getRulesList12());
-		euristics.addAll(getRulesList13());
-		euristics.addAll(getRulesList14());
-		euristics.addAll(getRulesList15());
-		euristics.addAll(getRulesList16());
-		euristics.addAll(getRulesList17());
-		euristics.addAll(getRulesList18());
-		euristics.addAll(getRulesList19());
-		euristics.addAll(getRulesList20());
-		euristics.addAll(getRulesList21());
-		euristics.addAll(getRulesList22());
+//		euristics.addAll(getRulesList5());
+//		euristics.addAll(getRulesList6());
+//		euristics.addAll(getRulesList7());
+//		euristics.addAll(getRulesList8());
+//		euristics.addAll(getRulesList9());
+//		euristics.addAll(getRulesList10());
+//		euristics.addAll(getRulesList11());
+//		euristics.addAll(getRulesList12());
+//		euristics.addAll(getRulesList13());
+//		euristics.addAll(getRulesList14());
+//		euristics.addAll(getRulesList15());
+//		euristics.addAll(getRulesList16());
+//		euristics.addAll(getRulesList17());
+//		euristics.addAll(getRulesList18());
+//		euristics.addAll(getRulesList19());
+//		euristics.addAll(getRulesList20());
+//		euristics.addAll(getRulesList21());
+//		euristics.addAll(getRulesList22());
 		euristics.addAll(getRulesList23());
-		euristics.addAll(getRulesList24());
-		euristics.addAll(getRulesList25());
-		euristics.addAll(getRulesList26());
-		euristics.addAll(getRulesList27());
-		euristics.addAll(getRulesList28());
-		euristics.addAll(getRulesList29());
-		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		String str = "баба Лена сама белила потолок";
+//		euristics.addAll(getRulesList24());
+//		euristics.addAll(getRulesList25());
+//		euristics.addAll(getRulesList26());
+//		euristics.addAll(getRulesList27());
+//		euristics.addAll(getRulesList28());
+//		euristics.addAll(getRulesList29());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		String str = "снег падал медленно и бесшумно"; //сет 23, пр 1
 		euristicAnalyzingParser.process(getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
@@ -205,12 +212,12 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList28());
 		euristics.addAll(getRulesList29());
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		String str = "употреблять белила очень экономно";
+		String str = "баба Лена сама белила потолок";
 		euristicAnalyzingParser.process(getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
 	}
-
+	
 	public void test00() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		euristics.add(Euristic.concat(
