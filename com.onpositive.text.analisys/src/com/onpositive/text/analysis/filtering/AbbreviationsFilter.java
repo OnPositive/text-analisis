@@ -9,8 +9,7 @@ public class AbbreviationsFilter extends AbstractChainsFilter {
 
 	@Override
 	protected boolean shouldFilterOut(IToken token) {
-		return token instanceof WordFormToken && token.hasConflicts() && 
-				((WordFormToken) token).hasGrammem(PartOfSpeech.NOUN) && ((WordFormToken) token).hasGrammem(SemanGramem.ABBR);
+		return ((WordFormToken) token).hasGrammem(PartOfSpeech.NOUN) && ((WordFormToken) token).hasGrammem(SemanGramem.ABBR);
 	}
 
 }

@@ -70,7 +70,7 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			List<IToken> curChain = chains.get(0);
 			for (int i = 0; i < curChain.size(); i++) {
 				IToken token = curChain.get(i);
-				if (token instanceof WordFormToken && token.hasConflicts() ) {
+				if (token instanceof WordFormToken && token.hasConflicts()) {
 					List<List<IToken>> toRemove = new ArrayList<List<IToken>>();
 					for (IPossibleChainsFilter filter : possibleChainsFilters) {
 						toRemove.addAll(filter.getFilteredOut(i, chains));
