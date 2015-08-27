@@ -1,3 +1,14 @@
 Manifest-Version: 1.0
-Class-Path: 
-
+Bundle-ManifestVersion: 2
+Bundle-Name: com.onpositive.text.analisys.tools
+Bundle-SymbolicName: com.onpositive.text.analisys.tools
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.onpositive.text.analisys.tools.Activator
+Bundle-Vendor: ONPOSITIVE
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.onpositive.text.analisys;bundle-version="1.0.0",
+ com.onpositive.wordnet;bundle-version="1.0.1",
+ com.onpositive.wordnet.extensions;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
