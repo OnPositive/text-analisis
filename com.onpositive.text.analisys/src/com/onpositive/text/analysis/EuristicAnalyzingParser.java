@@ -11,6 +11,8 @@ import com.onpositive.text.analysis.projection.Projection;
 
 public class EuristicAnalyzingParser extends AbstractParser{
 	
+	private static final boolean DEBUG = true;
+	
 	private static final int SEQUENCE_LENGTH = 2;
 	
 	private List<Euristic> euristics;
@@ -72,6 +74,11 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			if (token instanceof WordFormToken && token.hasConflicts() && !tryMatchConflicting(i, projection.tokens)) {
 				return false;
 			}
+		}
+		if (DEBUG) {
+			System.out.println("Проекция разобрана успешно");
+			System.out.println("Оригинал " + projection.original);
+			System.out.println("Проекция " + projection.tokens);
 		}
 		return true;
 	}
