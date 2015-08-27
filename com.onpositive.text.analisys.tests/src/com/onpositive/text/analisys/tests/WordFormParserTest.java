@@ -24,6 +24,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
+import com.onpositive.text.analysis.projection.creators.NotPartRemover;
 
 public class WordFormParserTest extends TestCase{
 
@@ -102,6 +103,7 @@ public class WordFormParserTest extends TestCase{
 	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
 		euristicAnalyzingParser.addChainsFilter(new AbbreviationsFilter());
+		euristicAnalyzingParser.addProjectionCreator(new NotPartRemover());
 		return euristicAnalyzingParser;
 	}
 	
@@ -215,6 +217,40 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(getRulesList29());
 		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
 		String str = "употреблять белила аккуратно и экономно";
+		euristicAnalyzingParser.process(getWordFormTokens(str));
+		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
+		printProcessingResult(str, possibleChains);		
+	}
+	
+	public void testAnalyzer4() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.addAll(getRulesList5());
+		euristics.addAll(getRulesList6());
+		euristics.addAll(getRulesList7());
+		euristics.addAll(getRulesList8());
+		euristics.addAll(getRulesList9());
+		euristics.addAll(getRulesList10());
+		euristics.addAll(getRulesList11());
+		euristics.addAll(getRulesList12());
+		euristics.addAll(getRulesList13());
+		euristics.addAll(getRulesList14());
+		euristics.addAll(getRulesList15());
+		euristics.addAll(getRulesList16());
+		euristics.addAll(getRulesList17());
+		euristics.addAll(getRulesList18());
+		euristics.addAll(getRulesList19());
+		euristics.addAll(getRulesList20());
+		euristics.addAll(getRulesList21());
+		euristics.addAll(getRulesList22());
+		euristics.addAll(getRulesList23());
+		euristics.addAll(getRulesList24());
+		euristics.addAll(getRulesList25());
+		euristics.addAll(getRulesList26());
+		euristics.addAll(getRulesList27());
+		euristics.addAll(getRulesList28());
+		euristics.addAll(getRulesList29());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		String str = "Не умеешь петь - не пей";
 		euristicAnalyzingParser.process(getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		

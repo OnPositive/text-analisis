@@ -53,9 +53,11 @@ public class Euristic {
 	}
 	
 	private boolean matchWord(IToken token) {
-		if (!(token instanceof WordFormToken)) return false;
+		if (!(token instanceof WordFormToken)) 
+			return false;
 		WordFormToken wft = (WordFormToken) token;
-		if (wft.getBasicForm().equals(this.word) == false) return false;
+		if (!wft.getBasicForm().equals(this.word)) 
+			return false;
 		
 		return matchAny(token);
 	}

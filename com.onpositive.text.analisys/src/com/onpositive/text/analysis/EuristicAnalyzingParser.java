@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.onpositive.text.analysis.filtering.IPossibleChainsFilter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.projection.IProjectionCreator;
+import com.onpositive.text.analysis.projection.Projection;
 
 public class EuristicAnalyzingParser extends AbstractParser{
 	
@@ -14,6 +16,8 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	private List<Euristic> euristics;
 	
 	private List<List<IToken>> possibleChains;
+	
+	private List<IProjectionCreator> projectionCreators = new ArrayList<IProjectionCreator>();
 	
 	private List<IPossibleChainsFilter> possibleChainsFilters = new ArrayList<IPossibleChainsFilter>();
 	
@@ -28,41 +32,92 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			return Collections.emptyList();
 		}
 		doPreFiltering(possibleChains);
-		List<IToken> curChain = possibleChains.get(0);
+		this.possibleChains = applyEuristics(possibleChains);
+		List<List<IToken>> failedChains = new ArrayList<List<IToken>>(possibleChains);
+		failedChains.removeAll(this.possibleChains);
+		if (!projectionCreators.isEmpty()) {
+			this.possibleChains.addAll(applyToProjections(failedChains));
+		}
+		return this.possibleChains.get(0);
+	}
+
+	protected List<List<IToken>> applyToProjections(List<List<IToken>> possibleChains) {
+		List<Projection> projections = new ArrayList<Projection>();
+		for (List<IToken> chain : possibleChains) {
+			List<IToken> workingCopy = new ArrayList<IToken>(chain);
+			boolean wasApplied = false;
+			for (IProjectionCreator creator : projectionCreators) {
+				if (creator.isApplicable(workingCopy)) {
+					wasApplied = true;
+					creator.applyTo(workingCopy);
+				}
+				if (wasApplied) {
+					projections.add(new Projection(chain,workingCopy));
+				}
+				
+			}
+		}
+		List<List<IToken>> result = new ArrayList<List<IToken>>();
+		for (Projection projection : projections) {
+			if (projectionMatches(projection)) {
+				result.add(projection.original);
+			}
+		}
+		return result;
+	}
+
+	private boolean projectionMatches(Projection projection) {
+		for (int i = 0; i < projection.tokens.size(); i++) {
+			IToken token = projection.tokens.get(i);
+			if (token instanceof WordFormToken && token.hasConflicts() && !tryMatchConflicting(i, projection.tokens)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected List<List<IToken>> applyEuristics(List<List<IToken>> possibleChains) {
+		List<List<IToken>> result = new ArrayList<List<IToken>>(possibleChains);
+		List<IToken> curChain = result.get(0);
 		for (int i = 0; i < curChain.size(); i++) {
 			IToken token = curChain.get(i);
 			if (token instanceof WordFormToken && token.hasConflicts()) {
 				List<List<IToken>> invalidChains = new ArrayList<List<IToken>>();
-				for (int j = 0; j < possibleChains.size(); j++) {
-					List<List<IToken>> sequences = getSequences(possibleChains.get(j), i);
-					boolean found = false;
-					for (List<IToken> curSequence: sequences) {
-						if (matchedNonConflict(euristics, curSequence)) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						invalidChains.add(possibleChains.get(j));
+				for (int j = 0; j < result.size(); j++) {
+					List<IToken> curResult = result.get(j);
+					if (!tryMatchConflicting(i, curResult)) {
+						invalidChains.add(result.get(j));
 					}
 				}
-				if (!invalidChains.isEmpty() && invalidChains.size() < possibleChains.size()) { //If nothing was matched - leave all possibilities for now 
-					possibleChains.removeAll(invalidChains);
-					if (!possibleChains.isEmpty()) {
-						curChain = possibleChains.get(0);
+				if (!invalidChains.isEmpty() && invalidChains.size() < result.size()) { //If nothing was matched - leave all possibilities for now 
+					result.removeAll(invalidChains);
+					if (!result.isEmpty()) {
+						curChain = result.get(0);
 					} else {
-						this.possibleChains = Collections.emptyList(); 
 						return Collections.emptyList();
 					}
 				}
 			} 
 		}
-		this.possibleChains = possibleChains;
-		return possibleChains.get(0);
+		return result;
+	}
+
+	protected boolean tryMatchConflicting(int i, List<IToken> curResult) {
+		List<List<IToken>> sequences = getSequences(curResult, i);
+		for (List<IToken> curSequence: sequences) {
+			if (matchedNonConflict(euristics, curSequence)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void addChainsFilter(IPossibleChainsFilter filter) {
 		possibleChainsFilters.add(filter);
+	}
+	
+	public void addProjectionCreator(IProjectionCreator projectionCreator) {
+		projectionCreators.add(projectionCreator);
 	}
 	
 	private void doPreFiltering(List<List<IToken>> chains) {
