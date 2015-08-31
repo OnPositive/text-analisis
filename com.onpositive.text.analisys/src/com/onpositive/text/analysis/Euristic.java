@@ -15,13 +15,14 @@ import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class Euristic {
 
-	static final int EURISTIC_WORD = 40001;
-	static final int EURISTIC_GRAMMEM = 40002;
-	static final int EURISTIC_CONCAT = 40003;
-	static final int EURISTIC_OR = 40004;
-	static final int EURISTIC_ALL = 40005;
+	private static final int EURISTIC_WORD = 40001;
+	private static final int EURISTIC_GRAMMEM = 40002;
+	private static final int EURISTIC_CONCAT = 40003;
+	private static final int EURISTIC_OR = 40004;
+	private static final int EURISTIC_ALL = 40005;
 	private static final int EURISTIC_CONFLICTING = 40006;
 	private static final int EURISTIC_AND = 40007;
+	private static final int EURISTIC_NOT = 40008;
 	
 	private static HashMap<Class<? extends BasicParser>, List<Euristic>> registered = new HashMap<>();
 	private String word = null;
@@ -175,6 +176,8 @@ public class Euristic {
 			case EURISTIC_CONFLICTING:
 				if (tokens.length != 1) return false;
 				else return matchConflicting(tokens[0]);
+			case EURISTIC_NOT:
+				return !euristics[0].match(tokens);
 			default:
 				return false; // TODO: add other classes
 		}
@@ -217,7 +220,13 @@ public class Euristic {
 		Euristic eur = new Euristic(euristics);
 		eur.type = EURISTIC_AND;
 		return eur; 
-	}	
+	}
+	
+	public static Euristic not (Euristic euristic) {
+		Euristic eur = new Euristic(new Euristic[]{euristic});
+		eur.type = EURISTIC_NOT;
+		return eur;
+	}
 	
 	public static Euristic createConflictChecker(PartOfSpeech right, PartOfSpeech wrong) {
 		return Euristic.and(Euristic.conflicting(right, wrong), Euristic.any(right));

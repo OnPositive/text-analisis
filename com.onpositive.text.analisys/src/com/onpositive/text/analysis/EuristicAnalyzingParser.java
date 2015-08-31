@@ -97,6 +97,7 @@ public class EuristicAnalyzingParser extends AbstractParser{
 					}
 				}
 				if (!invalidChains.isEmpty() && invalidChains.size() < result.size()) { //If nothing was matched - leave all possibilities for now 
+					setTriggered(true);
 					result.removeAll(invalidChains);
 					if (!result.isEmpty()) {
 						curChain = result.get(0);
@@ -137,7 +138,10 @@ public class EuristicAnalyzingParser extends AbstractParser{
 					for (IPossibleChainsFilter filter : possibleChainsFilters) {
 						toRemove.addAll(filter.getFilteredOut(i, chains));
 					}
-					chains.removeAll(toRemove);
+					if (!toRemove.isEmpty()) {
+						setTriggered(true);
+						chains.removeAll(toRemove);
+					}
 					if (chains.size() > 1) {
 						curChain = chains.get(0);
 					} else {
