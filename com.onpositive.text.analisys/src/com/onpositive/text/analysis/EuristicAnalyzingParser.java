@@ -176,11 +176,11 @@ public class EuristicAnalyzingParser extends AbstractParser{
 
 	protected boolean tryMatchConflicting(List<List<IToken>> sequences) {
 		for (List<IToken> curSequence: sequences) {
-			if (matchedNonConflict(euristics, curSequence)) {
-				return true;
+			if (!matchedNonConflict(euristics, curSequence)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public void addTokenFilter(ITokenFilter filter) {
