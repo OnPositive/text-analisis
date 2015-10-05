@@ -2211,6 +2211,10 @@ public class WordFormParserTest extends TestCase{
 		Collection<List<IToken>> matched = getAllMatched(getFullRulesList(), str);
 		printProcessingResult(str, matched);
 		assertTrue(matched.size() > 0);
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(getFullRulesList());
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
+		assertNotNull(processed);
+		printChain(str, processed);
 	}
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
@@ -2350,7 +2354,7 @@ public class WordFormParserTest extends TestCase{
 						printToken(conflictToken);
 					}
 				}
-				System.out.print(" ]");
+				System.out.print("]");
 			} else {
 				printToken(getValidToken(token));
 			}
@@ -2382,7 +2386,7 @@ public class WordFormParserTest extends TestCase{
 	private boolean hasConflicts(IToken token) {
 		if (!token.hasConflicts())
 			return false;
-		int validCount = token.getCorrelation() > E ? 0 : 1;
+		int validCount = token.getCorrelation() > E ? 1 : 0;
 		List<IToken> conflicts = token.getConflicts();
 		for (IToken conflictToken : conflicts) {
 			if (conflictToken.getCorrelation() > E) {
