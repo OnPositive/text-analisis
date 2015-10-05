@@ -11,8 +11,8 @@ import com.carrotsearch.hppc.cursors.IntCursor;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.AbstractRelationEvaluator;
-import com.onpositive.text.analysis.ChainRelationEvaluator;
 import com.onpositive.text.analysis.CompositToken;
+import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.IToken.Direction;
@@ -20,7 +20,6 @@ import com.onpositive.text.analysis.ParserComposition;
 import com.onpositive.text.analysis.SentenceTreeBuilder;
 import com.onpositive.text.analysis.SentenceTreeRuleFactory;
 import com.onpositive.text.analysis.StructureInspectingCleaner;
-import com.onpositive.text.analysis.TripletRelationEvaluator;
 import com.onpositive.text.analysis.WordRelationEvaluator;
 import com.onpositive.text.analysis.lexic.IndexAttachingPasrser;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
@@ -155,6 +154,10 @@ public class SyntaxParser extends ParserComposition {
 		IndexAttachingPasrser.class
 	};
 	
+	private static final Class<?>[] euristicParsersArray = new Class<?>[]{
+		EuristicAnalyzingParser.class,
+	};
+	
 	private static final Class<?>[] nameSyntaxParsersArray = new Class<?>[]{
 		AdverbModificatorParser.class,
 		UniformAdverbParser.class,
@@ -216,6 +219,10 @@ public class SyntaxParser extends ParserComposition {
 	protected SentenceSplitter sentenceSplitter = new SentenceSplitter();
 	
 	private ArrayList<IParser> syntaxParsers;
+
+	private ParserComposition euristicParsers;
+	
+	private boolean useEuristics = true;
 	
 	
 	public List<IToken> parse(String str){
@@ -225,7 +232,8 @@ public class SyntaxParser extends ParserComposition {
 		resetTokenIdProvider(primitiveTokens);
 		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
 		if (this.onProcess != null) onProcess.accept(2, 3);
-		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
+		List<IToken> currentResult = useEuristics?euristicParsers.process(lexicProcessed):lexicProcessed; 
+		List<IToken> sentences = sentenceSplitter.split(currentResult);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
 		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
@@ -283,7 +291,8 @@ public class SyntaxParser extends ParserComposition {
 	}
 	
 	private void initParsers() {
-		this.lexicParsers = createParsers(lexicParsersArray,false) ;		
+		this.lexicParsers = createParsers(lexicParsersArray,false);
+		this.euristicParsers = createParsers(euristicParsersArray,false);
 		this.verbGroupSyntaxParsers = createParsers(verbGroupSyntaxParsersArray,true);
 		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
 		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, false);
@@ -398,6 +407,16 @@ public class SyntaxParser extends ParserComposition {
 			}
 		}
 		return isParser;
+	}
+
+
+	public boolean isUseEuristics() {
+		return useEuristics;
+	}
+
+
+	public void setUseEuristics(boolean useEuristics) {
+		this.useEuristics = useEuristics;
 	}
 
 

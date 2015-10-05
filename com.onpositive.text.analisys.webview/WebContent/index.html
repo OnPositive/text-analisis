@@ -25,6 +25,7 @@
 		
 		<input type="checkbox" id="sentence" class="cb" />Show sentence token
         <input type="checkbox" id="main" class="cb" />Show auxiliary tokens
+        <input type="checkbox" id="euristics" checked="checked"/>Use euristics
         <br />
         <canvas id="viewport" width="1200" height="800" style="background: white; border: 1px solid #ddd"></canvas>
         
@@ -105,7 +106,9 @@ $(function() {
         var query = $("#query").val()
 		$("canvas").hide()
         
-        $.getJSON("/parse", { query : query }, callback)
+		var euristics = window.euristics["checked"];
+		
+        $.getJSON("/parse", { query : query, euristics : euristics }, callback)
         return false
     })
 })
