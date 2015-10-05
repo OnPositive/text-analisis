@@ -2348,12 +2348,9 @@ public class WordFormParserTest extends TestCase{
 					printToken(token);
 				}
 				List<IToken> conflicts = token.getConflicts();
-				for (IToken conflictToken : conflicts) {
-					if (conflictToken.getCorrelation() > E) {
-						System.out.print(" ");
-						printToken(conflictToken);
-					}
-				}
+				conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > E).forEach(curToken -> {
+					System.out.print(" "); printToken(curToken);
+				});
 				System.out.print("]");
 			} else {
 				printToken(getValidToken(token));
@@ -2386,14 +2383,10 @@ public class WordFormParserTest extends TestCase{
 	private boolean hasConflicts(IToken token) {
 		if (!token.hasConflicts())
 			return false;
-		int validCount = token.getCorrelation() > E ? 1 : 0;
+		int initialCount = token.getCorrelation() > E ? 1 : 0;
 		List<IToken> conflicts = token.getConflicts();
-		for (IToken conflictToken : conflicts) {
-			if (conflictToken.getCorrelation() > E) {
-				validCount++;
-			}
-		}
-		return validCount > 1;
+		long count = conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > E).count();
+		return initialCount + count > 1;
 	}
 
 	protected void printToken(IToken token) {
