@@ -2,7 +2,10 @@ package com.onpositive.text.analisys.tests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -105,7 +108,6 @@ public class WordFormParserTest extends TestCase{
 	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
 		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
-		euristicAnalyzingParser.addProjectionCreator(new NotPartRemover());
 		return euristicAnalyzingParser;
 	}
 	
@@ -121,11 +123,12 @@ public class WordFormParserTest extends TestCase{
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("ребенок должен учиться вести себя прилично")); - не разбирается, сет №7, правило №6
 //		String str = "отдала мою душу";
 		String str = "шестьдесят минут прошло";
+//		String str = "в обеденный перерыв он приходил домой";
 		doBasicAnalyzerTest(str, getFullRulesList());			
 	}
 	
 	public void testAnalyzer2() {
-		String str ="необходимость вести борьбу";
+		String str ="Что так поздно пришёл";
 		List<Euristic> euristics = getFullRulesList();
 		euristics.addAll(getRulesList30());
 		euristics.addAll(getRulesList31());
@@ -219,7 +222,7 @@ public class WordFormParserTest extends TestCase{
 
 	// существительное - предлог
 	public void test05() {
-		Euristic matched = matched(getRulesList5(), "перед красивым");
+		Euristic matched = matched(getRulesList5(), "перед яблока");
 		assertNotNull(matched);
 	}
 	
@@ -246,21 +249,11 @@ public class WordFormParserTest extends TestCase{
 				Euristic.all((PartOfSpeech.ADJF), (FeaturesGramem.Anum))
 				);
 		euristics.add(euristicPrepAdjf);
-		Euristic euristicPrepPrGen = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.NPRO), (Case.GENT))
-				);
-		euristics.add(euristicPrepPrGen);
 		Euristic euristicPrepNounInst = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
 				Euristic.all((PartOfSpeech.NOUN), (Case.ABLT))
 				);
 		euristics.add(euristicPrepNounInst);
-		Euristic euristicPrepNounGen = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.NOUN), (Case.GENT))
-				);
-		euristics.add(euristicPrepNounGen);
 		Euristic euristicPrepNpro = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
 				Euristic.all((PartOfSpeech.NPRO), (Extras.Anph))
@@ -268,9 +261,14 @@ public class WordFormParserTest extends TestCase{
 		euristics.add(euristicPrepNpro);
 		Euristic euristicPrepAdjf1 = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.ADJF)
+				Euristic.all(PartOfSpeech.ADJF, Case.ABLT)
 				);
 		euristics.add(euristicPrepAdjf1);
+		Euristic euristicNounNoun = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.PREP),
+				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
+				);
+		euristics.add(euristicNounNoun);
 		return euristics;
 	}
 	
@@ -525,11 +523,11 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJS)
 				);
 		euristics.add(euristicPrtfsNoun);
-		Euristic euristicNproAdj = Euristic.concat(
-				Euristic.any(PartOfSpeech.NPRO),
-				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN)
-				);
-		euristics.add(euristicNproAdj);
+//		Euristic euristicNproAdj = Euristic.concat(
+//				Euristic.any(PartOfSpeech.NPRO),
+//				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN)
+//				);
+//		euristics.add(euristicNproAdj); моих чёрных кос
 //		Euristic euristicNounAdjs = Euristic.concat(
 //				Euristic.any(PartOfSpeech.NOUN), 
 //				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN)
@@ -550,11 +548,11 @@ public class WordFormParserTest extends TestCase{
 //				Euristic.any(PartOfSpeech.VERB)
 //				);
 //		euristics.add(euristicAdjsVerb);
-		Euristic euristicAdjsAdvb = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.ADVB)
-				);
-		euristics.add(euristicAdjsAdvb);
+//		Euristic euristicAdjsAdvb = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN),
+//				Euristic.any(PartOfSpeech.ADVB)
+//				);
+//		euristics.add(euristicAdjsAdvb); мелок вдруг рассыпался
 		Euristic euristicAdjsNoun1 = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN),
 				Euristic.all(PartOfSpeech.NOUN, Case.NOMN, Gender.MASC)
@@ -616,12 +614,7 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicProNoun);
-		Euristic euristicNumrNoun = Euristic.concat(
-				Euristic.any(PartOfSpeech.NUMR), 
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
-				);
-		euristics.add(euristicNumrNoun);
-//		Euristic euristicNounNoun = Euristic.concat(
+		//		Euristic euristicNounNoun = Euristic.concat(
 //				Euristic.any(PartOfSpeech.NOUN), 
 //				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
 //				);
@@ -737,21 +730,21 @@ public class WordFormParserTest extends TestCase{
 		euristics.add(euristicGrndInf);
 		Euristic euristicNounAdj = Euristic.concat(
 				Euristic.any(PartOfSpeech.NOUN),
-				Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.GRND), Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN))
 				);
 		euristics.add(euristicNounAdj);
 		Euristic euristicAdjAdj = Euristic.concat(
 				Euristic.any(PartOfSpeech.ADJF),
-				Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.GRND), Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN))
 				);
 		euristics.add(euristicAdjAdj);
 		Euristic euristicAdjNoun = Euristic.concat(
-				Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.GRND), Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN)),
 				Euristic.any(PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicAdjNoun);
 		Euristic euristicAdjAdjf = Euristic.concat(
-				Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.GRND), Euristic.all(PartOfSpeech.ADJF, Case.NOMN, SingularPlural.SINGULAR, Gender.FEMN)),
 				Euristic.any(PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicAdjAdjf);
@@ -768,12 +761,12 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicNproVerb = Euristic.concat(
 				Euristic.all(PartOfSpeech.NPRO, Personality.PERS1),
-				Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT))
 				);
 		euristics.add(euristicNproVerb);
 		Euristic euristicAdvbVerb = Euristic.concat(
 				Euristic.any(PartOfSpeech.ADVB),
-				Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT))
 				);
 		euristics.add(euristicAdvbVerb);
 		Euristic euristicPrepAdjf = Euristic.concat(
@@ -1049,11 +1042,11 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.PRED, PartOfSpeech.PREP)
 				);
 		euristics.add(euristicInfnPred);
-		Euristic euristicWordPred = Euristic.concat(
-				Euristic.word("ещё", PartOfSpeech.ADVB),
-				Euristic.createConflictChecker(PartOfSpeech.PRED, PartOfSpeech.PREP)
-				);
-		euristics.add(euristicWordPred);
+//		Euristic euristicWordPred = Euristic.concat(
+//				Euristic.word("ещё", PartOfSpeech.ADVB),
+//				Euristic.createConflictChecker(PartOfSpeech.PRED, PartOfSpeech.PREP)
+//				);
+//		euristics.add(euristicWordPred);
 		Euristic euristicPredWord = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.PRED, PartOfSpeech.PREP),
 				Euristic.word("бы", PartOfSpeech.PRCL)
@@ -1117,41 +1110,41 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicNproNoun = Euristic.concat(
 				Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro, Case.ACCS),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NUMR)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NUMR), Euristic.word("семью"))
 				);
 		euristics.add(euristicNproNoun);
 		Euristic euristicAdjfNoun = Euristic.concat(
 				Euristic.all(PartOfSpeech.ADJF, Case.ACCS),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NUMR)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NUMR), Euristic.word("семью"))
 				);
 		euristics.add(euristicAdjfNoun);
 		Euristic euristicInfnNoun = Euristic.concat(
 				Euristic.any(PartOfSpeech.INFN),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NUMR)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NUMR), Euristic.word("семью"))
 				);
 		euristics.add(euristicInfnNoun);
 		Euristic euristicVerbNoun = Euristic.concat(
 				Euristic.any(PartOfSpeech.VERB),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NUMR)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NUMR), Euristic.word("семью"))
 				);
 		euristics.add(euristicVerbNoun);
 		Euristic euristicNounPrep = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NUMR),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NUMR), Euristic.word("семью")),
 				Euristic.any(PartOfSpeech.PREP)
 				);
 		euristics.add(euristicNounPrep);
 		Euristic euristicNumrAdjf = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("семью")),
 				Euristic.all(PartOfSpeech.ADJF, Case.ABLT)
 				);
 		euristics.add(euristicNumrAdjf);
 		Euristic euristicNumrNoun = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("семью")),
 				Euristic.all(PartOfSpeech.NOUN, Case.ABLT)
 				);
 		euristics.add(euristicNumrNoun);
 		Euristic euristicNumrNumr = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("семью")),
 				Euristic.any(PartOfSpeech.NUMR)
 				);
 		euristics.add(euristicNumrNumr);
@@ -1160,7 +1153,7 @@ public class WordFormParserTest extends TestCase{
 	
 	// существительное - числительное "сорока"
 	public void test19() {
-		Euristic matched = matched(getRulesList19(), "сорока лет");
+		Euristic matched = matched(getRulesList19(), "лет сорока");
 		assertNotNull(matched);
 	}
 	
@@ -1168,19 +1161,24 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicNounNumr = Euristic.concat(
 				Euristic.any(PartOfSpeech.NOUN),
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("сорока"))
 				);
 		euristics.add(euristicNounNumr);
 		Euristic euristicNumrNumr = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("сорока")),
 				Euristic.all(PartOfSpeech.NUMR, Case.GENT)
 				);
 		euristics.add(euristicNumrNumr);
 		Euristic euristicNumrNoun = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("сорока")),
 				Euristic.any(PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicNumrNoun);
+		Euristic euristicPrepNumr = Euristic.concat(
+				Euristic.any(PartOfSpeech.PREP),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NUMR, PartOfSpeech.NOUN), Euristic.word("сорока"))
+				);
+		euristics.add(euristicPrepNumr);
 		return euristics;
 	}
 	
@@ -1228,11 +1226,11 @@ public class WordFormParserTest extends TestCase{
 			
 	private List<Euristic> getRulesList21() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicPrepNoun = Euristic.concat(
-			Euristic.any(PartOfSpeech.PREP),
+		Euristic euristicPrepNumr = Euristic.concat(
+			Euristic.or(Euristic.word("в", PartOfSpeech.PREP), Euristic.word("на", PartOfSpeech.PREP), Euristic.word("при", PartOfSpeech.PREP), Euristic.word("о", PartOfSpeech.PREP)),
 			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Anum))
 		);
-		euristics.add(euristicPrepNoun);
+		euristics.add(euristicPrepNumr);
 		Euristic euristicVerbNoun = Euristic.concat(
 			Euristic.any(PartOfSpeech.VERB),
 			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Anum))
@@ -1248,6 +1246,11 @@ public class WordFormParserTest extends TestCase{
 			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Anum))
 		);
 		euristics.add(euristicNumrNumr);
+		Euristic euristicPrepNoun = Euristic.concat(
+			Euristic.or(Euristic.word("за", PartOfSpeech.PREP), Euristic.word("над", PartOfSpeech.PREP), Euristic.word("перед", PartOfSpeech.PREP), Euristic.word("под", PartOfSpeech.PREP), Euristic.word("с", PartOfSpeech.PREP)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Anum))
+		);
+		euristics.add(euristicPrepNoun);
 		return euristics;
 	}
 	
@@ -1344,7 +1347,7 @@ public class WordFormParserTest extends TestCase{
 	
 	// прилагательное - наречие
 	public void test23() {
-		Euristic matched = matched(getRulesList23(), "горько солнце");
+		Euristic matched = matched(getRulesList23(), "горько плача");
 		assertNotNull(matched);
 	}
 	
@@ -1425,6 +1428,26 @@ public class WordFormParserTest extends TestCase{
 				Euristic.any(PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicAdvbAdjf);
+		Euristic euristicAdjsNounM = Euristic.concat(
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJS, PartOfSpeech.ADVB), Euristic.all(PartOfSpeech.ADJS, Gender.MASC)),
+				Euristic.all(PartOfSpeech.NOUN, Gender.MASC, SingularPlural.SINGULAR, Case.NOMN)
+				);
+		euristics.add(euristicAdjsNounM);
+		Euristic euristicNounMAdjs = Euristic.concat(
+				Euristic.all(PartOfSpeech.NOUN, Gender.MASC, SingularPlural.SINGULAR, Case.NOMN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJS, PartOfSpeech.ADVB), Euristic.all(PartOfSpeech.ADJS, Gender.MASC))
+				);
+		euristics.add(euristicNounMAdjs);
+		Euristic euristicNproAdjs = Euristic.concat(
+				Euristic.all(PartOfSpeech.NPRO, Gender.MASC, SingularPlural.SINGULAR, Case.NOMN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJS, PartOfSpeech.ADVB), Euristic.all(PartOfSpeech.ADJS, Gender.MASC))
+				);
+		euristics.add(euristicNproAdjs);
+		Euristic euristicAdjsNpro = Euristic.concat(
+				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJS, PartOfSpeech.ADVB), Euristic.all(PartOfSpeech.ADJS, Gender.MASC)),
+				Euristic.all(PartOfSpeech.NPRO, Gender.MASC, SingularPlural.SINGULAR, Case.NOMN)
+				);
+		euristics.add(euristicAdjsNpro);
 		Euristic euristicNounAdjs = Euristic.concat(
 				Euristic.all(PartOfSpeech.NOUN, Gender.NEUT, SingularPlural.SINGULAR, Case.NOMN),
 				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB)
@@ -1696,17 +1719,17 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicPrepNoun = Euristic.concat(
 				Euristic.any(PartOfSpeech.PREP),
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.NPRO)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.NPRO), Euristic.word("кто"))
 				);
 		euristics.add(euristicPrepNoun);
 		Euristic euristicPrepNpro = Euristic.concat(
 				Euristic.word("к", PartOfSpeech.PREP),
-				Euristic.createConflictChecker(PartOfSpeech.NPRO, PartOfSpeech.NOUN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NPRO, PartOfSpeech.NOUN), Euristic.word("кто"))
 				);
 		euristics.add(euristicPrepNpro);
 		Euristic euristicVerbNpro = Euristic.concat(
 				Euristic.any(PartOfSpeech.VERB),
-				Euristic.createConflictChecker(PartOfSpeech.NPRO, PartOfSpeech.NOUN)
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NPRO, PartOfSpeech.NOUN), Euristic.word("кто"))
 				);
 		euristics.add(euristicVerbNpro);
 		return euristics;
@@ -1722,38 +1745,38 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicAdjfNpro = Euristic.concat(
 			Euristic.any(PartOfSpeech.ADJF),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем"))
 		);
 		euristics.add(euristicAdjfNpro);
 		Euristic euristicPrepNpro = Euristic.concat(
 			Euristic.any(PartOfSpeech.PREP),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем"))
 		);
 		euristics.add(euristicPrepNpro);
 		Euristic euristicNproSam = Euristic.concat(
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем")),
 			Euristic.word("самым", PartOfSpeech.ADJF)
 		);
 		euristics.add(euristicNproSam);
 		Euristic euristicNproNeMen = Euristic.concat(
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем")),
 			Euristic.word("не менее", PartOfSpeech.ADVB)
 		);
 		euristics.add(euristicNproNeMen);
 		Euristic euristicNproBol = Euristic.concat(
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем")),
 			Euristic.word("более", PartOfSpeech.ADVB)
 		);
 		euristics.add(euristicNproBol);
 		Euristic euristicPrepAdjfNpro = Euristic.concat(
 			Euristic.any(PartOfSpeech.PREP),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем")),
 			Euristic.any(PartOfSpeech.NPRO)
 		);
 		euristics.add(euristicPrepAdjfNpro);
 		Euristic euristicPrepAdjfPrep = Euristic.concat(
 			Euristic.any(PartOfSpeech.PREP),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тем")),
 			Euristic.any(PartOfSpeech.PREP)
 		);
 		euristics.add(euristicPrepAdjfPrep);
@@ -1770,9 +1793,14 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicPrepNpro = Euristic.concat(
 			Euristic.any(PartOfSpeech.PREP),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("том"))
 		);
 		euristics.add(euristicPrepNpro);
+		Euristic euristicNotPrepNpro = Euristic.concat(
+			Euristic.not(Euristic.any(PartOfSpeech.PREP)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("том"))
+		);
+		euristics.add(euristicNotPrepNpro);
 		return euristics;
 	}
 	
@@ -1786,19 +1814,29 @@ public class WordFormParserTest extends TestCase{
 		List<Euristic> euristics = new ArrayList<Euristic>();
 		Euristic euristicPrepNpro = Euristic.concat(
 			Euristic.any(PartOfSpeech.PREP),
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro))
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тому"))
 		);
 		euristics.add(euristicPrepNpro);
 		Euristic euristicNproPodob = Euristic.concat(
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тому")),
 			Euristic.word("подобный", PartOfSpeech.ADJF)
 		);
 		euristics.add(euristicNproPodob);
 		Euristic euristicNproNazad = Euristic.concat(
-			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro)),
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тому")),
 			Euristic.word("назад", PartOfSpeech.ADVB)
 		);
-			euristics.add(euristicNproNazad);
+		euristics.add(euristicNproNazad);
+		Euristic euristicNotNproPodob = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тому")),
+			Euristic.not(Euristic.word("подобный", PartOfSpeech.ADJF))
+		);
+		euristics.add(euristicNotNproPodob);
+		Euristic euristicNotNproNazad = Euristic.concat(
+			Euristic.and(Euristic.conflicting(PartOfSpeech.ADJF, PartOfSpeech.NOUN), Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro), Euristic.word("тому")),
+			Euristic.not(Euristic.word("назад", PartOfSpeech.ADVB))
+		);
+		euristics.add(euristicNotNproNazad);
 		return euristics;
 	}
 	
@@ -2167,8 +2205,15 @@ public class WordFormParserTest extends TestCase{
 		Euristic matched = matched(getRulesList14(), "в определённом");
 		assertNotNull(matched);
 	}
+	
+	public void test39() {
+		String str = "шестьдесят минут прошло";
+		Collection<List<IToken>> matched = getAllMatched(getFullRulesList(), str);
+		printProcessingResult(str, matched);
+		assertTrue(matched.size() > 0);
+	}
 		
-	private void printProcessingResult(String str, List<List<IToken>> possibleChains) {
+	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
 		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");
 		if (possibleChains == null || possibleChains.isEmpty()) {
 			System.out.println("Результатов не найдено");
@@ -2180,6 +2225,28 @@ public class WordFormParserTest extends TestCase{
 			}
 			System.out.println();
 		}
+	}
+	
+	private Collection<List<IToken>> getAllMatched(List<Euristic> euristicsToTry, String testString) {
+		PrimitiveTokenizer pt = new PrimitiveTokenizer();
+		WordFormParser wordFormParser = new WordFormParser(WordNetProvider.getInstance());
+		List<IToken> tokens = pt.tokenize(testString);		
+		List<IToken> processed = wordFormParser.process(tokens);
+		List<List<IToken>> possibleChains = calcVariants(processed);
+		return getAllMatched(euristicsToTry, possibleChains);
+	}
+
+	private Collection<List<IToken>> getAllMatched(
+			List<Euristic> euristicsToTry, List<List<IToken>> possibleChains) {
+		Set<List<IToken>> allMatched = new HashSet<List<IToken>>();
+		for (Euristic euristic : euristicsToTry) {
+			for (List<IToken> list : possibleChains) {
+				if (euristic.match(list.toArray(new IToken[0]))) {
+					allMatched.add(list);
+				}
+			}
+		}
+		return allMatched;
 	}
 
 	private Euristic matched(List<Euristic> euristicsToTry, String testString) {

@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 public class WordFormParserPrimitiveTest extends TestCase {
 	
 	public void test01() {
-		checkForErrors("вести борьбу");
+		checkForErrors("синтаксический анализ текста");
 	}
 	
 	public void test02() {
