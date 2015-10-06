@@ -49,10 +49,6 @@ public class WordFormParserTest extends TestCase{
 		
 		List<List<IToken>> possibleChains = calcVariants(processed);
 		
-
-		
-		
-		
 		System.out.println("----------------------------------------------------------------------------------------");
 		List<Euristic> euristics = Euristic.match(WordFormParser.class);
 		for (Euristic euristic : euristics) {
@@ -405,6 +401,14 @@ public class WordFormParserTest extends TestCase{
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
 		assertNotNull(processed);
 		printChain(str, processed);
+	}
+	
+	public void test40() {
+		String str = "шестьдесят минут прошло";
+		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
+		List<IToken> processed = util.process(str);
+		printChain(str, processed);
+		util.printConflictingEuristics();
 	}
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {

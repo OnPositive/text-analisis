@@ -29,6 +29,7 @@ public class Euristic {
 	private Grammem[] grammems = null;
 	private int type;
 	private Euristic[] euristics = null;
+	private String id;
 	
 	public static void register(Class<? extends BasicParser> clazz, Euristic ... euristics)
 	{
@@ -257,6 +258,22 @@ public class Euristic {
 				any(PartOfSpeech.ADJF),
 				or(any(PartOfSpeech.ADJF), any(PartOfSpeech.ADJS))
 		);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	@Override
+	public String toString() {
+		if (id != null) {
+			return "Euristic " + id; 
+		}
+		return super.toString();
 	}
 }
 
