@@ -507,6 +507,9 @@ public abstract class AbstractToken implements IToken {
 		double cor = 0.0;
 		double weight = 0.0;
 		for (int i = 0; i < corrValues.size(); i++) {
+			if (Double.isInfinite(corrWeights.get(i))) {
+				return corrValues.get(i);
+			}
 			cor += corrValues.get(i) * corrWeights.get(i);
 			weight += corrWeights.get(i);
 		}

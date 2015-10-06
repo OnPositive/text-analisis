@@ -145,26 +145,30 @@ public class EuristicAnalyzingParser extends AbstractParser{
 						passed.add(curResult.get(SEQUENCE_LENGTH - 1));
 					}
 				}
-				double failedCorrelation = passed.isEmpty() ? DEFAULT_ALL_FAILED_CORRELATION : 0;
+				List<IToken> conflicts = token.getConflicts();
+				double failedCorrelation = passed.isEmpty() ? 1.0 / (conflicts.size() + 1) : 0;
 				for (IToken passedToken : passed) {
 					passedToken.setCorrelation(1, 1);
 				}
 				if (!passed.contains(token)) {
-					if (failedCorrelation > 0) {
-						token.setCorrelation(failedCorrelation,1);
-					} else {
-						token.setCorrelation(failedCorrelation,Double.POSITIVE_INFINITY);
-					}
+					setFailedCorrelation(token, failedCorrelation);
 				}
-				List<IToken> conflicts = token.getConflicts();
 				for (IToken curConflicting : conflicts) {
 					if (!passed.contains(curConflicting)) {
-						curConflicting.setCorrelation(failedCorrelation,Double.POSITIVE_INFINITY);
+						setFailedCorrelation(curConflicting, failedCorrelation);
 					}
 				}
 			} 
 		}
 		return tokens;
+	}
+
+	protected void setFailedCorrelation(IToken token, double failedCorrelation) {
+		if (failedCorrelation > 0) {
+			token.setCorrelation(failedCorrelation,1);
+		} else {
+			token.setCorrelation(failedCorrelation,Double.POSITIVE_INFINITY);
+		}
 	}
 	
 	private List<List<IToken>> getLocalSequences(List<IToken> original) {
