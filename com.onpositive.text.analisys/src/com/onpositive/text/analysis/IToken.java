@@ -221,6 +221,12 @@ public interface IToken {
 	String getParserName();
 
 	void setCorrelation(double corellation, double weight);
+	
 	double getCorrelation();
+	
+	/**
+	 * @return Whether correlation was already set for current token
+	 */
+	boolean hasCorrelation();
 	
 }

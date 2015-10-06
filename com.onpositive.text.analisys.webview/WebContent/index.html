@@ -26,6 +26,7 @@
 		<input type="checkbox" id="sentence" class="cb" />Show sentence token
         <input type="checkbox" id="main" class="cb" />Show auxiliary tokens
         <input type="checkbox" id="euristics" checked="checked"/>Use euristics
+        <input type="checkbox" id="notNull" class="cb"/>Hide irrelative tokens
         <br />
         <canvas id="viewport" width="1200" height="800" style="background: white; border: 1px solid #ddd"></canvas>
         
@@ -54,12 +55,18 @@ function callback(graph) {
     model.vertices.forEach(function(v) { system.pruneNode(v.id) })
     
     window.model = graph
-	window.sentence = false
-    window.main = false
+	//window.sentence = false
+    //window.main = false
+    //window.notNull = false
+    
+    window.sentence = $("#sentence")[0].checked
+    window.main = $("#main")[0].checked
+    window.notNull = $("#notNull")[0].checked
     
     $(".cb").on("click", function() {
     	window.sentence = $("#sentence")[0].checked
     	window.main = $("#main")[0].checked
+    	window.notNull = $("#notNull")[0].checked
     	sys.renderer.redraw()
     })
     

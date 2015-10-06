@@ -516,11 +516,17 @@ public abstract class AbstractToken implements IToken {
 		
 		return weight == 0 ? 0.0 : cor / weight;
 	}
+	
 	@Override
 	public void setCorrelation(double corellation, double weight) {
 		if (Double.isFinite(corellation) == false) return;
 		corrValues.add(corellation);
 		corrWeights.add(weight);		
+	}
+	
+	@Override
+	public boolean hasCorrelation() {
+		return !corrValues.isEmpty();
 	}
 	
 }

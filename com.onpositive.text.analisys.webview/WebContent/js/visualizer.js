@@ -43,13 +43,14 @@
 		var visible = function(obj) {
 			var sentence = window.sentence
 			var main = window.main
+			var notNull = window.notNull
 		
 			if (obj.source) // edge
 				return visible(obj.source) && visible(obj.target)
 					
 			if (obj.data.type == "SentenceToken" && !sentence) return false 
 			if (!obj.data.main && !main) return false
-			
+			if (notNull && obj.data.relation < 0.05) return false;
 			
 			return true
 		}

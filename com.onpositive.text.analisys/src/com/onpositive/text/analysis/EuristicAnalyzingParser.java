@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.onpositive.text.analysis.filtering.ITokenFilter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
@@ -14,8 +15,6 @@ import com.onpositive.text.analysis.rules.RuleSet;
 
 public class EuristicAnalyzingParser extends AbstractParser{
 	
-	private static final double DEFAULT_ALL_FAILED_CORRELATION = 0.3;
-
 	private static final boolean DEBUG = true;
 	
 	private static final int SEQUENCE_LENGTH = 2;
@@ -248,6 +247,7 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			if (curToken.hasConflicts()) {
 				List<IToken> conflicts = new ArrayList<IToken>(curToken.getConflicts());
 				conflicts.add(curToken);
+				conflicts = conflicts.stream().filter(token -> !token.hasCorrelation() || token.getCorrelation() > 0).collect(Collectors.toList());
 				result = generateVariants(result, conflicts);
 			} else {
 				addItem(result,curToken);
