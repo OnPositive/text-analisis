@@ -140,8 +140,11 @@ public class SyntaxParser extends ParserComposition {
 	
 	private TreeBuilder treeBuilder = new TreeBuilder(tip);
 	
+	private static final Class<?>[] initialParsersArray = new Class<?>[]{
+		WordFormParser.class
+	};
+	
 	private static final Class<?>[] lexicParsersArray = new Class<?>[]{
-		WordFormParser.class,
 		ScalarParser.class,
 		UnaryScalarCompositionParser.class,
 		UnitParser.class,
@@ -223,6 +226,8 @@ public class SyntaxParser extends ParserComposition {
 	private ParserComposition euristicParsers;
 	
 	private boolean useEuristics = true;
+
+	private ParserComposition initialParsers;
 	
 	
 	public List<IToken> parse(String str){
@@ -230,10 +235,11 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> primitiveTokens = primitiveTokenizer.tokenize(str);
 		if (this.onProcess != null) onProcess.accept(1, 3);
 		resetTokenIdProvider(primitiveTokens);
-		List<IToken> lexicProcessed = lexicParsers.process(primitiveTokens);
+		List<IToken> initialProcessed = initialParsers.process(primitiveTokens);
+		List<IToken> currentResult = useEuristics?euristicParsers.process(initialProcessed):initialProcessed; 
+		List<IToken> lexicProcessed = lexicParsers.process(currentResult);
 		if (this.onProcess != null) onProcess.accept(2, 3);
-		List<IToken> currentResult = useEuristics?euristicParsers.process(lexicProcessed):lexicProcessed; 
-		List<IToken> sentences = sentenceSplitter.split(currentResult);
+		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
 		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
@@ -291,8 +297,9 @@ public class SyntaxParser extends ParserComposition {
 	}
 	
 	private void initParsers() {
-		this.lexicParsers = createParsers(lexicParsersArray,false);
+		this.initialParsers = createParsers(initialParsersArray,false);
 		this.euristicParsers = createParsers(euristicParsersArray,false);
+		this.lexicParsers = createParsers(lexicParsersArray,false);
 		this.verbGroupSyntaxParsers = createParsers(verbGroupSyntaxParsersArray,true);
 		this.nameSyntaxParsers = createParsers(nameSyntaxParsersArray, false);
 		this.nameRecursiveSyntaxParsers = createParsers(nameSyntaxRecursiveParsersArray, false);

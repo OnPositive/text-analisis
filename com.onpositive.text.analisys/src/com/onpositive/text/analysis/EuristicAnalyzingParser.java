@@ -10,6 +10,7 @@ import com.onpositive.text.analysis.filtering.ITokenFilter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.projection.IProjectionCreator;
 import com.onpositive.text.analysis.projection.Projection;
+import com.onpositive.text.analysis.rules.RuleSet;
 
 public class EuristicAnalyzingParser extends AbstractParser{
 	
@@ -27,6 +28,10 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	
 //	private List<IPossibleChainsFilter> possibleChainsFilters = new ArrayList<IPossibleChainsFilter>();
 	private List<ITokenFilter> tokenFilters = new ArrayList<ITokenFilter>();
+	
+	public EuristicAnalyzingParser() {
+		this.euristics = RuleSet.getFullRulesList();
+	}
 	
 	public EuristicAnalyzingParser(List<Euristic> euristics) {
 		this.euristics = euristics;
