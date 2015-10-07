@@ -228,6 +228,8 @@ public class SyntaxParser extends ParserComposition {
 	private boolean useEuristics = true;
 
 	private ParserComposition initialParsers;
+
+	private boolean useEstimator = true;
 	
 	
 	public List<IToken> parse(String str){
@@ -242,9 +244,10 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
-		AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
-		
-		sentences.forEach(x->evaluator.process(x, false));
+		if (useEstimator) {
+			AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
+			sentences.forEach(x->evaluator.process(x, false));
+		}
 		
 		int processed = 0;
 		int sentlen = sentences.size();
@@ -265,7 +268,10 @@ public class SyntaxParser extends ParserComposition {
 					);
 			}
 		}
-		sentences.forEach(x->evaluator.process(x, true));
+		if (useEstimator) {
+			AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
+			sentences.forEach(x->evaluator.process(x, true));
+		}
 		return sentences;
 	}
 
@@ -424,6 +430,11 @@ public class SyntaxParser extends ParserComposition {
 
 	public void setUseEuristics(boolean useEuristics) {
 		this.useEuristics = useEuristics;
+	}
+
+
+	public void setUseEstimator(boolean useEstimator) {
+		this.useEstimator = useEstimator;
 	}
 
 

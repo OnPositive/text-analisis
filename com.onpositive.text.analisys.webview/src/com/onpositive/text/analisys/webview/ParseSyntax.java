@@ -60,7 +60,9 @@ public class ParseSyntax extends HttpServlet {
 		}
 		
 		TokenRegistry.clean();		
-		parser.setUseEuristics("true".equalsIgnoreCase(request.getParameter("euristics")));
+		boolean euristics = "true".equalsIgnoreCase(request.getParameter("euristics"));
+		parser.setUseEuristics(euristics);
+		parser.setUseEstimator(!euristics || "true".equalsIgnoreCase(request.getParameter("estimator")));
 		List<IToken> processed = parser.parse(request.getParameter("query"));
 		writer.println(serializer.serialize(new BasicCleaner().clean(processed)));
 	}

@@ -26,6 +26,7 @@
 		<input type="checkbox" id="sentence" class="cb" />Show sentence token
         <input type="checkbox" id="main" class="cb" />Show auxiliary tokens
         <input type="checkbox" id="euristics" checked="checked"/>Use euristics
+        <input type="checkbox" id="estimator" checked="checked"/>Use estimation
         <input type="checkbox" id="notNull" class="cb"/>Hide irrelative tokens
         <br />
         <canvas id="viewport" width="1200" height="800" style="background: white; border: 1px solid #ddd"></canvas>
@@ -114,8 +115,9 @@ $(function() {
 		$("canvas").hide()
         
 		var euristics = window.euristics["checked"];
+        var estimator = window.estimator["checked"];
 		
-        $.getJSON("/parse", { query : query, euristics : euristics }, callback)
+        $.getJSON("/parse", { query : query, euristics : euristics, estimator : estimator }, callback)
         return false
     })
 })
