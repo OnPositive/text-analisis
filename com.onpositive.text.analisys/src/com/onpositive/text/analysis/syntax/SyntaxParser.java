@@ -12,6 +12,7 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.AbstractRelationEvaluator;
 import com.onpositive.text.analysis.CompositToken;
+import com.onpositive.text.analysis.DefaultRelationEvaluator;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IParser;
 import com.onpositive.text.analysis.IToken;
@@ -244,10 +245,13 @@ public class SyntaxParser extends ParserComposition {
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
 		if (this.onProcess != null) onProcess.accept(3, 3);
 
+		AbstractRelationEvaluator evaluator;
 		if (useEstimator) {
-			AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
-			sentences.forEach(x->evaluator.process(x, false));
+			evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
+		} else {
+			evaluator = AbstractRelationEvaluator.getInstance(DefaultRelationEvaluator.class);
 		}
+		sentences.forEach(x->evaluator.process(x, false));
 		
 		int processed = 0;
 		int sentlen = sentences.size();
@@ -268,10 +272,7 @@ public class SyntaxParser extends ParserComposition {
 					);
 			}
 		}
-		if (useEstimator) {
-			AbstractRelationEvaluator evaluator = AbstractRelationEvaluator.getInstance(WordRelationEvaluator.class);
-			sentences.forEach(x->evaluator.process(x, true));
-		}
+		sentences.forEach(x->evaluator.process(x, true));
 		return sentences;
 	}
 
