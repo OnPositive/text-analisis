@@ -46,7 +46,7 @@ public class ParsedTokensLoader {
 		public void endElement(String uri, String localName, String qName) throws SAXException {
 			if ("tfr".equalsIgnoreCase(qName)) {
 				if (!ignore) {
-					System.out.println("Token: " + curName + ", Grammmems: " + grammems.toString());
+//					System.out.println("Token: " + curName + ", Grammmems: " + grammems.toString());
 					tokens.add(new SimplifiedToken(curName, grammems));
 				}
 				curName = null;

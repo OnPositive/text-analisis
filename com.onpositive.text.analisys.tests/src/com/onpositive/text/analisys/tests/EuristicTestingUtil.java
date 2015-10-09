@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.text.analisys.tests.model.EuristicMatch;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
@@ -19,7 +20,7 @@ public class EuristicTestingUtil {
 	
 	private static final int SEQUENCE_LENGTH = 2;
 	private List<Euristic> euristics;
-	private List<Map<IToken, Euristic>> matchedEuristics = new ArrayList<Map<IToken, Euristic>>();
+	private List<Map<IToken, EuristicMatch>> matchedEuristics = new ArrayList<Map<IToken, EuristicMatch>>();
 	
 	public EuristicTestingUtil(List<Euristic> euristics) {
 		this.euristics = euristics;
@@ -36,7 +37,7 @@ public class EuristicTestingUtil {
 		}
 		List<IToken> curChain = possibleChains.get(0);
 		for (int i = 0; i < curChain.size(); i++) {
-			Map<IToken, Euristic>curMap = new HashMap<IToken, Euristic>();
+			Map<IToken, EuristicMatch>curMap = new HashMap<IToken, EuristicMatch>();
 			IToken token = curChain.get(i);
 			if (token instanceof WordFormToken && token.hasConflicts()) {
 				List<List<IToken>> invalidChains = new ArrayList<List<IToken>>();
@@ -46,7 +47,7 @@ public class EuristicTestingUtil {
 					for (List<IToken> curSequence: sequences) {
 						Euristic matchedEuristic = matchedNonConflict(euristics, curSequence);
 						if (matchedEuristic != null) {
-							curMap.put(possibleChains.get(j).get(i), matchedEuristic);
+							curMap.put(possibleChains.get(j).get(i), new EuristicMatch(matchedEuristic, curSequence));
 							found = true;
 							break;
 						}
@@ -143,10 +144,10 @@ public class EuristicTestingUtil {
 	}
 	
 	public void printConflictingEuristics() {
-		for (Map <IToken, Euristic> curMap: matchedEuristics) {
-			Map<IToken, Euristic> map = curMap;
+		for (Map <IToken, EuristicMatch> curMap: matchedEuristics) {
+			Map<IToken, EuristicMatch> map = curMap;
 			List<String> euristicList = curMap.keySet().stream().map(token -> {
-				return token.toString() + " Эвристика " + map.get(token);
+				return token.toString() + map.get(token).toString();
 			}).collect(Collectors.toList());
 			String joined = String.join(", ", euristicList);
 			System.out.println("Конфликт: [" + joined + "]");

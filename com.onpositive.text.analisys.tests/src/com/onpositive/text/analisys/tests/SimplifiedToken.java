@@ -1,5 +1,6 @@
 package com.onpositive.text.analisys.tests;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,29 @@ public class SimplifiedToken {
 		}).collect(Collectors.toList());
 		return missedGrammems;
 			
+	}
+	
+	public boolean wordEquals(WordFormToken comparedToken) {
+		String stringValue = comparedToken.getShortStringValue();
+		return word.trim().equalsIgnoreCase(stringValue.trim());
+	}
+
+	public List<Grammem> calculateMissed(WordFormToken comparedToken) {
+		List<Grammem> missed = new ArrayList<Grammem>();
+		List<GrammemSet> grammemSets = comparedToken.getGrammemSets();
+		for (GrammemSet grammemSet : grammemSets) {
+			for (Grammem grammem : grammemSet.grammems()) {
+				if (!grammems.contains(grammem)) {
+					missed.add(grammem);
+				}
+			}
+		}
+		return missed;
+	}
+	
+	@Override
+	public String toString() {
+		return word + ", Grammmems: " + grammems.toString();
 	}
 	
 }
