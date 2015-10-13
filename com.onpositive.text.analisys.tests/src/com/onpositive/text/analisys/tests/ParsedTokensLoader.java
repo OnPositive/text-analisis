@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.text.analisys.tests.euristics.SimplifiedToken;
 
 public class ParsedTokensLoader {
 	

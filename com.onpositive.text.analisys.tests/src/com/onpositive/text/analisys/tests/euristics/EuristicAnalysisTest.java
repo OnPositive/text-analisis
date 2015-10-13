@@ -1,4 +1,4 @@
-package com.onpositive.text.analisys.tests;
+package com.onpositive.text.analisys.tests.euristics;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;

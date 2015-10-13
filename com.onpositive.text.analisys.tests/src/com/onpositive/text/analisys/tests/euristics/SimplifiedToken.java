@@ -1,4 +1,4 @@
-package com.onpositive.text.analisys.tests;
+package com.onpositive.text.analisys.tests.euristics;
 
 import java.util.ArrayList;
 import java.util.Collection;

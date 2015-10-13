@@ -21,6 +21,7 @@ import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
 import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
+import com.onpositive.text.analisys.tests.euristics.EuristicTestingUtil;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
