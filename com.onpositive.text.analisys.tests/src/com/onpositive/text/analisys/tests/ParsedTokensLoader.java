@@ -18,13 +18,18 @@ public class ParsedTokensLoader {
 	
 	private List<SimplifiedToken> tokens = new ArrayList<SimplifiedToken>();
 	
+	private String initialText;
+	
 	DefaultHandler handler = new DefaultHandler() {
 		
 		private String curName;
+		private StringBuilder textBuilder = new StringBuilder();
 		private List<Grammem> grammems = new ArrayList<Grammem>();
 		private boolean ignore = false;
+		private String thisElement;
 		
 		public void startElement(String uri, String localName, String qName, org.xml.sax.Attributes attributes) throws SAXException {
+			thisElement = qName;
 			if ("tfr".equalsIgnoreCase(qName)) {
 				curName = attributes.getValue("t");
 			} else if ("g".equalsIgnoreCase(qName) && curName != null) {
@@ -40,6 +45,12 @@ public class ParsedTokensLoader {
 					gr = Grammem.get(grammemName.toUpperCase());
 				}
 				grammems.add(gr);
+			} 
+		};
+		
+		public void characters(char[] ch, int start, int length) throws SAXException {
+			if ("source".equalsIgnoreCase(thisElement)) {
+				textBuilder.append(new String(ch, start, length));
 			}
 		};
 		
@@ -55,6 +66,10 @@ public class ParsedTokensLoader {
 			};
 		
 		}
+		
+		public void endDocument() throws SAXException {
+			initialText = textBuilder.toString().replaceAll("\\t","");
+		};
 	
 	};
 	
@@ -80,5 +95,8 @@ public class ParsedTokensLoader {
 	public List<SimplifiedToken> getTokens() {
 		return tokens;
 	}
-
+	
+	public String getInitialText() {
+		return initialText;
+	}
 }

@@ -52,6 +52,10 @@ public class WordFormParser extends BasicParser {
 	
 	ILexicLevelDisambiguator disambiguator=DisambiguatorProvider.getInstance();
 	
+	private boolean isAbbr = false;
+	
+	private boolean ignoreCombinations = false;
+
 	public ILexicLevelDisambiguator getDisambiguator() {
 		return disambiguator;
 	}
@@ -487,6 +491,10 @@ public class WordFormParser extends BasicParser {
 			
 			if(possibleContinuations!=null){
 				for(TextElement te : possibleContinuations){
+					if (ignoreCombinations && te.getBasicForm().indexOf(' ')>=0) {
+						continue;
+					}
+					
 					if(set.contains(te.id())){
 						continue;
 					}
@@ -503,8 +511,6 @@ public class WordFormParser extends BasicParser {
 		
 		return CONTINUE_PUSH;
 	}
-	
-	private boolean isAbbr = false;
 	
 	protected void checkAbbr() {
 		isAbbr = false;
@@ -783,5 +789,13 @@ public class WordFormParser extends BasicParser {
 			wordFormTokens = tks.toArray(new WordFormToken[tks.size()]);
 		}
 		return wordFormTokens;
+	}
+
+	public boolean isIgnoreCombinations() {
+		return ignoreCombinations;
+	}
+
+	public void setIgnoreCombinations(boolean ignoreCombinations) {
+		this.ignoreCombinations = ignoreCombinations;
 	}
 }

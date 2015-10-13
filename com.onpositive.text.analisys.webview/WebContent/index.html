@@ -105,7 +105,9 @@ function callback(graph) {
 function showDebug() {
 	var query = $("#query").val()
 	$("canvas").hide()
-    $.getJSON("/parse", { debug: true }, callback)
+	var pathArray = window.location.pathname.split( '/' );
+    var firstSegment = pathArray[1];
+    $.getJSON(firstSegment + "/parse", { debug: true }, callback)
 }
 
 
@@ -116,8 +118,9 @@ $(function() {
         
 		var euristics = window.euristics["checked"];
         var estimator = window.estimator["checked"];
-		
-        $.getJSON("/parse", { query : query, euristics : euristics, estimator : estimator }, callback)
+        var pathArray = window.location.pathname.split( '/' );
+        var firstSegment = pathArray[1];
+        $.getJSON(firstSegment + "/parse", { query : query, euristics : euristics, estimator : estimator }, callback)
         return false
     })
 })
