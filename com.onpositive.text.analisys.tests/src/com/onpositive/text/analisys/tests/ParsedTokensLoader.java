@@ -51,7 +51,11 @@ public class ParsedTokensLoader {
 		
 		public void characters(char[] ch, int start, int length) throws SAXException {
 			if ("source".equalsIgnoreCase(thisElement)) {
-				textBuilder.append(new String(ch, start, length));
+				String str = new String(ch, start, length);
+				if (textBuilder.length() > 0 && Character.isAlphabetic(textBuilder.charAt(textBuilder.length() - 1))) {
+					textBuilder.append(' ');
+				}
+				textBuilder.append(str);
 			}
 		};
 		
