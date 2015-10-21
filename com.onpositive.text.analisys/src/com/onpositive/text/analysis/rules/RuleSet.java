@@ -499,21 +499,21 @@ public class RuleSet {
 	
 	public static List<Euristic> getRulesList11() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicAdvbGrnd = Euristic.concat(
-				Euristic.any(PartOfSpeech.ADVB),
-				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF)
-				);
-		euristics.add(euristicAdvbGrnd);
+//		Euristic euristicAdvbGrnd = Euristic.concat(
+//				Euristic.any(PartOfSpeech.ADVB),
+//				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF)
+//				);
+//		euristics.add(euristicAdvbGrnd); хорошо витая ложка
 		Euristic euristicGrndPrep = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF),
 				Euristic.any(PartOfSpeech.PREP)
 				);
 		euristics.add(euristicGrndPrep);
-		Euristic euristicGrndAdvb = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF),
-				Euristic.any(PartOfSpeech.ADVB)
-				);
-		euristics.add(euristicGrndAdvb);
+//		Euristic euristicGrndAdvb = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF),
+//				Euristic.any(PartOfSpeech.ADVB)
+//				);
+//		euristics.add(euristicGrndAdvb); витая хорошо ложка
 		Euristic euristicGrndNoun = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.ADJF),
 				Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
@@ -555,11 +555,11 @@ public class RuleSet {
 				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT))
 				);
 		euristics.add(euristicNproVerb);
-		Euristic euristicAdvbVerb = Euristic.concat(
-				Euristic.any(PartOfSpeech.ADVB),
-				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT))
-				);
-		euristics.add(euristicAdvbVerb);
+//		Euristic euristicAdvbVerb = Euristic.concat(
+//				Euristic.any(PartOfSpeech.ADVB),
+//				Euristic.and(Euristic.conflicting(PartOfSpeech.VERB, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.VERB, Personality.PERS1, SingularPlural.SINGULAR, Time.PRESENT))
+//				);
+//		euristics.add(euristicAdvbVerb); он вёл ОЧЕНЬ ПРАЗДНУЮ жизнь
 		Euristic euristicPrepAdjf = Euristic.concat(
 				Euristic.any(PartOfSpeech.PREP),
 				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.VERB)

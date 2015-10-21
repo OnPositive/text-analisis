@@ -24,11 +24,6 @@ public class EuristicAnalysisTest  extends TestCase{
 	
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10; 
 	
-	public void test00() {
-		List<IToken> processed = getWordFormTokens("с трудом прошел");
-		System.out.println(processed);
-	}
-	
 	public void test01() {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("corpora_parsed.xml"));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
@@ -36,6 +31,7 @@ public class EuristicAnalysisTest  extends TestCase{
 		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 	
 	public void test02() {
@@ -45,7 +41,19 @@ public class EuristicAnalysisTest  extends TestCase{
 		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
+	
+	public void test03() {
+		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2460.xml"));
+		List<SimplifiedToken> etalonTokens = loader.getTokens();
+		String text = loader.getInitialText();
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
+		compare(etalonTokens,processed);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
+	}
+	
 	
 	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
