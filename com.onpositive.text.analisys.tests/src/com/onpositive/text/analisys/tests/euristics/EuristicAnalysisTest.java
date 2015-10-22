@@ -2,13 +2,16 @@ package com.onpositive.text.analisys.tests.euristics;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import junit.framework.TestCase;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
+import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analysis.Euristic;
@@ -75,6 +78,10 @@ public class EuristicAnalysisTest  extends TestCase{
 	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens) { 
 		int i = 0;
 		int j = 0;
+		ITokenComparator tokenComparator = new PartOfSpeechComparator();
+		Map<PartOfSpeech, Integer> comparedCounts = new HashMap<PartOfSpeech, Integer>();
+		int comparedCount = 0;
+		int wrongCount = 0;
 		while (i < etalonTokens.size() && j < tokens.size()) {
 			SimplifiedToken etalonToken = etalonTokens.get(i);
 			List<WordFormToken> comparedTokens = new ArrayList<WordFormToken>();
@@ -111,10 +118,13 @@ public class EuristicAnalysisTest  extends TestCase{
 						System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + comparedTokens.get(0).getShortStringValue());
 					}
 					for (WordFormToken comparedToken : comparedTokens) {
-						List<Grammem> missedGrammems = etalonToken.calculateMissed(comparedToken);
+						incrementCount(comparedCounts, comparedToken.getPartOfSpeech());
+						comparedCount++;
+						List<Grammem> missedGrammems = tokenComparator.calculateMissed(etalonToken, comparedToken);
 						if (!missedGrammems.isEmpty()) {
 							System.out.println("Incorrect grammem set for token " + etalonToken);
 							System.out.println("Wrong grammems: " + missedGrammems);
+							wrongCount++;
 						}
 					}
 				}
@@ -123,7 +133,25 @@ public class EuristicAnalysisTest  extends TestCase{
 			j++;
 			
 		}
-		
+		System.out.println("** Totally compared " + comparedCount + " tokens **");
+		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (comparedCount - wrongCount) * 100.0 / comparedCount));
+		System.out.println("** Parts of speech ");
+		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
+			System.out.println("** " + part.description + " = " + comparedCounts.get(part));
+		});
+	}
+
+	private void incrementCount(Map<PartOfSpeech, Integer> comparedCounts, PartOfSpeech partOfSpeech) {
+		if (partOfSpeech == null) {
+			return;
+		}
+		Integer count = comparedCounts.get(partOfSpeech);
+		if (count == null) {
+			count = 1;
+		} else {
+			count++;
+		}
+		comparedCounts.put(partOfSpeech, count);
 	}
 
 	private int tryEtalonNeutralization(int i, List<SimplifiedToken> etalonTokens, WordFormToken wordFormToken) {
