@@ -81,6 +81,7 @@ public class EuristicAnalysisTest  extends TestCase{
 		ITokenComparator tokenComparator = new PartOfSpeechComparator();
 		Map<PartOfSpeech, Integer> comparedCounts = new HashMap<PartOfSpeech, Integer>();
 		int comparedCount = 0;
+		int conflictingCount = 0;
 		int wrongCount = 0;
 		while (i < etalonTokens.size() && j < tokens.size()) {
 			SimplifiedToken etalonToken = etalonTokens.get(i);
@@ -111,6 +112,9 @@ public class EuristicAnalysisTest  extends TestCase{
 					System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + comparedTokens.get(0).getStringValue());
 				}
 			} else {
+				if (comparedTokens.size() > 1) {
+					conflictingCount++;
+				}
 				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > 0).collect(Collectors.toList());
 				if (comparedTokens.size() > 0) {
 					boolean wordEquals = etalonToken.wordEquals(comparedTokens.get(0));
@@ -134,6 +138,7 @@ public class EuristicAnalysisTest  extends TestCase{
 			
 		}
 		System.out.println("** Totally compared " + comparedCount + " tokens **");
+		System.out.println("** Has conflicting: " + conflictingCount + " tokens **");
 		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (comparedCount - wrongCount) * 100.0 / comparedCount));
 		System.out.println("** Parts of speech ");
 		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
