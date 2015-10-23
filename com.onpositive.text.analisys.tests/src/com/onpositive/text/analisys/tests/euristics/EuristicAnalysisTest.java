@@ -88,12 +88,14 @@ public class EuristicAnalysisTest  extends TestCase{
 			List<WordFormToken> comparedTokens = new ArrayList<WordFormToken>();
 			j = getNextWordTokenIdx(tokens, j, etalonToken);
 			if (j == -1) {
+				printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
 				return;
 			}
 			WordFormToken wordFormToken = (WordFormToken) tokens.get(j);
 			if (!etalonToken.wordEquals(wordFormToken)) {
 				i = tryEtalonNeutralization(i, etalonTokens, wordFormToken);
 				if (i == -1) {
+					printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
 					return;
 				} else {
 					etalonToken = etalonTokens.get(i);
@@ -137,9 +139,13 @@ public class EuristicAnalysisTest  extends TestCase{
 			j++;
 			
 		}
+		printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
+	}
+
+	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount) {
 		System.out.println("** Totally compared " + comparedCount + " tokens **");
 		System.out.println("** Has conflicting: " + conflictingCount + " tokens **");
-		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (comparedCount - wrongCount) * 100.0 / comparedCount));
+		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (conflictingCount - wrongCount) * 100.0 / conflictingCount));
 		System.out.println("** Parts of speech ");
 		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
 			System.out.println("** " + part.description + " = " + comparedCounts.get(part));
