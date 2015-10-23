@@ -57,6 +57,16 @@ public class EuristicAnalysisTest  extends TestCase{
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 	
+	public void test04() {
+		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2619.xml"));
+		List<SimplifiedToken> etalonTokens = loader.getTokens();
+		String text = loader.getInitialText();
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
+		compare(etalonTokens,processed);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
+	}
+	
 	
 	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
