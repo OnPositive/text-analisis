@@ -31,7 +31,7 @@ public class EuristicAnalysisTest  extends TestCase{
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("corpora_parsed.xml"));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
@@ -41,7 +41,7 @@ public class EuristicAnalysisTest  extends TestCase{
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("3163.xml"));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
@@ -51,23 +51,59 @@ public class EuristicAnalysisTest  extends TestCase{
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2460.xml"));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
-	
+
 	public void test04() {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2619.xml"));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 	
 	
+	private List<Euristic> createRulesList() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.addAll(RuleSet.getRulesList5());
+		euristics.addAll(RuleSet.getRulesList6());
+		euristics.addAll(RuleSet.getRulesList7());
+		euristics.addAll(RuleSet.getRulesList8());
+		euristics.addAll(RuleSet.getRulesList9());
+		euristics.addAll(RuleSet.getRulesList10());
+		euristics.addAll(RuleSet.getRulesList11());
+		euristics.addAll(RuleSet.getRulesList12());
+		euristics.addAll(RuleSet.getRulesList13());
+		euristics.addAll(RuleSet.getRulesList14());
+		euristics.addAll(RuleSet.getRulesList15());
+		euristics.addAll(RuleSet.getRulesList16());
+		euristics.addAll(RuleSet.getRulesList17());
+		euristics.addAll(RuleSet.getRulesList18());
+		euristics.addAll(RuleSet.getRulesList19());
+		euristics.addAll(RuleSet.getRulesList20());
+		euristics.addAll(RuleSet.getRulesList21());
+		euristics.addAll(RuleSet.getRulesList22());
+		euristics.addAll(RuleSet.getRulesList23());
+		euristics.addAll(RuleSet.getRulesList24());
+		euristics.addAll(RuleSet.getRulesList25());
+		euristics.addAll(RuleSet.getRulesList26());
+		euristics.addAll(RuleSet.getRulesList27());
+		euristics.addAll(RuleSet.getRulesList28());
+		euristics.addAll(RuleSet.getRulesList29());
+		euristics.addAll(RuleSet.getRulesList30());
+		euristics.addAll(RuleSet.getRulesList31());
+		euristics.addAll(RuleSet.getRulesList32());
+		euristics.addAll(RuleSet.getRulesList33());
+		euristics.addAll(RuleSet.getRulesList34());
+		euristics.addAll(RuleSet.getRulesList35());
+		return euristics;
+	}
+
 	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
 		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
 		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
