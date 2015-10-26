@@ -21,7 +21,7 @@ public class ParsedTokensLoader {
 	
 	private String initialText;
 	
-	DefaultHandler handler = new DefaultHandler() {
+	private DefaultHandler handler = new DefaultHandler() {
 		
 		private String curName;
 		private StringBuilder textBuilder = new StringBuilder();
@@ -61,7 +61,7 @@ public class ParsedTokensLoader {
 		
 		public void endElement(String uri, String localName, String qName) throws SAXException {
 			if ("tfr".equalsIgnoreCase(qName)) {
-				if (!ignore) {
+				if (!ignore && !grammems.isEmpty() && grammems.get(0) != null) {
 //					System.out.println("Token: " + curName + ", Grammmems: " + grammems.toString());
 					tokens.add(new SimplifiedToken(curName, grammems));
 				}

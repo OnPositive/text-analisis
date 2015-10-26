@@ -217,9 +217,6 @@ public class EuristicAnalysisTest  extends TestCase{
 
 	protected int skipNonWordTokens(List<IToken> tokens, int j) {
 		while (j < tokens.size() && !(tokens.get(j) instanceof WordFormToken)) {
-			if (Character.isLetter(tokens.get(j).getStringValue().charAt(0))) {
-				System.out.println(tokens.get(j).getStringValue());
-			}
 			j++;
 		}
 		if (j == tokens.size()) {
