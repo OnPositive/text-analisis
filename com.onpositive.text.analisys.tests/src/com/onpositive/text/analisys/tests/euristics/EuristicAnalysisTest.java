@@ -28,9 +28,9 @@ public class EuristicAnalysisTest  extends TestCase{
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10; 
 	
 	public void test02() {
-		testWithFile("3163.xml");
-		testWithFile("2460.xml");
-		testWithFile("2619.xml");
+		testWithFile("3344.xml");
+		testWithFile("2176.xml");
+		testWithFile("2241.xml");
 	}
 
 	private void testWithFile(String filename) {
@@ -77,6 +77,8 @@ public class EuristicAnalysisTest  extends TestCase{
 		euristics.addAll(RuleSet.getRulesList33());
 		euristics.addAll(RuleSet.getRulesList34());
 		euristics.addAll(RuleSet.getRulesList35());
+		euristics.addAll(RuleSet.getRulesList36());
+		euristics.addAll(RuleSet.getRulesList37());
 		return euristics;
 	}
 

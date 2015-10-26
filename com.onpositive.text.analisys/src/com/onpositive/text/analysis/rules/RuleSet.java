@@ -1864,6 +1864,28 @@ public class RuleSet {
 		doSetIds("35", euristics);
 		return euristics;
 	}
+	
+	public static List<Euristic> getRulesList36() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNoun = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.PRCL),
+			Euristic.or(Euristic.any(PartOfSpeech.NOUN), Euristic.any(PartOfSpeech.ADJF))
+		);
+		euristics.add(euristicPrepNoun);
+		doSetIds("36", euristics);
+		return euristics;
+	}
+	
+	public static List<Euristic> getRulesList37() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNoun = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.INTJ),
+			Euristic.or(Euristic.any(PartOfSpeech.NOUN), Euristic.any(PartOfSpeech.ADJF))
+		);
+		euristics.add(euristicPrepNoun);
+		doSetIds("37", euristics);
+		return euristics;
+	}
 
 	private static void doSetIds(String preffix, List<Euristic> euristics) {
 		for (int i = 0; i < euristics.size(); i++) {
