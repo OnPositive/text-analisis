@@ -27,38 +27,14 @@ public class EuristicAnalysisTest  extends TestCase{
 	
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10; 
 	
-	public void test01() {
-		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("corpora_parsed.xml"));
-		List<SimplifiedToken> etalonTokens = loader.getTokens();
-		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
-		compare(etalonTokens,processed);
-		System.out.println("//--------------------------------------------------------------------------------------------------");
-	}
-	
 	public void test02() {
-		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("3163.xml"));
-		List<SimplifiedToken> etalonTokens = loader.getTokens();
-		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
-		compare(etalonTokens,processed);
-		System.out.println("//--------------------------------------------------------------------------------------------------");
-	}
-	
-	public void test03() {
-		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2460.xml"));
-		List<SimplifiedToken> etalonTokens = loader.getTokens();
-		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
-		compare(etalonTokens,processed);
-		System.out.println("//--------------------------------------------------------------------------------------------------");
+		testWithFile("3163.xml");
+		testWithFile("2460.xml");
+		testWithFile("2619.xml");
 	}
 
-	public void test04() {
-		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream("2619.xml"));
+	private void testWithFile(String filename) {
+		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
