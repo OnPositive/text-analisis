@@ -46,39 +46,39 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	private List<Euristic> createRulesList() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		euristics.addAll(RuleSet.getRulesList5());
-		euristics.addAll(RuleSet.getRulesList6());
-		euristics.addAll(RuleSet.getRulesList7());
-		euristics.addAll(RuleSet.getRulesList8());
-		euristics.addAll(RuleSet.getRulesList9());
-		euristics.addAll(RuleSet.getRulesList10());
-		euristics.addAll(RuleSet.getRulesList11());
-		euristics.addAll(RuleSet.getRulesList12());
-		euristics.addAll(RuleSet.getRulesList13());
-		euristics.addAll(RuleSet.getRulesList14());
-		euristics.addAll(RuleSet.getRulesList15());
-		euristics.addAll(RuleSet.getRulesList16());
-		euristics.addAll(RuleSet.getRulesList17());
-		euristics.addAll(RuleSet.getRulesList18());
-		euristics.addAll(RuleSet.getRulesList19());
-		euristics.addAll(RuleSet.getRulesList20());
-		euristics.addAll(RuleSet.getRulesList21());
-		euristics.addAll(RuleSet.getRulesList22());
-		euristics.addAll(RuleSet.getRulesList23());
-		euristics.addAll(RuleSet.getRulesList24());
-		euristics.addAll(RuleSet.getRulesList25());
-		euristics.addAll(RuleSet.getRulesList26());
-		euristics.addAll(RuleSet.getRulesList27());
-		euristics.addAll(RuleSet.getRulesList28());
-		euristics.addAll(RuleSet.getRulesList29());
-		euristics.addAll(RuleSet.getRulesList30());
-		euristics.addAll(RuleSet.getRulesList31());
-		euristics.addAll(RuleSet.getRulesList32());
-		euristics.addAll(RuleSet.getRulesList33());
-		euristics.addAll(RuleSet.getRulesList34());
-		euristics.addAll(RuleSet.getRulesList35());
-		euristics.addAll(RuleSet.getRulesList36());
-		euristics.addAll(RuleSet.getRulesList37());
+//		euristics.addAll(RuleSet.getRulesList5());
+//		euristics.addAll(RuleSet.getRulesList6());
+//		euristics.addAll(RuleSet.getRulesList7());
+//		euristics.addAll(RuleSet.getRulesList8());
+//		euristics.addAll(RuleSet.getRulesList9());
+//		euristics.addAll(RuleSet.getRulesList10());
+//		euristics.addAll(RuleSet.getRulesList11());
+//		euristics.addAll(RuleSet.getRulesList12());
+//		euristics.addAll(RuleSet.getRulesList13());
+//		euristics.addAll(RuleSet.getRulesList14());
+//		euristics.addAll(RuleSet.getRulesList15());
+//		euristics.addAll(RuleSet.getRulesList16());
+//		euristics.addAll(RuleSet.getRulesList17());
+//		euristics.addAll(RuleSet.getRulesList18());
+//		euristics.addAll(RuleSet.getRulesList19());
+//		euristics.addAll(RuleSet.getRulesList20());
+//		euristics.addAll(RuleSet.getRulesList21());
+//		euristics.addAll(RuleSet.getRulesList22());
+//		euristics.addAll(RuleSet.getRulesList23());
+//		euristics.addAll(RuleSet.getRulesList24());
+//		euristics.addAll(RuleSet.getRulesList25());
+//		euristics.addAll(RuleSet.getRulesList26());
+//		euristics.addAll(RuleSet.getRulesList27());
+//		euristics.addAll(RuleSet.getRulesList28());
+//		euristics.addAll(RuleSet.getRulesList29());
+//		euristics.addAll(RuleSet.getRulesList30());
+//		euristics.addAll(RuleSet.getRulesList31());
+//		euristics.addAll(RuleSet.getRulesList32());
+//		euristics.addAll(RuleSet.getRulesList33());
+//		euristics.addAll(RuleSet.getRulesList34());
+//		euristics.addAll(RuleSet.getRulesList35());
+//		euristics.addAll(RuleSet.getRulesList36());
+//		euristics.addAll(RuleSet.getRulesList37());
 		return euristics;
 	}
 
@@ -220,10 +220,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	protected int skipNonWordTokens(List<IToken> tokens, int j) {
-		while (j < tokens.size() && !(tokens.get(j) instanceof WordFormToken)) {
-			if (Character.isLetter(tokens.get(j).getStringValue().charAt(0))) {
-				System.out.println(tokens.get(j).getStringValue());
-			}
+		while (j < tokens.size() && !(tokens.get(j) instanceof WordFormToken)) {			
 			j++;
 		}
 		if (j == tokens.size()) {
