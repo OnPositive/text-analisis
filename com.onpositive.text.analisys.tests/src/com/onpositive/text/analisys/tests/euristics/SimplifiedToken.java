@@ -43,7 +43,17 @@ public class SimplifiedToken {
 	}
 	
 	public boolean wordEquals(WordFormToken comparedToken) {
-		String stringValue = comparedToken.getShortStringValue();
+		String stringValue = comparedToken.getShortStringValue().trim();
+		if (stringValue.length() > 0) {
+			int end = stringValue.length() - 1;
+			while (end >= 0 && !Character.isLetter(stringValue.charAt(end)) && !Character.isDigit(stringValue.charAt(end)) && stringValue.charAt(end) != '-') {
+				end--;
+			}
+			if (end >= 0 && end < stringValue.length() - 1) {
+				stringValue = stringValue.substring(0, end + 1);
+			}
+		}
+		stringValue = stringValue.replaceAll(" ","");
 		return word.trim().equalsIgnoreCase(stringValue.trim());
 	}
 	

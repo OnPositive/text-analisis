@@ -23,7 +23,7 @@ import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.RuleSet;
 
-public class EuristicAnalysisTest  extends TestCase{
+public class EuristicAnalysisTest extends TestCase{
 	
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10; 
 	
@@ -211,6 +211,10 @@ public class EuristicAnalysisTest  extends TestCase{
 			j++;
 			lookahead++;
 			j = skipNonWordTokens(tokens, j);
+			token = (WordFormToken) tokens.get(j);
+		}
+		if (lookahead == MAX_NEUTRALIZATION_LOOKAHEAD) {
+			return -1;
 		}
 		return j;
 	}
