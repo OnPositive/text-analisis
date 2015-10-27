@@ -411,6 +411,14 @@ public class WordFormParserTest extends TestCase{
 		printChain(str, processed);
 		util.printConflictingEuristics();
 	}
+	
+	public void test41() {
+		String str = "на скамейке";
+		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
+		List<IToken> processed = util.process(str);
+		printChain(str, processed);
+		util.printConflictingEuristics();
+	}
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
 		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");

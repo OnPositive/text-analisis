@@ -52,6 +52,8 @@ public class RuleSet {
 		euristics.addAll(getRulesList33());
 		euristics.addAll(getRulesList34());
 		euristics.addAll(getRulesList35());
+		euristics.addAll(getRulesList36());
+		euristics.addAll(getRulesList37());
 		return euristics;
 	}
 	
