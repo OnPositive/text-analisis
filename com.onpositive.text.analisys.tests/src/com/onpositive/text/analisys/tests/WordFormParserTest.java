@@ -68,6 +68,7 @@ public class WordFormParserTest extends TestCase{
 		PrimitiveTokenizer pt = new PrimitiveTokenizer();
 		AbstractWordNet instance = WordNetProvider.getInstance();
 		WordFormParser wfParser = new WordFormParser(instance);
+		wfParser.setIgnoreCombinations(true);
 		List<IToken> tokens = pt.tokenize(str);		
 		List<IToken> processed = wfParser.process(tokens);
 		return processed;
