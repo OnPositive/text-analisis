@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import junit.framework.TestCase;
@@ -25,7 +26,8 @@ import com.onpositive.text.analysis.rules.RuleSet;
 
 public class EuristicAnalysisTest extends TestCase{
 	
-	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10; 
+	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10;
+	private static final double E = 0.001; 
 	
 	public void test02() {
 		testWithFile("3344.xml");
@@ -104,22 +106,22 @@ public class EuristicAnalysisTest extends TestCase{
 		int j = 0;
 		ITokenComparator tokenComparator = new PartOfSpeechComparator();
 		Map<PartOfSpeech, Integer> comparedCounts = new HashMap<PartOfSpeech, Integer>();
-		int comparedCount = 0;
 		int conflictingCount = 0;
 		int wrongCount = 0;
+		long filteredOut = 0;
 		while (i < etalonTokens.size() && j < tokens.size()) {
 			SimplifiedToken etalonToken = etalonTokens.get(i);
 			List<WordFormToken> comparedTokens = new ArrayList<WordFormToken>();
 			j = getNextWordTokenIdx(tokens, j, etalonToken);
 			if (j == -1) {
-				printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
+				printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
 				return;
 			}
 			WordFormToken wordFormToken = (WordFormToken) tokens.get(j);
 			if (!etalonToken.wordEquals(wordFormToken)) {
 				i = tryEtalonNeutralization(i, etalonTokens, wordFormToken);
 				if (i == -1) {
-					printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
+					printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
 					return;
 				} else {
 					etalonToken = etalonTokens.get(i);
@@ -141,21 +143,25 @@ public class EuristicAnalysisTest extends TestCase{
 				if (comparedTokens.size() > 1) {
 					conflictingCount++;
 				}
-				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > 0).collect(Collectors.toList());
-				if (comparedTokens.size() > 0) {
-					boolean wordEquals = etalonToken.wordEquals(comparedTokens.get(0));
+				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > E).collect(Collectors.toList());
+				filteredOut  = comparedTokens.stream().filter(token -> token.getCorrelation() < E).count();
+				if (comparedTokens.size() > 1) {
+					wrongCount++;
+					StringJoiner joiner = new StringJoiner(", ");
+					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
+					System.out.println("Multiple options left: " + joiner.toString());
+				} else if (comparedTokens.size() == 1) {
+					WordFormToken token = comparedTokens.get(0);
+					boolean wordEquals = etalonToken.wordEquals(token);
 					if (!wordEquals) {
-						System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + comparedTokens.get(0).getShortStringValue());
+						System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + token.getShortStringValue());
 					}
-					for (WordFormToken comparedToken : comparedTokens) {
-						incrementCount(comparedCounts, comparedToken.getPartOfSpeech());
-						comparedCount++;
-						List<Grammem> missedGrammems = tokenComparator.calculateMissed(etalonToken, comparedToken);
-						if (!missedGrammems.isEmpty()) {
-							System.out.println("Incorrect grammem set for token " + etalonToken);
-							System.out.println("Wrong grammems: " + missedGrammems);
-							wrongCount++;
-						}
+					incrementCount(comparedCounts, token.getPartOfSpeech());
+					List<Grammem> missedGrammems = tokenComparator.calculateMissed(etalonToken, token);
+					if (!missedGrammems.isEmpty()) {
+						System.out.println("Incorrect grammem set for token " + etalonToken);
+						System.out.println("Wrong grammems: " + missedGrammems);
+						wrongCount++;
 					}
 				}
 			}
@@ -163,13 +169,14 @@ public class EuristicAnalysisTest extends TestCase{
 			j++;
 			
 		}
-		printComparisonResults(comparedCounts, comparedCount, conflictingCount, wrongCount);
+		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
 	}
 
-	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount) {
+	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut) {
 		System.out.println("** Totally compared " + comparedCount + " tokens **");
 		System.out.println("** Has conflicting: " + conflictingCount + " tokens **");
 		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (conflictingCount - wrongCount) * 100.0 / conflictingCount));
+		System.out.println("** Filtered out: " + filteredOut + " tokens **");
 		System.out.println("** Parts of speech ");
 		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
 			System.out.println("** " + part.description + " = " + comparedCounts.get(part));

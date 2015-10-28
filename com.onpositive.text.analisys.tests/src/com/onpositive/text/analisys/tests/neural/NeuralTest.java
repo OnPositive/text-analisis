@@ -10,7 +10,7 @@ public class NeuralTest extends TestCase {
 	
 	@Test
 	public void test00() throws Exception {
-		new Trainer().train();
+		new Trainer().trainEncog();
 	}
 
 }
