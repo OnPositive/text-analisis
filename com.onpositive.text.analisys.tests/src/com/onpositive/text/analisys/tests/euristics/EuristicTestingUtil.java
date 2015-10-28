@@ -154,4 +154,8 @@ public class EuristicTestingUtil {
 		}
 	}
 
+	public List<Map<IToken, EuristicMatch>> getMatchedEuristics() {
+		return matchedEuristics;
+	}
+
 }

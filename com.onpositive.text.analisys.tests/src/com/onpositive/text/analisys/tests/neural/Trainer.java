@@ -20,6 +20,7 @@ import org.encog.ml.train.MLTrain;
 import org.encog.neural.data.basic.BasicNeuralData;
 import org.encog.neural.data.basic.BasicNeuralDataPair;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.training.propagation.quick.QuickPropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.persist.EncogDirectoryPersistence;
@@ -96,7 +97,7 @@ public class Trainer {
 	
 	public void trainEncog() {
 		int inputSize = TOKEN_WINDOW_SIZE * props.length;
-		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 3,  (int) (inputSize * 2.5), inputSize * 2, 1);
+		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 10,  inputSize * 4, 1);
 		
 		// randomize consistent so that we get weights we know will converge
 		(new ConsistentRandomizer(-1,1,100)).randomize(network);
@@ -109,6 +110,7 @@ public class Trainer {
 
 		// train the neural network
 		final MLTrain train = new ResilientPropagation(network, trainingSet);
+//		final MLTrain train = new QuickPropagation(network, trainingSet);
 
 		long millis = System.currentTimeMillis();
 		double minError = 5;

@@ -7,18 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
-import com.onpositive.semantic.wordnet.Grammem.Case;
-import com.onpositive.semantic.wordnet.Grammem.Extras;
-import com.onpositive.semantic.wordnet.Grammem.FeaturesGramem;
-import com.onpositive.semantic.wordnet.Grammem.Gender;
-import com.onpositive.semantic.wordnet.Grammem.Mood;
-import com.onpositive.semantic.wordnet.Grammem.Personality;
-import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
-import com.onpositive.semantic.wordnet.Grammem.Time;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analisys.tests.euristics.EuristicTestingUtil;
@@ -28,7 +22,6 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
-import com.onpositive.text.analysis.projection.creators.NotPartRemover;
 import com.onpositive.text.analysis.rules.RuleSet;
 
 public class WordFormParserTest extends TestCase{
@@ -409,6 +402,7 @@ public class WordFormParserTest extends TestCase{
 		String str = "шестьдесят минут прошло";
 		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
 		List<IToken> processed = util.process(str);
+		assertTrue(!util.getMatchedEuristics().isEmpty());
 		printChain(str, processed);
 		util.printConflictingEuristics();
 	}
@@ -419,6 +413,17 @@ public class WordFormParserTest extends TestCase{
 		List<IToken> processed = util.process(str);
 		printChain(str, processed);
 		util.printConflictingEuristics();
+		assertTrue(!util.getMatchedEuristics().isEmpty());
+	}
+	
+	@Test
+	public void test42() throws Exception {
+		String str = "Но любая задача";
+		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
+		List<IToken> processed = util.process(str);
+		printChain(str, processed);
+		util.printConflictingEuristics();
+		assertTrue(!util.getMatchedEuristics().isEmpty());
 	}
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
