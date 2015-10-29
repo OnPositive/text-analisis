@@ -18,6 +18,7 @@ import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -39,7 +40,7 @@ public class EuristicAnalysisTest extends TestCase{
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
+		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
 		compare(etalonTokens,processed);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
@@ -84,8 +85,8 @@ public class EuristicAnalysisTest extends TestCase{
 		return euristics;
 	}
 
-	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
-		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+	private MorphologicParser configureDefaultAnalyzer(List<Euristic> euristics) {
+		MorphologicParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
 		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
 		return euristicAnalyzingParser;
 	}

@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.onpositive.text.analysis.filtering.ITokenFilter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.projection.IProjectionCreator;
 import com.onpositive.text.analysis.projection.Projection;
 import com.onpositive.text.analysis.rules.RuleSet;
+import com.onpositive.text.analysis.utils.MorphologicUtils;
 
-public class EuristicAnalyzingParser extends AbstractParser{
+public class EuristicAnalyzingParser extends MorphologicParser{
 	
 	private static final boolean DEBUG = true;
 	
@@ -24,9 +24,6 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	private List<List<IToken>> possibleChains;
 	
 	private List<IProjectionCreator> projectionCreators = new ArrayList<IProjectionCreator>();
-	
-//	private List<IPossibleChainsFilter> possibleChainsFilters = new ArrayList<IPossibleChainsFilter>();
-	private List<ITokenFilter> tokenFilters = new ArrayList<ITokenFilter>();
 	
 	public EuristicAnalyzingParser() {
 		this.euristics = RuleSet.getFullRulesList();
@@ -125,14 +122,8 @@ public class EuristicAnalyzingParser extends AbstractParser{
 	}
 	
 	protected List<IToken> applyEuristicsNew(List<IToken> tokens) {
-		for (IToken curToken : tokens) {
-			for (ITokenFilter filter : tokenFilters) {
-				if (filter.shouldFilterOut(curToken)) {
-					curToken.setCorrelation(0.0, Double.POSITIVE_INFINITY);
-				}
-			}
-		}
-		List<IToken> chain = getWithNoConflicts(tokens);
+		doFiltering(tokens);
+		List<IToken> chain = MorphologicUtils.getWithNoConflicts(tokens);
 		for (int i = 0; i < chain.size(); i++) {
 			IToken token = chain.get(i);
 			if (token instanceof WordFormToken && token.hasConflicts()) {
@@ -189,10 +180,6 @@ public class EuristicAnalyzingParser extends AbstractParser{
 			}
 		}
 		return true;
-	}
-	
-	public void addTokenFilter(ITokenFilter filter) {
-		tokenFilters.add(filter);
 	}
 	
 	public void addProjectionCreator(IProjectionCreator projectionCreator) {
@@ -289,42 +276,6 @@ public class EuristicAnalyzingParser extends AbstractParser{
 //		return result;
 //	}
 	
-	private List<IToken> getWithNoConflicts(List<IToken> source) {
-		List<IToken> workingCopy = new ArrayList<IToken>(source);
-		for (int i = 0; i < workingCopy.size(); i++) {
-			if (workingCopy.get(i).getConflicts() != null || !workingCopy.get(i).getConflicts().isEmpty()) {
-				List<IToken> conflicts = new ArrayList<IToken>(workingCopy.get(i).getConflicts());
-				conflicts.add(0, workingCopy.get(i));
-				while (i+1 < workingCopy.size() && conflicts.contains(workingCopy.get(i+1))) {
-					workingCopy.remove(i+1);
-				}
-			}
-		}
-		return workingCopy;
-	}
-	
-	private List<List<IToken>> generateVariants(List<List<IToken>> prevResult, List<IToken> conflicts) {
-		List<List<IToken>> result = new ArrayList<List<IToken>>();
-		for (List<IToken> list : prevResult) {
-			for (IToken curToken : conflicts) {
-//				if (curToken.getCorrelation() < E) {
-//					continue;
-//				}
-				List<IToken> newList = new ArrayList<IToken>(list);
-				newList.add(curToken);
-				result.add(newList);
-			}
-		}
-		return result;
-	}
-
-	private void addItem(List<List<IToken>> result, IToken token) {
-		for (List<IToken> list : result) {
-			list.add(token);
-		}
-	}
-
-
 	@Override
 	public boolean isRecursive() {
 		// TODO Auto-generated method stub

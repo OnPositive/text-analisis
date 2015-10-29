@@ -6,11 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.engine.network.activation.ActivationTANH;
 import org.encog.mathutil.randomize.ConsistentRandomizer;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
@@ -18,31 +18,22 @@ import org.encog.ml.data.basic.BasicMLDataPair;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.ml.train.MLTrain;
 import org.encog.neural.data.basic.BasicNeuralData;
-import org.encog.neural.data.basic.BasicNeuralDataPair;
 import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.training.propagation.quick.QuickPropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.persist.EncogDirectoryPersistence;
-import org.encog.util.simple.EncogUtility;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
-import org.neuroph.core.events.NeuralNetworkEvent;
-import org.neuroph.core.events.NeuralNetworkEventListener;
 import org.neuroph.nnet.MultiLayerPerceptron;
-import org.neuroph.nnet.Perceptron;
-
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
-import com.onpositive.semantic.wordnet.Grammem.Gender;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.Grammem.SingularPlural;
-import com.onpositive.semantic.wordnet.Grammem.TransKind;
-import com.onpositive.semantic.wordnet.Grammem.VerbKind;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analisys.tests.euristics.SimplifiedToken;
+
+import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 
 public class Trainer {
 	
@@ -52,7 +43,7 @@ public class Trainer {
 	
 	private class DataSetVisitor implements IVisitor  {
 		
-		private DataSet dataSet = new DataSet(TOKEN_WINDOW_SIZE * props.length, 1);
+		private DataSet dataSet = new DataSet(TOKEN_WINDOW_SIZE * USED_PROPS.length, 1);
 
 		@Override
 		public void visit(double[] inputs, double[] desired) {
@@ -84,11 +75,8 @@ public class Trainer {
 		
 	}
 	
-	private static final int TOKEN_WINDOW_SIZE = 3;
-	Class<? extends Grammem>[] props = (Class<? extends Grammem>[]) new Class<?>[] {PartOfSpeech.class, Gender.class, SingularPlural.class, VerbKind.class, TransKind.class }; 
-	
 	public void train() {
-		int inputSize = TOKEN_WINDOW_SIZE * props.length;
+		int inputSize = TOKEN_WINDOW_SIZE * USED_PROPS.length;
 		MultiLayerPerceptron perceptron1 = new MultiLayerPerceptron(inputSize, inputSize, 1);
 		DataSetVisitor visitor = new DataSetVisitor();
 		prepareLearningData(visitor);
@@ -96,7 +84,7 @@ public class Trainer {
 	}
 	
 	public void trainEncog() {
-		int inputSize = TOKEN_WINDOW_SIZE * props.length;
+		int inputSize = TOKEN_WINDOW_SIZE * USED_PROPS.length;
 		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 10,  inputSize * 4, 1);
 		
 		// randomize consistent so that we get weights we know will converge
@@ -110,7 +98,6 @@ public class Trainer {
 
 		// train the neural network
 		final MLTrain train = new ResilientPropagation(network, trainingSet);
-//		final MLTrain train = new QuickPropagation(network, trainingSet);
 
 		long millis = System.currentTimeMillis();
 		double minError = 5;
@@ -129,7 +116,17 @@ public class Trainer {
 		System.out.println("Training took, seconds: " + ((System.currentTimeMillis() - millis) / 1000));
 
 		System.out.println("Saving network");
-		EncogDirectoryPersistence.saveObject(new File("preved.nnet"), network);
+		EncogDirectoryPersistence.saveObject(new File("morphology.nnet"), network);
+	}
+	
+	public void testEncog() {
+		BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File("preved.nnet"));
+		EncogDataSetVisitor visitor = new EncogDataSetVisitor();
+		prepareTestingData(visitor);
+		MLDataSet trainingSet = new BasicMLDataSet(visitor.getPairs());
+		double e = network.calculateError(trainingSet);
+		System.out.println("Network trained to error: " + e);
+
 	}
 	
 	public static BasicNetwork simpleFeedForward(final int... neurons) {
@@ -156,23 +153,45 @@ public class Trainer {
 		
 		for (int i = 0; i < listedFiles.length / 2; i++) {
 			File curFile = listedFiles[i];
-			try {
-				BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(curFile));
-				ParsedTokensLoader loader = new ParsedTokensLoader(inputStream);
-				List<SimplifiedToken> tokens = loader.getTokens();
-				tokens = tokens.stream().filter(token -> token.hasValidGrammemSet()).collect(Collectors.toList());
-				for (int j = 0; j < tokens.size(); j++) {
-					List<List<SimplifiedToken>> trigrams = getTrigrams(tokens, j, wordNet);
+			prepareForFile(visitor, wordNet, curFile);
+			
+		}
+	}
+	
+	protected void prepareTestingData(IVisitor visitor) {
+		
+		File dir = new File("corpora");
+		File[] listedFiles = dir.listFiles();
+		AbstractWordNet wordNet = WordNetProvider.getInstance();
+		
+		for (int i = listedFiles.length / 2; i < listedFiles.length; i++) {
+			File curFile = listedFiles[i];
+			prepareForFile(visitor, wordNet, curFile);
+			
+		}
+	}
+
+	protected void prepareForFile(IVisitor visitor, AbstractWordNet wordNet, File curFile) {
+		try {
+			BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(curFile));
+			ParsedTokensLoader loader = new ParsedTokensLoader(inputStream);
+			List<List<SimplifiedToken>> chains = loader.getChains();
+			for (List<SimplifiedToken> chain : chains) {
+				chain = chain.stream().filter(token -> token.hasValidGrammemSet()).collect(Collectors.toList());
+				for (int j = 0; j < chain.size(); j++) {
+					if (chain.isEmpty()) {
+						continue;
+					}
+					List<List<SimplifiedToken>> trigrams = getTrigrams(chain, j, wordNet);
 					for (int k = 0; k < trigrams.size(); k++) {
 						List<SimplifiedToken> trigram = trigrams.get(k);
 						double desired = k == 0 ? 1: 0;
 						visitor.visit(getDataSet(trigram), new double[]{desired});
 					}
 				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 			}
-			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -183,9 +202,13 @@ public class Trainer {
 			subListStart = 0;
 		}
 		if (j == tokens.size() - 1) {
-			subListStart = tokens.size() - TOKEN_WINDOW_SIZE;
+			subListStart = Math.max(0,tokens.size() - TOKEN_WINDOW_SIZE);
 		}
-		List<SimplifiedToken> correctList = tokens.subList(subListStart, subListStart + TOKEN_WINDOW_SIZE);
+		int subListEnd = Math.min(tokens.size(), subListStart + TOKEN_WINDOW_SIZE);
+		if (subListEnd - subListStart < 2) {
+			return Collections.emptyList();
+		}
+		List<SimplifiedToken> correctList = tokens.subList(subListStart, subListEnd);
 		result.add(correctList);
 		int interestingToken = j - subListStart;
 		SimplifiedToken correctToken = correctList.get(interestingToken);
@@ -205,12 +228,15 @@ public class Trainer {
 	}
 
 	private double[] getDataSet(List<SimplifiedToken> tokens) {
+		if (TOKEN_WINDOW_SIZE < tokens.size()) {
+			throw new IllegalArgumentException("tokens list to large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
+		}
 		int i = 0;
-		double[] result = new double[tokens.size() * props.length];
+		double[] result = new double[TOKEN_WINDOW_SIZE * USED_PROPS.length];
 		for (SimplifiedToken simplifiedToken : tokens) {
 			Collection<Grammem> grammems = simplifiedToken.getGrammems();
-			for (int j = 0; j < props.length; j++) {
-				result[i * props.length + j] = getProperty(grammems, props[j]);
+			for (int j = 0; j < USED_PROPS.length; j++) {
+				result[i * USED_PROPS.length + j] = getProperty(grammems, USED_PROPS[j]);
 			}
 			i++;
 		}

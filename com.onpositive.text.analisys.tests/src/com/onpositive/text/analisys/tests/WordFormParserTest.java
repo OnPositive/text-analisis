@@ -19,6 +19,7 @@ import com.onpositive.text.analisys.tests.euristics.EuristicTestingUtil;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -87,7 +88,7 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
 				);
 		euristics.add(euristic1);
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
@@ -144,7 +145,7 @@ public class WordFormParserTest extends TestCase{
 	}
 
 	private void doBasicAnalyzerTest(String str, List<Euristic> euristics) {
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
 		printChain(str, processed);
 		matched(RuleSet.getFullRulesList(), str);
@@ -392,7 +393,7 @@ public class WordFormParserTest extends TestCase{
 		Collection<List<IToken>> matched = getAllMatched(RuleSet.getFullRulesList(), str);
 		printProcessingResult(str, matched);
 		assertTrue(matched.size() > 0);
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
 		assertNotNull(processed);
 		printChain(str, processed);

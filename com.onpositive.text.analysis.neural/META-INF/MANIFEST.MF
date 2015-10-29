@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Neural Network Morphology Analysis
+Bundle-SymbolicName: com.onpositive.text.analysis.neural
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: ONPOSITIVE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.onpositive.text.analisys;bundle-version="1.0.0",
+ com.onpositive.wordnet
+Export-Package: com.onpositive.text.analysis.neural

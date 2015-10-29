@@ -17,6 +17,7 @@ import com.onpositive.text.analisys.tests.euristics.SimplifiedToken;
 
 public class ParsedTokensLoader {
 	
+	private List<List<SimplifiedToken>> chains = new ArrayList<List<SimplifiedToken>>();
 	private List<SimplifiedToken> tokens = new ArrayList<SimplifiedToken>();
 	
 	private String initialText;
@@ -68,7 +69,12 @@ public class ParsedTokensLoader {
 				curName = null;
 				grammems = new ArrayList<Grammem>();
 				ignore = false;
-			};
+			} else if ("sentence".equalsIgnoreCase(qName) && !tokens.isEmpty()) {
+				chains.add(tokens);
+				tokens = new ArrayList<SimplifiedToken>();
+			} else if ("text".equalsIgnoreCase(qName) && !tokens.isEmpty()) {
+				chains.add(tokens);
+			}
 		
 		}
 		
@@ -96,12 +102,18 @@ public class ParsedTokensLoader {
 		}
 	}
 
-
-	public List<SimplifiedToken> getTokens() {
-		return tokens;
+	public List<List<SimplifiedToken>> getChains() {
+		return chains;
 	}
 	
 	public String getInitialText() {
 		return initialText;
+	}
+
+
+	public List<SimplifiedToken> getTokens() {
+		List<SimplifiedToken> result = new ArrayList<SimplifiedToken>();
+		chains.stream().forEach(list -> result.addAll(list));
+		return result;
 	}
 }
