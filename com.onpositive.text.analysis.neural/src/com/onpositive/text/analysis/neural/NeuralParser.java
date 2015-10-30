@@ -13,7 +13,6 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
-import com.onpositive.text.analysis.syntax.SentenceToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
 import static com.onpositive.text.analysis.neural.NeuralConstants.*;
@@ -27,16 +26,7 @@ public class NeuralParser extends MorphologicParser {
 	}
 
 	@Override
-	public List<IToken> process(List<IToken> tokens) {
-		if (tokens.isEmpty()) {
-			return tokens;
-		} else if (tokens.get(0) instanceof SentenceToken) {
-			return processSentences(tokens);
-		}
-		return processPlain(tokens);
-	}
-
-	protected List<IToken> processPlain(List<IToken> tokens) {
+	public List<IToken> processPlain(List<IToken> tokens) {
 		doFiltering(tokens);
 		List<IToken> chain = MorphologicUtils.getWithNoConflicts(tokens);
 		for (int i = 0; i < chain.size(); i++) {
@@ -82,14 +72,6 @@ public class NeuralParser extends MorphologicParser {
 		double[] result = new double[1];
  		network.compute(dataSet, result);
  		return result[0];
-	}
-
-	protected List<IToken> processSentences(List<IToken> tokens) {
-		for (IToken sentence : tokens) {
-			SentenceToken sentenceToken = (SentenceToken) sentence;
-			processPlain(sentenceToken.getChildren());
-		}
-		return tokens;
 	}
 
 	@Override

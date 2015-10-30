@@ -12,6 +12,7 @@ import com.onpositive.semantic.wordnet.Grammem.SemanGramem;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
 import com.onpositive.text.analysis.syntax.SentenceToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class SentenceSplitter {
 	
@@ -97,7 +98,7 @@ public class SentenceSplitter {
 					}
 				}
 				else if(prevType==IToken.TOKEN_TYPE_WORD_FORM){
-					WordFormToken wft = (WordFormToken) prev;
+					SyntaxToken wft = (SyntaxToken) prev;
 					if(wft.hasAnyGrammem(abbr)){
 						continue;
 					}

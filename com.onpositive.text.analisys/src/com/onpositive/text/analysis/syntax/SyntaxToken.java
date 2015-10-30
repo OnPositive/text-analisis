@@ -260,7 +260,7 @@ public class SyntaxToken extends AbstractToken{
 	}
 
 	public String getBasicForm() {
-		WordFormToken mainWord = getMainWord();
+		SyntaxToken mainWord = getMainWord();
 		return mainWord==null?null:mainWord.getBasicForm();
 	}
 

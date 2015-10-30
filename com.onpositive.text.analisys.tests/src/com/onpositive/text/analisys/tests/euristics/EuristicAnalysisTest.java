@@ -10,20 +10,19 @@ import java.util.stream.Collectors;
 
 import junit.framework.TestCase;
 
-import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
+import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
-import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
-import com.onpositive.text.analysis.lexic.WordFormParser;
+import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.rules.RuleSet;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class EuristicAnalysisTest extends TestCase{
 	
@@ -41,47 +40,52 @@ public class EuristicAnalysisTest extends TestCase{
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(text));
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(text));
 		compare(etalonTokens,processed);
+//		System.out.println("//---------------------------------With sentences---------------------------------------------------");
+//		List<IToken> tokens1 = TestingUtil.getWordFormTokens(text);
+//		List<IToken> sentences = new SentenceSplitter().split(tokens1);
+//		processed = euristicAnalyzingParser.process(sentences);
+//		compare(etalonTokens,tokens1);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 	
 	
 	private List<Euristic> createRulesList() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-//		euristics.addAll(RuleSet.getRulesList5());
-//		euristics.addAll(RuleSet.getRulesList6());
-//		euristics.addAll(RuleSet.getRulesList7());
-//		euristics.addAll(RuleSet.getRulesList8());
-//		euristics.addAll(RuleSet.getRulesList9());
-//		euristics.addAll(RuleSet.getRulesList10());
-//		euristics.addAll(RuleSet.getRulesList11());
-//		euristics.addAll(RuleSet.getRulesList12());
-//		euristics.addAll(RuleSet.getRulesList13());
-//		euristics.addAll(RuleSet.getRulesList14());
-//		euristics.addAll(RuleSet.getRulesList15());
-//		euristics.addAll(RuleSet.getRulesList16());
-//		euristics.addAll(RuleSet.getRulesList17());
-//		euristics.addAll(RuleSet.getRulesList18());
-//		euristics.addAll(RuleSet.getRulesList19());
-//		euristics.addAll(RuleSet.getRulesList20());
-//		euristics.addAll(RuleSet.getRulesList21());
-//		euristics.addAll(RuleSet.getRulesList22());
-//		euristics.addAll(RuleSet.getRulesList23());
-//		euristics.addAll(RuleSet.getRulesList24());
-//		euristics.addAll(RuleSet.getRulesList25());
-//		euristics.addAll(RuleSet.getRulesList26());
-//		euristics.addAll(RuleSet.getRulesList27());
-//		euristics.addAll(RuleSet.getRulesList28());
-//		euristics.addAll(RuleSet.getRulesList29());
-//		euristics.addAll(RuleSet.getRulesList30());
-//		euristics.addAll(RuleSet.getRulesList31());
-//		euristics.addAll(RuleSet.getRulesList32());
-//		euristics.addAll(RuleSet.getRulesList33());
-//		euristics.addAll(RuleSet.getRulesList34());
-//		euristics.addAll(RuleSet.getRulesList35());
-//		euristics.addAll(RuleSet.getRulesList36());
-//		euristics.addAll(RuleSet.getRulesList37());
+		euristics.addAll(RuleSet.getRulesList5());
+		euristics.addAll(RuleSet.getRulesList6());
+		euristics.addAll(RuleSet.getRulesList7());
+		euristics.addAll(RuleSet.getRulesList8());
+		euristics.addAll(RuleSet.getRulesList9());
+		euristics.addAll(RuleSet.getRulesList10());
+		euristics.addAll(RuleSet.getRulesList11());
+		euristics.addAll(RuleSet.getRulesList12());
+		euristics.addAll(RuleSet.getRulesList13());
+		euristics.addAll(RuleSet.getRulesList14());
+		euristics.addAll(RuleSet.getRulesList15());
+		euristics.addAll(RuleSet.getRulesList16());
+		euristics.addAll(RuleSet.getRulesList17());
+		euristics.addAll(RuleSet.getRulesList18());
+		euristics.addAll(RuleSet.getRulesList19());
+		euristics.addAll(RuleSet.getRulesList20());
+		euristics.addAll(RuleSet.getRulesList21());
+		euristics.addAll(RuleSet.getRulesList22());
+		euristics.addAll(RuleSet.getRulesList23());
+		euristics.addAll(RuleSet.getRulesList24());
+		euristics.addAll(RuleSet.getRulesList25());
+		euristics.addAll(RuleSet.getRulesList26());
+		euristics.addAll(RuleSet.getRulesList27());
+		euristics.addAll(RuleSet.getRulesList28());
+		euristics.addAll(RuleSet.getRulesList29());
+		euristics.addAll(RuleSet.getRulesList30());
+		euristics.addAll(RuleSet.getRulesList31());
+		euristics.addAll(RuleSet.getRulesList32());
+		euristics.addAll(RuleSet.getRulesList33());
+		euristics.addAll(RuleSet.getRulesList34());
+		euristics.addAll(RuleSet.getRulesList35());
+		euristics.addAll(RuleSet.getRulesList36());
+		euristics.addAll(RuleSet.getRulesList37());
 		return euristics;
 	}
 
@@ -90,17 +94,7 @@ public class EuristicAnalysisTest extends TestCase{
 		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
 		return euristicAnalyzingParser;
 	}
-	
-	public List<IToken> getWordFormTokens(String str) {
-		PrimitiveTokenizer pt = new PrimitiveTokenizer();
-		AbstractWordNet instance = WordNetProvider.getInstance();
-		WordFormParser wfParser = new WordFormParser(instance);
-		wfParser.setIgnoreCombinations(true);
-		List<IToken> tokens = pt.tokenize(str);		
-		List<IToken> processed = wfParser.process(tokens);
-		return processed;
-	}
-	
+		
 	@SuppressWarnings("unchecked")
 	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens) { 
 		int i = 0;
@@ -143,9 +137,9 @@ public class EuristicAnalysisTest extends TestCase{
 			} else {
 				if (comparedTokens.size() > 1) {
 					conflictingCount++;
-				}
+				}				
+				filteredOut += comparedTokens.stream().filter(token -> token.getCorrelation() <= E).count();
 				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > E).collect(Collectors.toList());
-				filteredOut  = comparedTokens.stream().filter(token -> token.getCorrelation() < E).count();
 				if (comparedTokens.size() > 1) {
 					wrongCount++;
 					StringJoiner joiner = new StringJoiner(", ");
@@ -158,10 +152,10 @@ public class EuristicAnalysisTest extends TestCase{
 						System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + token.getShortStringValue());
 					}
 					incrementCount(comparedCounts, token.getPartOfSpeech());
-					List<Grammem> missedGrammems = tokenComparator.calculateMissed(etalonToken, token);
-					if (!missedGrammems.isEmpty()) {
+					List<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
+					if (!wrongGrammems.isEmpty()) {
 						System.out.println("Incorrect grammem set for token " + etalonToken);
-						System.out.println("Wrong grammems: " + missedGrammems);
+						System.out.println("Wrong grammems: " + wrongGrammems);
 						wrongCount++;
 					}
 				}
@@ -197,7 +191,7 @@ public class EuristicAnalysisTest extends TestCase{
 		comparedCounts.put(partOfSpeech, count);
 	}
 
-	private int tryEtalonNeutralization(int i, List<SimplifiedToken> etalonTokens, WordFormToken wordFormToken) {
+	private int tryEtalonNeutralization(int i, List<SimplifiedToken> etalonTokens, SyntaxToken wordFormToken) {
 		i++;
 		for (int k = i; k < i + MAX_NEUTRALIZATION_LOOKAHEAD && k < etalonTokens.size(); k++) {
 			SimplifiedToken curToken = etalonTokens.get(k);
@@ -214,12 +208,12 @@ public class EuristicAnalysisTest extends TestCase{
 			return -1;
 		}
 		int lookahead = 0;
-		WordFormToken token = (WordFormToken) tokens.get(j);
+		SyntaxToken token = (SyntaxToken) tokens.get(j);
 		while (j > -1 && lookahead < MAX_NEUTRALIZATION_LOOKAHEAD && !etalonToken.wordEquals(token)) {
 			j++;
 			lookahead++;
 			j = skipNonWordTokens(tokens, j);
-			token = (WordFormToken) tokens.get(j);
+			token = (SyntaxToken) tokens.get(j);
 		}
 		if (lookahead == MAX_NEUTRALIZATION_LOOKAHEAD) {
 			return -1;

@@ -12,7 +12,6 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormParser;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
@@ -23,7 +22,7 @@ public class TestingUtil {
 	public static void checkHas(List<IToken> result, int i, Grammem wantedGrammem) {
 		TestCase.assertTrue(i < result.size() && (result.get(i) instanceof SyntaxToken));
 		result = MorphologicUtils.getWithNoConflicts(result);
-		WordFormToken wordFormToken = (WordFormToken) result.get(i);
+		SyntaxToken wordFormToken = (SyntaxToken) result.get(i);
 		if (wordFormToken.getCorrelation() > CORRELATION_THRESHOLD && wordFormToken.hasGrammem(wantedGrammem)) {
 			return;
 		}

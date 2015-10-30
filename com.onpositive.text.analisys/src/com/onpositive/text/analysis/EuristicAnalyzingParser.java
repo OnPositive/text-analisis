@@ -49,7 +49,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 //		return this.possibleChains.get(0);
 //	}
 	
-	public List<IToken> process(List<IToken> tokens) {
+	public List<IToken> processPlain(List<IToken> tokens) {
 		List<IToken> resultTokens = applyEuristicsNew(tokens);
 		return resultTokens;
 	}
@@ -315,6 +315,5 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	public List<List<IToken>> getPossibleChains() {
 		return possibleChains;
 	}
-
 
 }

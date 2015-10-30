@@ -6,8 +6,8 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 public class PartOfSpeechComparator extends DefaultComparator {
 
 	@Override
-	protected boolean conainsGrammem(SimplifiedToken etalonToken, Grammem grammem) {
-		return grammem instanceof PartOfSpeech && super.conainsGrammem(etalonToken, grammem);
+	protected boolean isWrong(SimplifiedToken etalonToken, Grammem grammem) {
+		return grammem instanceof PartOfSpeech && super.isWrong(etalonToken, grammem);
 	}
 
 }

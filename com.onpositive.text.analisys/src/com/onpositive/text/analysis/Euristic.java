@@ -11,6 +11,7 @@ import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class Euristic {
@@ -57,7 +58,7 @@ public class Euristic {
 	private boolean matchWord(IToken token) {
 		if (!(token instanceof WordFormToken)) 
 			return false;
-		WordFormToken wft = (WordFormToken) token;
+		SyntaxToken wft = (SyntaxToken) token;
 		if (!wft.getBasicForm().equals(this.word)) 
 			return false;
 		
@@ -130,7 +131,7 @@ public class Euristic {
 	
 	private boolean matchConflicting(IToken token) {
 		if (!(token instanceof WordFormToken)) return false;
-		WordFormToken wft = (WordFormToken) token;
+		SyntaxToken wft = (SyntaxToken) token;
 		List<IToken> conflicts = wft.getConflicts();
 		if (conflicts == null || conflicts.isEmpty()) {
 			return false;

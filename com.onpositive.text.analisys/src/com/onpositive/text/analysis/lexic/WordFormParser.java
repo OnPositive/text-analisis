@@ -72,7 +72,7 @@ public class WordFormParser extends BasicParser {
 			for(IToken t : sample){
 				ArrayList<GrammemSet> list = new ArrayList<GrammemSet>();
 				list.add(new GrammemSet(uniformGrammems));
-				WordFormToken wft = new WordFormToken(list, t.getStartPosition(), t.getEndPosition());
+				SyntaxToken wft = new WordFormToken(list, t.getStartPosition(), t.getEndPosition());
 				processingData.addReliableToken(wft);
 			}
 			return;
@@ -276,7 +276,7 @@ public class WordFormParser extends BasicParser {
 				}
 			}
 		}
-		for (WordFormToken t : nextWFTs) {
+		for (SyntaxToken t : nextWFTs) {
 			if (matcher.match(t)) {
 				return true;
 			}
@@ -778,7 +778,7 @@ public class WordFormParser extends BasicParser {
 				WordFormToken[] a = new WordFormToken[t.size()];
 				t.toArray(a);
 				a[0].merge(a);
-				for (WordFormToken tc : a) {
+				for (SyntaxToken tc : a) {
 					if (tc != a[0]) {
 						tks.remove(tc);
 					}

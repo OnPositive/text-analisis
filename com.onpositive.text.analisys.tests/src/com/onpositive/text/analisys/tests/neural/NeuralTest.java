@@ -8,7 +8,8 @@ import org.junit.Test;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.neural.NeuralParser;
+import com.onpositive.text.analysis.MorphologicParser;
+
 import junit.framework.TestCase;
 
 public class NeuralTest extends TestCase {
@@ -109,7 +110,7 @@ public class NeuralTest extends TestCase {
 	}
 
 	private List<IToken> basicNeuralTest(String str) throws FileNotFoundException {
-		NeuralParser neuralParser = NeuralParserProvider.getParser();
+		MorphologicParser neuralParser = NeuralParserProvider.getParser();
 		return neuralParser.process(TestingUtil.getWordFormTokens(str));
 	}
 	

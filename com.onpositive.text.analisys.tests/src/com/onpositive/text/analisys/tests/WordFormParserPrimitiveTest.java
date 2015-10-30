@@ -9,6 +9,7 @@ import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 import junit.framework.TestCase;
 
@@ -30,7 +31,7 @@ public class WordFormParserPrimitiveTest extends TestCase {
 			}
 			if (!(token instanceof WordFormToken) ||
 				((WordFormToken) token).getGrammarRelations().isEmpty() ||
-				((WordFormToken) token).getChildren().size() > 1) {
+				((SyntaxToken) token).getChildren().size() > 1) {
 				System.out.println("Ошибка в словаре - " + token);
 			}
 		}

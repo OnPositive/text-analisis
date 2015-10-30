@@ -3,11 +3,11 @@ package com.onpositive.text.analisys.tests.euristics;
 import java.util.List;
 
 import com.onpositive.semantic.wordnet.Grammem;
-import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public interface ITokenComparator {
 	
-	public List<Grammem> calculateMissed(SimplifiedToken etalonToken, WordFormToken comparedToken);
+	public List<Grammem> calculateWrong(SimplifiedToken etalonToken, SyntaxToken comparedToken);
 	
 
 }

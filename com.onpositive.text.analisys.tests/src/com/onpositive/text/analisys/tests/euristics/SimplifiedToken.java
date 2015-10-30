@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class SimplifiedToken {
@@ -29,7 +29,7 @@ public class SimplifiedToken {
 		return grammems;
 	}
 	
-	public List<Grammem> getMissedGrammems(WordFormToken wordFormToken) {
+	public List<Grammem> getMissedGrammems(SyntaxToken wordFormToken) {
 		List<GrammemSet> grammemSets = wordFormToken.getGrammemSets();
 		List<Grammem> missedGrammems = grammems.stream().filter(grammem -> {for (GrammemSet grammemSet : grammemSets) {
 				if (grammemSet.hasGrammem(grammem)) {
@@ -42,7 +42,7 @@ public class SimplifiedToken {
 			
 	}
 	
-	public boolean wordEquals(WordFormToken comparedToken) {
+	public boolean wordEquals(SyntaxToken comparedToken) {
 		String stringValue = comparedToken.getShortStringValue().trim();
 		if (stringValue.length() > 0) {
 			int end = stringValue.length() - 1;

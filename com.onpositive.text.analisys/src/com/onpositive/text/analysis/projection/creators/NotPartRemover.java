@@ -9,7 +9,7 @@ public class NotPartRemover extends TokenRemover {
 
 	@Override
 	protected boolean shouldBeRemoved(IToken token) {
-		return (token instanceof WordFormToken) && ((WordFormToken) token).getBasicForm().equals("не") && (((SyntaxToken) token).hasGrammem(PartOfSpeech.PRCL));
+		return (token instanceof WordFormToken) && ((SyntaxToken) token).getBasicForm().equals("не") && (((SyntaxToken) token).hasGrammem(PartOfSpeech.PRCL));
 	}
 
 }

@@ -1,15 +1,16 @@
 package com.onpositive.text.analisys.tests.neural;
 
+import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.neural.NeuralParser;
 
 public class NeuralParserProvider {
 	
-	private static NeuralParser parserInstance;
+	private static MorphologicParser parserInstance;
 	
 	private NeuralParserProvider() {
 	}
 	
-	public static NeuralParser getParser() {
+	public static MorphologicParser getParser() {
 		if (parserInstance == null) {
 			parserInstance = new NeuralParser();
 		}

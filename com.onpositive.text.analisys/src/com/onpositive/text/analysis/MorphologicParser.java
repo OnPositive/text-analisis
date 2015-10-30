@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.onpositive.text.analysis.filtering.ITokenFilter;
+import com.onpositive.text.analysis.syntax.SentenceToken;
 
 public abstract class MorphologicParser extends AbstractParser {
 
@@ -47,5 +48,25 @@ public abstract class MorphologicParser extends AbstractParser {
 			list.add(token);
 		}
 	}
+
+	@Override
+	public List<IToken> process(List<IToken> tokens) {
+		if (tokens.isEmpty()) {
+			return tokens;
+		} else if (tokens.get(0) instanceof SentenceToken) {
+			return processSentences(tokens);
+		}
+		return processPlain(tokens);
+	}
+
+	protected List<IToken> processSentences(List<IToken> tokens) {
+		for (IToken sentence : tokens) {
+			SentenceToken sentenceToken = (SentenceToken) sentence;
+			processPlain(sentenceToken.getChildren());
+		}
+		return tokens;
+	}
+
+	protected abstract List<IToken> processPlain(List<IToken> tokens);
 	
 }
