@@ -82,8 +82,8 @@ public class NeuralTest extends TestCase {
 	}
 	
 	public void test08b() throws FileNotFoundException {
-		List<IToken> result = basicNeuralTest("издали детский журнал");
-		TestingUtil.checkHas(result, 0, PartOfSpeech.VERB);
+		List<IToken> result = basicNeuralTest("императоры издали закон"); //XXX
+		TestingUtil.checkHas(result, 1, PartOfSpeech.VERB);
 	}
 
 	//существительное - числительное 
@@ -93,8 +93,8 @@ public class NeuralTest extends TestCase {
 	}
 
 	public void test09b() throws FileNotFoundException {
-		List<IToken> result = basicNeuralTest("семью разными способами");
-		TestingUtil.checkHas(result, 0, PartOfSpeech.NUMR);
+		List<IToken> result = basicNeuralTest("с семью нулями"); //XXX
+		TestingUtil.checkHas(result, 1, PartOfSpeech.NUMR);
 	}
 	
 	//числительное - существительное
