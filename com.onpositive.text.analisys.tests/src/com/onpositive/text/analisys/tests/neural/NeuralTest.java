@@ -5,29 +5,17 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.onpositive.semantic.wordnet.AbstractWordNet;
-import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
-import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
-import com.onpositive.text.analysis.lexic.SentenceSplitter;
-import com.onpositive.text.analysis.lexic.WordFormParser;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.neural.NeuralParser;
-import com.onpositive.text.analysis.syntax.SyntaxToken;
-import com.onpositive.text.analysis.utils.MorphologicUtils;
-
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class NeuralTest extends TestCase {
 	
-private static final double CORRELATION_THRESHOLD = 0.1;
-
 //	@Test
 //	public void test00() throws Exception {
-//		new Trainer().testEncog();
+//		new Trainer().trainEncog();
 //	}
 	
 	@Test
@@ -38,51 +26,93 @@ private static final double CORRELATION_THRESHOLD = 0.1;
 	@Test
 	public void test02() throws FileNotFoundException {
 		List<IToken> result = basicNeuralTest("шестьдесят минут прошло");
-		checkHas(result, 1, PartOfSpeech.NOUN);
-		checkHas(result, 2, PartOfSpeech.VERB);
+		TestingUtil.checkHas(result, 1, PartOfSpeech.NOUN);
+		TestingUtil.checkHas(result, 2, PartOfSpeech.VERB);
 	}
 	
 	@Test
 	public void test03() throws FileNotFoundException {
 		List<IToken> result = basicNeuralTest("не покупать белил совсем");
-		checkHas(result, 2, PartOfSpeech.NOUN);
+		TestingUtil.checkHas(result, 2, PartOfSpeech.NOUN);
 	}
 	
-	private void checkHas(List<IToken> result, int i, Grammem wantedGrammem) {
-		assertTrue(i < result.size() && (result.get(i) instanceof SyntaxToken));
-		result = MorphologicUtils.getWithNoConflicts(result);
-		WordFormToken wordFormToken = (WordFormToken) result.get(i);
-		if (wordFormToken.getCorrelation() > CORRELATION_THRESHOLD && wordFormToken.hasGrammem(wantedGrammem)) {
-			return;
-		}
-		List<IToken> conflicts = wordFormToken.getConflicts();
-		for (IToken conflictingToken : conflicts) {
-			if (conflictingToken.getCorrelation() > CORRELATION_THRESHOLD && 
-				conflictingToken instanceof SyntaxToken && 
-				((SyntaxToken) conflictingToken).hasGrammem(wantedGrammem)) {
-				return;
-			}	
-		}
-		throw new AssertionFailedError("Assertion failed, " + result.get(i).getShortStringValue() + " isn't " + wantedGrammem);
+	@Test
+	public void test04() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("Маша белила стену");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.VERB);
+	}
+	
+	// существительное - предлог
+	public void test05a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("перед яблока");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.NOUN);
+	}
+	
+	public void test05b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("стоял перед строем");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.PREP);
+	}
+		
+	// глагол - местоимение
+	public void test06a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("тщательно мой");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.VERB);
+	}
+	
+	public void test06b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("мой друг приехал");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.ADJF);
+	}
+	
+	// инфинитив - существительное
+	public void test07a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("без вести");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.NOUN);
+	}
+	
+	public void test07b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("вести исследования");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.INFN);
+	}
+	
+	//глагол - наречие
+	public void test08a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("показал издали");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.ADVB);
+	}
+	
+	public void test08b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("издали детский журнал");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.VERB);
+	}
+
+	//существительное - числительное 
+	public void test09a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("создал семью");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.NOUN);
+	}
+
+	public void test09b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("семью разными способами");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.NUMR);
+	}
+	
+	//числительное - существительное
+	public void test10a() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("сорока студентам");
+		TestingUtil.checkHas(result, 0, PartOfSpeech.NUMR);
+	}
+	
+	public void test10b() throws FileNotFoundException {
+		List<IToken> result = basicNeuralTest("большая сорока прилетела");
+		TestingUtil.checkHas(result, 1, PartOfSpeech.NOUN);
 	}
 
 	private List<IToken> basicNeuralTest(String str) throws FileNotFoundException {
-		NeuralParser neuralParser = new NeuralParser();
-		return neuralParser.process(getWordFormTokens(str));
+		NeuralParser neuralParser = NeuralParserProvider.getParser();
+		return neuralParser.process(TestingUtil.getWordFormTokens(str));
 	}
 	
-	private List<IToken> getWordFormTokens(String str) {
-		PrimitiveTokenizer pt = new PrimitiveTokenizer();
-		AbstractWordNet instance = WordNetProvider.getInstance();
-		WordFormParser wfParser = new WordFormParser(instance);
-		wfParser.setIgnoreCombinations(true);
-		List<IToken> tokens = pt.tokenize(str);		
-		List<IToken> processed = wfParser.process(tokens);
-		return processed;
-	}
-	
-	private List<IToken> getSentences(String str) {
-		return new SentenceSplitter().split(getWordFormTokens(str));
-	}
+
 
 }

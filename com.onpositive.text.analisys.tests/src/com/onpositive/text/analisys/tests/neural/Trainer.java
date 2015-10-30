@@ -108,7 +108,7 @@ public class Trainer {
 					"Epoch #" + epoch + "  Error : " + train.getError () ) ;
 			epoch++;
 			minError = Math.min(minError, train.getError());
-		} while (train.getError() > 0.02);
+		} while (train.getError() > 0.055);
 
 		double e = network.calculateError(trainingSet);
 		System.out.println("Network trained to error: " + e);

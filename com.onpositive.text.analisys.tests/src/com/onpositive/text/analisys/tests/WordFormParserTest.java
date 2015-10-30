@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
-import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analisys.tests.euristics.EuristicTestingUtil;
+import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
@@ -35,7 +35,7 @@ public class WordFormParserTest extends TestCase{
 //		String str = "Сработал электрический детонатор. Чудовище село на ковёр-самолёт и полетело.";
 //		GrammarRelation[] possibleGrammarForms = instance.getPossibleGrammarForms("автоматический");
 		String str = "меж тем";
-		List<IToken> processed = getWordFormTokens(str);
+		List<IToken> processed = TestingUtil.getWordFormTokens(str);
 		
 		System.out.println("----------------------------------------------------------------------------------------");
 		for(IToken t : processed){
@@ -58,15 +58,6 @@ public class WordFormParserTest extends TestCase{
 		System.out.println();
 	}
 
-	public List<IToken> getWordFormTokens(String str) {
-		PrimitiveTokenizer pt = new PrimitiveTokenizer();
-		AbstractWordNet instance = WordNetProvider.getInstance();
-		WordFormParser wfParser = new WordFormParser(instance);
-		wfParser.setIgnoreCombinations(true);
-		List<IToken> tokens = pt.tokenize(str);		
-		List<IToken> processed = wfParser.process(tokens);
-		return processed;
-	}
 	
 	public void testConflicting() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
@@ -89,7 +80,7 @@ public class WordFormParserTest extends TestCase{
 				);
 		euristics.add(euristic1);
 		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("отдала мою"));
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens("отдала мою"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
 		for(IToken t : processed){
@@ -130,7 +121,7 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList34());
 		euristics.addAll(RuleSet.getRulesList35());
 		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
-		euristicAnalyzingParser.process(getWordFormTokens(str));
+		euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
 	}
@@ -146,7 +137,7 @@ public class WordFormParserTest extends TestCase{
 
 	private void doBasicAnalyzerTest(String str, List<Euristic> euristics) {
 		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		printChain(str, processed);
 		matched(RuleSet.getFullRulesList(), str);
 	}
@@ -394,7 +385,7 @@ public class WordFormParserTest extends TestCase{
 		printProcessingResult(str, matched);
 		assertTrue(matched.size() > 0);
 		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens(str));
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		assertNotNull(processed);
 		printChain(str, processed);
 	}
