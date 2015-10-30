@@ -37,6 +37,8 @@ import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 
 public class Trainer {
 	
+	private static final double THRESHOLD = 0.055;
+
 	private interface IVisitor {
 		void visit(double[] inputs, double[] desired);
 	}
@@ -102,13 +104,18 @@ public class Trainer {
 		long millis = System.currentTimeMillis();
 		double minError = 5;
 		int epoch = 1;
+		double lastSaveError = -1;
 		do {
 			train.iteration();
 			System.out.println (
 					"Epoch #" + epoch + "  Error : " + train.getError () ) ;
 			epoch++;
-			minError = Math.min(minError, train.getError());
-		} while (train.getError() > 0.055);
+			double curError = train.getError();
+			minError = Math.min(minError, curError);
+			if (curError < THRESHOLD && curError - lastSaveError > 0.01) {
+				EncogDirectoryPersistence.saveObject(new File("morphology.nnet"), network);				
+			}
+		} while (train.getError() > 0.01);
 
 		double e = network.calculateError(trainingSet);
 		System.out.println("Network trained to error: " + e);
@@ -252,5 +259,9 @@ public class Trainer {
 		return 0;
 	}
 		
+	
+	public static void main(String[] args) {
+		new Trainer().trainEncog();
+	}
 	
 }

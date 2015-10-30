@@ -21,18 +21,37 @@ import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.neural.NeuralParser;
 import com.onpositive.text.analysis.rules.RuleSet;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class EuristicAnalysisTest extends TestCase{
 	
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10;
-	private static final double E = 0.001; 
+	private static final double E = 0.001;
 	
-	public void test02() {
-		testWithFile("3344.xml");
-		testWithFile("2176.xml");
-		testWithFile("2241.xml");
+	public void test01() {
+		testNeuralWithFile("3344.xml");
+		testNeuralWithFile("2176.xml");
+		testNeuralWithFile("2241.xml");
+		
+	}
+	
+//	public void test02() {
+//		testWithFile("3344.xml");
+//		testWithFile("2176.xml");
+//		testWithFile("2241.xml");
+//	}
+	
+	private void testNeuralWithFile(String filename) {
+		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
+		List<SimplifiedToken> etalonTokens = loader.getTokens();
+		String text = loader.getInitialText();
+		NeuralParser neuralParser = new NeuralParser();
+		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
+		neuralParser.process(new SentenceSplitter().split(wordTokens));
+		compare(etalonTokens,wordTokens);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 
 	private void testWithFile(String filename) {
