@@ -15,10 +15,8 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.Euristic;
-import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
-import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.neural.NeuralParser;
@@ -30,18 +28,17 @@ public class EuristicAnalysisTest extends TestCase{
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10;
 	private static final double E = 0.001;
 	
-	public void test01() {
-		testNeuralWithFile("3344.xml");
-		testNeuralWithFile("2176.xml");
-		testNeuralWithFile("2241.xml");
-		
-	}
-	
-//	public void test02() {
-//		testWithFile("3344.xml");
-//		testWithFile("2176.xml");
-//		testWithFile("2241.xml");
+//	public void test01() {
+//		testNeuralWithFile("3344.xml");
+//		testNeuralWithFile("2176.xml");
+//		testNeuralWithFile("2241.xml");
 //	}
+	
+	public void test02() {
+		testWithFile("3344.xml");
+		testWithFile("2176.xml");
+		testWithFile("2241.xml");
+	}
 	
 	private void testNeuralWithFile(String filename) {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
@@ -58,7 +55,7 @@ public class EuristicAnalysisTest extends TestCase{
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
-		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(text));
 		compare(etalonTokens,processed);
 //		System.out.println("//---------------------------------With sentences---------------------------------------------------");
@@ -108,12 +105,6 @@ public class EuristicAnalysisTest extends TestCase{
 		return euristics;
 	}
 
-	private MorphologicParser configureDefaultAnalyzer(List<Euristic> euristics) {
-		MorphologicParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
-		return euristicAnalyzingParser;
-	}
-		
 	@SuppressWarnings("unchecked")
 	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens) { 
 		int i = 0;
@@ -159,7 +150,7 @@ public class EuristicAnalysisTest extends TestCase{
 				}				
 				filteredOut += comparedTokens.stream().filter(token -> token.getCorrelation() <= E).count();
 				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > E).collect(Collectors.toList());
-				if (comparedTokens.size() > 1) {
+				if (comparedTokens.size() > 1 && !isSamePart(comparedTokens)) {
 					wrongCount++;
 					StringJoiner joiner = new StringJoiner(", ");
 					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
@@ -184,6 +175,17 @@ public class EuristicAnalysisTest extends TestCase{
 			
 		}
 		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
+	}
+
+	private boolean isSamePart(List<WordFormToken> comparedTokens) {
+		WordFormToken first = comparedTokens.get(0);
+		PartOfSpeech partOfSpeech = first.getPartOfSpeech();
+		for (int i = 1; i < comparedTokens.size(); i++) {
+			if (comparedTokens.get(i).getPartOfSpeech() != partOfSpeech) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut) {

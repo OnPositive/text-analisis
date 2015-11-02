@@ -8,7 +8,11 @@ import junit.framework.TestCase;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.text.analysis.Euristic;
+import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
+import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormParser;
@@ -49,6 +53,13 @@ public class TestingUtil {
 	
 	public static List<IToken> getSentences(String str) {
 		return new SentenceSplitter().split(getWordFormTokens(str));
+	}
+	
+	public static EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
+		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
+		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
+		euristicAnalyzingParser.addTokenFilter(new AdditionalPartsPresetFilter());
+		return euristicAnalyzingParser;
 	}
 	
 }

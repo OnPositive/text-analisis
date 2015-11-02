@@ -20,6 +20,9 @@ public abstract class MorphologicParser extends AbstractParser {
 
 	protected void doFiltering(List<IToken> tokens) {
 		for (IToken curToken : tokens) {
+			if (!curToken.hasConflicts()) {
+				continue;
+			}
 			for (ITokenFilter filter : tokenFilters) {
 				if (filter.shouldFilterOut(curToken)) {
 					curToken.setCorrelation(0.0, Double.POSITIVE_INFINITY);

@@ -87,7 +87,7 @@ public class Trainer {
 	
 	public void trainEncog() {
 		int inputSize = TOKEN_WINDOW_SIZE * USED_PROPS.length;
-		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 10,  inputSize * 4, 1);
+		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 12,  inputSize * 12, 1);
 		
 		// randomize consistent so that we get weights we know will converge
 		(new ConsistentRandomizer(-1,1,100)).randomize(network);

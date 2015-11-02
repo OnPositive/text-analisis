@@ -20,7 +20,6 @@ import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
-import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.WordFormParser;
 import com.onpositive.text.analysis.rules.RuleSet;
@@ -79,7 +78,7 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
 				);
 		euristics.add(euristic1);
-		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens("отдала мою"));
 		assertNotNull(processed);
 		System.out.println("//========================================Результат разбора==================================================");
@@ -87,12 +86,6 @@ public class WordFormParserTest extends TestCase{
 			System.out.print(t.getStartPosition() + "-" + t.getEndPosition() + " " + TokenTypeResolver.getResolvedType(t) + " " + t.getStringValue()+ " ");
 		}
 		System.out.println();
-	}
-	
-	private EuristicAnalyzingParser configureDefaultAnalyzer(List<Euristic> euristics) {
-		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(euristics);
-		euristicAnalyzingParser.addTokenFilter(new AbbreviationsFilter());
-		return euristicAnalyzingParser;
 	}
 	
 	public void testAnalyzer1() {
@@ -120,7 +113,7 @@ public class WordFormParserTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList33());	
 		euristics.addAll(RuleSet.getRulesList34());
 		euristics.addAll(RuleSet.getRulesList35());
-		EuristicAnalyzingParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		EuristicAnalyzingParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
 		euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
 		printProcessingResult(str, possibleChains);		
@@ -136,7 +129,7 @@ public class WordFormParserTest extends TestCase{
 	}
 
 	private void doBasicAnalyzerTest(String str, List<Euristic> euristics) {
-		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(euristics);
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		printChain(str, processed);
 		matched(RuleSet.getFullRulesList(), str);
@@ -384,7 +377,7 @@ public class WordFormParserTest extends TestCase{
 		Collection<List<IToken>> matched = getAllMatched(RuleSet.getFullRulesList(), str);
 		printProcessingResult(str, matched);
 		assertTrue(matched.size() > 0);
-		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(RuleSet.getFullRulesList());
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(RuleSet.getFullRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		assertNotNull(processed);
 		printChain(str, processed);
