@@ -20,9 +20,12 @@ import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 public class NeuralParser extends MorphologicParser {
 	
 	private BasicNetwork network;
-
+	
+	private IDataSetGenerator dataSetGenerator;
+	
 	public NeuralParser() {
 		network = (BasicNetwork) EncogDirectoryPersistence.loadObject(getClass().getResourceAsStream("morphology.nnet"));
+		dataSetGenerator = createDataSetGenerator();
 	}
 
 	@Override
@@ -74,6 +77,10 @@ public class NeuralParser extends MorphologicParser {
  		return result[0];
 	}
 
+	protected IDataSetGenerator createDataSetGenerator() {
+		return new SimpleDataSetGenerator();
+	}
+
 	@Override
 	public boolean isRecursive() {
 		// TODO Auto-generated method stub
@@ -115,13 +122,15 @@ public class NeuralParser extends MorphologicParser {
 			throw new IllegalArgumentException("tokens list to large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
 		}
 		int i = 0;
-		double[] result = new double[TOKEN_WINDOW_SIZE * USED_PROPS.length];
+		int datasetSize = dataSetGenerator.getDatasetSize();
+		double[] result = new double[TOKEN_WINDOW_SIZE * datasetSize];
 		for (IToken curToken : tokens) {
 			List<Grammem> allGrammems = new ArrayList<Grammem>();
 			if (curToken instanceof WordFormToken) {
 				((WordFormToken) curToken).getGrammemSets().stream().forEach(grammem -> allGrammems.addAll(grammem.grammems()));
-				for (int j = 0; j < USED_PROPS.length; j++) {
-					result[i * USED_PROPS.length + j] = getProperty(allGrammems, USED_PROPS[j]);
+				double[] dataset = dataSetGenerator.generateDataset(allGrammems);
+				for (int j = 0; j < dataset.length; j++) {
+					result[i * datasetSize + j] = dataset[j];
 				}
 			}
 			i++;

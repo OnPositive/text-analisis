@@ -22,9 +22,6 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.persist.EncogDirectoryPersistence;
-import org.neuroph.core.data.DataSet;
-import org.neuroph.core.data.DataSetRow;
-import org.neuroph.nnet.MultiLayerPerceptron;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
@@ -32,31 +29,34 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.semantic.wordnet.WordNetProvider;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analisys.tests.euristics.SimplifiedToken;
-
+import com.onpositive.text.analysis.neural.BinaryDataSetGenerator;
+import com.onpositive.text.analysis.neural.IDataSetGenerator;
 import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 
 public class Trainer {
 	
 	private static final double THRESHOLD = 0.055;
+	
+	private IDataSetGenerator dataSetGenerator = new BinaryDataSetGenerator();
 
 	private interface IVisitor {
 		void visit(double[] inputs, double[] desired);
 	}
 	
-	private class DataSetVisitor implements IVisitor  {
-		
-		private DataSet dataSet = new DataSet(TOKEN_WINDOW_SIZE * USED_PROPS.length, 1);
-
-		@Override
-		public void visit(double[] inputs, double[] desired) {
-			dataSet.addRow(new DataSetRow(inputs, desired));
-		}
-
-		public DataSet getDataSet() {
-			return dataSet;
-		}
-		
-	}
+//	private class DataSetVisitor implements IVisitor  {
+//		
+//		private DataSet dataSet = new DataSet(TOKEN_WINDOW_SIZE * dataSetGenerator.getDatasetSize(), 1);
+//
+//		@Override
+//		public void visit(double[] inputs, double[] desired) {
+//			dataSet.addRow(new DataSetRow(inputs, desired));
+//		}
+//
+//		public DataSet getDataSet() {
+//			return dataSet;
+//		}
+//		
+//	}
 	
 	private class EncogDataSetVisitor implements IVisitor  {
 		
@@ -77,16 +77,16 @@ public class Trainer {
 		
 	}
 	
-	public void train() {
-		int inputSize = TOKEN_WINDOW_SIZE * USED_PROPS.length;
-		MultiLayerPerceptron perceptron1 = new MultiLayerPerceptron(inputSize, inputSize, 1);
-		DataSetVisitor visitor = new DataSetVisitor();
-		prepareLearningData(visitor);
-		perceptron1.learn(visitor.getDataSet());
-	}
+//	public void train() {
+//		int inputSize = TOKEN_WINDOW_SIZE * dataSetGenerator.getDatasetSize();
+//		MultiLayerPerceptron perceptron1 = new MultiLayerPerceptron(inputSize, inputSize, 1);
+//		DataSetVisitor visitor = new DataSetVisitor();
+//		prepareLearningData(visitor);
+//		perceptron1.learn(visitor.getDataSet());
+//	}
 	
 	public void trainEncog() {
-		int inputSize = TOKEN_WINDOW_SIZE * USED_PROPS.length;
+		int inputSize = TOKEN_WINDOW_SIZE * dataSetGenerator.getDatasetSize();
 		BasicNetwork network = simpleFeedForward(inputSize, inputSize * 12,  inputSize * 12, 1);
 		
 		// randomize consistent so that we get weights we know will converge
@@ -236,29 +236,21 @@ public class Trainer {
 
 	private double[] getDataSet(List<SimplifiedToken> tokens) {
 		if (TOKEN_WINDOW_SIZE < tokens.size()) {
-			throw new IllegalArgumentException("tokens list to large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
+			throw new IllegalArgumentException("tokens list too large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
 		}
 		int i = 0;
-		double[] result = new double[TOKEN_WINDOW_SIZE * USED_PROPS.length];
+		int datasetSize = dataSetGenerator.getDatasetSize();
+		double[] result = new double[TOKEN_WINDOW_SIZE * dataSetGenerator.getDatasetSize()];
 		for (SimplifiedToken simplifiedToken : tokens) {
 			Collection<Grammem> grammems = simplifiedToken.getGrammems();
-			for (int j = 0; j < USED_PROPS.length; j++) {
-				result[i * USED_PROPS.length + j] = getProperty(grammems, USED_PROPS[j]);
+			double[] dataset = dataSetGenerator.generateDataset(grammems);
+			for (int j = 0; j < dataset.length; j++) {
+				result[i * datasetSize + j] = dataset[j];
 			}
 			i++;
 		}
 		return result;
 	}
-	
-	private double getProperty(Collection<Grammem> grammems, Class<?> propClass) {
-		for (Grammem grammem : grammems) {
-			if (propClass.isAssignableFrom(grammem.getClass())) {
-				return grammem.intId - grammem.getInitialId() + 1;
-			}
-		}
-		return 0;
-	}
-		
 	
 	public static void main(String[] args) {
 		new Trainer().trainEncog();
