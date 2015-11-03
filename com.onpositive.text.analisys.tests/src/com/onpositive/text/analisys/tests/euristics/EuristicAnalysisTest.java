@@ -139,7 +139,7 @@ public class EuristicAnalysisTest extends TestCase{
 				comparedTokens.addAll((Collection<? extends WordFormToken>) conflicts);
 				j += conflicts.size();
 			}
-			if (comparedTokens.size() == 1 && !comparedTokens.get(0).hasCorrelation()) {
+			if (comparedTokens.size() == 1) {
 				boolean wordEquals = etalonToken.wordEquals(comparedTokens.get(0));
 				if (!wordEquals) {
 					System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + comparedTokens.get(0).getStringValue());
