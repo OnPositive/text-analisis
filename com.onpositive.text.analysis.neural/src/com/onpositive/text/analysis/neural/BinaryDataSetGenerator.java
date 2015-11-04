@@ -34,6 +34,7 @@ public class BinaryDataSetGenerator implements IDataSetGenerator {
 					for (int j = 0; j < doubleSet.length; j++) {
 						result[dataSetIdx++] = doubleSet[j];
 					}
+					break;
 				}
 			}
 			if (!found) {
