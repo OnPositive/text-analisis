@@ -78,7 +78,7 @@ public class NeuralParser extends MorphologicParser {
 	}
 
 	protected IDataSetGenerator createDataSetGenerator() {
-		return new SimpleDataSetGenerator();
+		return new BinaryDataSetGenerator();
 	}
 
 	@Override
