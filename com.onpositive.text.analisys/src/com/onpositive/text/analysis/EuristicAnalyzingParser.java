@@ -2,8 +2,10 @@ package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,10 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	private List<List<IToken>> possibleChains;
 	
 	private List<IProjectionCreator> projectionCreators = new ArrayList<IProjectionCreator>();
+	
+	private IToken checkedToken;
+
+	private Map<IToken, Euristic> matchedEuristics = new HashMap<IToken, Euristic>();
 	
 	public EuristicAnalyzingParser() {
 		this.euristics = RuleSet.getFullRulesList();
@@ -82,6 +88,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	private boolean projectionMatches(Projection projection) {
 		for (int i = 0; i < projection.tokens.size(); i++) {
 			IToken token = projection.tokens.get(i);
+			checkedToken = token;
 			if (token instanceof WordFormToken && token.hasConflicts() && !tryMatchConflicting(getSequences(projection.tokens,i ))) {
 				return false;
 			}
@@ -131,8 +138,9 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 				Set<IToken> passed = new HashSet<IToken>();
 				for (int j = 0; j < localVariants.size(); j++) {
 					List<IToken> curResult = localVariants.get(j);
+					checkedToken = curResult.get(SEQUENCE_LENGTH - 1);
 					if (tryMatchConflicting(getLocalSequences(curResult))) {
-						passed.add(curResult.get(SEQUENCE_LENGTH - 1));
+						passed.add(checkedToken);
 					}
 				}
 				List<IToken> conflicts = token.getConflicts();
@@ -251,10 +259,17 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	private boolean matchedNonConflict(List<Euristic> euristicsToTry, List<IToken> tokens) {
 		for (Euristic euristic : euristicsToTry) {
 			if (euristic.match(tokens.toArray(new IToken[0]))) {
+				if (DEBUG) {
+					matchedEuristics.put(checkedToken, euristic);
+				}
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public Euristic getMatchedEuristic(IToken token) {
+		return matchedEuristics.get(token);
 	}
 
 //	private List<List<IToken>> calcVariants(List<IToken> source) {

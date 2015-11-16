@@ -15,6 +15,7 @@ import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analisys.tests.util.TestingUtil;
 import com.onpositive.text.analysis.Euristic;
+import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
@@ -47,7 +48,7 @@ public class EuristicAnalysisTest extends TestCase{
 		NeuralParser neuralParser = new NeuralParser();
 		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
 		neuralParser.process(new SentenceSplitter().split(wordTokens));
-		compare(etalonTokens,wordTokens);
+		compare(etalonTokens,wordTokens, null);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 
@@ -57,7 +58,7 @@ public class EuristicAnalysisTest extends TestCase{
 		String text = loader.getInitialText();
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(createRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(text));
-		compare(etalonTokens,processed);
+		compare(etalonTokens,processed, (EuristicAnalyzingParser) euristicAnalyzingParser);
 //		System.out.println("//---------------------------------With sentences---------------------------------------------------");
 //		List<IToken> tokens1 = TestingUtil.getWordFormTokens(text);
 //		List<IToken> sentences = new SentenceSplitter().split(tokens1);
@@ -106,7 +107,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	@SuppressWarnings("unchecked")
-	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens) { 
+	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens, EuristicAnalyzingParser parser) { 
 		int i = 0;
 		int j = 0;
 		ITokenComparator tokenComparator = new PartOfSpeechComparator();
@@ -142,9 +143,10 @@ public class EuristicAnalysisTest extends TestCase{
 			if (comparedTokens.size() == 1) {
 				boolean wordEquals = etalonToken.wordEquals(comparedTokens.get(0));
 				if (!wordEquals) {
-					System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + comparedTokens.get(0).getStringValue());
+					System.out.println("Несовпадение слова: нужно " + etalonToken.getWord() + " найдено " + comparedTokens.get(0).getStringValue());
 				}
 			} else {
+				System.out.println("Неоднозначность: слово " + wordFormToken.getShortStringValue() + " фраза " + getPhrase(etalonTokens, i));
 				if (comparedTokens.size() > 1) {
 					conflictingCount++;
 				}				
@@ -154,7 +156,16 @@ public class EuristicAnalysisTest extends TestCase{
 					wrongCount++;
 					StringJoiner joiner = new StringJoiner(", ");
 					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
-					System.out.println("Multiple options left: " + joiner.toString());
+					System.out.println("Осталось несколько вариантов: " + joiner.toString());
+					if (parser != null) {
+						if (parser.getMatchedEuristic(comparedTokens.get(0)) == null) {
+							System.out.println("Правила не найдено");
+						} else {
+							StringJoiner joiner1 = new StringJoiner(", ");
+							comparedTokens.stream().map(token -> parser.getMatchedEuristic(token)).forEach(euristic ->joiner.add(euristic != null ? euristic.toString():"ОШИБКА")); 
+							System.out.println("Правила: " + joiner1.toString());
+						}
+					}
 				} else if (comparedTokens.size() == 1) {
 					WordFormToken token = comparedTokens.get(0);
 					boolean wordEquals = etalonToken.wordEquals(token);
@@ -164,8 +175,12 @@ public class EuristicAnalysisTest extends TestCase{
 					incrementCount(comparedCounts, token.getPartOfSpeech());
 					List<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
 					if (!wrongGrammems.isEmpty()) {
-						System.out.println("Incorrect grammem set for token " + etalonToken);
-						System.out.println("Wrong grammems: " + wrongGrammems);
+						System.out.println("Ошибочное определение для слова " + etalonToken + " во фразе " + getPhrase(etalonTokens, i));
+						String wrongTxt = "Неверные граммемы: " + wrongGrammems;
+						if (parser != null && parser.getMatchedEuristic(token) != null) {
+							wrongTxt += " Эвристика: " + parser.getMatchedEuristic(token);
+						}
+						System.out.println(wrongTxt);
 						wrongCount++;
 					}
 				}
@@ -175,6 +190,20 @@ public class EuristicAnalysisTest extends TestCase{
 			
 		}
 		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
+	}
+
+	private String getPhrase(List<SimplifiedToken> etalonTokens, int j) {
+		StringBuilder builder = new StringBuilder();
+		if (j > 0) {
+			builder.append(etalonTokens.get(j - 1).getWord());
+			builder.append(" ");
+		}
+		builder.append(etalonTokens.get(j).getWord());
+		if (j < etalonTokens.size() - 1) {
+			builder.append(" ");
+			builder.append(etalonTokens.get(j + 1).getWord());
+		}
+		return builder.toString();
 	}
 
 	private boolean isSamePart(List<WordFormToken> comparedTokens) {
