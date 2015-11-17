@@ -28,6 +28,7 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10;
 	private static final double E = 0.001;
+	private boolean PRINT_ALL_CONFLICTS = true;
 	
 //	public void test01() {
 //		testNeuralWithFile("3344.xml");
@@ -146,7 +147,9 @@ public class EuristicAnalysisTest extends TestCase{
 					System.out.println("Несовпадение слова: нужно " + etalonToken.getWord() + " найдено " + comparedTokens.get(0).getStringValue());
 				}
 			} else {
-				System.out.println("Неоднозначность: слово " + wordFormToken.getShortStringValue() + " фраза " + getPhrase(etalonTokens, i));
+				if (PRINT_ALL_CONFLICTS) {
+					System.out.println("Неоднозначность: слово " + wordFormToken.getShortStringValue() + " фраза " + getPhrase(etalonTokens, i));
+				}
 				if (comparedTokens.size() > 1) {
 					conflictingCount++;
 				}				
@@ -162,7 +165,7 @@ public class EuristicAnalysisTest extends TestCase{
 							System.out.println("Правила не найдено");
 						} else {
 							StringJoiner joiner1 = new StringJoiner(", ");
-							comparedTokens.stream().map(token -> parser.getMatchedEuristic(token)).forEach(euristic ->joiner.add(euristic != null ? euristic.toString():"ОШИБКА")); 
+							comparedTokens.stream().map(token -> parser.getMatchedEuristic(token)).forEach(euristic ->joiner1.add(euristic != null ? euristic.toString():"ОШИБКА")); 
 							System.out.println("Правила: " + joiner1.toString());
 						}
 					}
