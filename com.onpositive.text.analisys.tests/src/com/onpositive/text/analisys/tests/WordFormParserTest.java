@@ -104,20 +104,20 @@ public class WordFormParserTest extends TestCase{
 		doBasicAnalyzerTest(str, RuleSet.getFullRulesList());			
 	}
 	
-	public void testAnalyzer2() {
-		String str ="Что так поздно пришёл";
-		List<Euristic> euristics = RuleSet.getFullRulesList();
-		euristics.addAll(RuleSet.getRulesList30());
-		euristics.addAll(RuleSet.getRulesList31());
-		euristics.addAll(RuleSet.getRulesList32());
-		euristics.addAll(RuleSet.getRulesList33());	
-		euristics.addAll(RuleSet.getRulesList34());
-		euristics.addAll(RuleSet.getRulesList35());
-		EuristicAnalyzingParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
-		euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
-		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
-		printProcessingResult(str, possibleChains);		
-	}
+//	public void testAnalyzer2() {
+//		String str ="Что так поздно пришёл";
+//		List<Euristic> euristics = RuleSet.getFullRulesList();
+//		euristics.addAll(RuleSet.getRulesList30());
+//		euristics.addAll(RuleSet.getRulesList31());
+//		euristics.addAll(RuleSet.getRulesList32());
+//		euristics.addAll(RuleSet.getRulesList33());	
+//		euristics.addAll(RuleSet.getRulesList34());
+//		euristics.addAll(RuleSet.getRulesList35());
+//		EuristicAnalyzingParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
+//		euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
+//		List<List<IToken>> possibleChains = euristicAnalyzingParser.getPossibleChains();
+//		printProcessingResult(str, possibleChains);		
+//	}
 	
 	public void testAnalyzer3() {
 		String str = "употреблять белила аккуратно и экономно";
@@ -409,6 +409,76 @@ public class WordFormParserTest extends TestCase{
 		printChain(str, processed);
 		util.printConflictingEuristics();
 		assertTrue(!util.getMatchedEuristics().isEmpty());
+	}
+	
+	public void test43() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.add(Euristic.concat(
+				Euristic.any(PartOfSpeech.ADJF),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB)
+				));
+		Euristic matched = matched(euristics, "первой части пресс-конференции");
+				assertNotNull(matched);
+	}
+	
+	public void test44() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.add(Euristic.concat(
+				Euristic.or(Euristic.word("на", PartOfSpeech.PREP), Euristic.word("о", PartOfSpeech.PREP), Euristic.word("в", PartOfSpeech.PREP)), 
+				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NOUN)
+				));
+		Euristic matched = matched(euristics, "на пятой пресс-конференции");
+				assertNotNull(matched);
+	}
+	
+	public void test45() {
+		Euristic matched = matched(RuleSet.getRulesList36(), "к сегодняшней встрече");
+		assertNotNull(matched);
+	}
+	
+	public void test46() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		euristics.add(Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
+				Euristic.any(PartOfSpeech.VERB)
+				));
+		Euristic matched = matched(euristics, "президент серьёзно встретил");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test47() {
+		Euristic matched = matched(RuleSet.getRulesList9(), "конце прошлого года");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test48() {
+		Euristic matched = matched(RuleSet.getRulesList23(), "рост значительно выросли");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test49() {
+		Euristic matched = matched(RuleSet.getRulesList23(), "мы регулярно работаем");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test50() {
+		Euristic matched = matched(RuleSet.getRulesList36(), "кафедра всеобщей истории");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test51() {
+		Euristic matched = matched(RuleSet.getRulesList9(), "мир Средние века");
+		assertNotNull(matched); //без первого слова срабатывает, а так ломается
+	}
+	
+	public void test52() {
+		Euristic matched = matched(RuleSet.getRulesList22(), "Ордер три ордера");
+		assertNotNull(matched);
+	}
+	
+	public void test53() {
+		Euristic matched = matched(RuleSet.getRulesList25(), "с начала года");
+		assertNotNull(matched);
 	}
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
