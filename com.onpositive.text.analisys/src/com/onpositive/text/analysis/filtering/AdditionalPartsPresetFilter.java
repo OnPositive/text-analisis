@@ -19,12 +19,22 @@ public class AdditionalPartsPresetFilter implements ITokenFilter {
 		presets.put("однако",PartOfSpeech.CONJ);
 		presets.put("чтоб",PartOfSpeech.CONJ);
 		presets.put("чтобы",PartOfSpeech.CONJ);
+		presets.put("хотя", PartOfSpeech.CONJ);
 		
 		presets.put("на",PartOfSpeech.PREP);
 		presets.put("для",PartOfSpeech.PREP);
 		presets.put("к",PartOfSpeech.PREP);
 		presets.put("из",PartOfSpeech.PREP);
 		presets.put("у",PartOfSpeech.PREP);
+		presets.put("о", PartOfSpeech.PREP);
+		presets.put("при", PartOfSpeech.PREP);
+		
+		presets.put("спасибо",PartOfSpeech.INTJ);
+		presets.put("пожалуйста", PartOfSpeech.INTJ);
+		
+		presets.put("было", PartOfSpeech.VERB);
+		
+		presets.put("потом", PartOfSpeech.ADVB);
 		
 	}
 
