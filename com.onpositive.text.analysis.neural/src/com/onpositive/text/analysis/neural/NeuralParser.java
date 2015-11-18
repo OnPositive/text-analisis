@@ -62,13 +62,13 @@ public class NeuralParser extends MorphologicParser {
 		return tokens;
 	}
 	
-	protected void setFailedCorrelation(IToken token, double failedCorrelation) {
-		if (failedCorrelation > 0) {
-			token.setCorrelation(failedCorrelation,1);
-		} else {
-			token.setCorrelation(failedCorrelation,Double.POSITIVE_INFINITY);
-		}
-	}
+//	protected void setFailedCorrelation(IToken token, double failedCorrelation) {
+//		if (failedCorrelation > 0) {
+//			token.setCorrelation(failedCorrelation,1);
+//		} else {
+//			token.setCorrelation(failedCorrelation,Double.POSITIVE_INFINITY);
+//		}
+//	}
 
 	private double calcNeural(List<IToken> curResult) {
 		double[] dataSet = getDataSet(curResult);

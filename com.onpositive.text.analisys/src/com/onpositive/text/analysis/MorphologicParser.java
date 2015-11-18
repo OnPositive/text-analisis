@@ -9,6 +9,7 @@ import com.onpositive.text.analysis.syntax.SentenceToken;
 public abstract class MorphologicParser extends AbstractParser {
 
 	protected List<ITokenFilter> tokenFilters = new ArrayList<ITokenFilter>();
+	private int filteredCount = 0;
 
 	public MorphologicParser() {
 		super();
@@ -26,6 +27,7 @@ public abstract class MorphologicParser extends AbstractParser {
 			for (ITokenFilter filter : tokenFilters) {
 				if (filter.shouldFilterOut(curToken)) {
 					curToken.setCorrelation(0.0, Double.POSITIVE_INFINITY);
+					filteredCount++;
 				}
 			}
 		}
@@ -71,5 +73,9 @@ public abstract class MorphologicParser extends AbstractParser {
 	}
 
 	protected abstract List<IToken> processPlain(List<IToken> tokens);
+
+	public int getFilteredCount() {
+		return filteredCount;
+	}
 	
 }

@@ -8,3 +8,7 @@ Require-Bundle: org.junit;bundle-version="3.8.2",
  com.onpositive.text.analisys;bundle-version="1.0.0",
  com.onpositive.wordnet;bundle-version="1.0.1",
  com.onpositive.text.analysis.neural;bundle-version="1.0.0"
+Bundle-ClassPath: lib/commons-math3-3.0.jar,
+ lib/encog-core-3.3.0.jar,
+ lib/slf4j-api-1.7.5.jar,
+ .

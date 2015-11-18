@@ -18,6 +18,8 @@ import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
+import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
+import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.neural.NeuralParser;
@@ -30,26 +32,28 @@ public class EuristicAnalysisTest extends TestCase{
 	private static final double E = 0.001;
 	private boolean PRINT_ALL_CONFLICTS = true;
 	
-//	public void test01() {
-//		testNeuralWithFile("3344.xml");
-//		testNeuralWithFile("2176.xml");
-//		testNeuralWithFile("2241.xml");
-//	}
-	
-	public void test02() {
-		testWithFile("3344.xml");
-		testWithFile("2176.xml");
-		testWithFile("2241.xml");
+	public void test01() {
+		testNeuralWithFile("3344.xml");
+		testNeuralWithFile("2176.xml");
+		testNeuralWithFile("2241.xml");
 	}
+	
+//	public void test02() {
+//		testWithFile("3344.xml");
+//		testWithFile("2176.xml");
+//		testWithFile("2241.xml");
+//	}
 	
 	private void testNeuralWithFile(String filename) {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		NeuralParser neuralParser = new NeuralParser();
+		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
+		neuralParser.addTokenFilter(new AbbreviationsFilter());
 		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
 		neuralParser.process(new SentenceSplitter().split(wordTokens));
-		compare(etalonTokens,wordTokens, null);
+		compare(etalonTokens,wordTokens, neuralParser);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 
@@ -108,9 +112,11 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	@SuppressWarnings("unchecked")
-	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens, EuristicAnalyzingParser parser) { 
+	private void compare(List<SimplifiedToken> etalonTokens, List<IToken> tokens, MorphologicParser parser) {
+		EuristicAnalyzingParser euristicParser = parser instanceof EuristicAnalyzingParser?(EuristicAnalyzingParser)parser:null;
 		int i = 0;
 		int j = 0;
+		int filteredByFilters = parser.getFilteredCount();
 		ITokenComparator tokenComparator = new PartOfSpeechComparator();
 		Map<PartOfSpeech, Integer> comparedCounts = new HashMap<PartOfSpeech, Integer>();
 		int conflictingCount = 0;
@@ -121,14 +127,14 @@ public class EuristicAnalysisTest extends TestCase{
 			List<WordFormToken> comparedTokens = new ArrayList<WordFormToken>();
 			j = getNextWordTokenIdx(tokens, j, etalonToken);
 			if (j == -1) {
-				printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
+				printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
 				return;
 			}
 			WordFormToken wordFormToken = (WordFormToken) tokens.get(j);
 			if (!etalonToken.wordEquals(wordFormToken)) {
 				i = tryEtalonNeutralization(i, etalonTokens, wordFormToken);
 				if (i == -1) {
-					printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
+					printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
 					return;
 				} else {
 					etalonToken = etalonTokens.get(i);
@@ -160,12 +166,12 @@ public class EuristicAnalysisTest extends TestCase{
 					StringJoiner joiner = new StringJoiner(", ");
 					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
 					System.out.println("Осталось несколько вариантов: " + joiner.toString());
-					if (parser != null) {
-						if (parser.getMatchedEuristic(comparedTokens.get(0)) == null) {
+					if (euristicParser != null) {
+						if (euristicParser.getMatchedEuristic(comparedTokens.get(0)) == null) {
 							System.out.println("Правила не найдено");
 						} else {
 							StringJoiner joiner1 = new StringJoiner(", ");
-							comparedTokens.stream().map(token -> parser.getMatchedEuristic(token)).forEach(euristic ->joiner1.add(euristic != null ? euristic.toString():"ОШИБКА")); 
+							comparedTokens.stream().map(token -> euristicParser.getMatchedEuristic(token)).forEach(euristic ->joiner1.add(euristic != null ? euristic.toString():"ОШИБКА")); 
 							System.out.println("Правила: " + joiner1.toString());
 						}
 					}
@@ -173,15 +179,15 @@ public class EuristicAnalysisTest extends TestCase{
 					WordFormToken token = comparedTokens.get(0);
 					boolean wordEquals = etalonToken.wordEquals(token);
 					if (!wordEquals) {
-						System.out.println("Word mismatch: expected " + etalonToken.getWord() + " found " + token.getShortStringValue());
+						System.out.println("Несовпадение слова: нужно " + etalonToken.getWord() + " найдено " + token.getShortStringValue());
 					}
 					incrementCount(comparedCounts, token.getPartOfSpeech());
-					List<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
+					Collection<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
 					if (!wrongGrammems.isEmpty()) {
 						System.out.println("Ошибочное определение для слова " + etalonToken + " во фразе " + getPhrase(etalonTokens, i));
 						String wrongTxt = "Неверные граммемы: " + wrongGrammems;
-						if (parser != null && parser.getMatchedEuristic(token) != null) {
-							wrongTxt += " Эвристика: " + parser.getMatchedEuristic(token);
+						if (euristicParser != null && euristicParser.getMatchedEuristic(token) != null) {
+							wrongTxt += " Эвристика: " + euristicParser.getMatchedEuristic(token);
 						}
 						System.out.println(wrongTxt);
 						wrongCount++;
@@ -192,7 +198,7 @@ public class EuristicAnalysisTest extends TestCase{
 			j++;
 			
 		}
-		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut);
+		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
 	}
 
 	private String getPhrase(List<SimplifiedToken> etalonTokens, int j) {
@@ -220,12 +226,13 @@ public class EuristicAnalysisTest extends TestCase{
 		return true;
 	}
 
-	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut) {
-		System.out.println("** Totally compared " + comparedCount + " tokens **");
-		System.out.println("** Has conflicting: " + conflictingCount + " tokens **");
-		System.out.println(String.format("** Correct %1$,.2f percent tokens **", (conflictingCount - wrongCount) * 100.0 / conflictingCount));
-		System.out.println("** Filtered out: " + filteredOut + " tokens **");
-		System.out.println("** Parts of speech ");
+	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut, int filteredByFilters) {
+		System.out.println("** Всего сравнили " + comparedCount + " лексем **");
+		System.out.println("** Из них с омонимией: " + conflictingCount + " лексем **");
+		System.out.println(String.format("** Верно снято для %1$,.2f процентов лексем **", (conflictingCount - wrongCount) * 100.0 / conflictingCount));
+		System.out.println("** Исключено: " + filteredOut + " лексем **");
+		System.out.println("** Из них фльтром: " + filteredByFilters + "шт.**");
+		System.out.println("** Части речи: ");
 		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
 			System.out.println("** " + part.description + " = " + comparedCounts.get(part));
 		});

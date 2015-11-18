@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Repackaged
-Bundle-SymbolicName: com.onpositie.hpc.repackaged
+Bundle-SymbolicName: com.onpositive.hppc.repackaged
 Bundle-Version: 1.0.0
 Export-Package: com.carrotsearch.hppc,
  com.carrotsearch.hppc.cursors,

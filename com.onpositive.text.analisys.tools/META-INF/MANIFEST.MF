@@ -9,6 +9,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  com.onpositive.text.analisys;bundle-version="1.0.0",
  com.onpositive.wordnet;bundle-version="1.0.1",
- com.onpositive.wordnet.extensions;bundle-version="1.0.0"
+ com.onpositive.wordnet.extensions;bundle-version="1.0.0",
+ com.onpositive.hppc.repackaged
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
