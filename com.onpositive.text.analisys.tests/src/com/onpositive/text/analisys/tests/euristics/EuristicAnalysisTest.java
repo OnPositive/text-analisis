@@ -1,11 +1,17 @@
 package com.onpositive.text.analisys.tests.euristics;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import junit.framework.TestCase;
@@ -28,33 +34,97 @@ import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class EuristicAnalysisTest extends TestCase{
 	
+	static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
+	
+	    Map<K, V> map;
+	
+	    public ValueComparator(Map<K, V> base) {
+	        this.map = base;
+	    }
+	
+	    @Override
+	    public int compare(K o1, K o2) {
+	         return map.get(o2).compareTo(map.get(o1));
+	    }
+	}
+
 	private static final int MAX_NEUTRALIZATION_LOOKAHEAD = 10;
 	private static final double E = 0.001;
 	private boolean PRINT_ALL_CONFLICTS = true;
 	
-	public void test01() {
-		testNeuralWithFile("3344.xml");
-		testNeuralWithFile("2176.xml");
-		testNeuralWithFile("2241.xml");
-	}
+	private Map<String, Integer> mistakesMap = new HashMap<String, Integer>();
+	
+	ArrayList<Double> percents = new ArrayList<Double>();
+	
+//	public void test01() {
+//		testNeuralWithFile("3344.xml");
+//		testNeuralWithFile("2176.xml");
+//		testNeuralWithFile("2241.xml");
+//	}
 	
 //	public void test02() {
 //		testWithFile("3344.xml");
 //		testWithFile("2176.xml");
 //		testWithFile("2241.xml");
 //	}
+	private void testNeuralWithFile(File file) {
+		ParsedTokensLoader loader;
+		try {
+			loader = new ParsedTokensLoader(new BufferedInputStream(new FileInputStream(file)));
+			testNeural(loader);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private void testNeuralWithFile(String filename) {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
-		List<SimplifiedToken> etalonTokens = loader.getTokens();
-		String text = loader.getInitialText();
-		NeuralParser neuralParser = new NeuralParser();
-		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
-		neuralParser.addTokenFilter(new AbbreviationsFilter());
-		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
-		neuralParser.process(new SentenceSplitter().split(wordTokens));
-		compare(etalonTokens,wordTokens, neuralParser);
-		System.out.println("//--------------------------------------------------------------------------------------------------");
+		testNeural(loader);
+	}
+
+protected void testNeural(ParsedTokensLoader loader) {
+	List<SimplifiedToken> etalonTokens = loader.getTokens();
+	String text = loader.getInitialText();
+	NeuralParser neuralParser = new NeuralParser();
+	neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
+	neuralParser.addTokenFilter(new AbbreviationsFilter());
+	List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
+	neuralParser.process(new SentenceSplitter().split(wordTokens));
+	compare(etalonTokens,wordTokens, neuralParser);
+	System.out.println("//--------------------------------------------------------------------------------------------------");
+}
+	
+	public void test03() {
+		File folder = new File("D:\\tmp\\corpora");
+		if (folder.exists() && folder.isDirectory()) {
+			File[] listedFiles = folder.listFiles();
+			for (File file : listedFiles) {
+				if (file.length() > 200000) {
+					testNeuralWithFile(file);
+				}
+			}
+			
+			int percentSum = 0;
+			for (Double percent : percents) {
+				percentSum += Math.round(percent);
+			}
+			
+			System.out.println(String.format("** Суммарно верно снято для %1$,.2f процентов лексем", percentSum * 1.0 / percents.size()));
+			
+			ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (mistakesMap);
+		    Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
+		    sortedMap.putAll(mistakesMap);
+		    
+		    System.out.println("Частые ошибки:");
+		    for (String word : sortedMap.keySet()) {
+				int count = sortedMap.get(word);
+				if (count > 5) {
+					System.out.println(word + " - " + count + " раз");
+				} else {
+					break;
+				}
+			}
+		}
 	}
 
 	private void testWithFile(String filename) {
@@ -107,7 +177,7 @@ public class EuristicAnalysisTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList34());
 		euristics.addAll(RuleSet.getRulesList35());
 		euristics.addAll(RuleSet.getRulesList36());
-		euristics.addAll(RuleSet.getRulesList37());
+//		euristics.addAll(RuleSet.getRulesList37());
 		return euristics;
 	}
 
@@ -166,6 +236,7 @@ public class EuristicAnalysisTest extends TestCase{
 					StringJoiner joiner = new StringJoiner(", ");
 					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
 					System.out.println("Осталось несколько вариантов: " + joiner.toString());
+					handleMistake(etalonToken);
 					if (euristicParser != null) {
 						if (euristicParser.getMatchedEuristic(comparedTokens.get(0)) == null) {
 							System.out.println("Правила не найдено");
@@ -185,6 +256,7 @@ public class EuristicAnalysisTest extends TestCase{
 					Collection<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
 					if (!wrongGrammems.isEmpty()) {
 						System.out.println("Ошибочное определение для слова " + etalonToken + " во фразе " + getPhrase(etalonTokens, i));
+						handleMistake(etalonToken);
 						String wrongTxt = "Неверные граммемы: " + wrongGrammems;
 						if (euristicParser != null && euristicParser.getMatchedEuristic(token) != null) {
 							wrongTxt += " Эвристика: " + euristicParser.getMatchedEuristic(token);
@@ -199,6 +271,17 @@ public class EuristicAnalysisTest extends TestCase{
 			
 		}
 		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
+	}
+
+	private void handleMistake(SimplifiedToken etalonToken) {
+		String word = etalonToken.getWord();
+		Integer count = mistakesMap.get(word);
+		if (count == null) {
+			count = 1;
+		} else {
+			count++;
+		}
+		mistakesMap.put(word, count);
 	}
 
 	private String getPhrase(List<SimplifiedToken> etalonTokens, int j) {
@@ -229,7 +312,9 @@ public class EuristicAnalysisTest extends TestCase{
 	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut, int filteredByFilters) {
 		System.out.println("** Всего сравнили " + comparedCount + " лексем **");
 		System.out.println("** Из них с омонимией: " + conflictingCount + " лексем **");
-		System.out.println(String.format("** Верно снято для %1$,.2f процентов лексем **", (conflictingCount - wrongCount) * 100.0 / conflictingCount));
+		double percent = (conflictingCount - wrongCount) * 100.0 / conflictingCount;
+		percents.add(percent);
+		System.out.println(String.format("** Верно снято для %1$,.2f процентов лексем **", percent));
 		System.out.println("** Исключено: " + filteredOut + " лексем **");
 		System.out.println("** Из них фльтром: " + filteredByFilters + "шт.**");
 		System.out.println("** Части речи: ");
@@ -273,6 +358,9 @@ public class EuristicAnalysisTest extends TestCase{
 			j++;
 			lookahead++;
 			j = skipNonWordTokens(tokens, j);
+			if (j == -1) {
+				return -1;
+			}
 			token = (SyntaxToken) tokens.get(j);
 		}
 		if (lookahead == MAX_NEUTRALIZATION_LOOKAHEAD) {
