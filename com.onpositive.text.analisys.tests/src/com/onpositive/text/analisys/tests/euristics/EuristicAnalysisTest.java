@@ -62,11 +62,45 @@ public class EuristicAnalysisTest extends TestCase{
 //		testNeuralWithFile("2241.xml");
 //	}
 	
-//	public void test02() {
-//		testWithFile("3344.xml");
-//		testWithFile("2176.xml");
-//		testWithFile("2241.xml");
+	public void test02() {
+		testWithFile("3344.xml");
+		testWithFile("2176.xml");
+		testWithFile("2241.xml");
+	}
+	
+//	public void test03() {
+//		File folder = new File("D:\\tmp\\corpora");
+//		if (folder.exists() && folder.isDirectory()) {
+//			File[] listedFiles = folder.listFiles();
+//			for (File file : listedFiles) {
+//				if (file.length() > 200000) {
+//					testNeuralWithFile(file);
+//				}
+//			}
+//			
+//			int percentSum = 0;
+//			for (Double percent : percents) {
+//				percentSum += Math.round(percent);
+//			}
+//			
+//			System.out.println(String.format("** Суммарно верно снято для %1$,.2f процентов лексем", percentSum * 1.0 / percents.size()));
+//			
+//			ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (mistakesMap);
+//		    Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
+//		    sortedMap.putAll(mistakesMap);
+//		    
+//		    System.out.println("Частые ошибки:");
+//		    for (String word : sortedMap.keySet()) {
+//				int count = sortedMap.get(word);
+//				if (count > 5) {
+//					System.out.println(word + " - " + count + " раз");
+//				} else {
+//					break;
+//				}
+//			}
+//		}
 //	}
+		
 	private void testNeuralWithFile(File file) {
 		ParsedTokensLoader loader;
 		try {
@@ -82,50 +116,18 @@ public class EuristicAnalysisTest extends TestCase{
 		testNeural(loader);
 	}
 
-protected void testNeural(ParsedTokensLoader loader) {
-	List<SimplifiedToken> etalonTokens = loader.getTokens();
-	String text = loader.getInitialText();
-	NeuralParser neuralParser = new NeuralParser();
-	neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
-	neuralParser.addTokenFilter(new AbbreviationsFilter());
-	List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
-	neuralParser.process(new SentenceSplitter().split(wordTokens));
-	compare(etalonTokens,wordTokens, neuralParser);
-	System.out.println("//--------------------------------------------------------------------------------------------------");
-}
-	
-	public void test03() {
-		File folder = new File("D:\\tmp\\corpora");
-		if (folder.exists() && folder.isDirectory()) {
-			File[] listedFiles = folder.listFiles();
-			for (File file : listedFiles) {
-				if (file.length() > 200000) {
-					testNeuralWithFile(file);
-				}
-			}
-			
-			int percentSum = 0;
-			for (Double percent : percents) {
-				percentSum += Math.round(percent);
-			}
-			
-			System.out.println(String.format("** Суммарно верно снято для %1$,.2f процентов лексем", percentSum * 1.0 / percents.size()));
-			
-			ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (mistakesMap);
-		    Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
-		    sortedMap.putAll(mistakesMap);
-		    
-		    System.out.println("Частые ошибки:");
-		    for (String word : sortedMap.keySet()) {
-				int count = sortedMap.get(word);
-				if (count > 5) {
-					System.out.println(word + " - " + count + " раз");
-				} else {
-					break;
-				}
-			}
-		}
+	protected void testNeural(ParsedTokensLoader loader) {
+		List<SimplifiedToken> etalonTokens = loader.getTokens();
+		String text = loader.getInitialText();
+		NeuralParser neuralParser = new NeuralParser();
+		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
+		neuralParser.addTokenFilter(new AbbreviationsFilter());
+		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
+		neuralParser.process(new SentenceSplitter().split(wordTokens));
+		compare(etalonTokens,wordTokens, neuralParser);
+		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
+	
 
 	private void testWithFile(String filename) {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));

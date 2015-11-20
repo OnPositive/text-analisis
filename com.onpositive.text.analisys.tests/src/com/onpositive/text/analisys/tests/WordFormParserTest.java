@@ -432,8 +432,13 @@ public class WordFormParserTest extends TestCase{
 	}
 	
 	public void test45() {
-		Euristic matched = matched(RuleSet.getRulesList36(), "к сегодняшней встрече");
+		String str = "к сегодняшней встрече";
+		Euristic matched = matched(RuleSet.getRulesList36(), str);
 		assertNotNull(matched);
+		
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(RuleSet.getRulesList36());
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
+		printChain(str, processed);
 	}
 	
 	public void test46() {
@@ -442,7 +447,13 @@ public class WordFormParserTest extends TestCase{
 				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
 				Euristic.any(PartOfSpeech.VERB)
 				));
-		Euristic matched = matched(euristics, "президент серьёзно встретил");
+		String str = "президент серьёзно встретил";
+		
+		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
+		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
+		printChain(str, processed);
+		
+		Euristic matched = matched(euristics, str);
 		assertNotNull(matched); //без первого слова срабатывает, а так ломается
 	}
 	
@@ -478,6 +489,11 @@ public class WordFormParserTest extends TestCase{
 	
 	public void test53() {
 		Euristic matched = matched(RuleSet.getRulesList25(), "с начала года");
+		assertNotNull(matched);
+	}
+	
+	public void test54() {
+		Euristic matched = matched(RuleSet.getFullRulesList(), "выслушав его просьбу");
 		assertNotNull(matched);
 	}
 		

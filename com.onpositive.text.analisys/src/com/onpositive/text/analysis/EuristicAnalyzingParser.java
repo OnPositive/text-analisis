@@ -135,10 +135,11 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 			IToken token = chain.get(i);
 			if (token instanceof WordFormToken && token.hasConflicts()) {
 				List<List<IToken>> localVariants = getLocalVariants(chain, i);
+				int interestingIdx = i == 0 ? 0 : SEQUENCE_LENGTH - 1;
 				Set<IToken> passed = new HashSet<IToken>();
 				for (int j = 0; j < localVariants.size(); j++) {
 					List<IToken> curResult = localVariants.get(j);
-					checkedToken = curResult.get(SEQUENCE_LENGTH - 1);
+					checkedToken = curResult.get(interestingIdx);
 					if (tryMatchConflicting(getLocalSequences(curResult))) {
 						passed.add(checkedToken);
 					}
@@ -183,11 +184,11 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 
 	protected boolean tryMatchConflicting(List<List<IToken>> sequences) {
 		for (List<IToken> curSequence: sequences) {
-			if (!matchedNonConflict(euristics, curSequence)) {
-				return false;
+			if (matchedNonConflict(euristics, curSequence)) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	public void addProjectionCreator(IProjectionCreator projectionCreator) {
