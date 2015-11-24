@@ -62,42 +62,42 @@ public class EuristicAnalysisTest extends TestCase{
 //		testNeuralWithFile("2241.xml");
 //	}
 	
-	public void test02() {
-		testWithFile("1551.xml");
-	}
-	
-//	public void test03() {
-//		File folder = new File("D:\\Лена\\NoAmbig");
-//		if (folder.exists() && folder.isDirectory()) {
-//			File[] listedFiles = folder.listFiles();
-//			for (File file : listedFiles) {
-//				if (file.length() > 200000) {
-//					testWithFile(file);
-//				}
-//			}
-//			
-//			int percentSum = 0;
-//			for (Double percent : percents) {
-//				percentSum += Math.round(percent);
-//			}
-//			
-//			System.out.println(String.format("** Суммарно верно снято для %1$,.2f процентов лексем", percentSum * 1.0 / percents.size()));
-//			
-//			ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (mistakesMap);
-//		    Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
-//		    sortedMap.putAll(mistakesMap);
-//		    
-//		    System.out.println("Частые ошибки:");
-//		    for (String word : sortedMap.keySet()) {
-//				int count = sortedMap.get(word);
-//				if (count > 100) {
-//					System.out.println(word + " - " + count + " раз");
-//				} else {
-//					break;
-//				}
-//			}
-//		}
+//	public void test02() {
+//		testWithFile("1551.xml");
 //	}
+	
+	public void test03() {
+		File folder = new File("D:\\Лена\\NoAmbig");
+		if (folder.exists() && folder.isDirectory()) {
+			File[] listedFiles = folder.listFiles();
+			for (File file : listedFiles) {
+				if (file.length() > 200000) {
+					testWithFile(file);
+				}
+			}
+			
+			int percentSum = 0;
+			for (Double percent : percents) {
+				percentSum += Math.round(percent);
+			}
+			
+			System.out.println(String.format("** Суммарно верно снято для %1$,.2f процентов лексем", percentSum * 1.0 / percents.size()));
+			
+			ValueComparator<String, Integer> comparator = new ValueComparator<String, Integer> (mistakesMap);
+		    Map<String, Integer> sortedMap = new TreeMap<String, Integer> (comparator);
+		    sortedMap.putAll(mistakesMap);
+		    
+		    System.out.println("Частые ошибки:");
+		    for (String word : sortedMap.keySet()) {
+				int count = sortedMap.get(word);
+				if (count > 100) {
+					System.out.println(word + " - " + count + " раз");
+				} else {
+					break;
+				}
+			}
+		}
+	}
 		
 	private void testNeuralWithFile(File file) {
 		ParsedTokensLoader loader;
@@ -195,6 +195,8 @@ public class EuristicAnalysisTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList37());
 		euristics.addAll(RuleSet.getRulesList38());
 		euristics.addAll(RuleSet.getRulesList39());
+		euristics.addAll(RuleSet.getRulesList40());
+		euristics.addAll(RuleSet.getRulesList41());
 		return euristics;
 	}
 

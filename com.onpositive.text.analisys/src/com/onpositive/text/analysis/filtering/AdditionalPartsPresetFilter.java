@@ -69,13 +69,16 @@ public class AdditionalPartsPresetFilter implements ITokenFilter {
 		presets.put("все - таки", PartOfSpeech.PRCL);
 		presets.put("там", PartOfSpeech.ADVB);
 		presets.put("ещё", PartOfSpeech.ADVB);
+		presets.put("еще", PartOfSpeech.ADVB);
 		presets.put("по - моему", PartOfSpeech.CONJ);
 		presets.put("ли", PartOfSpeech.PRCL);
+		presets.put("ль", PartOfSpeech.PRCL);
 		presets.put("всего", PartOfSpeech.ADJF);
 		presets.put("то", PartOfSpeech.ADJF);
 		presets.put("этом", PartOfSpeech.ADJF);
 		presets.put("этого", PartOfSpeech.ADJF);
 		presets.put("этим", PartOfSpeech.ADJF);
+		presets.put("этому", PartOfSpeech.ADJF);
 		presets.put("его", PartOfSpeech.ADJF);
 		presets.put("как", PartOfSpeech.CONJ);
 		presets.put("были", PartOfSpeech.VERB);
@@ -97,7 +100,8 @@ public class AdditionalPartsPresetFilter implements ITokenFilter {
 		presets.put("вне", PartOfSpeech.PREP);
 		presets.put("право", PartOfSpeech.NOUN);
 		presets.put("короче", PartOfSpeech.COMP);
-		
+		presets.put("тут", PartOfSpeech.ADVB);
+		presets.put("наряду", PartOfSpeech.ADVB);
 		
 	}
 

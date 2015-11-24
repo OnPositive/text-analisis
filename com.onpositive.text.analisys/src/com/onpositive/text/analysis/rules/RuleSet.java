@@ -378,11 +378,11 @@ public class RuleSet {
 				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicNounAdjs);
-		Euristic euristicAdjsNounAb = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN),
-				Euristic.all(PartOfSpeech.NOUN, Case.ABLT)
-				);
-		euristics.add(euristicAdjsNounAb);
+//		Euristic euristicAdjsNounAb = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.NOUN),
+//				Euristic.all(PartOfSpeech.NOUN, Case.ABLT)
+//				);
+//		euristics.add(euristicAdjsNounAb); вражеское судно бортом
 		Euristic euristicNounNoun1 = Euristic.concat(
 				Euristic.any(PartOfSpeech.NOUN),
 				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJS), Euristic.all(PartOfSpeech.NOUN, Case.GENT))
@@ -1984,6 +1984,58 @@ public class RuleSet {
 		);
 		euristics.add(euristicNumrNoun);
 		doSetIds("39", euristics);
+		return euristics;
+	}
+	
+	public static List<Euristic> getRulesList40() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicIntjAdjf = Euristic.concat(
+			Euristic.any(PartOfSpeech.INTJ),
+			Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.PRTF)
+		);
+		euristics.add(euristicIntjAdjf);
+		Euristic euristicAdjfIntj = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.PRTF),
+			Euristic.any(PartOfSpeech.INTJ)
+		);
+		euristics.add(euristicAdjfIntj);
+		Euristic euristicNotIntjPrtf = Euristic.concat(
+			Euristic.not(Euristic.any(PartOfSpeech.INTJ)),
+			Euristic.createConflictChecker(PartOfSpeech.PRTF, PartOfSpeech.ADJF)
+		);
+		euristics.add(euristicNotIntjPrtf);
+		Euristic euristicPrtfNotIntj = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.PRTF, PartOfSpeech.ADJF),
+			Euristic.not(Euristic.any(PartOfSpeech.INTJ))
+		);
+		euristics.add(euristicPrtfNotIntj);
+		doSetIds("40", euristics);
+		return euristics;
+	}
+	
+	public static List<Euristic> getRulesList41() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicIntjAdjf = Euristic.concat(
+			Euristic.any(PartOfSpeech.INTJ),
+			Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.PRTS)
+		);
+		euristics.add(euristicIntjAdjf);
+		Euristic euristicAdjfIntj = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.PRTS),
+			Euristic.any(PartOfSpeech.INTJ)
+		);
+		euristics.add(euristicAdjfIntj);
+		Euristic euristicNotIntjPrtf = Euristic.concat(
+			Euristic.not(Euristic.any(PartOfSpeech.INTJ)),
+			Euristic.createConflictChecker(PartOfSpeech.PRTS, PartOfSpeech.ADJS)
+		);
+		euristics.add(euristicNotIntjPrtf);
+		Euristic euristicPrtfNotIntj = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.PRTS, PartOfSpeech.ADJS),
+			Euristic.not(Euristic.any(PartOfSpeech.INTJ))
+		);
+		euristics.add(euristicPrtfNotIntj);
+		doSetIds("41", euristics);
 		return euristics;
 	}
 
