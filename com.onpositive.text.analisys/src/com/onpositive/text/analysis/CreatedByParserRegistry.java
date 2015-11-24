@@ -33,8 +33,8 @@ public class CreatedByParserRegistry {
 		CreatedByParserRegistry in = CreatedByParserRegistry.getInstance();
 				
 		try {
-			throw new NullPointerException();			
-		} catch (NullPointerException e) {
+			throw new RuntimeException();			
+		} catch (RuntimeException e) {
 			for (StackTraceElement el : e.getStackTrace()) {
 				String name = el.getClassName();
 				String res = in.getValue(name);

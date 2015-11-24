@@ -21,7 +21,7 @@ public class RuleSet {
 	
 	public static List<Euristic> getFullRulesList() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		euristics.addAll(getRulesList5());
+//		euristics.addAll(getRulesList5());
 		euristics.addAll(getRulesList6());
 		euristics.addAll(getRulesList7());
 		euristics.addAll(getRulesList8());
@@ -46,8 +46,8 @@ public class RuleSet {
 		euristics.addAll(getRulesList27());
 		euristics.addAll(getRulesList28());
 		euristics.addAll(getRulesList29());
-		euristics.addAll(getRulesList30());
-		euristics.addAll(getRulesList31());
+//		euristics.addAll(getRulesList30());
+//		euristics.addAll(getRulesList31());
 		euristics.addAll(getRulesList32());
 		euristics.addAll(getRulesList33());
 		euristics.addAll(getRulesList34());
@@ -57,52 +57,52 @@ public class RuleSet {
 		return euristics;
 	}
 	
-	public static List<Euristic> getRulesList5() {
-		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicPrepWordConj = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.word("тем", PartOfSpeech.ADJF),
-				Euristic.word("как", PartOfSpeech.CONJ)
-				);
-		euristics.add(euristicPrepWordConj);
-		Euristic euristicPrepNumR = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.any(PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicPrepNumR);
-		Euristic euristicPrepPrInst = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.NPRO), (Case.ABLT))
-				);
-		euristics.add(euristicPrepPrInst);
-		Euristic euristicPrepAdjf = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.ADJF), (FeaturesGramem.Anum))
-				);
-		euristics.add(euristicPrepAdjf);
-		Euristic euristicPrepNounInst = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.NOUN), (Case.ABLT))
-				);
-		euristics.add(euristicPrepNounInst);
-		Euristic euristicPrepNpro = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all((PartOfSpeech.NPRO), (Extras.Anph))
-				);
-		euristics.add(euristicPrepNpro);
-		Euristic euristicPrepAdjf1 = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
-				Euristic.all(PartOfSpeech.ADJF, Case.ABLT)
-				);
-		euristics.add(euristicPrepAdjf1);
-		Euristic euristicNounNoun = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.PREP),
-				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
-				);
-		euristics.add(euristicNounNoun);
-		doSetIds("5", euristics);
-		return euristics;
-	}
+//	public static List<Euristic> getRulesList5() {
+//		List<Euristic> euristics = new ArrayList<Euristic>();
+//		Euristic euristicPrepWordConj = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.word("тем", PartOfSpeech.ADJF),
+//				Euristic.word("как", PartOfSpeech.CONJ)
+//				);
+//		euristics.add(euristicPrepWordConj);
+//		Euristic euristicPrepNumR = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.any(PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicPrepNumR);
+//		Euristic euristicPrepPrInst = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.all((PartOfSpeech.NPRO), (Case.ABLT))
+//				);
+//		euristics.add(euristicPrepPrInst);
+//		Euristic euristicPrepAdjf = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.all((PartOfSpeech.ADJF), (FeaturesGramem.Anum))
+//				);
+//		euristics.add(euristicPrepAdjf);
+//		Euristic euristicPrepNounInst = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.all((PartOfSpeech.NOUN), (Case.ABLT))
+//				);
+//		euristics.add(euristicPrepNounInst);
+//		Euristic euristicPrepNpro = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.all((PartOfSpeech.NPRO), (Extras.Anph))
+//				);
+//		euristics.add(euristicPrepNpro);
+//		Euristic euristicPrepAdjf1 = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.NOUN),
+//				Euristic.all(PartOfSpeech.ADJF, Case.ABLT)
+//				);
+//		euristics.add(euristicPrepAdjf1);
+//		Euristic euristicNounNoun = Euristic.concat(
+//				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.PREP),
+//				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
+//				);
+//		euristics.add(euristicNounNoun);
+//		doSetIds("5", euristics);
+//		return euristics;
+//	}
 	
 	public static List<Euristic> getRulesList6() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
@@ -383,6 +383,11 @@ public class RuleSet {
 				Euristic.all(PartOfSpeech.NOUN, Case.ABLT)
 				);
 		euristics.add(euristicAdjsNounAb);
+		Euristic euristicNounNoun1 = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJS), Euristic.all(PartOfSpeech.NOUN, Case.GENT))
+				);
+		euristics.add(euristicNounNoun1);
 		doSetIds("8", euristics);
 		return euristics;				
 	}
@@ -415,7 +420,7 @@ public class RuleSet {
 //				);
 //		euristics.add(euristicVerbNoun); услышал лёгкие шаги
 		Euristic euristicNounVerb = Euristic.concat(
-				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF),
+				Euristic.and(Euristic.conflicting(PartOfSpeech.NOUN, PartOfSpeech.ADJF), Euristic.all(PartOfSpeech.NOUN, Case.NOMN)),
 				Euristic.any(PartOfSpeech.VERB)
 				);
 		euristics.add(euristicNounVerb);
@@ -424,11 +429,6 @@ public class RuleSet {
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicProNoun);
-		//		Euristic euristicNounNoun = Euristic.concat(
-//				Euristic.any(PartOfSpeech.NOUN), 
-//				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
-//				);
-//		euristics.add(euristicNounNoun); красные красные шли
 		Euristic euristicNounPrep = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF), 
 				Euristic.any(PartOfSpeech.PREP)
@@ -459,11 +459,21 @@ public class RuleSet {
 				Euristic.any(PartOfSpeech.NOUN)
 				);
 		euristics.add(euristicAdjNoun1);
-		Euristic euristicAdvbAdjf = Euristic.concat(
-				Euristic.any(PartOfSpeech.ADVB),
+//		Euristic euristicAdvbAdjf = Euristic.concat(
+//				Euristic.any(PartOfSpeech.ADVB),
+//				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NOUN)
+//				);
+//		euristics.add(euristicAdvbAdjf); неподалёку полицейский сумел
+		Euristic euristicNounAdjf = Euristic.concat(
+				Euristic.any(PartOfSpeech.NOUN),
 				Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NOUN)
 				);
-		euristics.add(euristicAdvbAdjf);	
+		euristics.add(euristicNounAdjf);
+		Euristic euristicNounPrtf = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF),
+				Euristic.any(PartOfSpeech.PRTF)
+				);
+		euristics.add(euristicNounPrtf);
 		doSetIds("9", euristics);
 		return euristics;
 	}
@@ -796,6 +806,11 @@ public class RuleSet {
 				Euristic.any(PartOfSpeech.VERB)
 				);
 		euristics.add(euristicAdvbVerb);
+		Euristic euristicInfnAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.INFN),
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.NOUN)
+				);
+		euristics.add(euristicInfnAdvb);
 		doSetIds("16", euristics);
 		return euristics;
 	}
@@ -1047,36 +1062,36 @@ public class RuleSet {
 				Euristic.all(PartOfSpeech.ADJF, Case.GENT)
 				);
 		euristics.add(euristicNumrAdjf);
-		Euristic euristicNotNounNumr = Euristic.concat(
-				Euristic.not(Euristic.all(PartOfSpeech.NOUN, Case.GENT)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotNounNumr);
-		Euristic euristicNotNumrNumr = Euristic.concat(
-				Euristic.not(Euristic.any(PartOfSpeech.NUMR)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotNumrNumr);
-		Euristic euristicNotVerbNumr = Euristic.concat(
-				Euristic.not(Euristic.any(PartOfSpeech.VERB)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotVerbNumr);
-		Euristic euristicNotPrepNumr = Euristic.concat(
-				Euristic.not(Euristic.any(PartOfSpeech.PREP)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotPrepNumr);
-		Euristic euristicNotAdjfNumr = Euristic.concat(
-				Euristic.not(Euristic.any(PartOfSpeech.ADJF)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotAdjfNumr);
-		Euristic euristicNotInfnNumr = Euristic.concat(
-				Euristic.not(Euristic.any(PartOfSpeech.INFN)),
-				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
-				);
-		euristics.add(euristicNotInfnNumr);
+//		Euristic euristicNotNounNumr = Euristic.concat(
+//				Euristic.not(Euristic.all(PartOfSpeech.NOUN, Case.GENT)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotNounNumr);внесены три изменения
+//		Euristic euristicNotNumrNumr = Euristic.concat(
+//				Euristic.not(Euristic.any(PartOfSpeech.NUMR)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotNumrNumr);
+//		Euristic euristicNotVerbNumr = Euristic.concat(
+//				Euristic.not(Euristic.any(PartOfSpeech.VERB)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotVerbNumr);
+//		Euristic euristicNotPrepNumr = Euristic.concat(
+//				Euristic.not(Euristic.any(PartOfSpeech.PREP)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotPrepNumr);
+//		Euristic euristicNotAdjfNumr = Euristic.concat(
+//				Euristic.not(Euristic.any(PartOfSpeech.ADJF)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotAdjfNumr);
+//		Euristic euristicNotInfnNumr = Euristic.concat(
+//				Euristic.not(Euristic.any(PartOfSpeech.INFN)),
+//				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR)
+//				);
+//		euristics.add(euristicNotInfnNumr);
 //		Euristic euristicNotNumrNoun = Euristic.concat(
 //				Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.NUMR),
 //				Euristic.not(Euristic.all(PartOfSpeech.NOUN, Case.GEN1))
@@ -1138,11 +1153,21 @@ public class RuleSet {
 				Euristic.any(PartOfSpeech.PRTF)
 				);
 		euristics.add(euristicAdvbPrtf);
+		Euristic euristicPrtfAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRTF),
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS)
+				);
+		euristics.add(euristicPrtfAdvb);
 		Euristic euristicAdvbPrts = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
 				Euristic.any(PartOfSpeech.PRTS)
 				);
 		euristics.add(euristicAdvbPrts);
+		Euristic euristicPrtsAdvb = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRTS),
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS)
+				);
+		euristics.add(euristicPrtsAdvb);
 		Euristic euristicAdvb1Advb = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
 				Euristic.any(PartOfSpeech.ADVB)
@@ -1168,6 +1193,11 @@ public class RuleSet {
 				Euristic.any(PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicAdvbAdjf);
+		Euristic euristicAdjfAdjs = Euristic.concat(
+				Euristic.all(PartOfSpeech.ADJF, FeaturesGramem.Apro, Gender.NEUT),
+				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB)
+				);
+		euristics.add(euristicAdjfAdjs);
 		Euristic euristicAdjsNounM = Euristic.concat(
 				Euristic.and(Euristic.conflicting(PartOfSpeech.ADJS, PartOfSpeech.ADVB), Euristic.all(PartOfSpeech.ADJS, Gender.MASC)),
 				Euristic.all(PartOfSpeech.NOUN, Gender.MASC, SingularPlural.SINGULAR, Case.NOMN)
@@ -1213,6 +1243,11 @@ public class RuleSet {
 //				Euristic.all(PartOfSpeech.ADJF, Gender.NEUT, SingularPlural.SINGULAR, Case.NOMN)
 //				);
 //		euristics.add(euristicAdjsAdjf);
+		Euristic euristicAdvbAdjs = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.ADJS),
+				Euristic.any(PartOfSpeech.ADJS)
+				);
+		euristics.add(euristicAdvbAdjs);
 		doSetIds("23", euristics);
 		return euristics;
 	}
@@ -1350,9 +1385,14 @@ public class RuleSet {
 				Euristic.any(PartOfSpeech.VERB)
 				);
 		euristics.add(euristicNounVerb);
-		Euristic euristicNounNounG = Euristic.concat(
+		Euristic euristicNounNounG2 = Euristic.concat(
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB),
 				Euristic.all(PartOfSpeech.NOUN, Case.GEN2)
+				);
+		euristics.add(euristicNounNounG2);
+		Euristic euristicNounNounG = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.VERB),
+				Euristic.all(PartOfSpeech.NOUN, Case.GENT)
 				);
 		euristics.add(euristicNounNounG);
 		Euristic euristicNounAdjsS = Euristic.concat(
@@ -1551,117 +1591,117 @@ public class RuleSet {
 		return euristics;
 	}
 	
-	public static List<Euristic> getRulesList30() {
-		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicPrepNpro = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
-			Euristic.all(PartOfSpeech.NPRO, Case.GENT)
-		);
-			euristics.add(euristicPrepNpro);
-		Euristic euristicPrepNoun = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
-			Euristic.all(PartOfSpeech.NOUN, Case.GENT)
-		);
-			euristics.add(euristicPrepNoun);
-		Euristic euristicPrepAdjf = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
-			Euristic.all(PartOfSpeech.ADJF, Case.GENT)
-		);
-			euristics.add(euristicPrepAdjf);
-		Euristic euristicAdvbGrnd = Euristic.concat(
-			Euristic.any(PartOfSpeech.ADVB),
-			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicAdvbGrnd); 
-//		Euristic euristicNounGrnd = Euristic.concat(
-//			Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+//	public static List<Euristic> getRulesList30() {
+//		List<Euristic> euristics = new ArrayList<Euristic>();
+//		Euristic euristicPrepNpro = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
+//			Euristic.all(PartOfSpeech.NPRO, Case.GENT)
+//		);
+//			euristics.add(euristicPrepNpro);
+//		Euristic euristicPrepNoun = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
+//			Euristic.all(PartOfSpeech.NOUN, Case.GENT)
+//		);
+//			euristics.add(euristicPrepNoun);
+//		Euristic euristicPrepAdjf = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.GRND),
+//			Euristic.all(PartOfSpeech.ADJF, Case.GENT)
+//		);
+//			euristics.add(euristicPrepAdjf);
+//		Euristic euristicAdvbGrnd = Euristic.concat(
+//			Euristic.any(PartOfSpeech.ADVB),
 //			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP)
 //		);
-//			euristics.add(euristicNounGrnd);
-		Euristic euristicAdjfGrnd = Euristic.concat(
-			Euristic.all(PartOfSpeech.ADJF, Case.ACCS, SingularPlural.SINGULAR),
-			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicAdjfGrnd);
-		Euristic euristicGrndAdvb = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
-			Euristic.any(PartOfSpeech.ADVB)
-		);
-			euristics.add(euristicGrndAdvb);
-		Euristic euristicGrndNoun = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
-			Euristic.all(PartOfSpeech.NOUN, Case.ACCS, SingularPlural.SINGULAR)
-		);
-			euristics.add(euristicGrndNoun);
-		Euristic euristicGrndAdjf = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
-			Euristic.all(PartOfSpeech.ADJF, Case.ACCS, SingularPlural.SINGULAR)
-		);
-		euristics.add(euristicGrndAdjf);
-		doSetIds("30", euristics);
-		return euristics;
-	}
-	
-	public static List<Euristic> getRulesList31() {
-		List<Euristic> euristics = new ArrayList<Euristic>();
-		Euristic euristicPrepNpro = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
-			Euristic.all(PartOfSpeech.NPRO, Case.LOCT)
-		);
-			euristics.add(euristicPrepNpro);
-		Euristic euristicPrepNoun = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
-			Euristic.all(PartOfSpeech.NOUN, Case.LOCT)
-		);
-			euristics.add(euristicPrepNoun);
-		Euristic euristicPrepAdjf = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
-			Euristic.all(PartOfSpeech.ADJF, Case.LOCT)
-		);
-			euristics.add(euristicPrepAdjf);
-		Euristic euristicAdvbVerb = Euristic.concat(
-			Euristic.any(PartOfSpeech.ADVB),
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicAdvbVerb);
-		Euristic euristicNounVerb = Euristic.concat(
-			Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicNounVerb);
-		Euristic euristicNproVerb = Euristic.concat(
-			Euristic.all(PartOfSpeech.NPRO, Case.ACCS),
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicNproVerb);
-		Euristic euristicAdjfVerb = Euristic.concat(
-			Euristic.all(PartOfSpeech.ADJF, Case.ACCS),
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
-		);
-			euristics.add(euristicAdjfVerb);
-		Euristic euristicVerbAdvb = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
-			Euristic.any(PartOfSpeech.ADVB)
-		);
-			euristics.add(euristicVerbAdvb);
-		Euristic euristicVerbNoun = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
-			Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
-		);
-			euristics.add(euristicVerbNoun);
-		Euristic euristicVerbAdjf = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
-			Euristic.all(PartOfSpeech.ADJF, Case.ACCS)
-		);
-			euristics.add(euristicVerbAdjf);
-		Euristic euristicVerbNpro = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
-			Euristic.all(PartOfSpeech.NPRO, Case.ACCS)
-		);
-		euristics.add(euristicVerbNpro);
-		doSetIds("31", euristics);
-		return euristics;
-	}
+//			euristics.add(euristicAdvbGrnd); 
+////		Euristic euristicNounGrnd = Euristic.concat(
+////			Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+////			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP)
+////		);
+////			euristics.add(euristicNounGrnd);
+//		Euristic euristicAdjfGrnd = Euristic.concat(
+//			Euristic.all(PartOfSpeech.ADJF, Case.ACCS, SingularPlural.SINGULAR),
+//			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP)
+//		);
+//			euristics.add(euristicAdjfGrnd);
+//		Euristic euristicGrndAdvb = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
+//			Euristic.any(PartOfSpeech.ADVB)
+//		);
+//			euristics.add(euristicGrndAdvb);
+//		Euristic euristicGrndNoun = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
+//			Euristic.all(PartOfSpeech.NOUN, Case.ACCS, SingularPlural.SINGULAR)
+//		);
+//			euristics.add(euristicGrndNoun);
+//		Euristic euristicGrndAdjf = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.GRND, PartOfSpeech.PREP),
+//			Euristic.all(PartOfSpeech.ADJF, Case.ACCS, SingularPlural.SINGULAR)
+//		);
+//		euristics.add(euristicGrndAdjf);
+//		doSetIds("30", euristics);
+//		return euristics;
+//	}
+//	
+//	public static List<Euristic> getRulesList31() {
+//		List<Euristic> euristics = new ArrayList<Euristic>();
+//		Euristic euristicPrepNpro = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
+//			Euristic.all(PartOfSpeech.NPRO, Case.LOCT)
+//		);
+//			euristics.add(euristicPrepNpro);
+//		Euristic euristicPrepNoun = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
+//			Euristic.all(PartOfSpeech.NOUN, Case.LOCT)
+//		);
+//			euristics.add(euristicPrepNoun);
+//		Euristic euristicPrepAdjf = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.PREP, PartOfSpeech.VERB),
+//			Euristic.all(PartOfSpeech.ADJF, Case.LOCT)
+//		);
+//			euristics.add(euristicPrepAdjf);
+//		Euristic euristicAdvbVerb = Euristic.concat(
+//			Euristic.any(PartOfSpeech.ADVB),
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
+//		);
+//			euristics.add(euristicAdvbVerb);
+//		Euristic euristicNounVerb = Euristic.concat(
+//			Euristic.all(PartOfSpeech.NOUN, Case.ACCS),
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
+//		);
+//			euristics.add(euristicNounVerb);
+//		Euristic euristicNproVerb = Euristic.concat(
+//			Euristic.all(PartOfSpeech.NPRO, Case.ACCS),
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
+//		);
+//			euristics.add(euristicNproVerb);
+//		Euristic euristicAdjfVerb = Euristic.concat(
+//			Euristic.all(PartOfSpeech.ADJF, Case.ACCS),
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP)
+//		);
+//			euristics.add(euristicAdjfVerb);
+//		Euristic euristicVerbAdvb = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
+//			Euristic.any(PartOfSpeech.ADVB)
+//		);
+//			euristics.add(euristicVerbAdvb);
+//		Euristic euristicVerbNoun = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
+//			Euristic.all(PartOfSpeech.NOUN, Case.ACCS)
+//		);
+//			euristics.add(euristicVerbNoun);
+//		Euristic euristicVerbAdjf = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
+//			Euristic.all(PartOfSpeech.ADJF, Case.ACCS)
+//		);
+//			euristics.add(euristicVerbAdjf);
+//		Euristic euristicVerbNpro = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PREP),
+//			Euristic.all(PartOfSpeech.NPRO, Case.ACCS)
+//		);
+//		euristics.add(euristicVerbNpro);
+//		doSetIds("31", euristics);
+//		return euristics;
+//	}
 	
 	public static List<Euristic> getRulesList32() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
@@ -1890,6 +1930,60 @@ public class RuleSet {
 		);
 		euristics.add(euristicAdjfAdjf);
 		doSetIds("36", euristics);
+		return euristics;
+	}
+	
+	public static List<Euristic> getRulesList37() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicVerbAdvb = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.VERB, PartOfSpeech.PRTS),
+			Euristic.any(PartOfSpeech.ADVB)
+		);
+		euristics.add(euristicVerbAdvb);
+		doSetIds("37", euristics);
+		return euristics;
+	}
+	
+	public static List<Euristic> getRulesList38() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicConjCompVerb = Euristic.concat(
+			Euristic.any(PartOfSpeech.CONJ),
+			Euristic.createConflictChecker(PartOfSpeech.COMP, PartOfSpeech.NOUN),
+			Euristic.any(PartOfSpeech.VERB)
+		);
+		euristics.add(euristicConjCompVerb);
+		doSetIds("38", euristics);
+		return euristics;		
+	}
+	
+	public static List<Euristic> getRulesList39() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicVerbAdvb = Euristic.concat(
+			Euristic.any(PartOfSpeech.VERB),
+			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.NUMR)
+		);
+		euristics.add(euristicVerbAdvb);
+		Euristic euristicInfnAdvb = Euristic.concat(
+			Euristic.any(PartOfSpeech.INFN),
+			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.NUMR)
+		);
+		euristics.add(euristicInfnAdvb);
+		Euristic euristicAdvbVerb = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.NUMR),
+			Euristic.any(PartOfSpeech.VERB)
+		);
+		euristics.add(euristicAdvbVerb);
+		Euristic euristicAdvbInfn = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.NUMR),
+			Euristic.any(PartOfSpeech.INFN)
+		);
+		euristics.add(euristicAdvbInfn);
+		Euristic euristicNumrNoun = Euristic.concat(
+			Euristic.createConflictChecker(PartOfSpeech.NUMR, PartOfSpeech.ADVB),
+			Euristic.any(PartOfSpeech.NOUN)
+		);
+		euristics.add(euristicNumrNoun);
+		doSetIds("39", euristics);
 		return euristics;
 	}
 

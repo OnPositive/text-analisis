@@ -63,13 +63,11 @@ public class EuristicAnalysisTest extends TestCase{
 //	}
 	
 	public void test02() {
-		testWithFile("3344.xml");
-		testWithFile("2176.xml");
-		testWithFile("2241.xml");
+		testWithFile("1551.xml");
 	}
 	
 //	public void test03() {
-//		File folder = new File("D:\\tmp\\corpora");
+//		File folder = new File("D:\\Лена\\NoAmbig");
 //		if (folder.exists() && folder.isDirectory()) {
 //			File[] listedFiles = folder.listFiles();
 //			for (File file : listedFiles) {
@@ -147,7 +145,7 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	private List<Euristic> createRulesList() {
 		List<Euristic> euristics = new ArrayList<Euristic>();
-		euristics.addAll(RuleSet.getRulesList5());
+//		euristics.addAll(RuleSet.getRulesList5());
 		euristics.addAll(RuleSet.getRulesList6());
 		euristics.addAll(RuleSet.getRulesList7());
 		euristics.addAll(RuleSet.getRulesList8());
@@ -172,14 +170,16 @@ public class EuristicAnalysisTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList27());
 		euristics.addAll(RuleSet.getRulesList28());
 		euristics.addAll(RuleSet.getRulesList29());
-		euristics.addAll(RuleSet.getRulesList30());
-		euristics.addAll(RuleSet.getRulesList31());
+//		euristics.addAll(RuleSet.getRulesList30());
+//		euristics.addAll(RuleSet.getRulesList31());
 		euristics.addAll(RuleSet.getRulesList32());
 		euristics.addAll(RuleSet.getRulesList33());
 		euristics.addAll(RuleSet.getRulesList34());
 		euristics.addAll(RuleSet.getRulesList35());
 		euristics.addAll(RuleSet.getRulesList36());
-//		euristics.addAll(RuleSet.getRulesList37());
+		euristics.addAll(RuleSet.getRulesList37());
+		euristics.addAll(RuleSet.getRulesList38());
+		euristics.addAll(RuleSet.getRulesList39());
 		return euristics;
 	}
 

@@ -168,11 +168,6 @@ public class WordFormParserTest extends TestCase{
 	}
 	
 
-	// существительное - предлог
-	public void test05() {
-		Euristic matched = matched(RuleSet.getRulesList5(), "перед яблока");
-		assertNotNull(matched);
-	}
 	
 	// глагол - местоимение
 	public void test06() {
@@ -322,16 +317,16 @@ public class WordFormParserTest extends TestCase{
 	}
 		
 	// предлог - деепричастие "для"
-	public void test30() {
-		Euristic matched = matched(RuleSet.getRulesList30(), "для лису");
-		assertNotNull(matched);
-	}
+//	public void test30() {
+//		Euristic matched = matched(RuleSet.getRulesList30(), "для лису");
+//		assertNotNull(matched);
+//	}
 	
 	// предлог - глагол "при"
-	public void test31() {
-		Euristic matched = matched(RuleSet.getRulesList31(), "при лису");
-		assertNotNull(matched);
-	}
+//	public void test31() {
+//		Euristic matched = matched(RuleSet.getRulesList31(), "при лису");
+//		assertNotNull(matched);
+//	}
 	
 	// глагол - компаратив
 	public void test32() {
@@ -496,6 +491,16 @@ public class WordFormParserTest extends TestCase{
 		Euristic matched = matched(RuleSet.getFullRulesList(), "выслушав его просьбу");
 		assertNotNull(matched);
 	}
+	
+	public void test55() {
+		Euristic matched = matched(RuleSet.getRulesList9(), "и учёные находившиеся");
+		assertNotNull(matched);
+	}
+	
+	public void test56() {
+		Euristic matched = matched(RuleSet.getRulesList25(), "соблюдение правил оказывают");
+		assertNotNull(matched);
+	} //не находятся правила в процентиках
 		
 	private void printProcessingResult(String str, Collection<List<IToken>> possibleChains) {
 		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");
