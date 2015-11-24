@@ -72,7 +72,7 @@ public class EuristicAnalysisTest extends TestCase{
 //			File[] listedFiles = folder.listFiles();
 //			for (File file : listedFiles) {
 //				if (file.length() > 200000) {
-//					testNeuralWithFile(file);
+//					testWithFile(file);
 //				}
 //			}
 //			
@@ -90,7 +90,7 @@ public class EuristicAnalysisTest extends TestCase{
 //		    System.out.println("Частые ошибки:");
 //		    for (String word : sortedMap.keySet()) {
 //				int count = sortedMap.get(word);
-//				if (count > 5) {
+//				if (count > 100) {
 //					System.out.println(word + " - " + count + " раз");
 //				} else {
 //					break;
@@ -125,10 +125,10 @@ public class EuristicAnalysisTest extends TestCase{
 		compare(etalonTokens,wordTokens, neuralParser);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
-	
 
-	private void testWithFile(String filename) {
-		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
+	
+	private void testWithFile(ParsedTokensLoader loader) {
+		
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(createRulesList());
@@ -140,6 +140,21 @@ public class EuristicAnalysisTest extends TestCase{
 //		processed = euristicAnalyzingParser.process(sentences);
 //		compare(etalonTokens,tokens1);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
+	}
+	
+	private void testWithFile(File file) {
+		ParsedTokensLoader loader;
+		try {
+			loader = new ParsedTokensLoader(new BufferedInputStream(new FileInputStream(file)));
+			testWithFile(loader);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void testWithFile(String filename) {
+		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
+		testWithFile(loader);
 	}
 	
 	
