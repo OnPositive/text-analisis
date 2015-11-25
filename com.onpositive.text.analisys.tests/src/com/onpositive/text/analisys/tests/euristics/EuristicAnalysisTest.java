@@ -199,6 +199,7 @@ public class EuristicAnalysisTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList39());
 		euristics.addAll(RuleSet.getRulesList40());
 		euristics.addAll(RuleSet.getRulesList41());
+		euristics.addAll(RuleSet.getRulesList42());
 		return euristics;
 	}
 

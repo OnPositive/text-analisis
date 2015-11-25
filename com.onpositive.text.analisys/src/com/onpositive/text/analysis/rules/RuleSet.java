@@ -2038,6 +2038,22 @@ public class RuleSet {
 		doSetIds("41", euristics);
 		return euristics;
 	}
+	
+	public static List<Euristic> getRulesList42() {
+		List<Euristic> euristics = new ArrayList<Euristic>();
+		Euristic euristicPrepNpro = Euristic.concat(
+			Euristic.any(PartOfSpeech.PREP),
+			Euristic.createConflictChecker(PartOfSpeech.NPRO, PartOfSpeech.ADJF)
+		);
+		euristics.add(euristicPrepNpro);
+		Euristic euristicNotPrepAdjf = Euristic.concat(
+			Euristic.not(Euristic.any(PartOfSpeech.PREP)),
+			Euristic.createConflictChecker(PartOfSpeech.ADJF, PartOfSpeech.NPRO)
+		);
+		euristics.add(euristicNotPrepAdjf);
+		doSetIds("42", euristics);
+		return euristics;
+	}
 
 	private static void doSetIds(String preffix, List<Euristic> euristics) {
 		for (int i = 0; i < euristics.size(); i++) {
