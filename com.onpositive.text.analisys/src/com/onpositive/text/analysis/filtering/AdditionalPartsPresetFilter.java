@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.onpositive.semantic.wordnet.Grammem.PartOfSpeech;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class AdditionalPartsPresetFilter implements ITokenFilter {
@@ -112,6 +113,12 @@ public class AdditionalPartsPresetFilter implements ITokenFilter {
 		}
 		String val = token.getShortStringValue().toLowerCase().trim();
 		PartOfSpeech partOfSpeech = presets.get(val);
+		if (partOfSpeech == null) {
+			return false;
+		}
+		if (token instanceof WordFormToken && ((WordFormToken) token).getPartOfSpeech() != null) {
+			return ((WordFormToken) token).getPartOfSpeech() != partOfSpeech;
+		}
 		if (partOfSpeech != null && !((SyntaxToken) token).hasGrammem(partOfSpeech)) {
 			return true;
 		}

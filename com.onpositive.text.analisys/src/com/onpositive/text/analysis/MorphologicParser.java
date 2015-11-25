@@ -28,6 +28,7 @@ public abstract class MorphologicParser extends AbstractParser {
 				if (filter.shouldFilterOut(curToken)) {
 					curToken.setCorrelation(0.0, Double.POSITIVE_INFINITY);
 					filteredCount++;
+					break;
 				}
 			}
 		}
