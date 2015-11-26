@@ -26,6 +26,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
+import com.onpositive.text.analysis.filtering.IntjFilter;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.neural.NeuralParser;
@@ -67,12 +68,12 @@ public class EuristicAnalysisTest extends TestCase{
 //	}
 	
 	public void test03() {
-		File folder = new File("D:\\Лена\\NoAmbig");
+		File folder = new File("D:\\tmp\\corpora");
 		if (folder.exists() && folder.isDirectory()) {
 			File[] listedFiles = folder.listFiles();
 			for (File file : listedFiles) {
 				if (file.length() > 200000) {
-					testWithFile(file);
+					testEuristicWithFile(file);
 				}
 			}
 			
@@ -118,6 +119,7 @@ public class EuristicAnalysisTest extends TestCase{
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		NeuralParser neuralParser = new NeuralParser();
+//		neuralParser.addTokenFilter(new IntjFilter());
 		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
 		neuralParser.addTokenFilter(new AbbreviationsFilter());
 		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
@@ -127,7 +129,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	
-	private void testWithFile(ParsedTokensLoader loader) {
+	private void testEuristicWithFile(ParsedTokensLoader loader) {
 		
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
@@ -142,19 +144,19 @@ public class EuristicAnalysisTest extends TestCase{
 		System.out.println("//--------------------------------------------------------------------------------------------------");
 	}
 	
-	private void testWithFile(File file) {
+	private void testEuristicWithFile(File file) {
 		ParsedTokensLoader loader;
 		try {
 			loader = new ParsedTokensLoader(new BufferedInputStream(new FileInputStream(file)));
-			testWithFile(loader);
+			testEuristicWithFile(loader);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void testWithFile(String filename) {
+	private void testEuristicWithFile(String filename) {
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
-		testWithFile(loader);
+		testEuristicWithFile(loader);
 	}
 	
 	

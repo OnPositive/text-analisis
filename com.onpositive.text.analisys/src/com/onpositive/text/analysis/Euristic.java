@@ -15,6 +15,12 @@ import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken.GrammemSet;
 
 public class Euristic {
+	
+	public enum ContextType {
+		PREFIX, 
+		POSTFIX,
+		INDIFFERENT
+	}
 
 	private static final int EURISTIC_WORD = 40001;
 	private static final int EURISTIC_GRAMMEM = 40002;
@@ -31,6 +37,7 @@ public class Euristic {
 	private int type;
 	private Euristic[] euristics = null;
 	private String id;
+	private ContextType contextType = null;
 	
 	public static void register(Class<? extends BasicParser> clazz, Euristic ... euristics)
 	{
@@ -269,12 +276,47 @@ public class Euristic {
 		this.id = id;
 	}
 	
+	public boolean hasConflictCheck() {
+		if (type == EURISTIC_CONFLICTING) {
+			return true;
+		}
+		if (euristics != null) {
+			for (Euristic euristic : euristics) {
+				if (euristic.hasConflictCheck()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public String toString() {
 		if (id != null) {
 			return "Euristic " + id; 
 		}
 		return super.toString();
+	}
+
+	public ContextType getContextType() {
+		return contextType;
+	}
+
+	public void setContextType(ContextType contextType) {
+		this.contextType = contextType;
+	}
+	
+	public void defineContextType() {
+		if (type == EURISTIC_CONCAT && euristics.length == 2) {
+			if (euristics[0].hasConflictCheck()) {
+				contextType = ContextType.POSTFIX;
+				return;
+			} else if (euristics[1].hasConflictCheck()) {
+				contextType = ContextType.PREFIX;
+				return;
+			} 
+		}
+		contextType = ContextType.INDIFFERENT;
 	}
 }
 

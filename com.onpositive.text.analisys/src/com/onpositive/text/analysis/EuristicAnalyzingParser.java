@@ -1,6 +1,7 @@
 package com.onpositive.text.analysis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,17 +14,24 @@ import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.projection.IProjectionCreator;
 import com.onpositive.text.analysis.projection.Projection;
 import com.onpositive.text.analysis.rules.RuleSet;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
 public class EuristicAnalyzingParser extends MorphologicParser{
 	
+	private static final double CORRELATION_E = 0.01;
+
 	private static final boolean DEBUG = true;
 	
 	private static final int SEQUENCE_LENGTH = 2;
 	
 	private List<Euristic> euristics;
 	
-	private List<List<IToken>> possibleChains;
+	private List<Euristic> preffixEuristics = new ArrayList<Euristic>();
+	
+	private List<Euristic> postfixEuristics = new ArrayList<Euristic>();
+	
+	private List<Euristic> indifferentEuristics = new ArrayList<Euristic>();
 	
 	private List<IProjectionCreator> projectionCreators = new ArrayList<IProjectionCreator>();
 	
@@ -32,30 +40,29 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	private Map<IToken, Euristic> matchedEuristics = new HashMap<IToken, Euristic>();
 	
 	public EuristicAnalyzingParser() {
-		this.euristics = RuleSet.getFullRulesList();
+		this(RuleSet.getFullRulesList());
 	}
 	
 	public EuristicAnalyzingParser(List<Euristic> euristics) {
 		this.euristics = euristics;
+		sortByTypes();
 	}
 
-//	public List<IToken> process(List<IToken> tokens) {
-//		List<List<IToken>> possibleChains = calcVariants(tokens);
-//		if (possibleChains.isEmpty()) {
-//			this.possibleChains = Collections.emptyList(); 
-//			return Collections.emptyList();
-//		}
-////		doPreFiltering(possibleChains);
-//		this.possibleChains = applyEuristics(possibleChains);
-//		List<List<IToken>> failedChains = new ArrayList<List<IToken>>(possibleChains);
-//		failedChains.removeAll(this.possibleChains);
-//		if (!projectionCreators.isEmpty()) {
-//			this.possibleChains.addAll(applyToProjections(failedChains));
-//		}
-//		return this.possibleChains.get(0);
-//	}
-	
+	private void sortByTypes() {
+		for (Euristic euristic : euristics) {
+			if (euristic.getContextType() == null) {
+				euristic.defineContextType();
+			}
+			switch (euristic.getContextType()) {
+				case PREFIX: preffixEuristics.add(euristic); break;
+				case POSTFIX: postfixEuristics.add(euristic); break;
+				case INDIFFERENT: indifferentEuristics.add(euristic); break;
+			}
+		}
+	}
+
 	public List<IToken> processPlain(List<IToken> tokens) {
+		tokens = tokens.stream().filter(curToken -> (curToken instanceof SyntaxToken)).collect(Collectors.toList());
 		List<IToken> resultTokens = applyEuristicsNew(tokens);
 		return resultTokens;
 	}
@@ -89,7 +96,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 		for (int i = 0; i < projection.tokens.size(); i++) {
 			IToken token = projection.tokens.get(i);
 			checkedToken = token;
-			if (token instanceof WordFormToken && token.hasConflicts() && !tryMatchConflicting(getSequences(projection.tokens,i ))) {
+			if (token instanceof WordFormToken && hasConflicts(token) && !tryMatchConflicting(getSequences(projection.tokens,i ))) {
 				return false;
 			}
 		}
@@ -106,7 +113,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 		List<IToken> curChain = result.get(0);
 		for (int i = 0; i < curChain.size(); i++) {
 			IToken token = curChain.get(i);
-			if (token instanceof WordFormToken && token.hasConflicts()) {
+			if (token instanceof WordFormToken && hasConflicts(token)) {
 				List<List<IToken>> invalidChains = new ArrayList<List<IToken>>();
 				for (int j = 0; j < result.size(); j++) {
 					List<IToken> curResult = result.get(j);
@@ -133,33 +140,117 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 		List<IToken> chain = MorphologicUtils.getWithNoConflicts(tokens);
 		for (int i = 0; i < chain.size(); i++) {
 			IToken token = chain.get(i);
-			if (token instanceof WordFormToken && token.hasConflicts()) {
-				List<List<IToken>> localVariants = getLocalVariants(chain, i);
-				int interestingIdx = i == 0 ? 0 : SEQUENCE_LENGTH - 1;
+			if (token instanceof WordFormToken && hasConflicts(token)) {
 				Set<IToken> passed = new HashSet<IToken>();
-				for (int j = 0; j < localVariants.size(); j++) {
-					List<IToken> curResult = localVariants.get(j);
-					checkedToken = curResult.get(interestingIdx);
-					if (tryMatchConflicting(getLocalSequences(curResult))) {
-						passed.add(checkedToken);
+				passed.addAll(getPrefixMatched(chain, i));
+				passed.addAll(getPostfixMatched(chain,i));
+				if (!indifferentEuristics.isEmpty()) {
+					List<List<IToken>> localVariants = getLocalVariants(chain, i);
+					int interestingIdx = i == 0 ? 0 : SEQUENCE_LENGTH - 1;
+					for (int j = 0; j < localVariants.size(); j++) {
+						List<IToken> curResult = localVariants.get(j);
+						checkedToken = curResult.get(interestingIdx);
+						if (tryMatchConflicting(getLocalSequences(curResult))) {
+							passed.add(checkedToken);
+						}
 					}
 				}
-				List<IToken> conflicts = token.getConflicts();
-				double failedCorrelation = passed.isEmpty() ? 1.0 / (conflicts.size() + 1) : 0;
+				List<IToken> allConflicts = new ArrayList<IToken>(token.getConflicts());
+				allConflicts.add(token);
+				double failedCorrelation = passed.isEmpty() ? 1.0 / allConflicts.size() : 0;
 				for (IToken passedToken : passed) {
 					passedToken.setCorrelation(1, 1);
 				}
 				if (!passed.contains(token)) {
 					setFailedCorrelation(token, failedCorrelation);
 				}
-				for (IToken curConflicting : conflicts) {
-					if (!passed.contains(curConflicting)) {
+				for (IToken curConflicting : allConflicts) {
+					if (passed.contains(curConflicting)) {
+						curConflicting.setCorrelation(1,1);
+					} else {
 						setFailedCorrelation(curConflicting, failedCorrelation);
-					}
+					} 
 				}
 			} 
 		}
 		return tokens;
+	}
+
+	private Collection<IToken> getPrefixMatched(List<IToken> chain, int i) {
+		if (chain.size() == 1 || i == 0 || preffixEuristics.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<List<IToken>> pairs = getPairs(chain, i-1, i);
+		return tryMatchDirectional(pairs, 1, chain.get(i), preffixEuristics);
+	}
+	
+	private Collection<IToken> getPostfixMatched(List<IToken> chain, int i) {
+		if (chain.size() == 1 || i == chain.size() - 1 || postfixEuristics.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<List<IToken>> pairs = getPairs(chain, i, i + 1);
+		return tryMatchDirectional(pairs, 0, chain.get(i), postfixEuristics);
+	}
+
+	protected Collection<IToken> tryMatchDirectional(List<List<IToken>> pairs, int checkedIdx, IToken checkedToken, List<Euristic> euristics) {
+		Set<IToken> passed = new HashSet<IToken>();
+		for (List<IToken> pair : pairs) {
+			if (matchedNonConflict(euristics, pair)) {
+				passed.add(pair.get(checkedIdx));
+			}
+		}
+		return passed;
+	}
+
+	private List<List<IToken>> getPairs(List<IToken> chain, int firstIdx, int secondIdx) {
+		IToken first = chain.get(firstIdx);
+		IToken second = chain.get(secondIdx);
+		List<IToken> firstVariantsList = getVariantsList(first);
+		List<IToken> secondVariantsList = getVariantsList(second);
+		List<List<IToken>> result = new ArrayList<List<IToken>>();
+		for (IToken token1 : firstVariantsList) {
+			for (IToken token2 : secondVariantsList) {
+				List<IToken> pair = new ArrayList<IToken>();
+				pair.add(token1);
+				pair.add(token2);
+				result.add(pair);
+			}
+		}
+		return result;
+	}
+
+	private List<IToken> getVariantsList(IToken token) {
+		if (!token.hasConflicts()) {
+			return Collections.singletonList(token);
+		} else {
+			List<IToken> result = new ArrayList<IToken>();
+			if (isAvailable(token)) {
+				result.add(token);
+			}
+			result.addAll(token.getConflicts().stream().filter(curToken -> isAvailable(curToken)).collect(Collectors.toList()));
+			return result;
+		}
+	}
+
+	protected boolean isAvailable(IToken token) {
+		return !token.hasCorrelation() || token.getCorrelation() > CORRELATION_E;
+	}
+
+	protected boolean hasConflicts(IToken token) {
+		if (token.hasConflicts()) {
+			int availCount = 0;
+			if (isAvailable(token)) {
+				availCount++;
+			}
+			List<IToken> conflicts = token.getConflicts();
+			for (IToken curToken : conflicts) {
+				if (isAvailable(curToken)) {
+					availCount++;
+				}	
+			}
+			return availCount > 1;
+		}
+		return false;
 	}
 
 	protected void setFailedCorrelation(IToken token, double failedCorrelation) {
@@ -184,7 +275,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 
 	protected boolean tryMatchConflicting(List<List<IToken>> sequences) {
 		for (List<IToken> curSequence: sequences) {
-			if (matchedNonConflict(euristics, curSequence)) {
+			if (matchedNonConflict(indifferentEuristics, curSequence)) {
 				return true;
 			}
 		}
@@ -195,31 +286,6 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 		projectionCreators.add(projectionCreator);
 	}
 	
-//	private void doPreFiltering(List<List<IToken>> chains) {
-//		if (chains.size() > 1) {
-//			List<IToken> curChain = chains.get(0);
-//			for (int i = 0; i < curChain.size(); i++) {
-//				IToken token = curChain.get(i);
-//				if (token instanceof WordFormToken && token.hasConflicts()) {
-//					List<List<IToken>> toRemove = new ArrayList<List<IToken>>();
-//					for (IPossibleChainsFilter filter : possibleChainsFilters) {
-//						toRemove.addAll(filter.getFilteredOut(i, chains));
-//					}
-//					if (!toRemove.isEmpty()) {
-//						setTriggered(true);
-//						chains.removeAll(toRemove);
-//					}
-//					if (chains.size() > 1) {
-//						curChain = chains.get(0);
-//					} else {
-//						return;
-//					}
-//				}
-//			}
-//		}
-//		
-//	}
-
 	private List<List<IToken>> getSequences(List<IToken> tokens, int idx) {
 		List<List<IToken>> result = new ArrayList<List<IToken>>();
 		int start = Math.max(0, idx - SEQUENCE_LENGTH + 1);
@@ -240,7 +306,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 		int end = Math.min(tokens.size() - 1, idx + SEQUENCE_LENGTH - 1);
 		for (int i = start; i <= end; i++) {
 			IToken curToken = tokens.get(i);
-			if (curToken.hasConflicts()) {
+			if (hasConflicts(curToken)) {
 				List<IToken> conflicts = new ArrayList<IToken>(curToken.getConflicts());
 				conflicts.add(curToken);
 				conflicts = conflicts.stream().filter(token -> !token.hasCorrelation() || token.getCorrelation() > 0).collect(Collectors.toList());
@@ -248,11 +314,6 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 			} else {
 				addItem(result,curToken);
 			}
-//			List<IToken> curList = new ArrayList<IToken>();
-//			for (int j = i; j < i + SEQUENCE_LENGTH; j++) {
-//				curList.add(tokens.get(j));
-//			}
-//			result.add(curList);
 		}
 		return result;
 	}
@@ -272,64 +333,37 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	public Euristic getMatchedEuristic(IToken token) {
 		return matchedEuristics.get(token);
 	}
-
-//	private List<List<IToken>> calcVariants(List<IToken> source) {
-//		List<IToken> workingCopy = new ArrayList<IToken>(source);
-//		List<List<IToken>> result = new ArrayList<List<IToken>>();
-//		result.add(new ArrayList<IToken>());
-//		for (int i = 0; i < workingCopy.size(); i++) {
-//			if (workingCopy.get(i).getConflicts() == null || workingCopy.get(i).getConflicts().isEmpty()) {
-//				addItem(result, workingCopy.get(i));
-//			} else {
-//				List<IToken> conflicts = new ArrayList<IToken>(workingCopy.get(i).getConflicts());
-//				conflicts.add(0, workingCopy.get(i));
-//				while (i+1 < workingCopy.size() && conflicts.contains(workingCopy.get(i+1))) {
-//					workingCopy.remove(i+1);
-//				}
-//				result = generateVariants(result,conflicts);
-//			}
-//		}
-//		return result;
-//	}
 	
 	@Override
 	public boolean isRecursive() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setHandleBounds(boolean b) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 
 	@Override
 	public List<IToken> getNewTokens() {
-		// TODO Auto-generated method stub
+		// Nothing for now
 		return null;
 	}
 
 	@Override
 	public void setTokenIdProvider(TokenIdProvider tokenIdProvider) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 
 	@Override
 	public TokenIdProvider getTokenIdProvider() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return null;
 	}
 
 	@Override
 	public void clean() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public List<List<IToken>> getPossibleChains() {
-		return possibleChains;
+		// Do nothing
 	}
 
 }

@@ -154,7 +154,7 @@ public class Trainer {
 
 	protected void prepareLearningData(IVisitor visitor) {
 		
-		File dir = new File("corpora");
+		File dir = new File("D:\\tmp\\corpora");
 		File[] listedFiles = dir.listFiles();
 		AbstractWordNet wordNet = WordNetProvider.getInstance();
 		

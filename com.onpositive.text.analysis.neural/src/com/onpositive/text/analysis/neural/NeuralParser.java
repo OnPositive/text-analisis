@@ -12,6 +12,7 @@ import org.encog.persist.EncogDirectoryPersistence;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
+import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
@@ -31,6 +32,7 @@ public class NeuralParser extends MorphologicParser {
 	@Override
 	public List<IToken> processPlain(List<IToken> tokens) {
 		doFiltering(tokens);
+		tokens = tokens.stream().filter(token -> !(token instanceof SymbolToken)).collect(Collectors.toList());
 		List<IToken> chain = MorphologicUtils.getWithNoConflicts(tokens);
 		for (int i = 0; i < chain.size(); i++) {
 			IToken token = chain.get(i);
@@ -40,7 +42,6 @@ public class NeuralParser extends MorphologicParser {
 				if (i > chain.size() - (TOKEN_WINDOW_SIZE / 2 + 1)) {
 					interestingIdx = i - Math.max(0,(chain.size() - TOKEN_WINDOW_SIZE));
 				}
-//				Set<IToken> passed = new HashSet<IToken>();
 				double maxVal= -1;
 				List<IToken> passedResult = null; 
 				for (int j = 0; j < localVariants.size(); j++) {
@@ -149,6 +150,15 @@ public class NeuralParser extends MorphologicParser {
 
 	private List<List<IToken>> getTrigrams(List<IToken> tokens, int index) {
 		List<List<IToken>> result = new ArrayList<List<IToken>>();
+		if (tokens.size() == 1) {
+			IToken token = tokens.get(0);
+			result.add(Collections.singletonList(token));
+			List<IToken> conflicts = token.getConflicts();
+			for (IToken curToken : conflicts) {
+				result.add(Collections.singletonList(curToken));	
+			}
+			return result;
+		}
 		result.add(new ArrayList<IToken>());
 		int subListStart = index - 1;
 		if (index == 0) {
