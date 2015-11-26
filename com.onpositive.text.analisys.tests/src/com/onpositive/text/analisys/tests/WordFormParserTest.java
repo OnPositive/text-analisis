@@ -347,10 +347,10 @@ public class WordFormParserTest extends TestCase{
 	}
 	
 	// союз - деепричастие ("хотя")
-	public void test35() {
-		Euristic matched = matched(RuleSet.getRulesList35(), "хотя пошел");
-		assertNotNull(matched);
-	}
+//	public void test35() {
+//		Euristic matched = matched(RuleSet.getRulesList35(), "хотя пошел");
+//		assertNotNull(matched);
+//	}
 	
 	public void test36() {
 		Euristic matched = matched(RuleSet.getRulesList25(), "обилие белил");

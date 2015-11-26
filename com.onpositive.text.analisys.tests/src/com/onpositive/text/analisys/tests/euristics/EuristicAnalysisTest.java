@@ -91,7 +91,7 @@ public class EuristicAnalysisTest extends TestCase{
 		    System.out.println("Частые ошибки:");
 		    for (String word : sortedMap.keySet()) {
 				int count = sortedMap.get(word);
-				if (count > 100) {
+				if (count > 10) {
 					System.out.println(word + " - " + count + " раз");
 				} else {
 					break;
@@ -192,7 +192,7 @@ public class EuristicAnalysisTest extends TestCase{
 		euristics.addAll(RuleSet.getRulesList32());
 		euristics.addAll(RuleSet.getRulesList33());
 		euristics.addAll(RuleSet.getRulesList34());
-		euristics.addAll(RuleSet.getRulesList35());
+//		euristics.addAll(RuleSet.getRulesList35());
 		euristics.addAll(RuleSet.getRulesList36());
 		euristics.addAll(RuleSet.getRulesList37());
 		euristics.addAll(RuleSet.getRulesList38());
