@@ -112,8 +112,9 @@ public class Trainer {
 			epoch++;
 			double curError = train.getError();
 			minError = Math.min(minError, curError);
-			if (curError < THRESHOLD && curError - lastSaveError > 0.01) {
-				EncogDirectoryPersistence.saveObject(new File("morphology.nnet"), network);				
+			if (curError < THRESHOLD && Math.abs(curError - lastSaveError) > 0.01) {
+				EncogDirectoryPersistence.saveObject(new File("morphology" + epoch + ".nnet"), network);	
+				lastSaveError = curError;
 			}
 		} while (train.getError() > 0.01);
 
