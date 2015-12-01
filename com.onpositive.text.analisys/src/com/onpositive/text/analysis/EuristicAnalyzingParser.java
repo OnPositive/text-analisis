@@ -158,12 +158,6 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 				List<IToken> allConflicts = new ArrayList<IToken>(token.getConflicts());
 				allConflicts.add(token);
 				double failedCorrelation = passed.isEmpty() ? 1.0 / allConflicts.size() : 0;
-				for (IToken passedToken : passed) {
-					passedToken.setCorrelation(1, 1);
-				}
-				if (!passed.contains(token)) {
-					setFailedCorrelation(token, failedCorrelation);
-				}
 				for (IToken curConflicting : allConflicts) {
 					if (passed.contains(curConflicting)) {
 						curConflicting.setCorrelation(1,1);
@@ -181,7 +175,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 			return Collections.emptyList();
 		}
 		List<List<IToken>> pairs = getPairs(chain, i-1, i);
-		return tryMatchDirectional(pairs, 1, chain.get(i), preffixEuristics);
+		return tryMatchDirectional(pairs, 1, preffixEuristics);
 	}
 	
 	private Collection<IToken> getPostfixMatched(List<IToken> chain, int i) {
@@ -189,14 +183,15 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 			return Collections.emptyList();
 		}
 		List<List<IToken>> pairs = getPairs(chain, i, i + 1);
-		return tryMatchDirectional(pairs, 0, chain.get(i), postfixEuristics);
+		return tryMatchDirectional(pairs, 0, postfixEuristics);
 	}
 
-	protected Collection<IToken> tryMatchDirectional(List<List<IToken>> pairs, int checkedIdx, IToken checkedToken, List<Euristic> euristics) {
+	protected Collection<IToken> tryMatchDirectional(List<List<IToken>> pairs, int checkedIdx, List<Euristic> euristics) {
 		Set<IToken> passed = new HashSet<IToken>();
 		for (List<IToken> pair : pairs) {
+			this.checkedToken = pair.get(checkedIdx);
 			if (matchedNonConflict(euristics, pair)) {
-				passed.add(pair.get(checkedIdx));
+				passed.add(checkedToken);
 			}
 		}
 		return passed;

@@ -26,7 +26,7 @@ import com.onpositive.text.analysis.rules.RuleSet;
 
 public class WordFormParserTest extends TestCase{
 
-	private static final double E = 0.0001;
+	private static final double E = 0.01;
 
 	public void testWordFormParser() {
 		
@@ -131,7 +131,7 @@ public class WordFormParserTest extends TestCase{
 	private void doBasicAnalyzerTest(String str, List<Euristic> euristics) {
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 		matched(RuleSet.getFullRulesList(), str);
 	}
 	
@@ -375,7 +375,7 @@ public class WordFormParserTest extends TestCase{
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(RuleSet.getFullRulesList());
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
 		assertNotNull(processed);
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 	}
 	
 	public void test40() {
@@ -383,7 +383,7 @@ public class WordFormParserTest extends TestCase{
 		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
 		List<IToken> processed = util.process(str);
 		assertTrue(!util.getMatchedEuristics().isEmpty());
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 		util.printConflictingEuristics();
 	}
 	
@@ -391,7 +391,7 @@ public class WordFormParserTest extends TestCase{
 		String str = "на скамейке";
 		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
 		List<IToken> processed = util.process(str);
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 		util.printConflictingEuristics();
 		assertTrue(!util.getMatchedEuristics().isEmpty());
 	}
@@ -401,7 +401,7 @@ public class WordFormParserTest extends TestCase{
 		String str = "Но любая задача";
 		EuristicTestingUtil util = new EuristicTestingUtil(RuleSet.getFullRulesList());
 		List<IToken> processed = util.process(str);
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 		util.printConflictingEuristics();
 		assertTrue(!util.getMatchedEuristics().isEmpty());
 	}
@@ -433,7 +433,7 @@ public class WordFormParserTest extends TestCase{
 		
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(RuleSet.getRulesList36());
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 	}
 	
 	public void test46() {
@@ -446,7 +446,7 @@ public class WordFormParserTest extends TestCase{
 		
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(euristics);
 		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(str));
-		printChain(str, processed);
+		TestingUtil.printChain(str, processed);
 		
 		Euristic matched = matched(euristics, str);
 		assertNotNull(matched); //без первого слова срабатывает, а так ломается
@@ -606,75 +606,4 @@ public class WordFormParserTest extends TestCase{
 		}
 	}
 	
-	private void printChain(String str, List<IToken> chain) {
-		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");
-		for (IToken token : chain) {
-			if (token.hasConflicts() && Math.abs(token.getCorrelation()) < E) {
-				boolean matchedAny = false;
-				List<IToken> conflicts = token.getConflicts();
-				for (IToken conflictToken : conflicts) {
-					if (conflictToken.getCorrelation() > E) {
-						matchedAny = true;
-						break;
-					}
-				}
-				if (!matchedAny) {
-					System.out.println("Результатов не найдено");
-					return;
-				}
-			}
-			
-		}
-		for (int i = 0; i < chain.size(); i++) {
-			IToken token = chain.get(i);
-			if (hasConflicts(token)) {
-				System.out.print(" Конфликт[ ");
-				if (token.getCorrelation() > E) {
-					printToken(token);
-				}
-				List<IToken> conflicts = token.getConflicts();
-				conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > E).forEach(curToken -> {
-					System.out.print(" "); printToken(curToken);
-				});
-				System.out.print("]");
-			} else {
-				printToken(getValidToken(token));
-			}
-			i += getConflictingCount(token);
-		}
-		System.out.println();
-	}
-
-	protected int getConflictingCount(IToken token) {
-		if (token.getConflicts() == null) {
-			return 0;
-		}
-		return token.getConflicts().size();
-	}
-
-	private IToken getValidToken(IToken token) {
-		if (token.getCorrelation() > E || !token.hasConflicts()) {
-			return token;
-		}
-		List<IToken> conflicts = token.getConflicts();
-		for (IToken conflictToken : conflicts) {
-			if (conflictToken.getCorrelation() > E) {
-				return conflictToken;
-			}
-		}
-		return null;
-	}
-
-	private boolean hasConflicts(IToken token) {
-		if (!token.hasConflicts())
-			return false;
-		int initialCount = token.getCorrelation() > E ? 1 : 0;
-		List<IToken> conflicts = token.getConflicts();
-		long count = conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > E).count();
-		return initialCount + count > 1;
-	}
-
-	protected void printToken(IToken token) {
-		System.out.print(token.getStartPosition() + "-" + token.getEndPosition() + " " + TokenTypeResolver.getResolvedType(token) + " " + token.getStringValue()+ " ");
-	}
 }

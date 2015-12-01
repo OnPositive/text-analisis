@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.Grammem;
 import com.onpositive.semantic.wordnet.WordNetProvider;
+import com.onpositive.text.analisys.tests.TokenTypeResolver;
 import com.onpositive.text.analysis.Euristic;
 import com.onpositive.text.analysis.EuristicAnalyzingParser;
 import com.onpositive.text.analysis.IToken;
@@ -22,7 +23,7 @@ import com.onpositive.text.analysis.utils.MorphologicUtils;
 
 public class TestingUtil {
 	
-	private static final double CORRELATION_THRESHOLD = 0.1;
+	private static final double CORRELATION_THRESHOLD = 0.01;
 
 	public static void checkHas(List<IToken> result, int i, Grammem wantedGrammem) {
 		TestCase.assertTrue(i < result.size() && (result.get(i) instanceof SyntaxToken));
@@ -65,4 +66,80 @@ public class TestingUtil {
 		return euristicAnalyzingParser;
 	}
 	
+	public static void printChain(String str, List<IToken> chain) {
+		System.out.println("//============Результаты разбора, строка '" + str +  "' ==================================================");
+		printChain(chain);
+		System.out.println();
+	}
+
+
+	public static void printChain(List<IToken> chain) {
+		for (IToken token : chain) {
+			if (token.hasConflicts() && Math.abs(token.getCorrelation()) < CORRELATION_THRESHOLD) {
+				boolean matchedAny = false;
+				List<IToken> conflicts = token.getConflicts();
+				for (IToken conflictToken : conflicts) {
+					if (conflictToken.getCorrelation() > CORRELATION_THRESHOLD) {
+						matchedAny = true;
+						break;
+					}
+				}
+				if (!matchedAny) {
+					System.out.println("Результатов не найдено");
+					return;
+				}
+			}
+			
+		}
+		for (int i = 0; i < chain.size(); i++) {
+			IToken token = chain.get(i);
+			if (hasConflicts(token)) {
+				System.out.print(" Конфликт[ ");
+				if (token.getCorrelation() > CORRELATION_THRESHOLD) {
+					printToken(token);
+				}
+				List<IToken> conflicts = token.getConflicts();
+				conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > CORRELATION_THRESHOLD).forEach(curToken -> {
+					System.out.print(" "); printToken(curToken);
+				});
+				System.out.print("]");
+			} else {
+				printToken(getValidToken(token));
+			}
+			i += getConflictingCount(token);
+		}
+	}
+
+	protected static int getConflictingCount(IToken token) {
+		if (token.getConflicts() == null) {
+			return 0;
+		}
+		return token.getConflicts().size();
+	}
+
+	private static IToken getValidToken(IToken token) {
+		if (token.getCorrelation() > CORRELATION_THRESHOLD || !token.hasConflicts()) {
+			return token;
+		}
+		List<IToken> conflicts = token.getConflicts();
+		for (IToken conflictToken : conflicts) {
+			if (conflictToken.getCorrelation() > CORRELATION_THRESHOLD) {
+				return conflictToken;
+			}
+		}
+		return null;
+	}
+
+	private static boolean hasConflicts(IToken token) {
+		if (!token.hasConflicts())
+			return false;
+		int initialCount = token.getCorrelation() > CORRELATION_THRESHOLD ? 1 : 0;
+		List<IToken> conflicts = token.getConflicts();
+		long count = conflicts.stream().filter(conflictToken -> conflictToken.getCorrelation() > CORRELATION_THRESHOLD).count();
+		return initialCount + count > 1;
+	}
+	
+	private static void printToken(IToken token) {
+		System.out.print(token.getStartPosition() + "-" + token.getEndPosition() + " " + TokenTypeResolver.getResolvedType(token) + " " + token.getStringValue()+ " ");
+	}
 }

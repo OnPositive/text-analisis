@@ -26,12 +26,13 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.filtering.AbbreviationsFilter;
 import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
-import com.onpositive.text.analysis.filtering.IntjFilter;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.neural.NeuralParser;
 import com.onpositive.text.analysis.rules.RuleSet;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
+
+import static com.onpositive.text.analisys.tests.util.TestingUtil.*;
 
 public class EuristicAnalysisTest extends TestCase{
 	
@@ -75,6 +76,13 @@ public class EuristicAnalysisTest extends TestCase{
 		File folder = new File("D:\\tmp\\corpora");
 		globalTestForFolder(folder, true);
 	}
+	
+//	public void test04() {
+//		testEuristicWithFile(new File("D:\\tmp\\corpora\\648.xml"));
+//		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
+//		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Из квалифицированных рабочих и служащих"));
+//		TestingUtil.printChain(processed);
+//	}
 
 	protected void globalTestForFolder(File folder, boolean euristic) {
 		if (folder.exists() && folder.isDirectory()) {

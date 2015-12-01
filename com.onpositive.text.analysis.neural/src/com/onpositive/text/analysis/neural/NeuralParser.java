@@ -1,7 +1,6 @@
 package com.onpositive.text.analysis.neural;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -138,15 +137,6 @@ public class NeuralParser extends MorphologicParser {
 			i++;
 		}
 		return result;
-	}
-	
-	private double getProperty(Collection<Grammem> grammems, Class<?> propClass) {
-		for (Grammem grammem : grammems) {
-			if (propClass.isAssignableFrom(grammem.getClass())) {
-				return grammem.intId - grammem.getInitialId() + 1;
-			}
-		}
-		return 0;
 	}
 
 	private List<List<IToken>> getTrigrams(List<IToken> tokens, int index) {
