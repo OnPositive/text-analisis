@@ -53,7 +53,7 @@ public class LongNameParser extends BasicParser {
 
 	ProcessingResult looksLikeName(IToken newToken) {
 		if (newToken instanceof WordFormToken) {
-			WordFormToken tc = (WordFormToken) newToken;
+			SyntaxToken tc = (SyntaxToken) newToken;
 			if (tc.hasGrammem(Grammem.SemanGramem.NAME)
 					|| tc.hasGrammem(Grammem.SemanGramem.SURN)
 					|| tc.hasGrammem(Grammem.SemanGramem.PATR)) {
@@ -148,18 +148,18 @@ public class LongNameParser extends BasicParser {
 	void consumTokens(ProcessingData processingData, ArrayList<IToken> tc) {
 		int start = Integer.MAX_VALUE;
 		int end = Integer.MIN_VALUE;
-		WordFormToken mn = null;
+		SyntaxToken mn = null;
 		for (IToken q : tc) {
 			end = Math.max(end, q.getEndPosition());
 			start = Math.min(start, q.getStartPosition());
 			if (isBetter(mn, q)) {
-				mn = (WordFormToken) q;
+				mn = (SyntaxToken) q;
 			}
 		}
 		if (mn == null) {
 			for (IToken q : tc) {
 				if (q instanceof WordFormToken) {
-					mn = (WordFormToken) q;
+					mn = (SyntaxToken) q;
 					break;
 				}
 			}
@@ -171,12 +171,12 @@ public class LongNameParser extends BasicParser {
 		}
 	}
 
-	private boolean isBetter(WordFormToken mn, IToken q) {
+	private boolean isBetter(SyntaxToken mn, IToken q) {
 		if (q instanceof WordFormToken) {
 			if (mn == null) {
 				return true;
 			}
-			WordFormToken mz = (WordFormToken) q;
+			SyntaxToken mz = (SyntaxToken) q;
 			if (mz.hasGrammem(Grammem.SemanGramem.NAME)) {
 				return true;
 			}
@@ -330,7 +330,7 @@ public class LongNameParser extends BasicParser {
 
 	private boolean isOtherNameToken(IToken tk) {
 		if (tk instanceof WordFormToken){
-			WordFormToken ml=(WordFormToken) tk;
+			SyntaxToken ml=(SyntaxToken) tk;
 			if (ml.hasGrammem(Grammem.SemanGramem.ORGN)){
 				return true;
 			}
@@ -346,7 +346,7 @@ public class LongNameParser extends BasicParser {
 
 	private boolean canBePatr(IToken tk) {
 		if (tk instanceof WordFormToken){
-			WordFormToken ml=(WordFormToken) tk;
+			SyntaxToken ml=(SyntaxToken) tk;
 			if (ml.hasGrammem(Grammem.SemanGramem.PATR)){
 				return true;
 			}			
@@ -356,7 +356,7 @@ public class LongNameParser extends BasicParser {
 
 	private boolean canBeSurName(IToken tk) {
 		if (tk instanceof WordFormToken){
-			WordFormToken ml=(WordFormToken) tk;
+			SyntaxToken ml=(SyntaxToken) tk;
 			if (ml.hasGrammem(Grammem.SemanGramem.SURN)){
 				return true;
 			}			
@@ -366,7 +366,7 @@ public class LongNameParser extends BasicParser {
 
 	private boolean canBeName(IToken tk) {
 		if (tk instanceof WordFormToken){
-			WordFormToken ml=(WordFormToken) tk;
+			SyntaxToken ml=(SyntaxToken) tk;
 			if (ml.hasGrammem(Grammem.SemanGramem.NAME)){
 				return true;
 			}			

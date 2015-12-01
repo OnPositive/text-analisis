@@ -55,6 +55,10 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	private Map<String, Integer> mistakesMap = new HashMap<String, Integer>();
 	
+	private Map<Euristic, Integer> usedEuristicsMap = new HashMap<Euristic, Integer>();
+	
+	private Map<Euristic, Integer> wrongEuristicsMap = new HashMap<Euristic, Integer>();
+	
 	ArrayList<Double> percents = new ArrayList<Double>();
 	
 //	public void test01() {
@@ -68,12 +72,21 @@ public class EuristicAnalysisTest extends TestCase{
 //	}
 	
 	public void test03() {
-		File folder = new File("D:\\Лена\\NoAmbig");
+		File folder = new File("D:\\tmp\\corpora");
+		globalTestForFolder(folder, true);
+	}
+
+	protected void globalTestForFolder(File folder, boolean euristic) {
 		if (folder.exists() && folder.isDirectory()) {
 			File[] listedFiles = folder.listFiles();
 			for (File file : listedFiles) {
 				if (file.length() > 200000) {
-					testEuristicWithFile(file);
+					System.out.println("Файл " + file.getName());
+					if (euristic) {
+						testEuristicWithFile(file);
+					} else {
+						testNeuralWithFile(file);
+					}
 				}
 			}
 			
@@ -96,6 +109,27 @@ public class EuristicAnalysisTest extends TestCase{
 				} else {
 					break;
 				}
+			}
+		    
+		    if (!usedEuristicsMap.isEmpty()) {
+		    	printEuristicsData(usedEuristicsMap, "Часто использовались эвристики:");
+		    	printEuristicsData(wrongEuristicsMap, "Часто были ошибочными:");
+
+		    }
+		}
+	}
+
+	protected void printEuristicsData(Map<Euristic, Integer> euristicsMap, String title) {
+		ValueComparator<Euristic, Integer> comparator1 = new ValueComparator<Euristic, Integer> (euristicsMap);
+		Map<Euristic, Integer> sortedMap1 = new TreeMap<Euristic, Integer> (comparator1);
+		sortedMap1.putAll(euristicsMap);
+		System.out.println(title);
+		for (Euristic curEuristic : sortedMap1.keySet()) {
+			int count = sortedMap1.get(curEuristic);
+			if (count > 3) {
+				System.out.println(curEuristic + " - " + count + " раз");
+			} else {
+				break;
 			}
 		}
 	}
@@ -145,7 +179,6 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 	
 	private void testEuristicWithFile(File file) {
-		System.out.println("Файл " + file.getName());
 		ParsedTokensLoader loader;
 		try {
 			loader = new ParsedTokensLoader(new BufferedInputStream(new FileInputStream(file)));
@@ -257,6 +290,7 @@ public class EuristicAnalysisTest extends TestCase{
 				comparedTokens = comparedTokens.stream().filter(token -> token.getCorrelation() > E).collect(Collectors.toList());
 				if (comparedTokens.size() > 1 && !isSamePart(comparedTokens)) {
 					wrongCount++;
+					handleWrongEuristics(etalonToken, comparedTokens, tokenComparator, parser);
 					StringJoiner joiner = new StringJoiner(", ");
 					comparedTokens.stream().forEach(token -> joiner.add(token.toString()));
 					System.out.println("Осталось несколько вариантов: " + joiner.toString());
@@ -279,6 +313,9 @@ public class EuristicAnalysisTest extends TestCase{
 					incrementCount(comparedCounts, token.getPartOfSpeech());
 					Collection<Grammem> wrongGrammems = tokenComparator.calculateWrong(etalonToken, token);
 					if (!wrongGrammems.isEmpty()) {
+						if (euristicParser != null) {
+							handleWrongEuristic(euristicParser.getMatchedEuristic(token));
+						}
 						System.out.println("Ошибочное определение для слова " + etalonToken + " во фразе " + getPhrase(etalonTokens, i));
 						handleMistake(etalonToken);
 						String wrongTxt = "Неверные граммемы: " + wrongGrammems;
@@ -287,7 +324,10 @@ public class EuristicAnalysisTest extends TestCase{
 						}
 						System.out.println(wrongTxt);
 						wrongCount++;
+					} else if (parser instanceof EuristicAnalyzingParser){
+						handleGoodEuristic(((EuristicAnalyzingParser) parser).getMatchedEuristic(token));
 					}
+						
 				}
 			}
 			i++;
@@ -295,6 +335,43 @@ public class EuristicAnalysisTest extends TestCase{
 			
 		}
 		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
+	}
+
+	private void handleWrongEuristics(SimplifiedToken etalonToken, List<WordFormToken> comparedTokens, ITokenComparator tokenComparator, MorphologicParser parser) {
+		if (parser instanceof EuristicAnalyzingParser) {
+			for (SyntaxToken curToken : comparedTokens) {
+				if (!tokenComparator.calculateWrong(etalonToken, curToken).isEmpty()) {
+					Euristic matchedEuristic = ((EuristicAnalyzingParser) parser).getMatchedEuristic(curToken);
+					handleWrongEuristic(matchedEuristic);
+				}
+			}
+		}
+	}
+
+	private void handleWrongEuristic(Euristic matchedEuristic) {
+		if (matchedEuristic == null) {
+			return;
+		}
+		Integer count = wrongEuristicsMap.get(matchedEuristic);
+		if (count == null) {
+			count = 1;
+		} else {
+			count++;
+		}
+		wrongEuristicsMap.put(matchedEuristic, count);
+	}
+	
+	private void handleGoodEuristic(Euristic matchedEuristic) {
+		if (matchedEuristic == null) {
+			return;
+		}
+		Integer count = usedEuristicsMap.get(matchedEuristic);
+		if (count == null) {
+			count = 1;
+		} else {
+			count++;
+		}
+		usedEuristicsMap.put(matchedEuristic, count);
 	}
 
 	private void handleMistake(SimplifiedToken etalonToken) {

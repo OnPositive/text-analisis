@@ -8,7 +8,6 @@ import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.DateToken;
 import com.onpositive.text.analysis.lexic.ScalarToken;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class DateParser extends BasicParser {
@@ -65,7 +64,7 @@ public class DateParser extends BasicParser {
 
 		int startPosition = token0.getStartPosition();
 		int endPosition = token1.getEndPosition();
-		WordFormToken mainWord = unitToken.getMainWord();
+		SyntaxToken mainWord = unitToken.getMainWord();
 		String basicForm = mainWord.getBasicForm();
 
 		if (basicForm.equals(YEAR)) {
@@ -101,7 +100,7 @@ public class DateParser extends BasicParser {
 	static boolean isDateWord(IToken nextToken) {
 		if (nextToken instanceof SyntaxToken) {
 			SyntaxToken tc = (SyntaxToken) nextToken;
-			WordFormToken mainWord = tc.getMainWord();
+			SyntaxToken mainWord = tc.getMainWord();
 			if (mainWord != null) {
 				String basicForm = mainWord.getBasicForm();
 				if (dates.contains(basicForm)) {

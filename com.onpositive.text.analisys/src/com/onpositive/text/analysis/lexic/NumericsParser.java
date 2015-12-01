@@ -7,16 +7,15 @@ import com.onpositive.semantic.wordnet.MeaningElement;
 import com.onpositive.semantic.words3.MetaLayer;
 import com.onpositive.text.analysis.BasicParser;
 import com.onpositive.text.analysis.IToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 public class NumericsParser extends BasicParser {
 
-	AbstractWordNet net;
 	private MetaLayer<Object> layer;
 	private MetaLayer<Object> scaleLayer;
 
 	public NumericsParser(AbstractWordNet net) {
 		super();
-		this.net = net;
 		layer = net.getMetaLayers().getLayer("numbers");
 		scaleLayer = net.getMetaLayers().getLayer("numbers.scale");
 	}
@@ -37,7 +36,7 @@ public class NumericsParser extends BasicParser {
 		int start = Integer.MAX_VALUE;
 		int end = Integer.MIN_VALUE;
 		int lastEnd = Integer.MIN_VALUE;
-		WordFormToken lastWordFormToken = null;
+		SyntaxToken lastWordFormToken = null;
 		boolean lastScalar = false;
 		for (IToken q : sample) {
 			lastEnd = end;

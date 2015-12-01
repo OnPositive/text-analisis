@@ -8,7 +8,6 @@ import java.util.List;
 import com.onpositive.text.analysis.CanonicalComparator;
 import com.onpositive.text.analysis.CompositToken;
 import com.onpositive.text.analysis.IToken;
-import com.onpositive.text.analysis.lexic.WordFormToken;
 
 public class SyntaxCanonicalComparator extends CanonicalComparator {
 	
@@ -53,7 +52,7 @@ public class SyntaxCanonicalComparator extends CanonicalComparator {
 
 	private TokenCanonicCode encodeSyntaxToken(SyntaxToken token) {
 		
-		WordFormToken mainWord = token.getMainWord();
+		SyntaxToken mainWord = token.getMainWord();
 		if(mainWord==null){
 			return new TokenCanonicCode(token.id(),token.id());
 		}

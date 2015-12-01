@@ -16,6 +16,7 @@ import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
 import com.onpositive.text.analysis.lexic.PrimitiveTokenizer;
 import com.onpositive.text.analysis.lexic.SentenceSplitter;
 import com.onpositive.text.analysis.lexic.WordFormParser;
+import com.onpositive.text.analysis.lexic.scalar.ScalarParser;
 import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
@@ -48,6 +49,8 @@ public class TestingUtil {
 		wfParser.setIgnoreCombinations(true);
 		List<IToken> tokens = pt.tokenize(str);		
 		List<IToken> processed = wfParser.process(tokens);
+		ScalarParser scalarParser = new ScalarParser();
+		processed = scalarParser.process(processed);
 		return processed;
 	}
 	

@@ -7,15 +7,16 @@ import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 
 
 public class WFTConflictStat extends SyntaxParser {
 
 	public class ConflictInfo {		
-		public WordFormToken wft;
+		public SyntaxToken wft;
 		public Set<String> tokenTypes;
 		
-		public ConflictInfo(WordFormToken wft, Set<String> parents) { 
+		public ConflictInfo(SyntaxToken wft, Set<String> parents) { 
 			this.wft = wft; 
 			this.tokenTypes = parents;
 		}
@@ -55,7 +56,7 @@ public class WFTConflictStat extends SyntaxParser {
 		
 		ArrayList<ConflictInfo[]> result = new ArrayList<WFTConflictStat.ConflictInfo[]>();
 		
-		WordFormToken[] wfts = wftset.stream().sorted((x,y)->x.getStartPosition() - y.getStartPosition()).toArray(WordFormToken[]::new);
+		SyntaxToken[] wfts = wftset.stream().sorted((x,y)->x.getStartPosition() - y.getStartPosition()).toArray(SyntaxToken[]::new);
 		
 		for (int i = 0; i < wfts.length; i++) {
 			int j = i;

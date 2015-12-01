@@ -113,7 +113,7 @@ public class DashClauseParser extends AbstractSyntaxParser {
 		
 		SyntaxToken subjToken = clauseToken.getSubject();
 		SyntaxToken predicateToken = clauseToken.getPredicate();
-		WordFormToken verbToken = predicateToken.getMainWord();
+		SyntaxToken verbToken = predicateToken.getMainWord();
 		IToken objectToken = null;
 		List<IToken> children = predicateToken.getChildren();
 		for(IToken ch : children){
@@ -185,7 +185,7 @@ l1:				for(MeaningElement me : concepts){
 				}
 			}
 		}
-		WordFormToken result = new WordFormToken(
+		SyntaxToken result = new WordFormToken(
 				estElement.getParentTextElement(),
 				new MeaningElement[]{estElement}, token1.getStartPosition(), token1.getEndPosition());
 		result.setId(getTokenIdProvider().getVacantId());
@@ -208,7 +208,7 @@ l1:				for(MeaningElement me : concepts){
 			}
 			else if(newToken instanceof SyntaxToken){
 				SyntaxToken sToken = (SyntaxToken) newToken;
-				WordFormToken mainWord = sToken.getMainWord();
+				SyntaxToken mainWord = sToken.getMainWord();
 				if(mainWord==null){
 					return DO_NOT_ACCEPT_AND_BREAK;
 				}

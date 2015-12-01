@@ -14,6 +14,7 @@ import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.MorphologicParser;
 import com.onpositive.text.analysis.lexic.SymbolToken;
 import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.utils.MorphologicUtils;
 
 import static com.onpositive.text.analysis.neural.NeuralConstants.*;
@@ -128,7 +129,7 @@ public class NeuralParser extends MorphologicParser {
 		for (IToken curToken : tokens) {
 			List<Grammem> allGrammems = new ArrayList<Grammem>();
 			if (curToken instanceof WordFormToken) {
-				((WordFormToken) curToken).getGrammemSets().stream().forEach(grammem -> allGrammems.addAll(grammem.grammems()));
+				((SyntaxToken) curToken).getGrammemSets().stream().forEach(grammem -> allGrammems.addAll(grammem.grammems()));
 				double[] dataset = dataSetGenerator.generateDataset(allGrammems);
 				for (int j = 0; j < dataset.length; j++) {
 					result[i * datasetSize + j] = dataset[j];

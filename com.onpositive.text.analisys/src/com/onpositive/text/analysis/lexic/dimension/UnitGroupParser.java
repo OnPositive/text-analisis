@@ -13,7 +13,7 @@ import com.onpositive.text.analysis.conditions.BinaryDisjunction;
 import com.onpositive.text.analysis.conditions.TokenMaskBinaryCondition;
 import com.onpositive.text.analysis.lexic.ScalarToken;
 import com.onpositive.text.analysis.lexic.UnitToken;
-import com.onpositive.text.analysis.lexic.WordFormToken;
+import com.onpositive.text.analysis.syntax.SyntaxToken;
 import com.onpositive.text.analysis.utils.Exponent;
 
 public class UnitGroupParser extends BasicParser{
@@ -96,7 +96,7 @@ public class UnitGroupParser extends BasicParser{
 	}
 
 	private static boolean checkWordFormToken(IToken token) {
-		WordFormToken wft = (WordFormToken) token;
+		SyntaxToken wft = (SyntaxToken) token;
 		String basicForm = wft.getBasicForm().toLowerCase();
 		if(expMap.containsKey(basicForm)){
 			return true;
@@ -179,7 +179,7 @@ public class UnitGroupParser extends BasicParser{
 			int startPosition = token0.getStartPosition();
 			int endPosition = token1.getEndPosition();
 			UnitToken unitToken = (UnitToken) token0;
-			WordFormToken wft = (WordFormToken) token1;
+			SyntaxToken wft = (SyntaxToken) token1;
 			String expString = wft.getBasicForm();
 			Integer exp = expMap.get(expString.toLowerCase());
 			List<UnitToken> result = groupUnit(unitToken,exp,startPosition,endPosition);
@@ -198,7 +198,7 @@ public class UnitGroupParser extends BasicParser{
 			}
 			int startPosition = token0.getStartPosition();
 			int endPosition = token1.getEndPosition();
-			WordFormToken wft = (WordFormToken) token0;
+			SyntaxToken wft = (SyntaxToken) token0;
 			UnitToken unitToken = (UnitToken) token1;			
 			String expString = wft.getBasicForm();
 			Integer exp = expMap.get(expString.toLowerCase());
