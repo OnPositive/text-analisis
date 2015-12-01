@@ -128,7 +128,7 @@ public class NeuralParser extends MorphologicParser {
 		double[] result = new double[TOKEN_WINDOW_SIZE * datasetSize];
 		for (IToken curToken : tokens) {
 			List<Grammem> allGrammems = new ArrayList<Grammem>();
-			if (curToken instanceof WordFormToken) {
+			if (curToken instanceof SyntaxToken) {
 				((SyntaxToken) curToken).getGrammemSets().stream().forEach(grammem -> allGrammems.addAll(grammem.grammems()));
 				double[] dataset = dataSetGenerator.generateDataset(allGrammems);
 				for (int j = 0; j < dataset.length; j++) {
