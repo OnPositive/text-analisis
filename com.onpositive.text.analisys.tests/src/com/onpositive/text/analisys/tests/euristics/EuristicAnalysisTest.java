@@ -68,7 +68,7 @@ public class EuristicAnalysisTest extends TestCase{
 //	}
 	
 	public void test03() {
-		File folder = new File("D:\\tmp\\corpora");
+		File folder = new File("D:\\Лена\\NoAmbig");
 		if (folder.exists() && folder.isDirectory()) {
 			File[] listedFiles = folder.listFiles();
 			for (File file : listedFiles) {
@@ -145,6 +145,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 	
 	private void testEuristicWithFile(File file) {
+		System.out.println("Файл " + file.getName());
 		ParsedTokensLoader loader;
 		try {
 			loader = new ParsedTokensLoader(new BufferedInputStream(new FileInputStream(file)));
@@ -155,6 +156,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	private void testEuristicWithFile(String filename) {
+		System.out.println("Файл " + filename);
 		ParsedTokensLoader loader = new ParsedTokensLoader(EuristicAnalysisTest.class.getResourceAsStream(filename));
 		testEuristicWithFile(loader);
 	}
