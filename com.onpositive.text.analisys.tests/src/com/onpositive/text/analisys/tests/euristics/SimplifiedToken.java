@@ -15,10 +15,17 @@ public class SimplifiedToken {
 	
 	private Collection<Grammem> grammems;
 
+	private String sentenceId;
+
 	public SimplifiedToken(String word, Collection<Grammem> grammems) {
 		super();
 		this.word = word;
 		this.grammems = grammems;
+	}
+	
+	public SimplifiedToken(String word, Collection<Grammem> grammems, String sentenceId) {
+		this(word, grammems);
+		this.sentenceId = sentenceId;
 	}
 
 	public String getWord() {
@@ -78,6 +85,10 @@ public class SimplifiedToken {
 	@Override
 	public String toString() {
 		return word + ", Grammmems: " + grammems.toString();
+	}
+
+	public String getSentenceId() {
+		return sentenceId;
 	}
 	
 }

@@ -36,7 +36,7 @@ import static com.onpositive.text.analisys.tests.util.TestingUtil.*;
 
 public class EuristicAnalysisTest extends TestCase{
 	
-	private static final String CORPORA_PATH = "D:\\Лена\\NoAmbig";
+	private static final String CORPORA_PATH = "D:\\tmp\\corpora";
 
 	static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
 	
@@ -81,7 +81,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 	
 //	public void test04() {
-//		testEuristicWithFile(new File(CORPORA_PATH + "\\" + "648.xml"));
+//		testEuristicWithFile(new File(CORPORA_PATH + "\\" + "993.xml"));
 //		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Из квалифицированных рабочих и служащих"));
 //		TestingUtil.printChain(processed);
@@ -178,8 +178,9 @@ public class EuristicAnalysisTest extends TestCase{
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		MorphologicParser euristicAnalyzingParser = TestingUtil.configureDefaultAnalyzer(createRulesList());
-		List<IToken> processed = euristicAnalyzingParser.process(TestingUtil.getWordFormTokens(text));
-		compare(etalonTokens,processed, (EuristicAnalyzingParser) euristicAnalyzingParser);
+		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
+		List<IToken> processed = euristicAnalyzingParser.process(new SentenceSplitter().split(wordTokens));
+		compare(etalonTokens,wordTokens, (EuristicAnalyzingParser) euristicAnalyzingParser);
 //		System.out.println("//---------------------------------With sentences---------------------------------------------------");
 //		List<IToken> tokens1 = TestingUtil.getWordFormTokens(text);
 //		List<IToken> sentences = new SentenceSplitter().split(tokens1);
@@ -400,13 +401,15 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	private String getPhrase(List<SimplifiedToken> etalonTokens, int j) {
+		SimplifiedToken curToken = etalonTokens.get(j);
+		String sentenceId = curToken.getSentenceId();
 		StringBuilder builder = new StringBuilder();
-		if (j > 0) {
+		if (j > 0 && (sentenceId == null || sentenceId.equals(etalonTokens.get(j - 1).getSentenceId()))) {
 			builder.append(etalonTokens.get(j - 1).getWord());
 			builder.append(" ");
 		}
-		builder.append(etalonTokens.get(j).getWord());
-		if (j < etalonTokens.size() - 1) {
+		builder.append(curToken.getWord());
+		if (j < etalonTokens.size() - 1 && (sentenceId == null || sentenceId.equals(etalonTokens.get(j + 1).getSentenceId()))) {
 			builder.append(" ");
 			builder.append(etalonTokens.get(j + 1).getWord());
 		}

@@ -159,7 +159,7 @@ public class Trainer {
 		File[] listedFiles = dir.listFiles();
 		AbstractWordNet wordNet = WordNetProvider.getInstance();
 		
-		for (int i = 0; i < listedFiles.length / 2; i++) {
+		for (int i = 0; i < listedFiles.length; i++) {
 			File curFile = listedFiles[i];
 			prepareForFile(visitor, wordNet, curFile);
 			

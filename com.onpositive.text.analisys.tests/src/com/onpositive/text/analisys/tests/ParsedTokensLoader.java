@@ -29,6 +29,7 @@ public class ParsedTokensLoader {
 		private List<Grammem> grammems = new ArrayList<Grammem>();
 		private boolean ignore = false;
 		private String thisElement;
+		private String curSentenceId;
 		
 		public void startElement(String uri, String localName, String qName, org.xml.sax.Attributes attributes) throws SAXException {
 			thisElement = qName;
@@ -47,7 +48,9 @@ public class ParsedTokensLoader {
 					gr = Grammem.get(grammemName.toUpperCase());
 				}
 				grammems.add(gr);
-			} 
+			} else if ("sentence".equalsIgnoreCase(qName)) {
+				curSentenceId = attributes.getValue("id");
+			}
 		};
 		
 		public void characters(char[] ch, int start, int length) throws SAXException {
@@ -64,7 +67,7 @@ public class ParsedTokensLoader {
 			if ("tfr".equalsIgnoreCase(qName)) {
 				if (!ignore && !grammems.isEmpty() && grammems.get(0) != null) {
 //					System.out.println("Token: " + curName + ", Grammmems: " + grammems.toString());
-					tokens.add(new SimplifiedToken(curName, grammems));
+					tokens.add(new SimplifiedToken(curName, grammems, curSentenceId));
 				}
 				curName = null;
 				grammems = new ArrayList<Grammem>();
