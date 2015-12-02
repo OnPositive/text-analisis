@@ -36,6 +36,8 @@ import static com.onpositive.text.analisys.tests.util.TestingUtil.*;
 
 public class EuristicAnalysisTest extends TestCase{
 	
+	private static final String CORPORA_PATH = "D:\\Лена\\NoAmbig";
+
 	static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
 	
 	    Map<K, V> map;
@@ -73,12 +75,12 @@ public class EuristicAnalysisTest extends TestCase{
 //	}
 	
 	public void test03() {
-		File folder = new File("D:\\tmp\\corpora");
+		File folder = new File(CORPORA_PATH);
 		globalTestForFolder(folder, true);
 	}
 	
 //	public void test04() {
-//		testEuristicWithFile(new File("D:\\tmp\\corpora\\648.xml"));
+//		testEuristicWithFile(new File(CORPORA_PATH + "\\" + "648.xml"));
 //		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Из квалифицированных рабочих и служащих"));
 //		TestingUtil.printChain(processed);
@@ -122,7 +124,6 @@ public class EuristicAnalysisTest extends TestCase{
 		    if (!usedEuristicsMap.isEmpty()) {
 		    	printEuristicsData(usedEuristicsMap, "Часто использовались эвристики:");
 		    	printEuristicsData(wrongEuristicsMap, "Часто были ошибочными:");
-
 		    }
 		}
 	}
