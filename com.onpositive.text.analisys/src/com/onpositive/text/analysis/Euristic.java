@@ -318,6 +318,49 @@ public class Euristic {
 		}
 		contextType = ContextType.INDIFFERENT;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((contextType == null) ? 0 : contextType.hashCode());
+		result = prime * result + Arrays.hashCode(euristics);
+		result = prime * result + Arrays.hashCode(grammems);
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + type;
+		result = prime * result + ((word == null) ? 0 : word.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Euristic other = (Euristic) obj;
+		if (contextType != other.contextType)
+			return false;
+		if (!Arrays.equals(euristics, other.euristics))
+			return false;
+		if (!Arrays.equals(grammems, other.grammems))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (type != other.type)
+			return false;
+		if (word == null) {
+			if (other.word != null)
+				return false;
+		} else if (!word.equals(other.word))
+			return false;
+		return true;
+	}
 }
 
 

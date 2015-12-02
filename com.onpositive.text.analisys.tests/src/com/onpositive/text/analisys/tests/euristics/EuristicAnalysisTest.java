@@ -63,6 +63,7 @@ public class EuristicAnalysisTest extends TestCase{
 	private Map<Euristic, Integer> wrongEuristicsMap = new HashMap<Euristic, Integer>();
 	
 	ArrayList<Double> percents = new ArrayList<Double>();
+	private List<Euristic> euristics;
 	
 //	public void test01() {
 //		testNeuralWithFile("3344.xml");
@@ -205,45 +206,47 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	
 	private List<Euristic> createRulesList() {
-		List<Euristic> euristics = new ArrayList<Euristic>();
-//		euristics.addAll(RuleSet.getRulesList5());
-		euristics.addAll(RuleSet.getRulesList6());
-		euristics.addAll(RuleSet.getRulesList7());
-		euristics.addAll(RuleSet.getRulesList8());
-		euristics.addAll(RuleSet.getRulesList9());
-		euristics.addAll(RuleSet.getRulesList10());
-		euristics.addAll(RuleSet.getRulesList11());
-		euristics.addAll(RuleSet.getRulesList12());
-		euristics.addAll(RuleSet.getRulesList13());
-		euristics.addAll(RuleSet.getRulesList14());
-		euristics.addAll(RuleSet.getRulesList15());
-		euristics.addAll(RuleSet.getRulesList16());
-		euristics.addAll(RuleSet.getRulesList17());
-		euristics.addAll(RuleSet.getRulesList18());
-		euristics.addAll(RuleSet.getRulesList19());
-		euristics.addAll(RuleSet.getRulesList20());
-		euristics.addAll(RuleSet.getRulesList21());
-		euristics.addAll(RuleSet.getRulesList22());
-		euristics.addAll(RuleSet.getRulesList23());
-		euristics.addAll(RuleSet.getRulesList24());
-		euristics.addAll(RuleSet.getRulesList25());
-		euristics.addAll(RuleSet.getRulesList26());
-		euristics.addAll(RuleSet.getRulesList27());
-		euristics.addAll(RuleSet.getRulesList28());
-		euristics.addAll(RuleSet.getRulesList29());
-//		euristics.addAll(RuleSet.getRulesList30());
-//		euristics.addAll(RuleSet.getRulesList31());
-		euristics.addAll(RuleSet.getRulesList32());
-		euristics.addAll(RuleSet.getRulesList33());
-		euristics.addAll(RuleSet.getRulesList34());
-//		euristics.addAll(RuleSet.getRulesList35());
-		euristics.addAll(RuleSet.getRulesList36());
-		euristics.addAll(RuleSet.getRulesList37());
-		euristics.addAll(RuleSet.getRulesList38());
-		euristics.addAll(RuleSet.getRulesList39());
-		euristics.addAll(RuleSet.getRulesList40());
-		euristics.addAll(RuleSet.getRulesList41());
-		euristics.addAll(RuleSet.getRulesList42());
+		if (euristics == null) {
+			euristics = new ArrayList<Euristic>();
+	//		euristics.addAll(RuleSet.getRulesList5());
+			euristics.addAll(RuleSet.getRulesList6());
+			euristics.addAll(RuleSet.getRulesList7());
+			euristics.addAll(RuleSet.getRulesList8());
+			euristics.addAll(RuleSet.getRulesList9());
+			euristics.addAll(RuleSet.getRulesList10());
+			euristics.addAll(RuleSet.getRulesList11());
+			euristics.addAll(RuleSet.getRulesList12());
+			euristics.addAll(RuleSet.getRulesList13());
+			euristics.addAll(RuleSet.getRulesList14());
+			euristics.addAll(RuleSet.getRulesList15());
+			euristics.addAll(RuleSet.getRulesList16());
+			euristics.addAll(RuleSet.getRulesList17());
+			euristics.addAll(RuleSet.getRulesList18());
+			euristics.addAll(RuleSet.getRulesList19());
+			euristics.addAll(RuleSet.getRulesList20());
+			euristics.addAll(RuleSet.getRulesList21());
+			euristics.addAll(RuleSet.getRulesList22());
+			euristics.addAll(RuleSet.getRulesList23());
+			euristics.addAll(RuleSet.getRulesList24());
+			euristics.addAll(RuleSet.getRulesList25());
+			euristics.addAll(RuleSet.getRulesList26());
+			euristics.addAll(RuleSet.getRulesList27());
+			euristics.addAll(RuleSet.getRulesList28());
+			euristics.addAll(RuleSet.getRulesList29());
+	//		euristics.addAll(RuleSet.getRulesList30());
+	//		euristics.addAll(RuleSet.getRulesList31());
+			euristics.addAll(RuleSet.getRulesList32());
+			euristics.addAll(RuleSet.getRulesList33());
+			euristics.addAll(RuleSet.getRulesList34());
+	//		euristics.addAll(RuleSet.getRulesList35());
+			euristics.addAll(RuleSet.getRulesList36());
+			euristics.addAll(RuleSet.getRulesList37());
+			euristics.addAll(RuleSet.getRulesList38());
+			euristics.addAll(RuleSet.getRulesList39());
+			euristics.addAll(RuleSet.getRulesList40());
+			euristics.addAll(RuleSet.getRulesList41());
+			euristics.addAll(RuleSet.getRulesList42());
+		}
 		return euristics;
 	}
 
@@ -257,20 +260,21 @@ public class EuristicAnalysisTest extends TestCase{
 		Map<PartOfSpeech, Integer> comparedCounts = new HashMap<PartOfSpeech, Integer>();
 		int conflictingCount = 0;
 		int wrongCount = 0;
+		int notFoundCount = 0;
 		long filteredOut = 0;
 		while (i < etalonTokens.size() && j < tokens.size()) {
 			SimplifiedToken etalonToken = etalonTokens.get(i);
 			List<WordFormToken> comparedTokens = new ArrayList<WordFormToken>();
 			j = getNextWordTokenIdx(tokens, j, etalonToken);
 			if (j == -1) {
-				printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
+				printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters, notFoundCount);
 				return;
 			}
 			WordFormToken wordFormToken = (WordFormToken) tokens.get(j);
 			if (!etalonToken.wordEquals(wordFormToken)) {
 				i = tryEtalonNeutralization(i, etalonTokens, wordFormToken);
 				if (i == -1) {
-					printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
+					printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters, notFoundCount);
 					return;
 				} else {
 					etalonToken = etalonTokens.get(i);
@@ -307,6 +311,7 @@ public class EuristicAnalysisTest extends TestCase{
 					if (euristicParser != null) {
 						if (euristicParser.getMatchedEuristic(comparedTokens.get(0)) == null) {
 							System.out.println("Правила не найдено");
+							notFoundCount++;
 						} else {
 							StringJoiner joiner1 = new StringJoiner(", ");
 							comparedTokens.stream().map(token -> euristicParser.getMatchedEuristic(token)).forEach(euristic ->joiner1.add(euristic != null ? euristic.toString():"ОШИБКА")); 
@@ -343,7 +348,7 @@ public class EuristicAnalysisTest extends TestCase{
 			j++;
 			
 		}
-		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters);
+		printComparisonResults(comparedCounts, i, conflictingCount, wrongCount, filteredOut, filteredByFilters, notFoundCount);
 	}
 
 	private void handleWrongEuristics(SimplifiedToken etalonToken, List<WordFormToken> comparedTokens, ITokenComparator tokenComparator, MorphologicParser parser) {
@@ -384,7 +389,7 @@ public class EuristicAnalysisTest extends TestCase{
 	}
 
 	private void handleMistake(SimplifiedToken etalonToken) {
-		String word = etalonToken.getWord();
+		String word = etalonToken.getWord().toLowerCase().trim();
 		Integer count = mistakesMap.get(word);
 		if (count == null) {
 			count = 1;
@@ -419,14 +424,15 @@ public class EuristicAnalysisTest extends TestCase{
 		return true;
 	}
 
-	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut, int filteredByFilters) {
+	protected void printComparisonResults(Map<PartOfSpeech, Integer> comparedCounts, int comparedCount, int conflictingCount, int wrongCount, long filteredOut, int filteredByFilters, int notFoundCount) {
 		System.out.println("** Всего сравнили " + comparedCount + " лексем **");
 		System.out.println("** Из них с омонимией: " + conflictingCount + " лексем **");
 		double percent = (conflictingCount - wrongCount) * 100.0 / conflictingCount;
 		percents.add(percent);
 		System.out.println(String.format("** Верно снято для %1$,.2f процентов лексем **", percent));
 		System.out.println("** Исключено: " + filteredOut + " лексем **");
-		System.out.println("** Из них фльтром: " + filteredByFilters + "шт.**");
+		System.out.println("** Из них фильтром: " + filteredByFilters + "шт.**");
+		System.out.println("** Не найдено правил для: " + notFoundCount + "шт.**");
 		System.out.println("** Части речи: ");
 		comparedCounts.keySet().stream().sorted((part1, part2) -> {return part1.intId - part2.intId;}).forEach( part -> {
 			System.out.println("** " + part.description + " = " + comparedCounts.get(part));
