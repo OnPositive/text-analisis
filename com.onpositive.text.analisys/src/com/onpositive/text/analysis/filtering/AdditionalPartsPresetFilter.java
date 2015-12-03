@@ -111,6 +111,7 @@ public class AdditionalPartsPresetFilter implements ITokenFilter {
 		presets.put("времени", PartOfSpeech.NOUN);
 		presets.put("пусть", PartOfSpeech.PRCL);
 		presets.put("такая", PartOfSpeech.ADJF);
+		presets.put("пример", PartOfSpeech.NOUN);
 		
 	}
 

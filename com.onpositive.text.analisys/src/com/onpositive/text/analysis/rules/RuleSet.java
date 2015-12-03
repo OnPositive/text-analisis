@@ -414,6 +414,11 @@ public class RuleSet {
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
 				);
 		euristics.add(euristicAdjNoun);
+		Euristic euristicPrtfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRTF),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
+				);
+		euristics.add(euristicPrtfNoun);
 //		Euristic euristicVerbNoun = Euristic.concat(
 //				Euristic.any(PartOfSpeech.VERB), 
 //				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.ADJF)
@@ -1258,6 +1263,11 @@ public class RuleSet {
 				Euristic.all(PartOfSpeech.NOUN, Gender.NEUT, SingularPlural.UNCHANGABLE, Case.NOMN)
 				);
 		euristics.add(euristicAdjsNoun1);
+		Euristic euristicAdjsNpro1 = Euristic.concat(
+				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB),
+				Euristic.all(PartOfSpeech.NPRO, Gender.NEUT, SingularPlural.SINGULAR, Case.NOMN)
+				);
+		euristics.add(euristicAdjsNpro1);
 //		Euristic euristicAdjsAdjf = Euristic.concat(
 //				Euristic.createConflictChecker(PartOfSpeech.ADJS, PartOfSpeech.ADVB),
 //				Euristic.all(PartOfSpeech.ADJF, Gender.NEUT, SingularPlural.SINGULAR, Case.NOMN)
@@ -1284,6 +1294,11 @@ public class RuleSet {
 				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.GRND)
 				);
 		euristics.add(euristicAdjfNoun);
+		Euristic euristicPrtfNoun = Euristic.concat(
+				Euristic.any(PartOfSpeech.PRTF),
+				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.GRND)
+				);
+		euristics.add(euristicPrtfNoun);
 //		Euristic euristicAdjsNoun = Euristic.concat(
 //				Euristic.any(PartOfSpeech.ADJS),
 //				Euristic.createConflictChecker(PartOfSpeech.NOUN, PartOfSpeech.GRND)
@@ -1851,11 +1866,11 @@ public class RuleSet {
 			Euristic.all(PartOfSpeech.NPRO, Case.GENT)
 		);
 		euristics.add(euristicPrepNpro);
-		Euristic euristicNotPrepNoun = Euristic.concat(
-			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.PREP),
-			Euristic.not(Euristic.all(PartOfSpeech.NOUN, Case.GENT))
-		);	
-		euristics.add(euristicNotPrepNoun);
+//		Euristic euristicNotPrepNoun = Euristic.concat(
+//			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.PREP),
+//			Euristic.not(Euristic.all(PartOfSpeech.NOUN, Case.GENT))
+//		);	
+//		euristics.add(euristicNotPrepNoun);
 //		Euristic euristicNotPrepAdjf = Euristic.concat(
 //			Euristic.createConflictChecker(PartOfSpeech.ADVB, PartOfSpeech.PREP),
 //			Euristic.not(Euristic.all(PartOfSpeech.ADJF, Case.GENT))
