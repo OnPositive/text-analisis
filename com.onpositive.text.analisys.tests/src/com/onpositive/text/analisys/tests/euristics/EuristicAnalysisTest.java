@@ -37,7 +37,7 @@ import static com.onpositive.text.analisys.tests.util.TestingUtil.*;
 
 public class EuristicAnalysisTest extends TestCase{
 	
-	private static final String CORPORA_PATH = "D:\\tmp\\corpora";
+	private static final String CORPORA_PATH = "D:\\Лена\\NoAmbig";
 
 	static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
 	
@@ -271,6 +271,8 @@ public class EuristicAnalysisTest extends TestCase{
 			euristics.addAll(RuleSet.getRulesList40());
 			euristics.addAll(RuleSet.getRulesList41());
 			euristics.addAll(RuleSet.getRulesList42());
+			euristics.addAll(RuleSet.getRulesList43());
+			euristics.addAll(RuleSet.getRulesList44());
 		}
 		return euristics;
 	}
