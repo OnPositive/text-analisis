@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -77,13 +78,18 @@ public class EuristicAnalysisTest extends TestCase{
 	
 	public void test03() {
 		File folder = new File(CORPORA_PATH);
-		globalTestForFolder(folder, true);
+		globalTestForFolder(folder, false);
 	}
 	
 //	public void test04() {
 //		testEuristicWithFile(new File(CORPORA_PATH + "\\" + "993.xml"));
 //		MorphologicParser euristicAnalyzingParser = configureDefaultAnalyzer(createRulesList());
 //		List<IToken> processed = euristicAnalyzingParser.process(getWordFormTokens("Из квалифицированных рабочих и служащих"));
+//		NeuralParser neuralParser = new NeuralParser();
+//		useCurWord(neuralParser);
+//		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
+//		neuralParser.addTokenFilter(new AbbreviationsFilter());
+//		List<IToken> processed = neuralParser.process(getWordFormTokens("Шестьдесят минут прошло"));
 //		TestingUtil.printChain(processed);
 //	}
 
@@ -163,13 +169,31 @@ public class EuristicAnalysisTest extends TestCase{
 		List<SimplifiedToken> etalonTokens = loader.getTokens();
 		String text = loader.getInitialText();
 		NeuralParser neuralParser = new NeuralParser();
+		useCurWord(neuralParser);
 //		neuralParser.addTokenFilter(new IntjFilter());
 		neuralParser.addTokenFilter(new AdditionalPartsPresetFilter());
 		neuralParser.addTokenFilter(new AbbreviationsFilter());
 		List<IToken> wordTokens = TestingUtil.getWordFormTokens(text);
-		neuralParser.process(new SentenceSplitter().split(wordTokens));
+		List<IToken> splitted = new SentenceSplitter().split(wordTokens);
+//		EuristicAnalyzingParser euristicAnalyzingParser = new EuristicAnalyzingParser(RuleSet.getRulesList25());
+//		euristicAnalyzingParser.process(splitted);
+		neuralParser.process(splitted);
 		compare(etalonTokens,wordTokens, neuralParser);
 		System.out.println("//--------------------------------------------------------------------------------------------------");
+	}
+
+	protected void useCurWord(NeuralParser neuralParser) {
+//		neuralParser.setUseCurWord(true);
+//		try {
+//			Scanner scanner = new Scanner(new File("specific.txt"));
+//			while (scanner.hasNext()) {
+//				neuralParser.addSpecificWord(scanner.next());
+//			}
+//			scanner.close();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	

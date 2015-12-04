@@ -15,6 +15,7 @@ import com.onpositive.text.analisys.tools.data.TokenSerializer;
 import com.onpositive.text.analysis.BasicCleaner;
 import com.onpositive.text.analysis.IToken;
 import com.onpositive.text.analysis.TokenRegistry;
+import com.onpositive.text.analysis.neural.NeuralParser;
 import com.onpositive.text.analysis.syntax.SyntaxParser;
 
 /**
@@ -40,6 +41,7 @@ public class ParseSyntax extends HttpServlet {
 		wn.addUrl("/participles.xml");
 		wn.prepare();
 		SyntaxParser syntaxParser = new SyntaxParser(wn);
+		syntaxParser.registerCustomParserClass(NeuralParser.class);
 		this.parser = syntaxParser;
     }
 
@@ -62,6 +64,8 @@ public class ParseSyntax extends HttpServlet {
 		TokenRegistry.clean();		
 		boolean euristics = "true".equalsIgnoreCase(request.getParameter("euristics"));
 		parser.setUseEuristics(euristics);
+		boolean neural = "true".equalsIgnoreCase(request.getParameter("neural"));
+		parser.setUseCustomParser(neural);
 		parser.setUseEstimator(!euristics || "true".equalsIgnoreCase(request.getParameter("estimator")));
 		List<IToken> processed = parser.parse(request.getParameter("query"));
 		writer.println(serializer.serialize(new BasicCleaner().clean(processed)));

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
@@ -22,6 +23,7 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.persist.EncogDirectoryPersistence;
+
 import com.onpositive.semantic.wordnet.AbstractWordNet;
 import com.onpositive.semantic.wordnet.GrammarRelation;
 import com.onpositive.semantic.wordnet.Grammem;
@@ -31,6 +33,8 @@ import com.onpositive.text.analisys.tests.ParsedTokensLoader;
 import com.onpositive.text.analisys.tests.euristics.SimplifiedToken;
 import com.onpositive.text.analysis.neural.BinaryDataSetGenerator;
 import com.onpositive.text.analysis.neural.IDataSetGenerator;
+import com.onpositive.text.analysis.neural.NeuralParser;
+
 import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 
 public class Trainer {
@@ -39,6 +43,10 @@ public class Trainer {
 	
 	private IDataSetGenerator dataSetGenerator = new BinaryDataSetGenerator();
 
+	private boolean useCurWord = true;
+	
+	private List<String> specificWords = new ArrayList<String>((int) Math.pow(2, NeuralParser.CUR_WORD_BITS));
+	
 	private interface IVisitor {
 		void visit(double[] inputs, double[] desired);
 	}
@@ -104,7 +112,7 @@ public class Trainer {
 		long millis = System.currentTimeMillis();
 		double minError = 5;
 		int epoch = 1;
-		double lastSaveError = -1;
+		double lastSaveError = 1;
 		do {
 			train.iteration();
 			System.out.println (
@@ -112,7 +120,7 @@ public class Trainer {
 			epoch++;
 			double curError = train.getError();
 			minError = Math.min(minError, curError);
-			if (curError < THRESHOLD && Math.abs(curError - lastSaveError) > 0.01) {
+			if (curError < THRESHOLD && lastSaveError - curError > 0.01) {
 				EncogDirectoryPersistence.saveObject(new File("morphology" + epoch + ".nnet"), network);	
 				lastSaveError = curError;
 			}
@@ -155,11 +163,22 @@ public class Trainer {
 
 	protected void prepareLearningData(IVisitor visitor) {
 		
+		try {
+			Scanner scanner = new Scanner(new File("specific.txt"));
+			while (scanner.hasNext()) {
+				specificWords.add(scanner.next().toLowerCase().trim());
+			}
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		File dir = new File("D:\\tmp\\corpora");
 		File[] listedFiles = dir.listFiles();
 		AbstractWordNet wordNet = WordNetProvider.getInstance();
 		
-		for (int i = 0; i < listedFiles.length; i++) {
+		for (int i = 0; i < listedFiles.length / 2; i++) {
 			File curFile = listedFiles[i];
 			prepareForFile(visitor, wordNet, curFile);
 			
@@ -194,7 +213,7 @@ public class Trainer {
 					for (int k = 0; k < trigrams.size(); k++) {
 						List<SimplifiedToken> trigram = trigrams.get(k);
 						double desired = k == 0 ? 1: 0;
-						visitor.visit(getDataSet(trigram), new double[]{desired});
+						visitor.visit(getDataSet(trigram, chain.get(j).getWord()), new double[]{desired});
 					}
 				}
 			}
@@ -235,13 +254,15 @@ public class Trainer {
 		return result;
 	}
 
-	private double[] getDataSet(List<SimplifiedToken> tokens) {
+	private double[] getDataSet(List<SimplifiedToken> tokens, String curWord) {
+		curWord = curWord.toLowerCase().trim();
 		if (TOKEN_WINDOW_SIZE < tokens.size()) {
 			throw new IllegalArgumentException("tokens list too large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
 		}
 		int i = 0;
 		int datasetSize = dataSetGenerator.getDatasetSize();
-		double[] result = new double[TOKEN_WINDOW_SIZE * dataSetGenerator.getDatasetSize()];
+		int wordAddition = useCurWord ? NeuralParser.CUR_WORD_BITS : 0;
+		double[] result = new double[TOKEN_WINDOW_SIZE * datasetSize + wordAddition];
 		for (SimplifiedToken simplifiedToken : tokens) {
 			Collection<Grammem> grammems = simplifiedToken.getGrammems();
 			double[] dataset = dataSetGenerator.generateDataset(grammems);
@@ -249,6 +270,14 @@ public class Trainer {
 				result[i * datasetSize + j] = dataset[j];
 			}
 			i++;
+		}
+		if (useCurWord && specificWords.indexOf(curWord) > -1) {
+			double[] doubleSet = BinaryDataSetGenerator.toDoubleSet(specificWords.indexOf(curWord) + 1, NeuralParser.CUR_WORD_BITS);
+			int start = TOKEN_WINDOW_SIZE * datasetSize;
+			for (int j = start; j < start + NeuralParser.CUR_WORD_BITS; j++) {
+				result[j] = doubleSet[j - start]; 
+			}
+					
 		}
 		return result;
 	}

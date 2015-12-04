@@ -20,9 +20,15 @@ import static com.onpositive.text.analysis.neural.NeuralConstants.*;
 
 public class NeuralParser extends MorphologicParser {
 	
+	public static final int CUR_WORD_BITS = 4;
+
 	private BasicNetwork network;
 	
 	private IDataSetGenerator dataSetGenerator;
+	
+	private boolean useCurWord = false;
+	
+	private List<String> specificWords = new ArrayList<String>((int) Math.pow(2, CUR_WORD_BITS));
 	
 	public NeuralParser() {
 		network = (BasicNetwork) EncogDirectoryPersistence.loadObject(getClass().getResourceAsStream("morphology.nnet"));
@@ -46,7 +52,7 @@ public class NeuralParser extends MorphologicParser {
 				List<IToken> passedResult = null; 
 				for (int j = 0; j < localVariants.size(); j++) {
 					List<IToken> curResult = localVariants.get(j);
-					double value = calcNeural(curResult);
+					double value = calcNeural(curResult, curResult.get(interestingIdx));
 					if (value > maxVal) {
 						maxVal = value;
 						passedResult = curResult;
@@ -71,8 +77,9 @@ public class NeuralParser extends MorphologicParser {
 //		}
 //	}
 
-	private double calcNeural(List<IToken> curResult) {
-		double[] dataSet = getDataSet(curResult);
+	private double calcNeural(List<IToken> curResult, IToken curToken) {
+		String curWord = curToken.getShortStringValue();
+		double[] dataSet = getDataSet(curResult, curWord);
 		double[] result = new double[1];
  		network.compute(dataSet, result);
  		return result[0];
@@ -118,13 +125,15 @@ public class NeuralParser extends MorphologicParser {
 
 	}
 	
-	private double[] getDataSet(List<IToken> tokens) {
+	private double[] getDataSet(List<IToken> tokens, String curWord) {
+		curWord= curWord.toLowerCase().trim();
 		if (TOKEN_WINDOW_SIZE < tokens.size()) {
 			throw new IllegalArgumentException("tokens list to large, should be " + TOKEN_WINDOW_SIZE + " tokens at most");
 		}
 		int i = 0;
 		int datasetSize = dataSetGenerator.getDatasetSize();
-		double[] result = new double[TOKEN_WINDOW_SIZE * datasetSize];
+		int wordAddition = useCurWord ? CUR_WORD_BITS : 0;
+		double[] result = new double[TOKEN_WINDOW_SIZE * datasetSize + wordAddition];
 		for (IToken curToken : tokens) {
 			List<Grammem> allGrammems = new ArrayList<Grammem>();
 			if (curToken instanceof SyntaxToken) {
@@ -135,6 +144,14 @@ public class NeuralParser extends MorphologicParser {
 				}
 			}
 			i++;
+		}
+		if (useCurWord && specificWords.indexOf(curWord) > -1) {
+			double[] doubleSet = BinaryDataSetGenerator.toDoubleSet(specificWords.indexOf(curWord) + 1, NeuralParser.CUR_WORD_BITS);
+			int start = TOKEN_WINDOW_SIZE * datasetSize;
+			for (int j = start; j < start + CUR_WORD_BITS; j++) {
+				result[j] = doubleSet[j - start]; 
+			}
+					
 		}
 		return result;
 	}
@@ -179,6 +196,28 @@ public class NeuralParser extends MorphologicParser {
 //			result.add(curList);
 		}
 		return result;
+	}
+
+	public boolean isUseCurWord() {
+		return useCurWord;
+	}
+
+	public void setUseCurWord(boolean useCurWord) {
+		this.useCurWord = useCurWord;
+	}
+
+	public List<String> getSpecificWords() {
+		return specificWords;
+	}
+
+	public void setSpecificWords(List<String> specificWords) {
+		this.specificWords = specificWords;
+	}
+	
+	public void addSpecificWord(String word) {
+		if (specificWords.size() < Math.pow(2, CUR_WORD_BITS) - 2) {
+			specificWords.add(word);
+		}
 	}
 
 }

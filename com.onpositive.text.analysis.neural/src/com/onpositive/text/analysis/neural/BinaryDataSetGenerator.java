@@ -44,7 +44,7 @@ public class BinaryDataSetGenerator implements IDataSetGenerator {
 		return result;
 	}
 	
-	private static double[] toDoubleSet(int number, int base) {
+	public static double[] toDoubleSet(int number, int base) {
 	    final double[] ret = new double[base];
 	    for (int i = 0; i < base; i++) {
 	        ret[base - 1 - i] = Math.abs(Math.signum((1 << i & number)));

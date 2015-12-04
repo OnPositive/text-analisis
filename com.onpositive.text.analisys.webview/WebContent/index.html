@@ -26,6 +26,7 @@
 		<input type="checkbox" id="sentence" class="cb" />Show sentence token
         <input type="checkbox" id="main" class="cb" />Show auxiliary tokens
         <input type="checkbox" id="euristics" checked="checked"/>Use euristics
+        <input type="checkbox" id="neural" />Use neural
         <input type="checkbox" id="estimator" checked="checked"/>Use estimation
         <input type="checkbox" id="notNull" class="cb"/>Hide irrelative tokens
         <br />
@@ -117,10 +118,11 @@ $(function() {
 		$("canvas").hide()
         
 		var euristics = window.euristics["checked"];
+        var neural = window.neural["checked"];
         var estimator = window.estimator["checked"];
         var pathArray = window.location.pathname.split( '/' );
         var firstSegment = pathArray[1];
-        $.getJSON(firstSegment + "/parse", { query : query, euristics : euristics, estimator : estimator }, callback)
+        $.getJSON(firstSegment + "/parse", { query : query, euristics : euristics, neural : neural, estimator : estimator }, callback)
         return false
     })
 })

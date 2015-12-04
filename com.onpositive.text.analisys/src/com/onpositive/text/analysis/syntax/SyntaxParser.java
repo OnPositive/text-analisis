@@ -226,7 +226,11 @@ public class SyntaxParser extends ParserComposition {
 
 	private ParserComposition euristicParsers;
 	
+	private ParserComposition customParsers;
+	
 	private boolean useEuristics = true;
+	
+	private boolean useCustomParser = false;
 
 	private ParserComposition initialParsers;
 
@@ -239,7 +243,10 @@ public class SyntaxParser extends ParserComposition {
 		if (this.onProcess != null) onProcess.accept(1, 3);
 		resetTokenIdProvider(primitiveTokens);
 		List<IToken> initialProcessed = initialParsers.process(primitiveTokens);
-		List<IToken> currentResult = useEuristics?euristicParsers.process(initialProcessed):initialProcessed; 
+		List<IToken> currentResult = useEuristics?euristicParsers.process(initialProcessed):initialProcessed;
+		if (useCustomParser) {
+			currentResult = customParsers.process(currentResult); 
+		}
 		List<IToken> lexicProcessed = lexicParsers.process(currentResult);
 		if (this.onProcess != null) onProcess.accept(2, 3);
 		List<IToken> sentences = sentenceSplitter.split(lexicProcessed);
@@ -390,7 +397,6 @@ public class SyntaxParser extends ParserComposition {
 		return instance;
 	}
 
-
 	private boolean extendsClass(Class<?> clazz, Class<?> parent) {
 		boolean isParser = false;
 		for(Class<?> cl = clazz ; cl != null ; cl = cl.getSuperclass()){
@@ -423,20 +429,34 @@ public class SyntaxParser extends ParserComposition {
 		return isParser;
 	}
 
-
 	public boolean isUseEuristics() {
 		return useEuristics;
 	}
 
-
 	public void setUseEuristics(boolean useEuristics) {
 		this.useEuristics = useEuristics;
+		if (useEuristics) {
+			useCustomParser = false;
+		}
 	}
-
 
 	public void setUseEstimator(boolean useEstimator) {
 		this.useEstimator = useEstimator;
 	}
 
+	public void registerCustomParserClass(Class<? extends IParser> customClass) {
+		this.customParsers = createParsers(new Class[]{customClass},false);
+	}
+
+	public boolean isUseCustomParser() {
+		return useCustomParser;
+	}
+
+	public void setUseCustomParser(boolean useCustomParser) {
+		this.useCustomParser = useCustomParser;
+		if (useCustomParser) {
+			useEuristics = false;
+		}
+	}
 
 }
