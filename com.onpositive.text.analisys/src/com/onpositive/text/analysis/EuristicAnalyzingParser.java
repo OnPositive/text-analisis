@@ -136,6 +136,7 @@ public class EuristicAnalyzingParser extends MorphologicParser{
 	}
 	
 	protected List<IToken> applyEuristicsNew(List<IToken> tokens) {
+		
 		doFiltering(tokens);
 		List<IToken> chain = MorphologicUtils.getWithNoConflicts(tokens);
 		for (int i = 0; i < chain.size(); i++) {

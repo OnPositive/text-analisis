@@ -3,6 +3,7 @@ package com.onpositive.text.analysis;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.onpositive.text.analysis.filtering.AdditionalPartsPresetFilter;
 import com.onpositive.text.analysis.filtering.ITokenFilter;
 import com.onpositive.text.analysis.syntax.SentenceToken;
 
@@ -13,6 +14,7 @@ public abstract class MorphologicParser extends AbstractParser {
 
 	public MorphologicParser() {
 		super();
+		tokenFilters.add(new AdditionalPartsPresetFilter());
 	}
 
 	public void addTokenFilter(ITokenFilter filter) {
@@ -20,18 +22,23 @@ public abstract class MorphologicParser extends AbstractParser {
 	}
 
 	protected void doFiltering(List<IToken> tokens) {
-		for (IToken curToken : tokens) {
+		ArrayList<IToken>ss=new ArrayList();
+		l2:for (IToken curToken : tokens) {
 			if (!curToken.hasConflicts()) {
+				ss.add(curToken);
 				continue;
 			}
 			for (ITokenFilter filter : tokenFilters) {
 				if (filter.shouldFilterOut(curToken)) {
 					curToken.setCorrelation(0.0, Double.POSITIVE_INFINITY);
 					filteredCount++;
-					break;
+					break l2;
 				}
 			}
+			ss.add(curToken);
 		}
+		tokens.clear();
+		tokens.addAll(ss);
 	}
 
 	protected List<List<IToken>> generateVariants(List<List<IToken>> prevResult, List<IToken> conflicts) {

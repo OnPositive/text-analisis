@@ -43,7 +43,7 @@ public class Trainer {
 	
 	private IDataSetGenerator dataSetGenerator = new BinaryDataSetGenerator();
 
-	private boolean useCurWord = true;
+	private boolean useCurWord = false;
 	
 	private List<String> specificWords = new ArrayList<String>((int) Math.pow(2, NeuralParser.CUR_WORD_BITS));
 	
@@ -178,7 +178,7 @@ public class Trainer {
 		File[] listedFiles = dir.listFiles();
 		AbstractWordNet wordNet = WordNetProvider.getInstance();
 		
-		for (int i = 0; i < listedFiles.length / 2; i++) {
+		for (int i = 0; i < listedFiles.length; i++) {
 			File curFile = listedFiles[i];
 			prepareForFile(visitor, wordNet, curFile);
 			
